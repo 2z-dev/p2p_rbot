@@ -3,242 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>P2P Pro Terminal</title>
-    <!-- Подключение Telegram Web App API -->
+    <title>Bybit P2P Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Неоновые орбиты на фоне -->
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
 
     <div class="container">
 
-        <!-- СЕКЦИЯ 1: ДАШБОРД (СТАТИСТИКА) -->
+        <!-- ДАШБОРД -->
         <div id="dashboard" class="section active">
-            <h1>Аналитика</h1>
-            <p class="subtitle">Сводка капитала Bybit P2P</p>
+            <h1>Терминал Bybit</h1>
+            <p class="subtitle">Сводка твоего капитала</p>
 
-            <div class="glass-card">
-                <div class="label">Чистая Прибыль</div>
-                <div class="profit-display">
-                    <!-- Цифры будут анимироваться через JS -->
-                    <span class="profit-value" id="profit-val">0.00</span>
-                    <span class="profit-currency" id="currency-sym">₽</span>
+            <div class="glass-panel">
+                <span class="badge">Чистая Прибыль</span>
+                <div class="main-balance">
+                    <span class="profit-val" id="val-profit">0.00</span>
+                    <span class="currency-sym" id="val-sym">₽</span>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="label">Оборот USDT</div>
-                        <div class="stat-val" id="crypto-turnover">0.00</div>
+                <div class="grid-2">
+                    <div class="metric-box">
+                        <span class="badge">Оборот USDT</span>
+                        <div class="metric-num" id="val-turnover-usdt">0.00</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="label">Спред (Маржа)</div>
-                        <div class="stat-val glow-blue" id="avg-spread">0.00%</div>
+                    <div class="metric-box">
+                        <span class="badge">Спред (Маржа)</span>
+                        <div class="metric-num text-gold" id="val-spread">0.00%</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="label">WAC Закуп</div>
-                        <div class="stat-val" id="wac-buy">0.00</div>
+                    <div class="metric-box">
+                        <span class="badge">WAC Закуп</span>
+                        <div class="metric-num" id="val-wac">0.00</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="label">ROI Оборота</div>
-                        <div class="stat-val glow-blue" id="roi-val">0.00%</div>
+                    <div class="metric-box">
+                        <span class="badge">ROI Оборота</span>
+                        <div class="metric-num text-gold" id="val-roi">0.00%</div>
                     </div>
                 </div>
             </div>
 
-            <div class="glass-card delay-1">
-                <div class="label" style="margin-bottom: 12px;">Обороты 115-ФЗ</div>
-                <div class="stat-box">
-                    <div class="label">Фиатный оборот</div>
-                    <div class="stat-val" id="fiat-turnover">0.00</div>
+            <div class="glass-panel">
+                <span class="badge" style="color: #fff;">115-ФЗ | Банковские обороты</span>
+                <div class="metric-box" style="margin-top: 10px;">
+                    <span class="badge">Прокручено фиата</span>
+                    <div class="metric-num" id="val-turnover-fiat" style="font-size: 24px;">0.00</div>
                 </div>
             </div>
         </div>
 
-        <!-- СЕКЦИЯ 2: НОВАЯ СДЕЛКА (КАЛЬКУЛЯТОР) -->
+        <!-- НОВАЯ СДЕЛКА -->
         <div id="trade" class="section">
             <h1>Новая операция</h1>
-            <p class="subtitle">Внесите данные сделки в реестр</p>
+            <p class="subtitle">Зафиксировать круг в базу бота</p>
 
-            <div class="glass-card">
-                <div class="toggle-container">
-                    <div class="toggle-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
-                    <div class="toggle-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
+            <div class="glass-panel">
+                <div class="trade-switch">
+                    <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
+                    <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
                 </div>
 
-                <div class="input-group">
-                    <div class="label" style="margin-bottom: 10px;">Объем крипты (USDT)</div>
+                <div class="input-wrap">
+                    <span class="badge">Объем крипты (USDT)</span>
                     <span class="input-icon">🪙</span>
-                    <input type="number" inputmode="decimal" class="modern-input" id="input-crypto" placeholder="0.00">
+                    <input type="number" inputmode="decimal" class="styled-input" id="inp-crypto" placeholder="Например: 1000">
                 </div>
 
-                <div class="input-group">
-                    <div class="label" style="margin-bottom: 10px;">Зафиксированный курс</div>
+                <div class="input-wrap">
+                    <span class="badge">Зафиксированный курс</span>
                     <span class="input-icon">💱</span>
-                    <input type="number" inputmode="decimal" class="modern-input" id="input-rate" placeholder="0.00">
+                    <input type="number" inputmode="decimal" class="styled-input" id="inp-rate" placeholder="Например: 92.50">
                 </div>
 
-                <!-- Автоматический расчет фиата -->
-                <div class="stat-box" style="margin-top: 30px; border-color: rgba(0, 225, 255, 0.3);">
-                    <div class="label">Итоговый фиат</div>
-                    <div class="stat-val glow-blue" id="calc-fiat" style="font-size: 32px;">0.00 ₽</div>
+                <div class="result-box">
+                    <span class="badge">Итоговый фиат</span>
+                    <div class="metric-num text-gold" id="calc-fiat" style="font-size: 28px;">0.00</div>
                 </div>
             </div>
         </div>
 
-        <!-- СЕКЦИЯ 3: ИСТОРИЯ -->
+        <!-- ИСТОРИЯ (РЕЕСТР) -->
         <div id="history" class="section">
-            <h1>Реестр</h1>
-            <p class="subtitle">Последние операции</p>
-            <div class="glass-card" id="history-container">
-                <!-- Сделки будут загружаться сюда через JS -->
-                <div style="text-align:center; color: var(--text-muted); padding: 20px;">Загрузка истории...</div>
+            <h1>Реестр сделок</h1>
+            <p class="subtitle">Твои последние операции</p>
+            <div class="glass-panel">
+                <div class="history-list" id="history-container">
+                    <div class="empty-state">История пуста. Данные загружаются...</div>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- ТАБ-БАР (НАВИГАЦИЯ) -->
+    <!-- ТАБ БАР -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('dashboard', this)">
-            <div class="nav-icon">📊</div><span>Сводка</span>
+        <div class="nav-btn active" onclick="switchTab('dashboard', this)">
+            <i>📊</i><span>Сводка</span>
         </div>
-        <div class="nav-item" onclick="switchTab('trade', this)">
-            <div class="nav-icon">⚡️</div><span>Сделка</span>
+        <div class="nav-btn" onclick="switchTab('trade', this)">
+            <i>⚡️</i><span>Сделка</span>
         </div>
-        <div class="nav-item" onclick="switchTab('history', this)">
-            <div class="nav-icon">📓</div><span>Реестр</span>
+        <div class="nav-btn" onclick="switchTab('history', this)">
+            <i>📓</i><span>Реестр</span>
         </div>
     </div>
 
     <script>
-        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Открыть на весь экран
+        tg.expand();
         tg.ready();
 
-        // Текущие данные пользователя (для отправки обратно)
-        const userTgId = tg.initDataUnsafe?.user?.id || 0;
-        let currentCurrencySym = '₽';
+        let sym = '₽';
 
-        // --- 1. АНИМАЦИЯ ЦИФР (Для дорогого эффекта) ---
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const easeOut = progress * (2 - progress);
-                const current = (easeOut * (end - start) + start).toFixed(2);
-
-                obj.innerHTML = current > 0 ? "+" + current.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : current.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                if (progress < 1) window.requestAnimationFrame(step);
-            };
-            window.requestAnimationFrame(step);
-        }
-
-        // --- 2. ПОДГРУЗКА ДАННЫХ С БЭКЕНДА ---
-        // В реальном проекте здесь будет fetch('https://твой-домен.com/api/stats?tg_id=' + userTgId)
-        function loadDashboardData() {
-            // Имитация ответа от твоего Python-кода
-            const mockData = {
-                profit: 142560.50, cryptoTurnover: 8450.00, spread: 2.15,
-                wacBuy: 91.20, roi: 18.5, fiatTurnover: 1250000.00, currency: "₽"
-            };
-
-            currentCurrencySym = mockData.currency;
-            document.getElementById("currency-sym").innerText = currentCurrencySym;
-            animateValue(document.getElementById("profit-val"), 0, mockData.profit, 2000);
-
-            document.getElementById("crypto-turnover").innerText = mockData.cryptoTurnover.toLocaleString('en-US');
-            document.getElementById("avg-spread").innerText = "+" + mockData.spread + "%";
-            document.getElementById("wac-buy").innerText = mockData.wacBuy.toFixed(2) + " " + currentCurrencySym;
-            document.getElementById("roi-val").innerText = mockData.roi + "%";
-            document.getElementById("fiat-turnover").innerText = mockData.fiatTurnover.toLocaleString('en-US') + " " + currentCurrencySym;
-        }
-
-        // --- 3. ЛОГИКА НАВИГАЦИИ ---
-        function switchTab(tabId, element) {
-            tg.HapticFeedback.impactOccurred('light'); // Вибрация при нажатии
-
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-
-            if (tabId === 'trade') {
-                updateMainButton();
-            } else {
-                tg.MainButton.hide();
+        // --- МАГИЯ: ПОЛУЧАЕМ РЕАЛЬНЫЕ ДАННЫЕ ИЗ ССЫЛКИ БОТА ---
+        function parseBotData() {
+            try {
+                // Бот передаст данные так: ?data=eyJwcm9maXQiOjEwMH0= (base64)
+                const urlParams = new URLSearchParams(window.location.search);
+                const encodedData = urlParams.get('data');
+                if (!encodedData) return null;
+                return JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+            } catch (e) {
+                console.error("Ошибка расшифровки данных бота", e);
+                return null;
             }
         }
 
-        // --- 4. КАЛЬКУЛЯТОР НОВОЙ СДЕЛКИ ---
+        const botData = parseBotData();
+
+        // --- ЗАПОЛНЕНИЕ ДАШБОРДА РЕАЛЬНЫМИ ЦИФРАМИ ---
+        function initDashboard() {
+            if(!botData) return;
+            sym = botData.sym || '₽';
+            document.getElementById('val-sym').innerText = sym;
+
+            const profEl = document.getElementById('val-profit');
+            profEl.innerText = botData.profit > 0 ? "+" + botData.profit.toLocaleString() : botData.profit.toLocaleString();
+            if(botData.profit < 0) profEl.classList.add('negative');
+
+            document.getElementById('val-turnover-usdt').innerText = botData.crypto_turnover.toLocaleString();
+            document.getElementById('val-spread').innerText = "+" + botData.spread.toFixed(2) + "%";
+            document.getElementById('val-wac').innerText = botData.wac.toFixed(2) + " " + sym;
+            document.getElementById('val-roi').innerText = botData.roi.toFixed(2) + "%";
+            document.getElementById('val-turnover-fiat').innerText = botData.fiat_turnover.toLocaleString() + " " + sym;
+
+            // Заполняем историю
+            const histCont = document.getElementById('history-container');
+            if(botData.history && botData.history.length > 0) {
+                histCont.innerHTML = '';
+                botData.history.forEach(t => {
+                    const isBuy = t.type.includes('buy');
+                    histCont.innerHTML += `
+                    <div class="history-item">
+                        <div class="h-left">
+                            <span class="h-type ${isBuy ? 'buy' : 'sell'}">${isBuy ? 'ПОКУПКА 🟢' : 'ПРОДАЖА 🔴'}</span>
+                            <span class="h-date">${t.date}</span>
+                        </div>
+                        <div class="h-right">
+                            <div class="h-fiat">${t.fiat.toLocaleString()} ${sym}</div>
+                            <div class="h-crypto">${t.crypto} USDT</div>
+                        </div>
+                    </div>`;
+                });
+            }
+        }
+
+        if(botData) initDashboard();
+
+        // --- НАВИГАЦИЯ ---
+        function switchTab(tabId, el) {
+            tg.HapticFeedback.impactOccurred('light');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+
+            if (tabId === 'trade') checkInputs(); else tg.MainButton.hide();
+        }
+
+        // --- КАЛЬКУЛЯТОР ---
         let currentType = 'buy';
         function setTradeType(type) {
             tg.HapticFeedback.impactOccurred('medium');
             currentType = type;
-            const btnBuy = document.getElementById('btn-buy');
-            const btnSell = document.getElementById('btn-sell');
-
-            if (type === 'buy') {
-                btnBuy.classList.add('active', 'buy');
-                btnSell.classList.remove('active', 'sell');
-                tg.MainButton.color = "#00ff88"; // Неоновый зеленый
-                tg.MainButton.textColor = "#000000";
-            } else {
-                btnSell.classList.add('active', 'sell');
-                btnBuy.classList.remove('active', 'buy');
-                tg.MainButton.color = "#ff3366"; // Неоновый красный
-                tg.MainButton.textColor = "#ffffff";
-            }
-            updateMainButton();
+            document.getElementById('btn-buy').className = `switch-btn ${type==='buy'?'active buy':''}`;
+            document.getElementById('btn-sell').className = `switch-btn ${type==='sell'?'active sell':''}`;
+            tg.MainButton.color = type === 'buy' ? "#20b26c" : "#ff3366";
+            checkInputs();
         }
 
-        const cryptoInput = document.getElementById('input-crypto');
-        const rateInput = document.getElementById('input-rate');
-        const fiatDisplay = document.getElementById('calc-fiat');
+        const inpC = document.getElementById('inp-crypto');
+        const inpR = document.getElementById('inp-rate');
+        const outF = document.getElementById('calc-fiat');
 
-        function updateMainButton() {
-            const crypto = parseFloat(cryptoInput.value);
-            const rate = parseFloat(rateInput.value);
-
-            if (crypto > 0 && rate > 0) {
-                const fiat = (crypto * rate).toFixed(2);
-                fiatDisplay.innerText = fiat.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + currentCurrencySym;
-
-                tg.MainButton.text = currentType === 'buy' ? `СОХРАНИТЬ ПОКУПКУ: ${crypto} USDT` : `СОХРАНИТЬ ПРОДАЖУ: ${fiat} ${currentCurrencySym}`;
+        function checkInputs() {
+            const c = parseFloat(inpC.value); const r = parseFloat(inpR.value);
+            if(c > 0 && r > 0) {
+                const f = (c * r).toFixed(2);
+                outF.innerText = parseFloat(f).toLocaleString() + " " + sym;
+                tg.MainButton.text = currentType === 'buy' ? `СОХРАНИТЬ ПОКУПКУ: ${c} USDT` : `СОХРАНИТЬ ПРОДАЖУ: ${f} ${sym}`;
                 tg.MainButton.show();
             } else {
-                fiatDisplay.innerText = "0.00 " + currentCurrencySym;
+                outF.innerText = "0.00 " + sym;
                 tg.MainButton.hide();
             }
         }
 
-        cryptoInput.addEventListener('input', updateMainButton);
-        rateInput.addEventListener('input', updateMainButton);
+        inpC.addEventListener('input', checkInputs);
+        inpR.addEventListener('input', checkInputs);
 
-        // --- 5. ОТПРАВКА ДАННЫХ В БОТА ---
+        // --- ОТПРАВКА В БОТ ---
         tg.MainButton.onClick(() => {
             tg.HapticFeedback.notificationOccurred('success');
-
             const data = {
                 action: "save_trade",
                 type: currentType,
-                crypto: parseFloat(cryptoInput.value),
-                rate: parseFloat(rateInput.value),
-                fiat: parseFloat((cryptoInput.value * rateInput.value).toFixed(2))
+                crypto: parseFloat(inpC.value),
+                rate: parseFloat(inpR.value),
+                fiat: parseFloat((inpC.value * inpR.value).toFixed(2))
             };
-
-            // Отправляем JSON обратно в Telegram бот
             tg.sendData(JSON.stringify(data));
-            tg.close();
         });
-
-        // Запуск
-        loadDashboardData();
     </script>
 </body>
 </html>
