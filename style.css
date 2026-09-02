@@ -1,166 +1,100 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* Фирменные цвета Bybit */
-    --bg-deep: #0a0e17;
-    --bg-darker: #05070a;
-    --neon-green: #20b26c;
-    --neon-red: #ff3366;
-    --neon-gold: #f7a600;
-    --neon-blue: #00c8f8;
-    --glass-bg: rgba(18, 24, 38, 0.55);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --text-main: #ffffff;
-    --text-muted: #848e9c;
+    --bg-main: #0b0e14;
+    --bg-card: rgba(24, 28, 39, 0.65);
+    --border-card: rgba(255, 255, 255, 0.05);
+    --bybit-gold: #f7a600;
+    --bybit-green: #20b26c;
+    --bybit-red: #ef454a;
+    --bybit-blue: #00c8f8;
+    --text-primary: #ffffff;
+    --text-secondary: #848e9c;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background: radial-gradient(circle at 50% 0%, var(--bg-deep), var(--bg-darker) 80%);
+    margin: 0; padding: 0;
+    background: var(--bg-main) radial-gradient(circle at 50% -20%, #1a2235 0%, transparent 60%);
     font-family: 'Inter', sans-serif;
-    color: var(--text-main);
+    color: var(--text-primary);
     overflow-x: hidden;
+    padding-bottom: 90px;
     -webkit-tap-highlight-color: transparent;
-    min-height: 100vh;
 }
 
-/* --- АНИМАЦИИ И ФОНОВЫЕ ЭФФЕКТЫ --- */
-.bg-glow {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    z-index: -1;
-    opacity: 0.25;
-    animation: pulseGlow 8s infinite alternate ease-in-out;
+/* Плавающие эффекты на фоне */
+.orb {
+    position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.15;
+    animation: float 8s infinite alternate ease-in-out;
 }
-.glow-1 { width: 300px; height: 300px; background: var(--neon-gold); top: -50px; left: -100px; }
-.glow-2 { width: 400px; height: 400px; background: var(--neon-blue); bottom: -150px; right: -100px; animation-delay: -4s; }
+.orb-gold { width: 300px; height: 300px; background: var(--bybit-gold); top: -50px; left: -100px; }
+.orb-blue { width: 400px; height: 400px; background: var(--bybit-blue); bottom: -100px; right: -100px; animation-delay: -4s; }
 
-@keyframes pulseGlow {
-    0% { transform: scale(1) translate(0, 0); opacity: 0.2; }
-    100% { transform: scale(1.2) translate(20px, 30px); opacity: 0.4; }
+@keyframes float { 0% { transform: translateY(0); } 100% { transform: translateY(30px); } }
+
+/* Карточки */
+.container { padding: 20px; }
+.glass-card {
+    background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-card); border-radius: 16px; padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(20px);
 }
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-/* --- КОНТЕЙНЕР И СТЕКЛЯННЫЕ КАРТОЧКИ --- */
-.container { padding: 20px 20px 100px 20px; }
+/* Тексты */
+h1 { font-size: 26px; font-weight: 800; margin: 0 0 5px 0; }
+.subtitle { color: var(--text-secondary); font-size: 13px; margin: 0 0 20px 0; }
+.badge { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; display: block; }
 
-.glass-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 22px;
-    margin-bottom: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-    opacity: 0;
-    transform: translateY(30px);
-}
-.glass-panel:nth-child(2) { animation-delay: 0.1s; }
-.glass-panel:nth-child(3) { animation-delay: 0.2s; }
+/* Прибыль */
+.profit-wrap { margin: 10px 0 20px 0; }
+.profit-val { font-size: 40px; font-weight: 800; color: var(--bybit-green); text-shadow: 0 0 20px rgba(32,178,108,0.3); display: flex; align-items: baseline; gap: 4px; }
+.profit-val.negative { color: var(--bybit-red); text-shadow: 0 0 20px rgba(239,69,74,0.3); }
+.currency-sym { font-size: 20px; opacity: 0.8; }
 
-@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+/* Сетка дашборда */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.metric-box { background: rgba(0,0,0,0.25); border: 1px solid var(--border-card); border-radius: 12px; padding: 14px; }
+.metric-num { font-size: 18px; font-weight: 700; color: #fff; margin-top: 4px; }
+.txt-gold { color: var(--bybit-gold); } .txt-blue { color: var(--bybit-blue); }
+.metric-desc { font-size: 10px; color: var(--text-secondary); margin-top: 4px; line-height: 1.3; }
 
-/* --- ТИПОГРАФИКА И ВАЖНЫЕ ЦИФРЫ --- */
-h1 { font-size: 26px; font-weight: 800; margin: 0 0 4px 0; background: linear-gradient(90deg, #fff, #aeb5c0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 20px 0; font-weight: 500; }
-.badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; display: block; }
+/* Формы и инпуты */
+.trade-switch { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+.switch-btn { flex: 1; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary); transition: 0.3s; cursor: pointer; }
+.switch-btn.active.buy { background: var(--bybit-green); color: #000; box-shadow: 0 0 15px rgba(32,178,108,0.3); }
+.switch-btn.active.sell { background: var(--bybit-red); color: #fff; box-shadow: 0 0 15px rgba(239,69,74,0.3); }
 
-.main-balance { margin: 10px 0 25px 0; }
-.profit-val {
-    font-size: 42px; font-weight: 800; color: var(--neon-green);
-    text-shadow: 0 0 25px rgba(32, 178, 108, 0.4);
-    display: flex; align-items: center; gap: 6px;
-}
-.profit-val.negative { color: var(--neon-red); text-shadow: 0 0 25px rgba(255, 51, 102, 0.4); }
-.currency-sym { font-size: 22px; opacity: 0.7; }
+.input-wrap { position: relative; margin-bottom: 16px; }
+.styled-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-card); color: white; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; box-sizing: border-box; transition: 0.3s; appearance: none; }
+.styled-input:focus { outline: none; border-color: var(--bybit-gold); box-shadow: 0 0 0 2px rgba(247,166,0,0.1); }
 
-/* --- СЕТКА ДАШБОРДА --- */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.metric-box {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255,255,255,0.03);
-    border-radius: 16px; padding: 16px;
-    position: relative; overflow: hidden;
-}
-.metric-num { font-size: 20px; font-weight: 700; margin-top: 4px; color: #fff; }
-.text-gold { color: var(--neon-gold); text-shadow: 0 0 15px rgba(247, 166, 0, 0.3); }
-
-/* --- КАЛЬКУЛЯТОР СДЕЛОК --- */
-.trade-switch {
-    display: flex; background: rgba(0,0,0,0.4); border-radius: 14px;
-    padding: 5px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.04);
-}
-.switch-btn {
-    flex: 1; text-align: center; padding: 12px; border-radius: 10px;
-    font-weight: 700; font-size: 14px; color: var(--text-muted); transition: 0.3s; cursor: pointer;
-}
-.switch-btn.active.buy { background: var(--neon-green); color: #000; box-shadow: 0 0 20px rgba(32, 178, 108, 0.3); }
-.switch-btn.active.sell { background: var(--neon-red); color: #fff; box-shadow: 0 0 20px rgba(255, 51, 102, 0.3); }
-
-.input-wrap { position: relative; margin-bottom: 20px; }
-.styled-input {
-    width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08);
-    color: white; padding: 18px 18px 18px 45px; border-radius: 14px;
-    font-size: 18px; font-weight: 600; box-sizing: border-box; transition: 0.3s;
-}
-.styled-input:focus { outline: none; border-color: var(--neon-gold); box-shadow: 0 0 0 3px rgba(247, 166, 0, 0.15); }
-.styled-input::placeholder { color: rgba(255,255,255,0.15); }
-.input-icon { position: absolute; left: 16px; bottom: 18px; font-size: 18px; opacity: 0.7; }
-
-.result-box { text-align: center; padding: 20px; background: rgba(247, 166, 0, 0.05); border: 1px solid rgba(247, 166, 0, 0.2); border-radius: 16px; margin-top: 25px; }
-
-/* КНОПКА СОХРАНЕНИЯ */
-.action-btn {
-    width: 100%; padding: 18px; border-radius: 14px; border: none;
-    font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif;
-    margin-top: 20px; cursor: pointer; transition: all 0.3s;
-    background: var(--neon-green); color: #000;
-    box-shadow: 0 0 25px rgba(32, 178, 108, 0.3);
-    display: none; /* Скрыта по умолчанию */
-}
+/* Кнопки */
+.action-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; background: var(--bybit-green); color: #000; transition: 0.2s; margin-top: 10px; }
+.action-btn.sell-mode { background: var(--bybit-red); color: #fff; }
 .action-btn:active { transform: scale(0.97); }
-.action-btn.sell-mode { background: var(--neon-red); color: #fff; box-shadow: 0 0 25px rgba(255, 51, 102, 0.3); }
 
-/* --- ИСТОРИЯ СДЕЛОК --- */
-.history-list { display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 5px; }
-.history-item {
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.03);
-    border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center;
-}
-.h-left { display: flex; flex-direction: column; gap: 4px; }
-.h-type { font-weight: 700; font-size: 15px; }
-.h-type.buy { color: var(--neon-green); }
-.h-type.sell { color: var(--neon-red); }
-.h-date { font-size: 12px; color: var(--text-muted); }
-.h-right { text-align: right; }
-.h-fiat { font-weight: 800; font-size: 16px; }
-.h-crypto { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+/* История */
+.history-item { background: rgba(0,0,0,0.25); border: 1px solid var(--border-card); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.h-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;}
+.h-type { font-size: 14px; font-weight: 700; } .h-type.buy { color: var(--bybit-green); } .h-type.sell { color: var(--bybit-red); }
+.h-date { font-size: 12px; color: var(--text-secondary); }
+.h-body { display: flex; justify-content: space-between; align-items: flex-end; }
+.h-amount { font-size: 16px; font-weight: 800; }
+.h-actions { display: flex; gap: 10px; }
+.h-btn { background: transparent; border: 1px solid var(--border-card); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+.h-btn.del { color: var(--bybit-red); border-color: rgba(239,69,74,0.3); }
 
-/* Всплывающее уведомление (Toast) */
-.toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-    background: rgba(32, 178, 108, 0.9); backdrop-filter: blur(10px);
-    color: #000; font-weight: 700; padding: 14px 24px; border-radius: 30px;
-    z-index: 1000; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); opacity: 0;
-}
-.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+/* Навигация */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,14,20,0.9); backdrop-filter: blur(20px); border-top: 1px solid var(--border-card); display: flex; justify-content: space-around; padding: 12px 0 20px 0; z-index: 1000; }
+.nav-btn { color: var(--text-secondary); font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; transition: 0.3s; }
+.nav-btn.active { color: var(--bybit-gold); transform: translateY(-2px); }
+.nav-btn i { font-size: 22px; font-style: normal; display: block; margin-bottom: 4px; }
 
-/* --- НАВИГАЦИЯ (НИЖНИЙ БАР) --- */
-.bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: rgba(10, 14, 23, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around;
-    padding: 12px 0 25px 0; z-index: 100;
-}
-.nav-btn {
-    color: var(--text-muted); font-size: 11px; font-weight: 600; text-align: center;
-    display: flex; flex-direction: column; gap: 6px; align-items: center; transition: 0.3s; cursor: pointer;
-}
-.nav-btn.active { color: var(--neon-gold); transform: translateY(-3px); }
-.nav-btn i { font-size: 24px; font-style: normal; }
-
-.section { display: none; opacity: 0; transition: 0.4s; }
-.section.active { display: block; opacity: 1; }
+/* Утилиты */
+.section { display: none; } .section.active { display: block; }
+#loader { position: fixed; inset: 0; background: var(--bg-main); z-index: 9999; display: flex; justify-content: center; align-items: center; color: var(--bybit-gold); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
+.period-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.p-tab { flex: 1; text-align: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border: 1px solid var(--border-card); }
+.p-tab.active { background: rgba(247,166,0,0.1); color: var(--bybit-gold); border-color: var(--bybit-gold); }
