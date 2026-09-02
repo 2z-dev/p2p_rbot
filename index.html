@@ -3,418 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Bybit Terminal Pro</title>
+    <title>P2P Accounting Terminal Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="loader">
-        <div class="spinner"></div>
-        <div style="font-weight: 700; color: var(--bybit-yellow); letter-spacing: 1px;">СИНХРОНИЗАЦИЯ...</div>
-    </div>
-
+    <div id="loader">ЗАГРУЗКА ДАННЫХ...</div>
     <div class="orb orb-gold"></div>
     <div class="orb orb-green"></div>
 
-    <div id="toast">✅ Успешно!</div>
-
     <div class="container">
-
-        <!-- ОГРАНИЧЕНИЕ ДОСТУПА -->
+        <!-- 1. PAYWALL / БЛОКИРОВКА -->
         <div id="paywall" class="section">
-            <h1>Доступ закрыт 🔒</h1>
-            <p class="subtitle">Отсутствует подписка или аккаунт заблокирован</p>
-            <div class="glass-panel">
-                <span class="badge">Бесплатный Trial</span>
-                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Активируйте 24 часа премиум-доступа для тестирования всех функций платформы.</p>
-                <button class="btn-primary gold" id="btn-trial" onclick="activateTrial()">🎁 Активировать Trial</button>
+            <h1>Терминал Заблокирован 🔒</h1>
+            <p class="subtitle" id="paywall-reason">Отсутствует активная подписка</p>
 
-                <div style="margin-top: 30px;">
-                    <span class="badge">Оплата подписки</span>
-                    <p style="font-size: 14px; color: var(--text-muted);">Для покупки безлимитного доступа вернитесь в бота и перейдите в раздел "Моя подписка".</p>
+            <div class="glass-card" id="trial-card">
+                <span class="badge">Бесплатный Trial</span>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Активируйте 24 часа бесплатного доступа ко всем функциям терминала.</p>
+                <button class="action-btn" id="btn-trial" onclick="sendToBot('activate_trial')">🎁 Активировать 24ч доступа</button>
+            </div>
+
+            <div class="glass-card" style="margin-top: 15px;">
+                <span class="badge">Оформить подписку</span>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Оплата переводом внутри Bybit без комиссии:</p>
+
+                <div class="bybit-box">
+                    <div style="font-size: 11px; color: var(--text-muted);">BYBIT UID ДЛЯ ПЕРЕВОДА:</div>
+                    <div class="uid-row">
+                        <strong id="disp-bybit-uid">...</strong>
+                        <button class="btn-copy" onclick="copyUid()">Копировать</button>
+                    </div>
+                    <div style="font-size: 11px; color: var(--bybit-yellow); margin-top: 8px;">
+                        ⚠️ Обязательно укажите в комментарии перевода ваш ID: <b id="disp-user-id">...</b>
+                    </div>
                 </div>
+
+                <div class="grid-2" style="margin-top: 15px;">
+                    <button class="plan-btn" onclick="sendToBot('confirm_payment', {plan: 'month'})">
+                        <span>1 Месяц</span>
+                        <strong id="disp-price-month">5$</strong>
+                    </button>
+                    <button class="plan-btn gold" onclick="sendToBot('confirm_payment', {plan: 'forever'})">
+                        <span>Навсегда ♾️</span>
+                        <strong id="disp-price-forever">49$</strong>
+                    </button>
+                </div>
+
+                <button class="action-btn-secondary" style="margin-top: 15px;" onclick="openSupport()">👨‍💻 Написать в поддержку</button>
             </div>
         </div>
 
-        <!-- ДАШБОРД (СТАТИСТИКА) -->
-        <div id="dashboard" class="section active">
-            <h1>Сводка Bybit</h1>
-            <p class="subtitle">Эффективность с вычетом комиссий Maker и СБП</p>
+        <!-- 2. ДАШБОРД (АНАЛИТИКА) -->
+        <div id="dashboard" class="section">
+            <h1>Аналитика</h1>
+            <p class="subtitle">Финансовая сводка и маржинальность</p>
 
-            <div class="tabs-wrap">
-                <div class="tab-btn active" onclick="setPeriod('today', this)">Сегодня</div>
-                <div class="tab-btn" onclick="setPeriod('month', this)">Месяц</div>
-                <div class="tab-btn" onclick="setPeriod('all', this)">Всё время</div>
+            <div class="period-tabs">
+                <div class="p-tab active" onclick="setPeriod('today', this)">За сегодня</div>
+                <div class="p-tab" onclick="setPeriod('month', this)">За месяц</div>
+                <div class="p-tab" onclick="setPeriod('all', this)">Все время</div>
             </div>
 
-            <div class="glass-panel">
+            <div class="glass-card">
                 <span class="badge">Чистая Прибыль</span>
                 <div class="profit-wrap">
-                    <span class="profit-val" id="val-profit">0.00</span>
-                    <span class="currency-sym sym">₽</span>
+                    <div class="profit-val" id="val-profit">0.00 <span class="currency-sym sym">₽</span></div>
                 </div>
-
                 <div class="grid-2">
                     <div class="metric-box">
                         <span class="badge">Спред (ROI)</span>
                         <div class="metric-num txt-gold" id="val-spread">0.00%</div>
-                        <div class="metric-desc">Маржинальность кругов</div>
                     </div>
                     <div class="metric-box">
                         <span class="badge">WAC Закуп</span>
                         <div class="metric-num" id="val-wac">0.00</div>
-                        <div class="metric-desc">Ср. цена USDT</div>
                     </div>
                     <div class="metric-box">
                         <span class="badge">Оборот Фиата</span>
                         <div class="metric-num" id="val-fiat-turn">0.00</div>
-                        <div class="metric-desc">Лимиты 115-ФЗ</div>
                     </div>
                     <div class="metric-box">
-                        <span class="badge">Свободно USDT</span>
-                        <div class="metric-num txt-green" id="val-free-usdt">0.00</div>
-                        <div class="metric-desc">На балансе</div>
+                        <span class="badge">Оборот USDT</span>
+                        <div class="metric-num txt-green" id="val-crypto-turn">0.00</div>
                     </div>
                 </div>
             </div>
+
+            <!-- Информационный баннер подписки -->
+            <div class="glass-card" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px;">
+                <div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Статус подписки</div>
+                    <div id="disp-sub-status" style="font-size: 13px; font-weight: 700; margin-top: 2px;">Активна</div>
+                </div>
+                <button class="btn-mini" onclick="switchTab('profile', document.querySelectorAll('.nav-btn')[4])">Продлить</button>
+            </div>
         </div>
 
-        <!-- КАЛЬКУЛЯТОР (СДЕЛКА) -->
+        <!-- 3. СДЕЛКА -->
         <div id="trade" class="section">
             <h1>Новая операция</h1>
-            <p class="subtitle">Внести P2P круг в единую базу данных</p>
-
-            <div class="glass-panel">
-                <div class="tabs-wrap">
-                    <div class="tab-btn active" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
-                    <div class="tab-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
+            <p class="subtitle">Внести круг в единую базу бота</p>
+            <div class="glass-card">
+                <div class="trade-switch">
+                    <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
+                    <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
                 </div>
-
                 <div class="input-wrap">
                     <span class="badge">Объем USDT</span>
-                    <span class="input-icon">🪙</span>
                     <input type="number" inputmode="decimal" id="inp-crypto" class="styled-input" placeholder="0.00">
                 </div>
-
                 <div class="input-wrap">
                     <span class="badge">Зафиксированный курс</span>
-                    <span class="input-icon">💱</span>
                     <input type="number" inputmode="decimal" id="inp-rate" class="styled-input" placeholder="0.00">
                 </div>
-
-                <div style="background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px; text-align: center; margin-top: 25px; margin-bottom: 20px;">
-                    <span class="badge">Итоговый фиат</span>
-                    <div class="metric-num txt-gold" id="calc-fiat" style="font-size: 32px;">0.00 <span class="sym" style="font-size:18px;">₽</span></div>
+                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 13px;">
+                    Итоговый фиат: <b id="preview-fiat">0.00</b> <span class="sym">₽</span>
                 </div>
-
-                <!-- НАДЕЖНАЯ HTML КНОПКА СОХРАНЕНИЯ -->
-                <button class="btn-primary" id="btn-save-trade" style="display: none;" onclick="saveTrade()">💾 СОХРАНИТЬ СДЕЛКУ</button>
+                <button class="action-btn" id="btn-save" onclick="saveTrade()" style="display: none;">СОХРАНИТЬ</button>
             </div>
         </div>
 
-        <!-- ИСТОРИЯ (РЕЕСТР) -->
+        <!-- 4. РЕЕСТР (ИСТОРИЯ) С РЕДАКТИРОВАНИЕМ -->
         <div id="history" class="section">
-            <h1>Реестр сделок</h1>
-            <p class="subtitle">Редактирование пересчитает балансы</p>
-            <div class="glass-panel">
-                <div class="history-list" id="history-container">
-                    <!-- Заполняется из JS -->
+            <h1>Реестр</h1>
+            <p class="subtitle">История с редактированием и удалением</p>
+            <div class="glass-card">
+                <div class="history-list" id="history-container"></div>
+            </div>
+        </div>
+
+        <!-- 5. РЕФЕРАЛЬНАЯ ПРОГРАММА (РЕФКА) -->
+        <div id="referral" class="section">
+            <h1>Партнерская сеть</h1>
+            <p class="subtitle">Приглашайте трейдеров и получайте бонусы</p>
+            <div class="glass-card">
+                <div class="ref-banner">
+                    <div style="font-size: 32px; font-weight: 800; color: var(--bybit-yellow);" id="ref-count-val">0</div>
+                    <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Приглашено пользователей</div>
+                </div>
+                <p style="font-size: 13px; color: var(--text-main); margin: 15px 0;">
+                    За каждого приглашенного коллегу вы получаете <b class="txt-gold" id="ref-bonus-val">+3 дня</b> к подписке!
+                </p>
+                <span class="badge">Ваша партнерская ссылка</span>
+                <div class="bybit-box" style="word-break: break-all; font-size: 13px; font-family: monospace; padding: 12px;" id="ref-link-box">
+                    https://t.me/...
+                </div>
+                <div class="grid-2" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="copyRefLink()">📋 Скопировать</button>
+                    <button class="action-btn gold" onclick="shareRefLink()">🚀 Отправить другу</button>
                 </div>
             </div>
         </div>
 
-        <!-- НАСТРОЙКИ И ПРОФИЛЬ -->
+        <!-- 6. НАСТРОЙКИ И ПОДДЕРЖКА -->
         <div id="profile" class="section">
-            <h1>Профиль</h1>
-            <p class="subtitle">Системные параметры терминала</p>
-
-            <div class="glass-panel">
-                <span class="badge">Партнерская программа</span>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Приглашено: <b id="ref-count" style="color:#fff;">0</b>. За каждого друга вы получаете +3 дня доступа.</p>
-                <button class="btn-primary secondary" onclick="shareRef()">🤝 Поделиться ссылкой</button>
-            </div>
-
-            <div class="glass-panel">
+            <h1>Настройки</h1>
+            <p class="subtitle">Параметры и управление аккаунтом</p>
+            <div class="glass-card">
                 <span class="badge">Базовая валюта</span>
-                <select id="set-currency" class="styled-input" onchange="updateSettings()" style="margin-bottom: 20px;">
-                    <option value="RUB">RUB ₽</option><option value="KZT">KZT ₸</option><option value="UAH">UAH ₴</option><option value="BYN">BYN Br</option><option value="USD">USD $</option>
+                <select id="set-currency" class="styled-input" onchange="updateSettings()" style="margin-bottom: 15px;">
+                    <option value="RUB">RUB ₽</option>
+                    <option value="KZT">KZT ₸</option>
+                    <option value="UAH">UAH ₴</option>
+                    <option value="BYN">BYN Br</option>
+                    <option value="USD">USD $</option>
                 </select>
 
                 <span class="badge">Часовой пояс (UTC)</span>
                 <select id="set-tz" class="styled-input" onchange="updateSettings()" style="margin-bottom: 20px;">
-                    <option value="2">UTC+2</option><option value="3">UTC+3 (Москва)</option><option value="4">UTC+4</option><option value="5">UTC+5</option><option value="6">UTC+6</option>
+                    <option value="2">UTC+2</option>
+                    <option value="3">UTC+3 (Москва)</option>
+                    <option value="4">UTC+4</option>
+                    <option value="5">UTC+5</option>
+                    <option value="6">UTC+6</option>
+                    <option value="7">UTC+7</option>
                 </select>
 
-                <span class="badge">Уровень Maker комиссии Bybit</span>
-                <select id="set-maker" class="styled-input" onchange="updateSettings()">
-                    <option value="0.003">Обычный Мейкер (0.3%)</option>
-                    <option value="0.00275">Мерчант (0.275%)</option>
-                    <option value="0.0025">Мерчант PRO (0.25%)</option>
-                </select>
+                <div style="border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                    <span class="badge">Продление доступа</span>
+                    <button class="action-btn" style="margin-top: 8px; margin-bottom: 12px;" onclick="switchTab('paywall')">💎 Тарифы и оплата</button>
+                    <button class="action-btn-secondary" onclick="openSupport()">👨‍💻 Служба поддержки</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ТАБ-БАР НАВИГАЦИИ -->
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ СДЕЛКИ -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="glass-card modal-box">
+            <h2 style="font-size: 18px; margin: 0 0 4px 0;">Редактирование сделки</h2>
+            <p class="subtitle" style="margin-bottom: 15px;" id="modal-trade-id">Сделка #...</p>
+
+            <div class="input-wrap">
+                <span class="badge">Новый объем USDT</span>
+                <input type="number" inputmode="decimal" id="modal-crypto" class="styled-input" placeholder="0.00">
+            </div>
+            <div class="input-wrap">
+                <span class="badge">Новый курс</span>
+                <input type="number" inputmode="decimal" id="modal-rate" class="styled-input" placeholder="0.00">
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
+                Пересчитанный фиат: <b id="modal-fiat">0.00</b> <span class="sym">₽</span>
+            </div>
+
+            <div class="grid-2">
+                <button class="action-btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button class="action-btn" onclick="submitEditTrade()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ТОСТ-УВЕДОМЛЕНИЕ -->
+    <div id="toast">Ссылка скопирована!</div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ (5 ВКЛАДОК) -->
     <div class="bottom-nav">
         <div class="nav-btn active" onclick="switchTab('dashboard', this)"><i>📊</i><span>Сводка</span></div>
         <div class="nav-btn" onclick="switchTab('trade', this)"><i>⚡️</i><span>Сделка</span></div>
         <div class="nav-btn" onclick="switchTab('history', this)"><i>📓</i><span>Реестр</span></div>
-        <div class="nav-btn" onclick="switchTab('profile', this)"><i>⚙️</i><span>Профиль</span></div>
+        <div class="nav-btn" onclick="switchTab('referral', this)"><i>🤝</i><span>Рефка</span></div>
+        <div class="nav-btn" onclick="switchTab('profile', this)"><i>⚙️</i><span>Опции</span></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
 
-        // ❗️ ВАЖНО: ВСТАВЬ СЮДА СВОЙ URL ОТ GOOGLE APPS SCRIPT !!!
-        const API_URL = "https://script.google.com/macros/s/AKfycbxeoAxC0FKwhNawUw54xJIm4kgYC556pfrp4IvbtmNTsLLJGSGOrN_c8WCy1kxBfVdxhA/exec";
-
-        const userTgId = tg.initDataUnsafe?.user?.id || 12345678;
-        const username = tg.initDataUnsafe?.user?.username || "Trader";
-        const firstName = tg.initDataUnsafe?.user?.first_name || "";
-        const lastName = tg.initDataUnsafe?.user?.last_name || "";
-        const startParam = tg.initDataUnsafe?.start_param || null;
-
-        let appData = { trades: [], user: {}, settings: {} };
+        let appData = { trades: [], settings: { currency: "RUB", tz: 3 } };
         let currentPeriod = 'today';
+        let activeEditTradeId = null;
 
-        function showToast(text, isError = false) {
-            const t = document.getElementById('toast');
-            t.innerText = text;
-            t.className = isError ? 'toast error show' : 'toast show';
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        async function apiCall(data) {
+        // 1. ПАРСИНГ ДАННЫХ ИЗ URL
+        function parseBotData() {
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
-                return await res.json();
-            } catch(e) {
-                showToast("Ошибка соединения с БД", true);
+                const urlParams = new URLSearchParams(window.location.search);
+                const encodedData = urlParams.get('data');
+                if (!encodedData) return null;
+                return JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+            } catch (e) {
+                console.error("Ошибка парсинга:", e);
                 return null;
             }
         }
 
-        // --- 1. ИНИЦИАЛИЗАЦИЯ (СБОР ДАННЫХ ИЗ GOOGLE ТАБЛИЦЫ) ---
-        async function initApp() {
-            // Регистрируем/Получаем инфу о подписке
-            const auth = await apiCall({action: "register_or_get_user", tg_id: userTgId, username: username, first_name: firstName, last_name: lastName, ref_by: startParam});
-            if(!auth) return document.getElementById('loader').innerText = "ОШИБКА СЕРВЕРА";
+        // 2. ИНИЦИАЛИЗАЦИЯ
+        function initApp() {
+            const parsedData = parseBotData();
+            if (!parsedData) {
+                document.getElementById('loader').innerText = "ОТКРОЙТЕ ТЕРМИНАЛ ЧЕРЕЗ БОТА ПО КОМАНДЕ /menu";
+                return;
+            }
+            appData = parsedData;
 
-            // Если забанен или кончилась подписка
-            if (auth.status === "banned" || (auth.sub_end !== "none" && new Date(auth.sub_end) < new Date())) {
+            // Заполнение реквизитов и пользователя
+            if (appData.user_id) document.getElementById('disp-user-id').innerText = appData.user_id;
+            if (appData.bybit_uid) document.getElementById('disp-bybit-uid').innerText = appData.bybit_uid;
+            if (appData.price_month) document.getElementById('disp-price-month').innerText = `${appData.price_month}$`;
+            if (appData.price_forever) document.getElementById('disp-price-forever').innerText = `${appData.price_forever}$`;
+
+            // Реферальные данные
+            if (appData.bot_username && appData.user_id) {
+                const link = `https://t.me/${appData.bot_username}?start=${appData.user_id}`;
+                document.getElementById('ref-link-box').innerText = link;
+            }
+            document.getElementById('ref-count-val').innerText = appData.ref_count || 0;
+            document.getElementById('ref-bonus-val').innerText = `+${appData.ref_bonus_days || 3} дня`;
+
+            // Проверка подписки / Paywall
+            if (appData.status === "banned") {
                 document.getElementById('loader').style.display = 'none';
-                if(auth.trial_used) document.getElementById('btn-trial').style.display = 'none';
+                document.getElementById('paywall-reason').innerText = "Ваш аккаунт заблокирован администратором";
+                document.getElementById('trial-card').style.display = 'none';
                 switchTab('paywall');
                 document.querySelector('.bottom-nav').style.display = 'none';
                 return;
             }
 
-            // Скачиваем сделки и настройки
-            const fullData = await fetch(`${API_URL}?action=get_full_data&tg_id=${userTgId}`).then(r => r.json());
-            appData = fullData;
+            if (appData.status === "expired") {
+                document.getElementById('loader').style.display = 'none';
+                if (appData.trial_used) document.getElementById('trial-card').style.display = 'none';
+                switchTab('paywall');
+                document.querySelector('.bottom-nav').style.display = 'none';
+                return;
+            }
 
-            // Заполняем интерфейс
-            document.getElementById('set-currency').value = appData.settings.currency;
-            document.getElementById('set-tz').value = appData.settings.tz;
-            document.getElementById('set-maker').value = appData.settings.maker_fee;
-            document.getElementById('ref-count').innerText = appData.user.refs;
+            // Статус подписки на дашборде
+            if (appData.sub_end) {
+                const isForever = appData.sub_end.startsWith('2100');
+                document.getElementById('disp-sub-status').innerText = isForever ? "♾️ Навсегда" : `До ${appData.sub_end.slice(0, 10)}`;
+            }
+
+            // Настройки
+            document.getElementById('set-currency').value = appData.settings.currency || "RUB";
+            document.getElementById('set-tz').value = appData.settings.tz || 3;
 
             document.getElementById('loader').style.display = 'none';
             calculateStats();
             renderHistory();
+            switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
         }
 
-        async function activateTrial() {
-            tg.HapticFeedback.impactOccurred('heavy');
-            await apiCall({action: "activate_trial", tg_id: userTgId});
-            window.location.reload();
+        // 3. ОТПРАВКА ДАННЫХ В БОТ (tg.sendData)
+        function sendToBot(actionName, extraData = {}) {
+            tg.HapticFeedback.impactOccurred('medium');
+            const payload = { action: actionName, ...extraData };
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
         }
 
-        // --- 2. МАТЕМАТИКА BYBIT P2P ---
-        function setPeriod(p, el) {
+        // 4. РАСЧЕТ АНАЛИТИКИ
+        function setPeriod(p, element) {
             currentPeriod = p;
-            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+            document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
             calculateStats();
         }
 
         function calculateStats() {
             const tz = parseInt(appData.settings.tz) || 3;
-            const now = new Date(); now.setHours(now.getUTCHours() + tz);
-            const makerFee = parseFloat(appData.settings.maker_fee) || 0.003;
-
-            let buyF = 0, buyC = 0, sellF = 0, sellC = 0;
+            const now = new Date();
+            now.setHours(now.getUTCHours() + tz);
 
             const filteredTrades = appData.trades.filter(t => {
-                const d = new Date(t.date); d.setHours(d.getUTCHours() + tz);
+                const d = new Date(t.date);
+                d.setHours(d.getUTCHours() + tz);
                 if (currentPeriod === 'today') return d.toDateString() === now.toDateString();
                 if (currentPeriod === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
                 return true;
             });
 
-            // Для WAC считаем всю базу (свободные USDT)
-            let totalBuyF = 0, totalBuyC = 0, totalSellC = 0;
-            appData.trades.forEach(t => {
-                if(t.type === 'buy') { totalBuyF += t.fiat; totalBuyC += t.crypto * (1 - makerFee); }
-                else { totalSellC += t.crypto; }
-            });
-            const globalWac = totalBuyC > 0 ? totalBuyF / totalBuyC : 0;
-            const freeUsdt = totalBuyC - totalSellC;
-
-            // Считаем стату за период
+            let buyF = 0, buyC = 0, sellF = 0, sellC = 0;
             filteredTrades.forEach(t => {
-                if (t.type === 'buy') { buyF += t.fiat; buyC += t.crypto * (1 - makerFee); }
-                else { sellF += t.fiat; sellC += t.crypto; }
+                if (t.type === 'buy') {
+                    buyF += t.fiat; buyC += t.crypto;
+                } else {
+                    sellF += t.fiat; sellC += t.crypto;
+                }
             });
 
+            const wac = buyC > 0 ? buyF / buyC : 0;
             const avgSell = sellC > 0 ? sellF / sellC : 0;
-            const profit = sellC > 0 ? sellF - (sellC * globalWac) : 0;
-            const spread = (globalWac > 0 && avgSell > 0) ? ((avgSell / globalWac) - 1) * 100 : 0;
+            const profit = sellC > 0 ? sellF - (sellC * wac) : 0;
+            const spread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
+            const fiatTurn = buyF + sellF;
+            const cryptoTurn = buyC + sellC;
 
-            const syms = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"};
-            const sym = syms[appData.settings.currency] || "₽";
+            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[appData.settings.currency] || "₽";
             document.querySelectorAll('.sym').forEach(el => el.innerText = sym);
 
-            const pEl = document.getElementById('val-profit');
-            pEl.innerText = profit > 0 ? "+" + profit.toLocaleString(undefined,{minimumFractionDigits:2}) : profit.toLocaleString(undefined,{minimumFractionDigits:2});
-            pEl.className = profit < 0 ? 'profit-val negative' : 'profit-val';
+            const profEl = document.getElementById('val-profit');
+            profEl.innerHTML = (profit > 0 ? "+" : "") + profit.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ` <span class="currency-sym sym">${sym}</span>`;
+            profEl.className = profit < 0 ? 'profit-val negative' : 'profit-val';
 
-            document.getElementById('val-spread').innerText = (spread>0?"+":"") + spread.toFixed(2) + "%";
-            document.getElementById('val-wac').innerText = globalWac.toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('val-fiat-turn').innerText = (buyF + sellF).toLocaleString(undefined,{minimumFractionDigits:0});
-            document.getElementById('val-crypto-turn').innerText = (buyC + sellC).toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('val-free-usdt').innerText = freeUsdt.toLocaleString(undefined,{minimumFractionDigits:2});
+            document.getElementById('val-spread').innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
+            document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('val-fiat-turn').innerText = fiatTurn.toLocaleString(undefined, {minimumFractionDigits:0});
+            document.getElementById('val-crypto-turn').innerText = cryptoTurn.toLocaleString(undefined, {minimumFractionDigits:2});
         }
 
-        // --- 3. ИСТОРИЯ И РЕДАКТИРОВАНИЕ ---
+        // 5. РЕЕСТР И РЕДАКТИРОВАНИЕ
         function renderHistory() {
             const list = document.getElementById('history-container');
             list.innerHTML = '';
-            if(appData.trades.length === 0) { list.innerHTML = '<div style="text-align:center; color:var(--text-muted);">Сделок еще нет.</div>'; return; }
+            if (appData.trades.length === 0) {
+                list.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding: 25px;">Сделок пока нет. Добавьте круг!</div>';
+                return;
+            }
 
             const tz = parseInt(appData.settings.tz) || 3;
             const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[appData.settings.currency] || "₽";
 
-            appData.trades.slice(0, 15).forEach(t => {
+            appData.trades.forEach(t => {
                 const isBuy = t.type === 'buy';
-                const d = new Date(t.date); d.setHours(d.getUTCHours() + tz);
+                const d = new Date(t.date);
+                d.setHours(d.getUTCHours() + tz);
                 const dateStr = d.toLocaleDateString('ru-RU', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
 
                 list.innerHTML += `
                 <div class="history-item">
                     <div class="h-header">
-                        <div class="h-type ${isBuy?'buy':'sell'}">${isBuy?'ПОКУПКА 🟢':'ПРОДАЖА 🔴'}</div>
+                        <div class="h-type ${isBuy ? 'buy' : 'sell'}">${isBuy ? 'ПОКУПКА 🟢' : 'ПРОДАЖА 🔴'}</div>
                         <div class="h-date">${dateStr}</div>
                     </div>
-                    <div class="h-body">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            <div class="h-fiat">${t.fiat.toLocaleString()} ${sym}</div>
-                            <div class="h-crypto">${t.crypto} USDT по ${t.rate}</div>
+                            <div class="h-fiat">${t.fiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${t.crypto} USDT по ${t.rate}</div>
                         </div>
-                        <div class="h-actions">
-                            <button class="btn-mini" onclick="editTrade(${t.id}, 'crypto')">USDT</button>
-                            <button class="btn-mini" onclick="editTrade(${t.id}, 'rate')">Курс</button>
-                            <button class="btn-mini del" onclick="deleteTrade(${t.id})">❌</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-mini-action" onclick="openEditModal(${t.id}, ${t.crypto}, ${t.rate})">✏️ Изменить</button>
+                            <button class="btn-mini-del" onclick="sendToBot('delete_trade', {trade_id: ${t.id}})">🗑</button>
                         </div>
                     </div>
                 </div>`;
             });
         }
 
-        async function editTrade(id, field) {
-            tg.HapticFeedback.impactOccurred('medium');
-            let trade = appData.trades.find(t => t.id == id);
-            let pText = field === 'crypto' ? "Новый объем USDT:" : "Новый Курс:";
-            let newVal = prompt(pText, trade[field]);
+        function openEditModal(tradeId, crypto, rate) {
+            tg.HapticFeedback.impactOccurred('light');
+            activeEditTradeId = tradeId;
+            document.getElementById('modal-trade-id').innerText = `Сделка #${tradeId}`;
+            document.getElementById('modal-crypto').value = crypto;
+            document.getElementById('modal-rate').value = rate;
+            calcModalFiat();
+            document.getElementById('edit-modal').classList.add('show');
+        }
 
-            if (newVal && !isNaN(newVal)) {
-                newVal = parseFloat(newVal);
-                trade[field] = newVal;
-                trade.fiat = trade.crypto * trade.rate;
-                calculateStats(); renderHistory();
-                await apiCall({action: "update_trade", id: id, tg_id: userTgId, field: field, val: newVal, fiat: trade.fiat});
-                showToast("Сделка обновлена!");
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+        }
+
+        function calcModalFiat() {
+            const c = parseFloat(document.getElementById('modal-crypto').value) || 0;
+            const r = parseFloat(document.getElementById('modal-rate').value) || 0;
+            document.getElementById('modal-fiat').innerText = (c * r).toLocaleString(undefined, {minimumFractionDigits: 2});
+        }
+
+        document.getElementById('modal-crypto').addEventListener('input', calcModalFiat);
+        document.getElementById('modal-rate').addEventListener('input', calcModalFiat);
+
+        function submitEditTrade() {
+            const c = parseFloat(document.getElementById('modal-crypto').value);
+            const r = parseFloat(document.getElementById('modal-rate').value);
+            if (c > 0 && r > 0 && activeEditTradeId) {
+                sendToBot('edit_trade', { trade_id: activeEditTradeId, crypto: c, rate: r });
             }
         }
 
-        async function deleteTrade(id) {
-            if(!confirm("Удалить сделку? Это откатит статистику.")) return;
-            tg.HapticFeedback.impactOccurred('heavy');
-            appData.trades = appData.trades.filter(t => t.id != id);
-            calculateStats(); renderHistory();
-            await apiCall({action: "delete_trade", id: id, tg_id: userTgId});
-            showToast("Сделка удалена!");
-        }
-
-        // --- 4. КАЛЬКУЛЯТОР НОВОЙ СДЕЛКИ ---
+        // 6. СОЗДАНИЕ СДЕЛКИ
         let currentType = 'buy';
-        const inpC = document.getElementById('inp-crypto');
-        const inpR = document.getElementById('inp-rate');
-        const btnSave = document.getElementById('btn-save-trade');
-
         function setTradeType(type) {
             tg.HapticFeedback.impactOccurred('light');
             currentType = type;
-            document.getElementById('btn-buy').className = `tab-btn ${type==='buy'?'active':''}`;
-            document.getElementById('btn-sell').className = `tab-btn ${type==='sell'?'active':''}`;
-            btnSave.className = `btn-primary ${type==='sell'?'sell':''}`;
+            document.getElementById('btn-buy').className = `switch-btn ${type === 'buy' ? 'active buy' : ''}`;
+            document.getElementById('btn-sell').className = `switch-btn ${type === 'sell' ? 'active sell' : ''}`;
+            const btn = document.getElementById('btn-save');
+            btn.className = `action-btn ${type === 'sell' ? 'sell-mode' : ''}`;
             checkInputs();
         }
 
         function checkInputs() {
-            const c = parseFloat(inpC.value); const r = parseFloat(inpR.value);
-            if(c > 0 && r > 0) {
-                document.getElementById('calc-fiat').innerText = (c*r).toLocaleString(undefined,{minimumFractionDigits:2});
-                btnSave.innerText = currentType === 'buy' ? `💾 КУПИТЬ ${c} USDT` : `💾 ПРОДАТЬ ЗА ${(c*r).toFixed(0)}`;
-                btnSave.style.display = 'block';
+            const c = parseFloat(document.getElementById('inp-crypto').value);
+            const r = parseFloat(document.getElementById('inp-rate').value);
+            const btn = document.getElementById('btn-save');
+            const prev = document.getElementById('trade-preview');
+
+            if (c > 0 && r > 0) {
+                const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[appData.settings.currency] || "₽";
+                const fiat = c * r;
+                prev.style.display = 'block';
+                document.getElementById('preview-fiat').innerText = fiat.toLocaleString(undefined, {minimumFractionDigits: 2});
+                btn.innerText = currentType === 'buy' ? `СОХРАНИТЬ ПОКУПКУ: ${c} USDT` : `СОХРАНИТЬ ПРОДАЖУ: ${fiat.toFixed(2)} ${sym}`;
+                btn.style.display = 'block';
             } else {
-                document.getElementById('calc-fiat').innerText = "0.00";
-                btnSave.style.display = 'none';
+                prev.style.display = 'none';
+                btn.style.display = 'none';
             }
         }
 
-        inpC.addEventListener('input', checkInputs); inpR.addEventListener('input', checkInputs);
+        document.getElementById('inp-crypto').addEventListener('input', checkInputs);
+        document.getElementById('inp-rate').addEventListener('input', checkInputs);
 
-        async function saveTrade() {
-            tg.HapticFeedback.notificationOccurred('success');
-            const c = parseFloat(inpC.value); const r = parseFloat(inpR.value); const f = c * r;
-            const newTrade = { id: Date.now(), type: currentType, crypto: c, rate: r, fiat: f, date: new Date().toISOString() };
-
-            appData.trades.unshift(newTrade);
-            calculateStats(); renderHistory();
-
-            inpC.value = ''; inpR.value = ''; checkInputs();
-            showToast("Сделка занесена в базу!");
-            switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
-
-            await apiCall({action: "save_trade", id: newTrade.id, tg_id: userTgId, type: currentType, crypto: c, rate: r, fiat: f, date: newTrade.date});
+        function saveTrade() {
+            const c = parseFloat(document.getElementById('inp-crypto').value);
+            const r = parseFloat(document.getElementById('inp-rate').value);
+            sendToBot('save_trade', { type: currentType, crypto: c, rate: r, fiat: c * r });
         }
 
-        // --- 5. ПРОФИЛЬ И НАСТРОЙКИ ---
-        async function updateSettings() {
-            tg.HapticFeedback.impactOccurred('light');
-            appData.settings.currency = document.getElementById('set-currency').value;
-            appData.settings.tz = document.getElementById('set-tz').value;
-            appData.settings.maker_fee = document.getElementById('set-maker').value;
-            calculateStats(); renderHistory();
-            await apiCall({action: "update_settings", tg_id: userTgId, currency: appData.settings.currency, tz_offset: appData.settings.tz, maker_fee: appData.settings.maker_fee});
-            showToast("Настройки сохранены");
+        // 7. НАСТРОЙКИ, РЕФКА, САППОРТ
+        function updateSettings() {
+            const curr = document.getElementById('set-currency').value;
+            const tz = document.getElementById('set-tz').value;
+            sendToBot('update_settings', { currency: curr, tz_offset: tz });
         }
 
-        function shareRef() {
-            const link = `https://t.me/ТВОЙ_БОТ?start=${userTgId}`;
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Мощный терминал для P2P-арбитража`);
+        function openSupport() {
+            const sup = appData.support_username || "hsushzje";
+            tg.openTelegramLink(`https://t.me/${sup.replace('@', '')}`);
         }
 
-        function switchTab(tabId, el=null) {
-            if(tabId === 'paywall') { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(tabId).classList.add('active'); return; }
+        function copyUid() {
+            navigator.clipboard.writeText(appData.bybit_uid || "");
+            showToast("Bybit UID скопирован!");
+        }
+
+        function copyRefLink() {
+            const link = `https://t.me/${appData.bot_username}?start=${appData.user_id}`;
+            navigator.clipboard.writeText(link);
+            showToast("Партнерская ссылка скопирована!");
+        }
+
+        function shareRefLink() {
+            const link = `https://t.me/${appData.bot_username}?start=${appData.user_id}`;
+            const text = encodeURIComponent("Удобный P2P-терминал для учета сделок и WAC:");
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function switchTab(tabId, el = null) {
             tg.HapticFeedback.impactOccurred('light');
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            if(el) el.classList.add('active');
+            if (el) el.classList.add('active');
         }
 
         initApp();
