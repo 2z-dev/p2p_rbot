@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>P2P Pro Terminal</title>
+    <!-- Подключение Telegram Web App API -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Неоновые орбиты на фоне -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="container">
+
+        <!-- СЕКЦИЯ 1: ДАШБОРД (СТАТИСТИКА) -->
+        <div id="dashboard" class="section active">
+            <h1>Аналитика</h1>
+            <p class="subtitle">Сводка капитала Bybit P2P</p>
+
+            <div class="glass-card">
+                <div class="label">Чистая Прибыль</div>
+                <div class="profit-display">
+                    <!-- Цифры будут анимироваться через JS -->
+                    <span class="profit-value" id="profit-val">0.00</span>
+                    <span class="profit-currency" id="currency-sym">₽</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="label">Оборот USDT</div>
+                        <div class="stat-val" id="crypto-turnover">0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">Спред (Маржа)</div>
+                        <div class="stat-val glow-blue" id="avg-spread">0.00%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">WAC Закуп</div>
+                        <div class="stat-val" id="wac-buy">0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">ROI Оборота</div>
+                        <div class="stat-val glow-blue" id="roi-val">0.00%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card delay-1">
+                <div class="label" style="margin-bottom: 12px;">Обороты 115-ФЗ</div>
+                <div class="stat-box">
+                    <div class="label">Фиатный оборот</div>
+                    <div class="stat-val" id="fiat-turnover">0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЕКЦИЯ 2: НОВАЯ СДЕЛКА (КАЛЬКУЛЯТОР) -->
+        <div id="trade" class="section">
+            <h1>Новая операция</h1>
+            <p class="subtitle">Внесите данные сделки в реестр</p>
+
+            <div class="glass-card">
+                <div class="toggle-container">
+                    <div class="toggle-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
+                    <div class="toggle-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
+                </div>
+
+                <div class="input-group">
+                    <div class="label" style="margin-bottom: 10px;">Объем крипты (USDT)</div>
+                    <span class="input-icon">🪙</span>
+                    <input type="number" inputmode="decimal" class="modern-input" id="input-crypto" placeholder="0.00">
+                </div>
+
+                <div class="input-group">
+                    <div class="label" style="margin-bottom: 10px;">Зафиксированный курс</div>
+                    <span class="input-icon">💱</span>
+                    <input type="number" inputmode="decimal" class="modern-input" id="input-rate" placeholder="0.00">
+                </div>
+
+                <!-- Автоматический расчет фиата -->
+                <div class="stat-box" style="margin-top: 30px; border-color: rgba(0, 225, 255, 0.3);">
+                    <div class="label">Итоговый фиат</div>
+                    <div class="stat-val glow-blue" id="calc-fiat" style="font-size: 32px;">0.00 ₽</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЕКЦИЯ 3: ИСТОРИЯ -->
+        <div id="history" class="section">
+            <h1>Реестр</h1>
+            <p class="subtitle">Последние операции</p>
+            <div class="glass-card" id="history-container">
+                <!-- Сделки будут загружаться сюда через JS -->
+                <div style="text-align:center; color: var(--text-muted); padding: 20px;">Загрузка истории...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ТАБ-БАР (НАВИГАЦИЯ) -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('dashboard', this)">
+            <div class="nav-icon">📊</div><span>Сводка</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('trade', this)">
+            <div class="nav-icon">⚡️</div><span>Сделка</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('history', this)">
+            <div class="nav-icon">📓</div><span>Реестр</span>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Открыть на весь экран
+        tg.ready();
+
+        // Текущие данные пользователя (для отправки обратно)
+        const userTgId = tg.initDataUnsafe?.user?.id || 0;
+        let currentCurrencySym = '₽';
+
+        // --- 1. АНИМАЦИЯ ЦИФР (Для дорогого эффекта) ---
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOut = progress * (2 - progress);
+                const current = (easeOut * (end - start) + start).toFixed(2);
+
+                obj.innerHTML = current > 0 ? "+" + current.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : current.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // --- 2. ПОДГРУЗКА ДАННЫХ С БЭКЕНДА ---
+        // В реальном проекте здесь будет fetch('https://твой-домен.com/api/stats?tg_id=' + userTgId)
+        function loadDashboardData() {
+            // Имитация ответа от твоего Python-кода
+            const mockData = {
+                profit: 142560.50, cryptoTurnover: 8450.00, spread: 2.15,
+                wacBuy: 91.20, roi: 18.5, fiatTurnover: 1250000.00, currency: "₽"
+            };
+
+            currentCurrencySym = mockData.currency;
+            document.getElementById("currency-sym").innerText = currentCurrencySym;
+            animateValue(document.getElementById("profit-val"), 0, mockData.profit, 2000);
+
+            document.getElementById("crypto-turnover").innerText = mockData.cryptoTurnover.toLocaleString('en-US');
+            document.getElementById("avg-spread").innerText = "+" + mockData.spread + "%";
+            document.getElementById("wac-buy").innerText = mockData.wacBuy.toFixed(2) + " " + currentCurrencySym;
+            document.getElementById("roi-val").innerText = mockData.roi + "%";
+            document.getElementById("fiat-turnover").innerText = mockData.fiatTurnover.toLocaleString('en-US') + " " + currentCurrencySym;
+        }
+
+        // --- 3. ЛОГИКА НАВИГАЦИИ ---
+        function switchTab(tabId, element) {
+            tg.HapticFeedback.impactOccurred('light'); // Вибрация при нажатии
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+
+            if (tabId === 'trade') {
+                updateMainButton();
+            } else {
+                tg.MainButton.hide();
+            }
+        }
+
+        // --- 4. КАЛЬКУЛЯТОР НОВОЙ СДЕЛКИ ---
+        let currentType = 'buy';
+        function setTradeType(type) {
+            tg.HapticFeedback.impactOccurred('medium');
+            currentType = type;
+            const btnBuy = document.getElementById('btn-buy');
+            const btnSell = document.getElementById('btn-sell');
+
+            if (type === 'buy') {
+                btnBuy.classList.add('active', 'buy');
+                btnSell.classList.remove('active', 'sell');
+                tg.MainButton.color = "#00ff88"; // Неоновый зеленый
+                tg.MainButton.textColor = "#000000";
+            } else {
+                btnSell.classList.add('active', 'sell');
+                btnBuy.classList.remove('active', 'buy');
+                tg.MainButton.color = "#ff3366"; // Неоновый красный
+                tg.MainButton.textColor = "#ffffff";
+            }
+            updateMainButton();
+        }
+
+        const cryptoInput = document.getElementById('input-crypto');
+        const rateInput = document.getElementById('input-rate');
+        const fiatDisplay = document.getElementById('calc-fiat');
+
+        function updateMainButton() {
+            const crypto = parseFloat(cryptoInput.value);
+            const rate = parseFloat(rateInput.value);
+
+            if (crypto > 0 && rate > 0) {
+                const fiat = (crypto * rate).toFixed(2);
+                fiatDisplay.innerText = fiat.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " " + currentCurrencySym;
+
+                tg.MainButton.text = currentType === 'buy' ? `СОХРАНИТЬ ПОКУПКУ: ${crypto} USDT` : `СОХРАНИТЬ ПРОДАЖУ: ${fiat} ${currentCurrencySym}`;
+                tg.MainButton.show();
+            } else {
+                fiatDisplay.innerText = "0.00 " + currentCurrencySym;
+                tg.MainButton.hide();
+            }
+        }
+
+        cryptoInput.addEventListener('input', updateMainButton);
+        rateInput.addEventListener('input', updateMainButton);
+
+        // --- 5. ОТПРАВКА ДАННЫХ В БОТА ---
+        tg.MainButton.onClick(() => {
+            tg.HapticFeedback.notificationOccurred('success');
+
+            const data = {
+                action: "save_trade",
+                type: currentType,
+                crypto: parseFloat(cryptoInput.value),
+                rate: parseFloat(rateInput.value),
+                fiat: parseFloat((cryptoInput.value * rateInput.value).toFixed(2))
+            };
+
+            // Отправляем JSON обратно в Telegram бот
+            tg.sendData(JSON.stringify(data));
+            tg.close();
+        });
+
+        // Запуск
+        loadDashboardData();
+    </script>
+</body>
+</html>
