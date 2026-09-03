@@ -1,522 +1,2492 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>P2P Accounting Terminal Pro</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>P2P_Rbot — Accounting Terminal Pro | Cyber-Financial OS</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ==========================================================================
+       CSS RESET & DESIGN SYSTEM TOKENS (HIGH-TECH LUXURY HUD)
+       ========================================================================== */
+    :root {
+      --bg-black: #050507;
+      --bg-surface: #0a0a0f;
+      --bg-surface-elevated: #111118;
+      --bg-glass: rgba(14, 15, 22, 0.72);
+      --bg-glass-bright: rgba(26, 27, 38, 0.6);
+
+      --gold-100: #fff5db;
+      --gold-200: #fae19c;
+      --gold-300: #f2cb62;
+      --gold-400: #dfb15b;
+      --gold-500: #c69438;
+      --gold-600: #9e7123;
+      --gold-glow: rgba(223, 177, 91, 0.45);
+      --gold-glow-subtle: rgba(223, 177, 91, 0.15);
+
+      --cyan-neon: #00f2fe;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --green-profit: #00e676;
+      --red-expense: #ff3366;
+
+      --border-subtle: rgba(223, 177, 91, 0.15);
+      --border-bright: rgba(223, 177, 91, 0.45);
+      --border-active: #dfb15b;
+
+      --text-main: #f0f0f5;
+      --text-muted: #838394;
+      --text-dim: #4e4e5d;
+
+      --font-display: 'Chakra Petch', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+
+      --hud-corner-size: 8px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg-black);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+    }
+
+    body {
+      position: relative;
+      background: var(--bg-black);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* Selection */
+    ::selection {
+      background: var(--gold-400);
+      color: #000;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070709;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold-600);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold-400);
+    }
+
+    /* ==========================================================================
+       CYBERPUNK HUD OVERLAYS, SCANLINES & MATRICES
+       ========================================================================== */
+    .crt-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      background-size: 100% 3px, 4px 100%;
+      opacity: 0.7;
+    }
+
+    .vignette {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+      background: radial-gradient(circle at center, transparent 40%, rgba(3, 3, 5, 0.85) 90%, #000 100%);
+    }
+
+    .grid-background {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      background-image:
+        linear-gradient(to right, rgba(223, 177, 91, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(223, 177, 91, 0.035) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    /* Three.js Canvas Container */
+    #webgl-hero-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: auto;
+    }
+
+    /* HUD Corner & Reticle Elements */
+    .hud-box {
+      position: relative;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+    }
+    .hud-box:hover {
+      border-color: var(--border-bright);
+      box-shadow: 0 0 25px var(--gold-glow-subtle);
+    }
+    .hud-box::before, .hud-box::after,
+    .hud-corners::before, .hud-corners::after {
+      content: '';
+      position: absolute;
+      width: var(--hud-corner-size);
+      height: var(--hud-corner-size);
+      border-color: var(--gold-400);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .hud-box::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+    .hud-box::after { top: -1px; right: -1px; border-top: 2px solid; border-right: 2px solid; }
+    .hud-corners::before { bottom: -1px; left: -1px; border-bottom: 2px solid; border-left: 2px solid; }
+    .hud-corners::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    /* Crosshairs marker */
+    .hud-crosshair {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+    .hud-crosshair::before {
+      content: '';
+      position: absolute;
+      top: 6px; left: 0; width: 14px; height: 2px;
+      background: var(--gold-dim);
+    }
+    .hud-crosshair::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 6px; width: 2px; height: 14px;
+      background: var(--gold-dim);
+    }
+
+    /* ==========================================================================
+       TOP NAVIGATION BAR
+       ========================================================================== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 76px;
+      padding: 0 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      background: rgba(5, 5, 7, 0.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--gold-400);
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(223, 177, 91, 0.1);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+    .brand-logo-icon span {
+      transform: rotate(-45deg);
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--gold-300);
+      font-size: 1rem;
+    }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: 2px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-title span {
+      color: var(--gold-400);
+      text-shadow: 0 0 10px var(--gold-glow);
+    }
+    .brand-status-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--green-profit);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green-profit);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green-profit);
+      animation: pulse 2s infinite;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+      padding: 6px 0;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--gold-300);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; width: 0%; height: 1px;
+      background: var(--gold-400);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-cyber {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 26px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #000;
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      box-shadow: 0 0 20px var(--gold-glow);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-cyber:hover {
+      background: linear-gradient(135deg, #fff, var(--gold-300));
+      box-shadow: 0 0 35px rgba(223, 177, 91, 0.8);
+      transform: translateY(-2px);
+    }
+    .btn-cyber-outline {
+      background: transparent;
+      color: var(--gold-400);
+      border: 1px solid var(--gold-400);
+      clip-path: none;
+      border-radius: 4px;
+      box-shadow: none;
+    }
+    .btn-cyber-outline:hover {
+      background: rgba(223, 177, 91, 0.1);
+      color: #fff;
+      border-color: #fff;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    /* Sound toggle */
+    .sound-toggle {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(20, 20, 28, 0.6);
+      color: var(--gold-400);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .sound-toggle:hover {
+      border-color: var(--gold-400);
+      background: rgba(223, 177, 91, 0.15);
+    }
+
+    /* ==========================================================================
+       HERO SECTION WITH 3D HUD & EXPANDED METRICS
+       ========================================================================== */
+    .hero-section {
+      position: relative;
+      min-height: 100vh;
+      padding-top: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .hero-stage-container {
+      position: relative;
+      width: 100%;
+      max-width: 1400px;
+      height: 720px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Central Title & Terminal Status */
+    .hero-hud-center {
+      position: absolute;
+      top: 15%;
+      text-align: center;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .hero-sys-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 18px;
+      background: rgba(223, 177, 91, 0.08);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      color: var(--gold-300);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero-title-glitch {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 3.8rem;
+      letter-spacing: 4px;
+      color: #fff;
+      text-transform: uppercase;
+      line-height: 1.1;
+      text-shadow: 0 0 30px rgba(0,0,0,0.9);
+    }
+    .hero-title-glitch span {
+      background: linear-gradient(180deg, #fff, var(--gold-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      filter: drop-shadow(0 0 15px var(--gold-glow));
+    }
+
+    .hero-sub-meta {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      letter-spacing: 2px;
+    }
+
+    /* HUD Callouts directly linked to 3D model */
+    .hud-anchor {
+      position: absolute;
+      z-index: 20;
+      max-width: 290px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-tag-num {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--gold-500);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--border-subtle);
+      padding-bottom: 4px;
+    }
+
+    .hud-anchor h4 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-anchor h4 svg {
+      color: var(--gold-400);
+      width: 18px;
+      height: 18px;
+    }
+
+    .hud-anchor p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .hud-stat-highlight {
+      margin-top: 8px;
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--green-profit);
+    }
+
+    /* Coordinates in space */
+    .ha-top-left { top: 18%; left: 6%; }
+    .ha-top-right { top: 18%; right: 6%; }
+    .ha-mid-left { top: 52%; left: 4%; }
+    .ha-mid-right { top: 52%; right: 4%; }
+    .ha-bottom-center { bottom: 6%; left: 50%; transform: translateX(-50%); width: 440px; max-width: 90%; }
+
+    /* HUD connecting target line SVG */
+    .hud-svg-lines {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 12;
+    }
+    .hud-svg-lines line, .hud-svg-lines polyline {
+      stroke: var(--gold-dim);
+      stroke-width: 1.2;
+      stroke-dasharray: 4 3;
+      opacity: 0.55;
+    }
+
+    /* Hero CTA Bar */
+    .hero-footer-bar {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 20px;
+      z-index: 25;
+    }
+
+    /* ==========================================================================
+       SECTION: LIVE TELEGRAM MINI-APP TERMINAL SIMULATOR
+       ========================================================================== */
+    .section-container {
+      position: relative;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 120px 24px;
+      z-index: 20;
+    }
+
+    .section-header-block {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .section-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--gold-400);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .section-main-title {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .section-main-title span {
+      color: var(--gold-400);
+      text-shadow: 0 0 20px var(--gold-glow);
+    }
+    .section-desc {
+      max-width: 680px;
+      margin: 16px auto 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Interactive Terminal Simulator Grid */
+    .terminal-sim-wrapper {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      border: 1px solid var(--border-bright);
+      background: rgba(10, 10, 14, 0.85);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px var(--gold-glow-subtle);
+    }
+
+    /* Left panel: New Round Order Entry */
+    .terminal-order-panel {
+      border-right: 1px solid var(--border-subtle);
+      padding-right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sim-panel-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: #fff;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+    .sim-panel-title span {
+      font-size: 0.7rem;
+      color: var(--gold-400);
+      font-family: var(--font-mono);
+    }
+
+    .sim-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sim-input-group label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+    }
+    .sim-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .sim-input-wrap input, .sim-input-wrap select {
+      width: 100%;
+      background: #060609;
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      border-radius: 4px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .sim-input-wrap input:focus, .sim-input-wrap select:focus {
+      border-color: var(--gold-400);
+      box-shadow: 0 0 10px var(--gold-glow-subtle);
+    }
+    .sim-input-affix {
+      position: absolute;
+      right: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--gold-500);
+      pointer-events: none;
+    }
+
+    .sim-buttons-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-buy {
+      background: rgba(0, 230, 118, 0.15);
+      border: 1px solid var(--green-profit);
+      color: var(--green-profit);
+      padding: 10px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-buy:hover {
+      background: var(--green-profit);
+      color: #000;
+      box-shadow: 0 0 15px rgba(0,230,118,0.4);
+    }
+    .btn-sell {
+      background: rgba(255, 51, 102, 0.15);
+      border: 1px solid var(--red-expense);
+      color: var(--red-expense);
+      padding: 10px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-sell:hover {
+      background: var(--red-expense);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(255,51,102,0.4);
+    }
+
+    /* Right panel: Live Terminal Dashboard */
+    .terminal-screen-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .t-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .t-metric-card {
+      background: rgba(18, 19, 26, 0.7);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 16px;
+      border-radius: 6px;
+      position: relative;
+    }
+    .t-metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .t-metric-value {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .t-metric-sub {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green-profit);
+      margin-top: 2px;
+    }
+
+    /* Terminal Chart Area */
+    .terminal-chart-box {
+      height: 240px;
+      background: rgba(8, 8, 12, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 12px;
+      position: relative;
+    }
+
+    /* Live Deals History Log */
+    .terminal-log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+    .terminal-log-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+    .terminal-log-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .log-buy { color: var(--green-profit); font-weight: 600; }
+    .log-sell { color: var(--red-expense); font-weight: 600; }
+    .log-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .log-action-btn:hover { color: var(--gold-300); }
+
+    /* ==========================================================================
+       SECTION: EXPLODED STACK / 3D ARCHITECTURE (ВИДЕО-РЕФЕРЕНС: СЛОИ)
+       ========================================================================== */
+    .exploded-stack-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-top: 40px;
+    }
+
+    .layers-viewport {
+      position: relative;
+      height: 480px;
+      perspective: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .layer-card-3d {
+      position: absolute;
+      width: 380px;
+      height: 110px;
+      border: 1px solid var(--border-bright);
+      background: rgba(14, 15, 24, 0.85);
+      backdrop-filter: blur(14px);
+      border-radius: 8px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 20px rgba(223, 177, 91, 0.1);
+      transform-style: preserve-3d;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+
+    .layer-card-3d:hover {
+      border-color: var(--gold-300);
+      background: rgba(30, 26, 20, 0.9);
+      box-shadow: 0 20px 45px var(--gold-glow);
+    }
+
+    .layer-icon-badge {
+      width: 48px;
+      height: 48px;
+      background: rgba(223, 177, 91, 0.1);
+      border: 1px solid var(--gold-400);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-300);
+      flex-shrink: 0;
+    }
+
+    .layer-details h4 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .layer-details p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Position isometric stack layers */
+    #layer-1 { transform: translateY(-130px) rotateX(48deg) rotateZ(-25deg); z-index: 4; }
+    #layer-2 { transform: translateY(-40px) rotateX(48deg) rotateZ(-25deg); z-index: 3; }
+    #layer-3 { transform: translateY(50px) rotateX(48deg) rotateZ(-25deg); z-index: 2; }
+    #layer-4 { transform: translateY(140px) rotateX(48deg) rotateZ(-25deg); z-index: 1; }
+
+    .layers-viewport:hover #layer-1 { transform: translateY(-170px) rotateX(45deg) rotateZ(-25deg); }
+    .layers-viewport:hover #layer-2 { transform: translateY(-60px) rotateX(45deg) rotateZ(-25deg); }
+    .layers-viewport:hover #layer-3 { transform: translateY(50px) rotateX(45deg) rotateZ(-25deg); }
+    .layers-viewport:hover #layer-4 { transform: translateY(160px) rotateX(45deg) rotateZ(-25deg); }
+
+    .layers-info-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      border-radius: 6px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .accordion-item.active {
+      border-color: var(--gold-400);
+      background: rgba(223, 177, 91, 0.05);
+      box-shadow: 0 0 20px var(--gold-glow-subtle);
+    }
+    .accordion-item h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .accordion-item.active h3 { color: var(--gold-300); }
+    .accordion-content {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      display: none;
+    }
+    .accordion-item.active .accordion-content {
+      display: block;
+    }
+
+    /* ==========================================================================
+       SECTION: WAC ENGINE & CALCULATOR INTERFACE
+       ========================================================================== */
+    .calculator-frame {
+      background: linear-gradient(135deg, rgba(20,21,30,0.8), rgba(10,11,16,0.95));
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    }
+
+    .calc-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .calc-slider-box {
+      margin-bottom: 24px;
+    }
+    .calc-slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .calc-slider-header span {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .calc-slider-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--gold-300);
+      font-size: 1.1rem;
+    }
+
+    input[type=range] {
+      width: 100%;
+      -webkit-appearance: none;
+      background: #1b1c26;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold-400);
+      box-shadow: 0 0 12px var(--gold-glow);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .calc-summary-display {
+      background: #07080d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .summary-metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 12px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.08);
+    }
+    .summary-metric-row:last-child {
+      border-bottom: none;
+    }
+    .summary-metric-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .summary-metric-large {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--green-profit);
+      text-shadow: 0 0 15px rgba(0,230,118,0.3);
+    }
+
+    /* ==========================================================================
+       SECTION: MONETIZATION & TARIFF TIERS
+       ========================================================================== */
+    .tariffs-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 30px;
+    }
+
+    .tariff-card {
+      position: relative;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.4s ease;
+    }
+    .tariff-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--border-bright);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 30px var(--gold-glow-subtle);
+    }
+
+    .tariff-card.featured {
+      background: linear-gradient(180deg, rgba(26,24,18,0.9), rgba(12,12,18,0.95));
+      border: 1px solid var(--gold-400);
+      box-shadow: 0 0 30px var(--gold-glow-subtle);
+    }
+
+    .tariff-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold-400);
+      color: #000;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 4px 16px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .tariff-name {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .tariff-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .tariff-price-wrap {
+      margin: 28px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .tariff-price {
+      font-family: var(--font-display);
+      font-size: 3.4rem;
+      font-weight: 700;
+      color: var(--gold-300);
+      line-height: 1;
+      text-shadow: 0 0 20px var(--gold-glow);
+    }
+    .tariff-period {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .tariff-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .tariff-features-list li {
+      font-size: 0.85rem;
+      color: #ccc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tariff-features-list li svg {
+      width: 16px;
+      height: 16px;
+      color: var(--gold-400);
+      flex-shrink: 0;
+    }
+
+    /* Bybit UID Payment Callout inside Lifetime */
+    .bybit-instant-info {
+      background: rgba(223, 177, 91, 0.08);
+      border: 1px dashed var(--border-bright);
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--gold-300);
+      text-align: center;
+    }
+
+    /* ==========================================================================
+       SECTION: ADMIN MODULE DOSSIER & SECURITY
+       ========================================================================== */
+    .admin-preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .dossier-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .dossier-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+    .dossier-avatar {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--gold-400);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--gold-300);
+      background: rgba(223, 177, 91, 0.1);
+    }
+    .dossier-user-info h4 {
+      font-size: 1rem;
+      color: #fff;
+    }
+    .dossier-user-info span {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .dossier-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .dossier-row span:first-child { color: var(--text-muted); }
+    .dossier-row span:last-child { color: #fff; }
+
+    /* ==========================================================================
+       FOOTER & HUD TERMINAL STATUS LINE
+       ========================================================================== */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      background: #030305;
+      padding: 60px 40px 30px;
+      position: relative;
+      z-index: 20;
+    }
+
+    .footer-content {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .footer-desc {
+      max-width: 380px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    .footer-links-group h5 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .footer-links-group ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .footer-links-group a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      transition: color 0.2s;
+    }
+    .footer-links-group a:hover { color: var(--gold-400); }
+
+    .bottom-hud-bar {
+      max-width: 1300px;
+      margin: 40px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    /* Modal styles for Buy/UID direct transaction */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-window {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--gold-400);
+      border-radius: 8px;
+      padding: 32px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 0 40px var(--gold-glow);
+      position: relative;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-stage-container { height: auto; padding: 100px 0; }
+      .hud-anchor { position: static; max-width: 100%; margin-bottom: 20px; }
+      .terminal-sim-wrapper { grid-template-columns: 1fr; }
+      .exploded-stack-wrap { grid-template-columns: 1fr; }
+      .calc-cols { grid-template-columns: 1fr; }
+      .tariffs-container { grid-template-columns: 1fr; }
+      .admin-preview-grid { grid-template-columns: 1fr; }
+      .t-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .navbar { padding: 0 20px; }
+    }
+  </style>
 </head>
 <body>
-    <div id="loader">ЗАГРУЗКА ДАННЫХ...</div>
-    <div class="orb orb-gold"></div>
-    <div class="orb orb-green"></div>
 
-    <div class="container">
-        <!-- 1. PAYWALL / БЛОКИРОВКА -->
-        <div id="paywall" class="section">
-            <h1>Терминал Заблокирован 🔒</h1>
-            <p class="subtitle" id="paywall-reason">Отсутствует активная подписка</p>
+  <!-- Cyberpunk Visual Layers -->
+  <div class="crt-overlay"></div>
+  <div class="vignette"></div>
+  <div class="grid-background"></div>
 
-            <div class="glass-card" id="trial-card">
-                <span class="badge">Бесплатный Trial</span>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Активируйте 24 часа бесплатного доступа ко всем функциям терминала.</p>
-                <button class="action-btn" id="btn-trial" onclick="sendToBot('activate_trial')">🎁 Активировать 24ч доступа</button>
-            </div>
+  <!-- Audio elements for high-tech HUD feedbacks -->
+  <audio id="snd-click" preload="auto"></audio>
+  <audio id="snd-beep" preload="auto"></audio>
 
-            <div class="glass-card" style="margin-top: 15px;">
-                <span class="badge">Оформить подписку</span>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Оплата переводом внутри Bybit без комиссии:</p>
-
-                <div class="bybit-box">
-                    <div style="font-size: 11px; color: var(--text-muted);">BYBIT UID ДЛЯ ПЕРЕВОДА:</div>
-                    <div class="uid-row">
-                        <strong id="disp-bybit-uid">...</strong>
-                        <button class="btn-copy" onclick="copyUid()">Копировать</button>
-                    </div>
-                    <div style="font-size: 11px; color: var(--bybit-yellow); margin-top: 8px;">
-                        ⚠️ Обязательно укажите в комментарии перевода ваш ID: <b id="disp-user-id">...</b>
-                    </div>
-                </div>
-
-                <div class="grid-2" style="margin-top: 15px;">
-                    <button class="plan-btn" onclick="sendToBot('confirm_payment', {plan: 'month'})">
-                        <span>1 Месяц</span>
-                        <strong id="disp-price-month">5$</strong>
-                    </button>
-                    <button class="plan-btn gold" onclick="sendToBot('confirm_payment', {plan: 'forever'})">
-                        <span>Навсегда ♾️</span>
-                        <strong id="disp-price-forever">49$</strong>
-                    </button>
-                </div>
-
-                <button class="action-btn-secondary" style="margin-top: 15px;" onclick="openSupport()">👨‍💻 Написать в поддержку</button>
-            </div>
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="brand-cluster">
+      <div class="brand-logo-icon">
+        <span>R</span>
+      </div>
+      <div class="brand-name">
+        <div class="brand-title">P2P_<span>Rbot</span></div>
+        <div class="brand-status-tag">
+          <span class="pulse-dot"></span> TERMINAL PRO v2.4 ONLINE
         </div>
-
-        <!-- 2. ДАШБОРД (АНАЛИТИКА) -->
-        <div id="dashboard" class="section">
-            <h1>Аналитика</h1>
-            <p class="subtitle">Финансовая сводка и маржинальность</p>
-
-            <div class="period-tabs">
-                <div class="p-tab active" onclick="setPeriod('today', this)">За сегодня</div>
-                <div class="p-tab" onclick="setPeriod('month', this)">За месяц</div>
-                <div class="p-tab" onclick="setPeriod('all', this)">Все время</div>
-            </div>
-
-            <div class="glass-card">
-                <span class="badge">Чистая Прибыль</span>
-                <div class="profit-wrap">
-                    <div class="profit-val" id="val-profit">0.00 <span class="currency-sym sym">₽</span></div>
-                </div>
-                <div class="grid-2">
-                    <div class="metric-box">
-                        <span class="badge">Спред (ROI)</span>
-                        <div class="metric-num txt-gold" id="val-spread">0.00%</div>
-                    </div>
-                    <div class="metric-box">
-                        <span class="badge">WAC Закуп</span>
-                        <div class="metric-num" id="val-wac">0.00</div>
-                    </div>
-                    <div class="metric-box">
-                        <span class="badge">Оборот Фиата</span>
-                        <div class="metric-num" id="val-fiat-turn">0.00</div>
-                    </div>
-                    <div class="metric-box">
-                        <span class="badge">Оборот USDT</span>
-                        <div class="metric-num txt-green" id="val-crypto-turn">0.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Информационный баннер подписки -->
-            <div class="glass-card" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px;">
-                <div>
-                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Статус подписки</div>
-                    <div id="disp-sub-status" style="font-size: 13px; font-weight: 700; margin-top: 2px;">Активна</div>
-                </div>
-                <button class="btn-mini" onclick="switchTab('profile', document.querySelectorAll('.nav-btn')[4])">Продлить</button>
-            </div>
-        </div>
-
-        <!-- 3. СДЕЛКА -->
-        <div id="trade" class="section">
-            <h1>Новая операция</h1>
-            <p class="subtitle">Внести круг в единую базу бота</p>
-            <div class="glass-card">
-                <div class="trade-switch">
-                    <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
-                    <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
-                </div>
-                <div class="input-wrap">
-                    <span class="badge">Объем USDT</span>
-                    <input type="number" inputmode="decimal" id="inp-crypto" class="styled-input" placeholder="0.00">
-                </div>
-                <div class="input-wrap">
-                    <span class="badge">Зафиксированный курс</span>
-                    <input type="number" inputmode="decimal" id="inp-rate" class="styled-input" placeholder="0.00">
-                </div>
-                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 13px;">
-                    Итоговый фиат: <b id="preview-fiat">0.00</b> <span class="sym">₽</span>
-                </div>
-                <button class="action-btn" id="btn-save" onclick="saveTrade()" style="display: none;">СОХРАНИТЬ</button>
-            </div>
-        </div>
-
-        <!-- 4. РЕЕСТР (ИСТОРИЯ) С РЕДАКТИРОВАНИЕМ -->
-        <div id="history" class="section">
-            <h1>Реестр</h1>
-            <p class="subtitle">История с редактированием и удалением</p>
-            <div class="glass-card">
-                <div class="history-list" id="history-container"></div>
-            </div>
-        </div>
-
-        <!-- 5. РЕФЕРАЛЬНАЯ ПРОГРАММА (РЕФКА) -->
-        <div id="referral" class="section">
-            <h1>Партнерская сеть</h1>
-            <p class="subtitle">Приглашайте трейдеров и получайте бонусы</p>
-            <div class="glass-card">
-                <div class="ref-banner">
-                    <div style="font-size: 32px; font-weight: 800; color: var(--bybit-yellow);" id="ref-count-val">0</div>
-                    <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Приглашено пользователей</div>
-                </div>
-                <p style="font-size: 13px; color: var(--text-main); margin: 15px 0;">
-                    За каждого приглашенного коллегу вы получаете <b class="txt-gold" id="ref-bonus-val">+3 дня</b> к подписке!
-                </p>
-                <span class="badge">Ваша партнерская ссылка</span>
-                <div class="bybit-box" style="word-break: break-all; font-size: 13px; font-family: monospace; padding: 12px;" id="ref-link-box">
-                    https://t.me/...
-                </div>
-                <div class="grid-2" style="margin-top: 15px;">
-                    <button class="action-btn" onclick="copyRefLink()">📋 Скопировать</button>
-                    <button class="action-btn gold" onclick="shareRefLink()">🚀 Отправить другу</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 6. НАСТРОЙКИ И ПОДДЕРЖКА -->
-        <div id="profile" class="section">
-            <h1>Настройки</h1>
-            <p class="subtitle">Параметры и управление аккаунтом</p>
-            <div class="glass-card">
-                <span class="badge">Базовая валюта</span>
-                <select id="set-currency" class="styled-input" onchange="updateSettings()" style="margin-bottom: 15px;">
-                    <option value="RUB">RUB ₽</option>
-                    <option value="KZT">KZT ₸</option>
-                    <option value="UAH">UAH ₴</option>
-                    <option value="BYN">BYN Br</option>
-                    <option value="USD">USD $</option>
-                </select>
-
-                <span class="badge">Часовой пояс (UTC)</span>
-                <select id="set-tz" class="styled-input" onchange="updateSettings()" style="margin-bottom: 20px;">
-                    <option value="2">UTC+2</option>
-                    <option value="3">UTC+3 (Москва)</option>
-                    <option value="4">UTC+4</option>
-                    <option value="5">UTC+5</option>
-                    <option value="6">UTC+6</option>
-                    <option value="7">UTC+7</option>
-                </select>
-
-                <div style="border-top: 1px solid var(--glass-border); padding-top: 15px;">
-                    <span class="badge">Продление доступа</span>
-                    <button class="action-btn" style="margin-top: 8px; margin-bottom: 12px;" onclick="switchTab('paywall')">💎 Тарифы и оплата</button>
-                    <button class="action-btn-secondary" onclick="openSupport()">👨‍💻 Служба поддержки</button>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ СДЕЛКИ -->
-    <div id="edit-modal" class="modal-overlay">
-        <div class="glass-card modal-box">
-            <h2 style="font-size: 18px; margin: 0 0 4px 0;">Редактирование сделки</h2>
-            <p class="subtitle" style="margin-bottom: 15px;" id="modal-trade-id">Сделка #...</p>
+    <ul class="nav-menu">
+      <li><a href="#hero" class="nav-link active">Терминал</a></li>
+      <li><a href="#simulator" class="nav-link">Web App UI</a></li>
+      <li><a href="#architecture" class="nav-link">Слои Ядра</a></li>
+      <li><a href="#calculator" class="nav-link">WAC Калькулятор</a></li>
+      <li><a href="#pricing" class="nav-link">Тарифы</a></li>
+    </ul>
 
-            <div class="input-wrap">
-                <span class="badge">Новый объем USDT</span>
-                <input type="number" inputmode="decimal" id="modal-crypto" class="styled-input" placeholder="0.00">
-            </div>
-            <div class="input-wrap">
-                <span class="badge">Новый курс</span>
-                <input type="number" inputmode="decimal" id="modal-rate" class="styled-input" placeholder="0.00">
-            </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
-                Пересчитанный фиат: <b id="modal-fiat">0.00</b> <span class="sym">₽</span>
-            </div>
+    <div class="nav-controls">
+      <button class="sound-toggle" id="soundBtn" title="HUD Sound FX">
+        <i data-lucide="volume-2"></i>
+      </button>
+      <a href="https://t.me/" target="_blank" class="btn-cyber">
+        <i data-lucide="send"></i> Войти в Бот
+      </a>
+    </div>
+  </header>
 
-            <div class="grid-2">
-                <button class="action-btn-secondary" onclick="closeEditModal()">Отмена</button>
-                <button class="action-btn" onclick="submitEditTrade()">Сохранить</button>
-            </div>
+  <!-- ==========================================================================
+       HERO SECTION WITH 3D CANVAS & RETICLE HUD (STYLING AS IN VIDEO)
+       ========================================================================== -->
+  <section class="hero-section" id="hero">
+    <!-- WebGL Canvas for 3D Cyber Crystal / Core -->
+    <canvas id="webgl-hero-canvas"></canvas>
+
+    <div class="hero-stage-container">
+
+      <!-- Dynamic SVG Crosshair connecting lines -->
+      <svg class="hud-svg-lines" id="hudSvg">
+        <line x1="20%" y1="28%" x2="42%" y2="45%" />
+        <line x1="80%" y1="28%" x2="58%" y2="45%" />
+        <line x1="18%" y1="62%" x2="40%" y2="55%" />
+        <line x1="82%" y1="62%" x2="60%" y2="55%" />
+      </svg>
+
+      <!-- Central Overlay Heads Up Display text -->
+      <div class="hero-hud-center">
+        <div class="hero-sys-badge">
+          <i data-lucide="cpu" style="width: 14px; height: 14px;"></i>
+          AUTONOMOUS ARBITRAGE ACCOUNTING ENGINE
         </div>
+        <h1 class="hero-title-glitch">P2P <span>ACCOUNTING</span> PRO</h1>
+        <p class="hero-sub-meta">BYBIT-STYLE INTERACTIVE MINI APP // ZERO SPREAD CONFUSION</p>
+      </div>
+
+      <!-- HUD Marker 1: Top-Left WAC Analytics -->
+      <div class="hud-box hud-corners hud-anchor ha-top-left" id="cardWac">
+        <div class="hud-tag-num">
+          <span>SYS_MOD_01</span>
+          <span>WAC.CORE</span>
+        </div>
+        <h4><i data-lucide="trending-up"></i> WAC Аналитика</h4>
+        <p>Исключает путаницу в закупах. Рассчитывает средневзвешенный курс закупки (WAC) для десятков параллельных партий USDT в реальном времени.</p>
+        <span class="hud-stat-highlight">AUTO_RECALC // &lt; 2ms</span>
+      </div>
+
+      <!-- HUD Marker 2: Top-Right Spread & ROI -->
+      <div class="hud-box hud-corners hud-anchor ha-top-right" id="cardSpread">
+        <div class="hud-tag-num">
+          <span>SYS_MOD_02</span>
+          <span>ROI.REALTIME</span>
+        </div>
+        <h4><i data-lucide="pie-chart"></i> Сквозной ROI</h4>
+        <p>Мгновенный расчет чистой прибыли, фиатного оборота и спреда за сегодня, месяц или всю торговую сессию. Больше никаких кривых Excel таблиц.</p>
+        <span class="hud-stat-highlight">+1.84% NET SPREAD AVG</span>
+      </div>
+
+      <!-- HUD Marker 3: Mid-Left Telegram WebApp Engine -->
+      <div class="hud-box hud-corners hud-anchor ha-mid-left" id="cardWebapp">
+        <div class="hud-tag-num">
+          <span>SYS_MOD_03</span>
+          <span>TG.WEBAPP</span>
+        </div>
+        <h4><i data-lucide="smartphone"></i> Bybit WebApp</h4>
+        <p>Полноэкранный темный терминал с нативным UI. Работает без логинов и паролей: мгновенная передача данных через протокол <code>tg.sendData</code>.</p>
+        <span class="hud-stat-highlight">NATIVE DARK INTERFACE</span>
+      </div>
+
+      <!-- HUD Marker 4: Mid-Right Live Editable Register -->
+      <div class="hud-box hud-corners hud-anchor ha-mid-right" id="cardRegister">
+        <div class="hud-tag-num">
+          <span>SYS_MOD_04</span>
+          <span>LIVE.LEDGER</span>
+        </div>
+        <h4><i data-lucide="history"></i> Редактор Сделок</h4>
+        <p>Полный реестр ордеров. Возможность налету менять объем или курс с моментальным каскадным пересчетом всей финансовой статистики.</p>
+        <span class="hud-stat-highlight">CASCADE RECALCULATION</span>
+      </div>
+
+      <!-- Bottom Status Widget -->
+      <div class="hud-box hud-corners hud-anchor ha-bottom-center">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="shield-check" style="color: var(--gold-400);"></i>
+            <span style="font-family: var(--font-mono); font-size: 0.78rem;">LOCALIZATION: RUB, KZT, UAH, BYN, USD // TIMEZONE UTC+2...UTC+7</span>
+          </div>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--gold-400);">READY</span>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ТОСТ-УВЕДОМЛЕНИЕ -->
-    <div id="toast">Ссылка скопирована!</div>
+    <!-- Action Call to Action -->
+    <div class="hero-footer-bar">
+      <a href="#simulator" class="btn-cyber-outline btn-cyber">
+        <i data-lucide="terminal"></i> Тест Терминала
+      </a>
+      <a href="https://t.me/" target="_blank" class="btn-cyber">
+        <i data-lucide="zap"></i> Активировать 24ч Триал
+      </a>
+    </div>
+  </section>
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ (5 ВКЛАДОК) -->
-    <div class="bottom-nav">
-        <div class="nav-btn active" onclick="switchTab('dashboard', this)"><i>📊</i><span>Сводка</span></div>
-        <div class="nav-btn" onclick="switchTab('trade', this)"><i>⚡️</i><span>Сделка</span></div>
-        <div class="nav-btn" onclick="switchTab('history', this)"><i>📓</i><span>Реестр</span></div>
-        <div class="nav-btn" onclick="switchTab('referral', this)"><i>🤝</i><span>Рефка</span></div>
-        <div class="nav-btn" onclick="switchTab('profile', this)"><i>⚙️</i><span>Опции</span></div>
+
+  <!-- ==========================================================================
+       SECTION: LIVE TELEGRAM MINI-APP TERMINAL SIMULATOR
+       ========================================================================== -->
+  <section class="section-container" id="simulator">
+    <div class="section-header-block">
+      <span class="section-indicator">// LIVE TELEGRAM MINI APP SIMULATOR</span>
+      <h2 class="section-main-title">Интерактивный <span>Терминал</span></h2>
+      <p class="section-desc">
+        Попробуйте функционал карманного терминала прямо в браузере. Введите объем USDT и курс — система рассчитает партию, средневзвешенный WAC и обновит баланс в реальном времени.
+      </p>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+    <div class="terminal-sim-wrapper hud-corners">
 
-        let appData = { trades: [], settings: { currency: "RUB", tz: 3 } };
-        let currentPeriod = 'today';
-        let activeEditTradeId = null;
+      <!-- Order Entry Form -->
+      <div class="terminal-order-panel">
+        <div class="sim-panel-title">
+          Быстрый Ввод Ордера
+          <span>BYBIT_STYLE_v2</span>
+        </div>
 
-        // 1. ПАРСИНГ ДАННЫХ ИЗ URL
-        function parseBotData() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const encodedData = urlParams.get('data');
-                if (!encodedData) return null;
-                return JSON.parse(decodeURIComponent(escape(atob(encodedData))));
-            } catch (e) {
-                console.error("Ошибка парсинга:", e);
-                return null;
-            }
+        <div class="sim-input-group">
+          <label>Тип Операции</label>
+          <div class="sim-buttons-row" style="margin-top: 0;">
+            <button type="button" class="btn-buy" id="orderBuyBtn">ПОКУПКА (BUY)</button>
+            <button type="button" class="btn-sell" id="orderSellBtn">ПРОДАЖА (SELL)</button>
+          </div>
+        </div>
+
+        <div class="sim-input-group">
+          <label>Рабочая Валюта <span>SETTING</span></label>
+          <div class="sim-input-wrap">
+            <select id="simCurrency">
+              <option value="RUB">RUB — Российский рубль</option>
+              <option value="KZT">KZT — Казахстанский тенге</option>
+              <option value="UAH">UAH — Украинская гривна</option>
+              <option value="BYN">BYN — Белорусский рубль</option>
+              <option value="USD">USD — Доллар США</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sim-input-group">
+          <label>Объем USDT <span>AMOUNT</span></label>
+          <div class="sim-input-wrap">
+            <input type="number" id="simUsdtAmount" value="1500" step="50" />
+            <span class="sim-input-affix">USDT</span>
+          </div>
+        </div>
+
+        <div class="sim-input-group">
+          <label>Курс Сделки <span>PRICE</span></label>
+          <div class="sim-input-wrap">
+            <input type="number" id="simRate" value="92.40" step="0.05" />
+            <span class="sim-input-affix" id="rateCurrencyAffix">RUB</span>
+          </div>
+        </div>
+
+        <div class="sim-input-group">
+          <label>Итоговая сумма в фиате</label>
+          <div style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--gold-300); font-weight: 700;" id="simFiatTotal">
+            138,600.00 RUB
+          </div>
+        </div>
+
+        <button type="button" class="btn-cyber" id="simExecuteBtn" style="width: 100%; margin-top: 10px;">
+          <i data-lucide="check-circle-2"></i> Провести Сделку
+        </button>
+
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); text-align: center;">
+          ⚡ Данные моментально отправляются в ядро через tg.sendData
+        </div>
+      </div>
+
+      <!-- Live Terminal Dashboard -->
+      <div class="terminal-screen-panel">
+
+        <!-- Metrics Row -->
+        <div class="t-metrics-grid">
+          <div class="t-metric-card">
+            <div class="t-metric-label">Позиция USDT</div>
+            <div class="t-metric-value" id="dispUsdtBalance">5,420.00</div>
+            <div class="t-metric-sub">USDT в работе</div>
+          </div>
+          <div class="t-metric-card">
+            <div class="t-metric-label">WAC (Курс закупа)</div>
+            <div class="t-metric-value" id="dispWacRate">91.85</div>
+            <div class="t-metric-sub">RUB / USDT</div>
+          </div>
+          <div class="t-metric-card">
+            <div class="t-metric-label">Чистая Прибыль</div>
+            <div class="t-metric-value" id="dispNetProfit" style="color: var(--green-profit);">+14,820</div>
+            <div class="t-metric-sub">+1.92% спред ROI</div>
+          </div>
+          <div class="t-metric-card">
+            <div class="t-metric-label">Оборот за сегодня</div>
+            <div class="t-metric-value" id="dispTurnover">845,300</div>
+            <div class="t-metric-sub">12 закрытых кругов</div>
+          </div>
+        </div>
+
+        <!-- Realtime Chart -->
+        <div class="terminal-chart-box">
+          <canvas id="terminalPerformanceChart"></canvas>
+        </div>
+
+        <!-- Ledger History -->
+        <div style="overflow-x: auto;">
+          <table class="terminal-log-table">
+            <thead>
+              <tr>
+                <th>ВРЕМЯ</th>
+                <th>ТИП</th>
+                <th>ОБЪЕМ USDT</th>
+                <th>КУРС</th>
+                <th>СУММА ФИАТ</th>
+                <th>WAC / СПРЕД</th>
+                <th>ДЕЙСТВИЯ</th>
+              </tr>
+            </thead>
+            <tbody id="simLedgerBody">
+              <tr>
+                <td>14:23:05</td>
+                <td class="log-buy">BUY</td>
+                <td>1,200.00 USDT</td>
+                <td>91.70</td>
+                <td>110,040 RUB</td>
+                <td>WAC: 91.70</td>
+                <td><button class="log-action-btn"><i data-lucide="edit-3" style="width: 14px; height: 14px;"></i></button></td>
+              </tr>
+              <tr>
+                <td>14:48:19</td>
+                <td class="log-sell">SELL</td>
+                <td>1,200.00 USDT</td>
+                <td>93.10</td>
+                <td>111,720 RUB</td>
+                <td>+1.52% (+1,680)</td>
+                <td><button class="log-action-btn"><i data-lucide="edit-3" style="width: 14px; height: 14px;"></i></button></td>
+              </tr>
+              <tr>
+                <td>15:10:44</td>
+                <td class="log-buy">BUY</td>
+                <td>2,500.00 USDT</td>
+                <td>91.90</td>
+                <td>229,750 RUB</td>
+                <td>WAC: 91.83</td>
+                <td><button class="log-action-btn"><i data-lucide="edit-3" style="width: 14px; height: 14px;"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SECTION: EXPLODED STACK (ВЗРЫВНЫЕ 3D СЛОИ АРХИТЕКТУРЫ КАК В РЕФЕРЕНСЕ)
+       ========================================================================== -->
+  <section class="section-container" id="architecture">
+    <div class="section-header-block">
+      <span class="section-indicator">// HARDWARE &amp; SOFTWARE STACK EXPLODED</span>
+      <h2 class="section-main-title">Архитектура <span>Ядра</span></h2>
+      <p class="section-desc">
+        Послойный разбор внутреннего стека P2P_Rbot: от локального ядра расчетов до вирусной реферальной системы и антифрод-защиты.
+      </p>
+    </div>
+
+    <div class="exploded-stack-wrap">
+
+      <!-- 3D Interactive Layers Visual Viewport -->
+      <div class="layers-viewport" id="layers3dContainer">
+
+        <div class="layer-card-3d" id="layer-1" data-index="1">
+          <div class="layer-icon-badge">
+            <i data-lucide="layers"></i>
+          </div>
+          <div class="layer-details">
+            <h4>01. Слой Telegram Mini App</h4>
+            <p>Высокоскоростной веб-интерфейс в стилистике Bybit с нулевой задержкой отклика.</p>
+          </div>
+        </div>
+
+        <div class="layer-card-3d" id="layer-2" data-index="2">
+          <div class="layer-icon-badge">
+            <i data-lucide="calculator"></i>
+          </div>
+          <div class="layer-details">
+            <h4>02. Математический движок WAC</h4>
+            <p>Партионный пересчет средневзвешенного курса в многопоточном режиме.</p>
+          </div>
+        </div>
+
+        <div class="layer-card-3d" id="layer-3" data-index="3">
+          <div class="layer-icon-badge">
+            <i data-lucide="database"></i>
+          </div>
+          <div class="layer-details">
+            <h4>03. Реактивный Реестр Сделок</h4>
+            <p>История с каскадным обновлением параметров при правке курса задним числом.</p>
+          </div>
+        </div>
+
+        <div class="layer-card-3d" id="layer-4" data-index="4">
+          <div class="layer-icon-badge">
+            <i data-lucide="shield"></i>
+          </div>
+          <div class="layer-details">
+            <h4>04. Безопасность &amp; Paywall Bybit UID</h4>
+            <p>Прямой прием платежей на биржевой UID без сторонних касс и комиссий.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Accordion description details -->
+      <div class="layers-info-accordion">
+
+        <div class="accordion-item active" data-target="1">
+          <h3>
+            01. Telegram Mini App GUI
+            <i data-lucide="chevron-down"></i>
+          </h3>
+          <div class="accordion-content">
+            Полноэкранный WebApp обеспечивает тактильный мобильный опыт трейдера. Нет необходимости переключаться между вкладками браузера: аналитика открывается прямо поверх чата Telegram, мгновенно отправляя сигналы боту.
+          </div>
+        </div>
+
+        <div class="accordion-item" data-target="2">
+          <h3>
+            02. Алгоритм WAC (Weighted Average Cost)
+            <i data-lucide="chevron-down"></i>
+          </h3>
+          <div class="accordion-content">
+            Главная боль P2P — покупка USDT частями по разным курсам (например, 500 по 91.2, 1000 по 91.8 и 2000 по 92.4). Движок терминала вычисляет реальную себестоимость актива с точностью до десятых долей процента.
+          </div>
+        </div>
+
+        <div class="accordion-item" data-target="3">
+          <h3>
+            03. Реестр с динамическим каскадом
+            <i data-lucide="chevron-down"></i>
+          </h3>
+          <div class="accordion-content">
+            Ошиблись при вводе? Отредактируйте объем или курс в истории — система налету пересчитает WAC и прибыль для всех последующих ордеров торгового дня, сохранив идеальную точность учета.
+          </div>
+        </div>
+
+        <div class="accordion-item" data-target="4">
+          <h3>
+            04. Монетизация &amp; Реферальный движок
+            <i data-lucide="chevron-down"></i>
+          </h3>
+          <div class="accordion-content">
+            Встроенная вирусная петля роста: пользователи делятся реферальными ссылками с коллегами и получают бесплатные бонусные дни подписки, обеспечивая органический приток новых P2P-команд.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SECTION: WAC & SPREAD LIVE INTERACTIVE CALCULATOR
+       ========================================================================== -->
+  <section class="section-container" id="calculator">
+    <div class="section-header-block">
+      <span class="section-indicator">// PROFITABILITY MODEL</span>
+      <h2 class="section-main-title">Калькулятор <span>Прибыли</span></h2>
+      <p class="section-desc">
+        Оцените эффект перехода от хаотичных таблиц Excel к автоматизированному WAC-учету на вашем ежемесячном обороте.
+      </p>
+    </div>
+
+    <div class="calculator-frame">
+      <div class="calc-cols">
+
+        <!-- Sliders -->
+        <div>
+          <div class="calc-slider-box">
+            <div class="calc-slider-header">
+              <span>Ежедневный оборот в USDT</span>
+              <span class="calc-slider-val" id="valDailyTurnover">15,000 $</span>
+            </div>
+            <input type="range" id="sliderTurnover" min="1000" max="100000" step="1000" value="15000" />
+          </div>
+
+          <div class="calc-slider-box">
+            <div class="calc-slider-header">
+              <span>Средний спред на круге (%)</span>
+              <span class="calc-slider-val" id="valSpreadPercent">1.40 %</span>
+            </div>
+            <input type="range" id="sliderSpread" min="0.2" max="4.0" step="0.05" value="1.40" />
+          </div>
+
+          <div class="calc-slider-box">
+            <div class="calc-slider-header">
+              <span>Торговых дней в месяц</span>
+              <span class="calc-slider-val" id="valTradeDays">26 дней</span>
+            </div>
+            <input type="range" id="sliderDays" min="10" max="31" step="1" value="26" />
+          </div>
+
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); border-left: 2px solid var(--gold-400); padding-left: 12px; margin-top: 20px;">
+            Устранение человеческих ошибок в WAC-курсе сохраняет в среднем от 0.3% до 0.7% от всего оборота арбитражника в месяц.
+          </div>
+        </div>
+
+        <!-- Summary Metric Panel -->
+        <div class="calc-summary-display">
+          <div>
+            <div class="summary-metric-row">
+              <span class="summary-metric-title">Дневная чистая прибыль:</span>
+              <span class="calc-slider-val" id="resDailyProfit">+210.00 USDT</span>
+            </div>
+            <div class="summary-metric-row">
+              <span class="summary-metric-title">Месячный оборот:</span>
+              <span class="calc-slider-val" id="resMonthlyTurnover">390,000 USDT</span>
+            </div>
+            <div class="summary-metric-row">
+              <span class="summary-metric-title">Спасенный профит от ошибок WAC:</span>
+              <span class="calc-slider-val" style="color: var(--gold-300);" id="resSavedProfit">+1,950 USDT</span>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 20px; margin-top: 20px;">
+            <div class="summary-metric-title">Итоговая чистая прибыль в месяц:</div>
+            <div class="summary-metric-large" id="resMonthlyTotalNet">+$5,460 USDT</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px;">
+              Окупаемость пожизненной подписки ($49) составляет менее 8 часов работы
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SECTION: PRICING & LIFETIME BYBIT UID DIRECT PAYWALL
+       ========================================================================== -->
+  <section class="section-container" id="pricing">
+    <div class="section-header-block">
+      <span class="section-indicator">// TRANSPARENT MONETIZATION</span>
+      <h2 class="section-main-title">Тарифные <span>Планы</span></h2>
+      <p class="section-desc">
+        Без скрытых комиссий и посредников. Мгновенная автоматическая активация по Bybit UID или встроенный 24-часовой бесплатный ознакомительный период.
+      </p>
+    </div>
+
+    <div class="tariffs-container">
+
+      <!-- 24H Trial -->
+      <div class="tariff-card">
+        <div>
+          <div class="tariff-name">24H Free Trial</div>
+          <div class="tariff-sub">Тестовый боевой режим для новых P2P-трейдеров</div>
+
+          <div class="tariff-price-wrap">
+            <span class="tariff-price">$0</span>
+            <span class="tariff-period">/ 24 часа</span>
+          </div>
+
+          <ul class="tariff-features-list">
+            <li><i data-lucide="check"></i> Доступ ко всем функциям бота</li>
+            <li><i data-lucide="check"></i> Полноэкранный WebApp Bybit Style</li>
+            <li><i data-lucide="check"></i> Расчет WAC и спреда без лимитов</li>
+            <li><i data-lucide="check"></i> Автоматическая активация в 1 клик</li>
+          </ul>
+        </div>
+
+        <a href="https://t.me/" target="_blank" class="btn-cyber-outline btn-cyber" style="width: 100%;">
+          Запустить Тест
+        </a>
+      </div>
+
+      <!-- Lifetime Featured Tier -->
+      <div class="tariff-card featured">
+        <div class="tariff-badge">ПОЖИЗНЕННЫЙ ДОСТУП // LIFETIME</div>
+        <div>
+          <div class="tariff-name">Lifetime Pro</div>
+          <div class="tariff-sub">Полная бессрочная лицензия без ежемесячных списаний</div>
+
+          <div class="tariff-price-wrap">
+            <span class="tariff-price">$49</span>
+            <span class="tariff-period">/ навсегда</span>
+          </div>
+
+          <div class="bybit-instant-info">
+            <i data-lucide="zap" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+            Прямой перевод на Bybit UID (0% комиссии, автопроверка)
+          </div>
+
+          <ul class="tariff-features-list">
+            <li><i data-lucide="check"></i> Бессрочный доступ ко всем обновлениям</li>
+            <li><i data-lucide="check"></i> Экспорт всей базы сделок в Excel</li>
+            <li><i data-lucide="check"></i> Приоритетная поддержка администратора</li>
+            <li><i data-lucide="check"></i> Расширенная реферальная программа (х2 дни)</li>
+            <li><i data-lucide="check"></i> Ночные автоматические резервные копии</li>
+          </ul>
+        </div>
+
+        <button class="btn-cyber" id="openLifetimeModalBtn" style="width: 100%;">
+          <i data-lucide="credit-card"></i> Забрать Lifetime ($49)
+        </button>
+      </div>
+
+      <!-- Monthly Subscription -->
+      <div class="tariff-card">
+        <div>
+          <div class="tariff-name">Monthly Pro</div>
+          <div class="tariff-sub">Гибкая помесячная оплата для растущих команд</div>
+
+          <div class="tariff-price-wrap">
+            <span class="tariff-price">$5</span>
+            <span class="tariff-period">/ месяц</span>
+          </div>
+
+          <ul class="tariff-features-list">
+            <li><i data-lucide="check"></i> Неограниченное число кругов и сделок</li>
+            <li><i data-lucide="check"></i> Выбор любых валют (RUB, KZT, UAH, USD)</li>
+            <li><i data-lucide="check"></i> Настройка часового пояса (UTC+2..+7)</li>
+            <li><i data-lucide="check"></i> Быстрое продление через Bybit UID</li>
+          </ul>
+        </div>
+
+        <a href="https://t.me/" target="_blank" class="btn-cyber-outline btn-cyber" style="width: 100%;">
+          Оформить Месяц ($5)
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SECTION: ADMIN MODULE & AUDIT DOSSIER
+       ========================================================================== */
+  -->
+  <section class="section-container" id="admin">
+    <div class="section-header-block">
+      <span class="section-indicator">// ADMINISTRATIVE &amp; SECURITY CONTROLS</span>
+      <h2 class="section-main-title">Модуль <span>Управления</span></h2>
+      <p class="section-desc">
+        Встроенный функционал супер-админа: финансовые досье на каждого пользователя, управление доступом, массовые уведомления и экспорт в Excel.
+      </p>
+    </div>
+
+    <div class="admin-preview-grid">
+
+      <!-- Dossier Card 1 -->
+      <div class="dossier-card hud-corners">
+        <div class="dossier-header">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="dossier-avatar">TG</div>
+            <div class="dossier-user-info">
+              <h4>@arbitrage_king (ID: 84920419)</h4>
+              <span>ТАРИФ: LIFETIME PRO // STATUS: ACTIVE</span>
+            </div>
+          </div>
+          <span style="color: var(--green-profit); font-family: var(--font-mono); font-size: 0.8rem;">VERIFIED</span>
+        </div>
+
+        <div class="dossier-row">
+          <span>Суммарный оборот трейдера:</span>
+          <span>$1,420,800 USDT</span>
+        </div>
+        <div class="dossier-row">
+          <span>Всего зарегистрировано кругов:</span>
+          <span>1,842 сделки</span>
+        </div>
+        <div class="dossier-row">
+          <span>Средний чистый спред:</span>
+          <span style="color: var(--green-profit);">+1.64%</span>
+        </div>
+        <div class="dossier-row">
+          <span>Приглашено рефералов:</span>
+          <span>18 коллег (+36 дней)</span>
+        </div>
+        <div class="dossier-row">
+          <span>Дата последней активности:</span>
+          <span>Сегодня, 15:42 (UTC+3)</span>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 18px;">
+          <button class="btn-cyber-outline btn-cyber" style="flex: 1; padding: 8px 12px; font-size: 0.72rem;">Выгрузить Excel</button>
+          <button class="btn-cyber-outline btn-cyber" style="flex: 1; padding: 8px 12px; font-size: 0.72rem; border-color: var(--red-expense); color: var(--red-expense);">Заблокировать</button>
+        </div>
+      </div>
+
+      <!-- Dossier Card 2 -->
+      <div class="dossier-card hud-corners">
+        <div class="dossier-header">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="dossier-avatar" style="border-color: var(--cyan-neon); color: var(--cyan-neon);">TG</div>
+            <div class="dossier-user-info">
+              <h4>@p2p_kazakhstan (ID: 99401284)</h4>
+              <span>ТАРИФ: 24H TRIAL // TIME LEFT: 06:14:22</span>
+            </div>
+          </div>
+          <span style="color: var(--gold-400); font-family: var(--font-mono); font-size: 0.8rem;">IN TRIAL</span>
+        </div>
+
+        <div class="dossier-row">
+          <span>Рабочая локализация:</span>
+          <span>KZT (Казахстанский тенге)</span>
+        </div>
+        <div class="dossier-row">
+          <span>Тестовый оборот за сегодня:</span>
+          <span>14,500,000 KZT</span>
+        </div>
+        <div class="dossier-row">
+          <span>Чистая прибыль за триал:</span>
+          <span style="color: var(--green-profit);">+218,000 KZT</span>
+        </div>
+        <div class="dossier-row">
+          <span>Bybit UID для верификации:</span>
+          <span>48920194 (Pending)</span>
+        </div>
+        <div class="dossier-row">
+          <span>Автоматический бэкап:</span>
+          <span>Завершен (03:00 UTC)</span>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 18px;">
+          <button class="btn-cyber" style="flex: 1; padding: 8px 12px; font-size: 0.72rem;">Выдать Полный Доступ</button>
+          <button class="btn-cyber-outline btn-cyber" style="flex: 1; padding: 8px 12px; font-size: 0.72rem;">Отправить Msg</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       MODAL: DIRECT BYBIT UID PAYMENT
+       ========================================================================== -->
+  <div class="modal-backdrop" id="lifetimeModal">
+    <div class="modal-window hud-corners">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-family: var(--font-display); color: var(--gold-300); font-size: 1.25rem;">Оплата по Bybit UID</h3>
+        <button id="closeModalBtn" style="background: none; border: none; color: #fff; cursor: pointer;">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+        Для активации бессрочной лицензии <b>Lifetime Pro ($49)</b> отправьте ровно 49 USDT внутренним переводом на Bybit UID (без комиссий):
+      </p>
+
+      <div style="background: #07070a; border: 1px dashed var(--gold-400); border-radius: 6px; padding: 14px; text-align: center; margin-bottom: 20px;">
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">BYBIT UID ПОЛУЧАТЕЛЯ:</div>
+        <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--gold-300); letter-spacing: 2px;">
+          88492011
+        </div>
+      </div>
+
+      <div class="sim-input-group" style="margin-bottom: 20px;">
+        <label>Ваш Telegram Username или ID</label>
+        <div class="sim-input-wrap">
+          <input type="text" id="buyerTgId" placeholder="@your_telegram" />
+        </div>
+      </div>
+
+      <button class="btn-cyber" id="confirmPaymentBtn" style="width: 100%;">
+        <i data-lucide="check"></i> Я перевел 49 USDT (Активировать)
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer>
+    <div class="footer-content">
+      <div>
+        <div class="brand-title">P2P_<span>Rbot</span></div>
+        <p class="footer-desc">
+          Профессиональный карманный терминал бухгалтерского и управленческого учета для P2P-трейдеров. Авторасчет WAC, сквозная статистика спреда и Bybit Mini App интерфейс.
+        </p>
+      </div>
+
+      <div class="footer-links-group">
+        <h5>Навигация</h5>
+        <ul>
+          <li><a href="#hero">Главный экран</a></li>
+          <li><a href="#simulator">Симулятор терминала</a></li>
+          <li><a href="#architecture">Слои архитектуры</a></li>
+          <li><a href="#calculator">WAC Калькулятор</a></li>
+          <li><a href="#pricing">Тарифные планы</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h5>Локализация</h5>
+        <ul>
+          <li><a href="javascript:void(0)">RUB — Россия (UTC+3)</a></li>
+          <li><a href="javascript:void(0)">KZT — Казахстан (UTC+5)</a></li>
+          <li><a href="javascript:void(0)">UAH — Украина (UTC+2)</a></li>
+          <li><a href="javascript:void(0)">BYN — Беларусь (UTC+3)</a></li>
+          <li><a href="javascript:void(0)">USD — Global Arbitrage</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h5>Контакты</h5>
+        <ul>
+          <li><a href="https://t.me/" target="_blank">Telegram Bot (@P2P_Rbot)</a></li>
+          <li><a href="https://t.me/" target="_blank">Канал обновлений</a></li>
+          <li><a href="https://t.me/" target="_blank">Техподдержка 24/7</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom-hud-bar">
+      <div>© 2026 P2P_RBOT TERMINAL PRO. ALL RIGHTS RESERVED.</div>
+      <div>ENCRYPTED WITH TELEGRAM SECURE PROTOCOL // BYBIT MINI APP INTEGRATION</div>
+    </div>
+  </footer>
+
+
+  <!-- ==========================================================================
+       JAVASCRIPT APPLICATION LOGIC
+       Three.js 3D Golden Tech Crystal, Chart.js Live Stats, Audio FX, Sliders
+       ========================================================================== -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    /* --------------------------------------------------------------------------
+       1. WEB AUDIO API SYNTHESIZER (HIGH-TECH HUD SOUND FX)
+       -------------------------------------------------------------------------- */
+    let audioCtx = null;
+    let soundEnabled = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playBeep(freq = 880, type = 'sine', duration = 0.08) {
+      if (!soundEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      initAudio();
+      soundBtn.style.color = soundEnabled ? 'var(--gold-400)' : 'var(--text-muted)';
+      soundBtn.style.borderColor = soundEnabled ? 'var(--gold-400)' : 'var(--border-subtle)';
+      if (soundEnabled) playBeep(1200, 'triangle', 0.1);
+    });
+
+    document.querySelectorAll('button, a, input, .stack-card-3d, .accordion-item').forEach(elem => {
+      elem.addEventListener('mouseenter', () => playBeep(900, 'sine', 0.03));
+      elem.addEventListener('click', () => playBeep(650, 'triangle', 0.06));
+    });
+
+
+    /* --------------------------------------------------------------------------
+       2. THREE.JS 3D SCENE: LUXURY GOLD CYBER-CHIP (В ТОЧНОСТИ КАК В РЕФЕРЕНСЕ)
+       -------------------------------------------------------------------------- */
+    const canvas = document.getElementById('webgl-hero-canvas');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 7;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const goldPoint1 = new THREE.PointLight(0xdfb15b, 3, 50);
+    goldPoint1.position.set(5, 5, 5);
+    scene.add(goldPoint1);
+
+    const goldPoint2 = new THREE.PointLight(0xfae19c, 2, 50);
+    goldPoint2.position.set(-5, -3, 3);
+    scene.add(goldPoint2);
+
+    const blueRimLight = new THREE.PointLight(0x00f2fe, 1.5, 50);
+    blueRimLight.position.set(0, -5, -4);
+    scene.add(blueRimLight);
+
+    // 3D Object Group
+    const techCrystalGroup = new THREE.Group();
+    scene.add(techCrystalGroup);
+
+    // Main Crystal / Cyber Shield Geometry
+    const geomCore = new THREE.OctahedronGeometry(1.8, 0);
+    const matCore = new THREE.MeshPhysicalMaterial({
+      color: 0xdfb15b,
+      metalness: 0.85,
+      roughness: 0.15,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+      reflectivity: 0.9,
+      wireframe: false,
+      transparent: true,
+      opacity: 0.88
+    });
+    const meshCore = new THREE.Mesh(geomCore, matCore);
+    techCrystalGroup.add(meshCore);
+
+    // Inner Wireframe Octahedron
+    const geomInner = new THREE.OctahedronGeometry(1.2, 1);
+    const matWire = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.35
+    });
+    const meshInner = new THREE.Mesh(geomInner, matWire);
+    techCrystalGroup.add(meshInner);
+
+    // Orbiting HUD Rings
+    const ringGeom1 = new THREE.RingGeometry(2.4, 2.45, 64);
+    const ringMat1 = new THREE.MeshBasicMaterial({ color: 0xdfb15b, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+    const ringMesh1 = new THREE.Mesh(ringGeom1, ringMat1);
+    ringMesh1.rotation.x = Math.PI / 2.5;
+    techCrystalGroup.add(ringMesh1);
+
+    const ringGeom2 = new THREE.RingGeometry(2.8, 2.83, 64);
+    const ringMat2 = new THREE.MeshBasicMaterial({ color: 0xfae19c, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
+    const ringMesh2 = new THREE.Mesh(ringGeom2, ringMat2);
+    ringMesh2.rotation.y = Math.PI / 3;
+    techCrystalGroup.add(ringMesh2);
+
+    // Particle Dust Field
+    const particlesCount = 350;
+    const posArray = new Float32Array(particlesCount * 3);
+    for (let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 12;
+    }
+    const particlesGeom = new THREE.BufferGeometry();
+    particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMat = new THREE.PointsMaterial({
+      size: 0.035,
+      color: 0xdfb15b,
+      transparent: true,
+      opacity: 0.6
+    });
+    const particleSystem = new THREE.Points(particlesGeom, particlesMat);
+    scene.add(particleSystem);
+
+    // Mouse Parallax
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Render Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Smooth rotate 3D crystal
+      techCrystalGroup.rotation.y += 0.006;
+      techCrystalGroup.rotation.x += 0.003;
+      meshInner.rotation.y -= 0.012;
+      ringMesh1.rotation.z += 0.004;
+      ringMesh2.rotation.z -= 0.005;
+      particleSystem.rotation.y += 0.0008;
+
+      // Parallax easing
+      targetX += (mouseX * 0.8 - targetX) * 0.05;
+      targetY += (mouseY * 0.8 - targetY) * 0.05;
+      techCrystalGroup.position.x = targetX;
+      techCrystalGroup.position.y = targetY;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+
+    /* --------------------------------------------------------------------------
+       3. CHART.JS: TERMINAL PERFORMANCE REALTIME MONITOR
+       -------------------------------------------------------------------------- */
+    const ctxChart = document.getElementById('terminalPerformanceChart').getContext('2d');
+    const gradient = ctxChart.createLinearGradient(0, 0, 0, 240);
+    gradient.addColorStop(0, 'rgba(223, 177, 91, 0.35)');
+    gradient.addColorStop(1, 'rgba(223, 177, 91, 0.0)');
+
+    const performanceChart = new Chart(ctxChart, {
+      type: 'line',
+      data: {
+        labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
+        datasets: [{
+          label: 'Накопленный спред (USDT)',
+          data: [25, 48, 92, 115, 160, 210, 248],
+          borderColor: '#dfb15b',
+          borderWidth: 2,
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: '#dfb15b',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { color: '#838394', font: { family: 'JetBrains Mono', size: 10 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { color: '#838394', font: { family: 'JetBrains Mono', size: 10 } }
+          }
         }
+      }
+    });
 
-        // 2. ИНИЦИАЛИЗАЦИЯ
-        function initApp() {
-            const parsedData = parseBotData();
-            if (!parsedData) {
-                document.getElementById('loader').innerText = "ОТКРОЙТЕ ТЕРМИНАЛ ЧЕРЕЗ БОТА ПО КОМАНДЕ /menu";
-                return;
-            }
-            appData = parsedData;
 
-            // Заполнение реквизитов и пользователя
-            if (appData.user_id) document.getElementById('disp-user-id').innerText = appData.user_id;
-            if (appData.bybit_uid) document.getElementById('disp-bybit-uid').innerText = appData.bybit_uid;
-            if (appData.price_month) document.getElementById('disp-price-month').innerText = `${appData.price_month}$`;
-            if (appData.price_forever) document.getElementById('disp-price-forever').innerText = `${appData.price_forever}$`;
+    /* --------------------------------------------------------------------------
+       4. INTERACTIVE SIMULATOR: LIVE ORDER ENTRY & WAC CALCULATION
+       -------------------------------------------------------------------------- */
+    let currentOperation = 'BUY';
+    const orderBuyBtn = document.getElementById('orderBuyBtn');
+    const orderSellBtn = document.getElementById('orderSellBtn');
+    const simAmount = document.getElementById('simUsdtAmount');
+    const simRate = document.getElementById('simRate');
+    const simCurrency = document.getElementById('simCurrency');
+    const rateCurrencyAffix = document.getElementById('rateCurrencyAffix');
+    const simFiatTotal = document.getElementById('simFiatTotal');
+    const simExecuteBtn = document.getElementById('simExecuteBtn');
+    const simLedgerBody = document.getElementById('simLedgerBody');
 
-            // Реферальные данные
-            if (appData.bot_username && appData.user_id) {
-                const link = `https://t.me/${appData.bot_username}?start=${appData.user_id}`;
-                document.getElementById('ref-link-box').innerText = link;
-            }
-            document.getElementById('ref-count-val').innerText = appData.ref_count || 0;
-            document.getElementById('ref-bonus-val').innerText = `+${appData.ref_bonus_days || 3} дня`;
+    // Stats State
+    let totalUsdt = 5420;
+    let wacRate = 91.85;
+    let netProfit = 14820;
+    let turnover = 845300;
 
-            // Проверка подписки / Paywall
-            if (appData.status === "banned") {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('paywall-reason').innerText = "Ваш аккаунт заблокирован администратором";
-                document.getElementById('trial-card').style.display = 'none';
-                switchTab('paywall');
-                document.querySelector('.bottom-nav').style.display = 'none';
-                return;
-            }
+    function updateFiatPreview() {
+      const amount = parseFloat(simAmount.value) || 0;
+      const rate = parseFloat(simRate.value) || 0;
+      const total = amount * rate;
+      const curr = simCurrency.value;
+      simFiatTotal.innerText = `${total.toLocaleString('ru-RU', { minimumFractionDigits: 2 })} ${curr}`;
+      rateCurrencyAffix.innerText = curr;
+    }
 
-            if (appData.status === "expired") {
-                document.getElementById('loader').style.display = 'none';
-                if (appData.trial_used) document.getElementById('trial-card').style.display = 'none';
-                switchTab('paywall');
-                document.querySelector('.bottom-nav').style.display = 'none';
-                return;
-            }
+    orderBuyBtn.addEventListener('click', () => {
+      currentOperation = 'BUY';
+      orderBuyBtn.style.background = 'var(--green-profit)';
+      orderBuyBtn.style.color = '#000';
+      orderSellBtn.style.background = 'transparent';
+      orderSellBtn.style.color = 'var(--red-expense)';
+    });
 
-            // Статус подписки на дашборде
-            if (appData.sub_end) {
-                const isForever = appData.sub_end.startsWith('2100');
-                document.getElementById('disp-sub-status').innerText = isForever ? "♾️ Навсегда" : `До ${appData.sub_end.slice(0, 10)}`;
-            }
+    orderSellBtn.addEventListener('click', () => {
+      currentOperation = 'SELL';
+      orderSellBtn.style.background = 'var(--red-expense)';
+      orderSellBtn.style.color = '#fff';
+      orderBuyBtn.style.background = 'transparent';
+      orderBuyBtn.style.color = 'var(--green-profit)';
+    });
 
-            // Настройки
-            document.getElementById('set-currency').value = appData.settings.currency || "RUB";
-            document.getElementById('set-tz').value = appData.settings.tz || 3;
+    simAmount.addEventListener('input', updateFiatPreview);
+    simRate.addEventListener('input', updateFiatPreview);
+    simCurrency.addEventListener('change', updateFiatPreview);
 
-            document.getElementById('loader').style.display = 'none';
-            calculateStats();
-            renderHistory();
-            switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
-        }
+    simExecuteBtn.addEventListener('click', () => {
+      const amount = parseFloat(simAmount.value);
+      const rate = parseFloat(simRate.value);
+      const curr = simCurrency.value;
+      if (!amount || !rate) return;
 
-        // 3. ОТПРАВКА ДАННЫХ В БОТ (tg.sendData)
-        function sendToBot(actionName, extraData = {}) {
-            tg.HapticFeedback.impactOccurred('medium');
-            const payload = { action: actionName, ...extraData };
-            tg.sendData(JSON.stringify(payload));
-            tg.close();
-        }
+      const fiatSum = amount * rate;
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
 
-        // 4. РАСЧЕТ АНАЛИТИКИ
-        function setPeriod(p, element) {
-            currentPeriod = p;
-            document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
-            element.classList.add('active');
-            calculateStats();
-        }
+      let wacText = '';
+      if (currentOperation === 'BUY') {
+        const prevTotalFiat = totalUsdt * wacRate;
+        totalUsdt += amount;
+        wacRate = (prevTotalFiat + fiatSum) / totalUsdt;
+        wacText = `WAC: ${wacRate.toFixed(2)}`;
+      } else {
+        const spreadProfit = (rate - wacRate) * amount;
+        netProfit += spreadProfit;
+        totalUsdt = Math.max(0, totalUsdt - amount);
+        const roi = ((rate - wacRate) / wacRate) * 100;
+        wacText = `${roi >= 0 ? '+' : ''}${roi.toFixed(2)}% (+${spreadProfit.toFixed(0)})`;
+      }
+      turnover += fiatSum;
 
-        function calculateStats() {
-            const tz = parseInt(appData.settings.tz) || 3;
-            const now = new Date();
-            now.setHours(now.getUTCHours() + tz);
+      // Update DOM Indicators
+      document.getElementById('dispUsdtBalance').innerText = totalUsdt.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('dispWacRate').innerText = wacRate.toFixed(2);
+      document.getElementById('dispNetProfit').innerText = `${netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}`;
+      document.getElementById('dispTurnover').innerText = turnover.toLocaleString('ru-RU', { maximumFractionDigits: 0 });
 
-            const filteredTrades = appData.trades.filter(t => {
-                const d = new Date(t.date);
-                d.setHours(d.getUTCHours() + tz);
-                if (currentPeriod === 'today') return d.toDateString() === now.toDateString();
-                if (currentPeriod === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                return true;
-            });
+      // Insert Row into Ledger Table
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${timeStr}</td>
+        <td class="${currentOperation === 'BUY' ? 'log-buy' : 'log-sell'}">${currentOperation}</td>
+        <td>${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</td>
+        <td>${rate.toFixed(2)}</td>
+        <td>${fiatSum.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} ${curr}</td>
+        <td>${wacText}</td>
+        <td><button class="log-action-btn"><i data-lucide="edit-3" style="width: 14px; height: 14px;"></i></button></td>
+      `;
+      simLedgerBody.insertBefore(row, simLedgerBody.firstChild);
+      lucide.createIcons();
 
-            let buyF = 0, buyC = 0, sellF = 0, sellC = 0;
-            filteredTrades.forEach(t => {
-                if (t.type === 'buy') {
-                    buyF += t.fiat; buyC += t.crypto;
-                } else {
-                    sellF += t.fiat; sellC += t.crypto;
-                }
-            });
+      // Chart update
+      performanceChart.data.labels.push(timeStr.slice(0, 5));
+      performanceChart.data.datasets[0].data.push(Math.round(netProfit / 90));
+      if (performanceChart.data.labels.length > 9) {
+        performanceChart.data.labels.shift();
+        performanceChart.data.datasets[0].data.shift();
+      }
+      performanceChart.update();
 
-            const wac = buyC > 0 ? buyF / buyC : 0;
-            const avgSell = sellC > 0 ? sellF / sellC : 0;
-            const profit = sellC > 0 ? sellF - (sellC * wac) : 0;
-            const spread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
-            const fiatTurn = buyF + sellF;
-            const cryptoTurn = buyC + sellC;
+      playBeep(1100, 'sine', 0.12);
+    });
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[appData.settings.currency] || "₽";
-            document.querySelectorAll('.sym').forEach(el => el.innerText = sym);
 
-            const profEl = document.getElementById('val-profit');
-            profEl.innerHTML = (profit > 0 ? "+" : "") + profit.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ` <span class="currency-sym sym">${sym}</span>`;
-            profEl.className = profit < 0 ? 'profit-val negative' : 'profit-val';
+    /* --------------------------------------------------------------------------
+       5. 3D ARCHITECTURE EXPLODED STACK ACCORDION
+       -------------------------------------------------------------------------- */
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    const layerCards = document.querySelectorAll('.layer-card-3d');
 
-            document.getElementById('val-spread').innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
-            document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-            document.getElementById('val-fiat-turn').innerText = fiatTurn.toLocaleString(undefined, {minimumFractionDigits:0});
-            document.getElementById('val-crypto-turn').innerText = cryptoTurn.toLocaleString(undefined, {minimumFractionDigits:2});
-        }
+    accordionItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.getAttribute('data-target');
+        accordionItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
 
-        // 5. РЕЕСТР И РЕДАКТИРОВАНИЕ
-        function renderHistory() {
-            const list = document.getElementById('history-container');
-            list.innerHTML = '';
-            if (appData.trades.length === 0) {
-                list.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding: 25px;">Сделок пока нет. Добавьте круг!</div>';
-                return;
-            }
+        // Highlight matching 3D card
+        layerCards.forEach(card => {
+          if (card.getAttribute('data-index') === target) {
+            card.style.borderColor = 'var(--gold-300)';
+            card.style.boxShadow = '0 0 35px var(--gold-glow)';
+          } else {
+            card.style.borderColor = 'var(--border-bright)';
+            card.style.boxShadow = 'none';
+          }
+        });
+      });
+    });
 
-            const tz = parseInt(appData.settings.tz) || 3;
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[appData.settings.currency] || "₽";
+    layerCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = card.getAttribute('data-index');
+        accordionItems.forEach(i => {
+          if (i.getAttribute('data-target') === idx) {
+            i.click();
+          }
+        });
+      });
+    });
 
-            appData.trades.forEach(t => {
-                const isBuy = t.type === 'buy';
-                const d = new Date(t.date);
-                d.setHours(d.getUTCHours() + tz);
-                const dateStr = d.toLocaleDateString('ru-RU', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
 
-                list.innerHTML += `
-                <div class="history-item">
-                    <div class="h-header">
-                        <div class="h-type ${isBuy ? 'buy' : 'sell'}">${isBuy ? 'ПОКУПКА 🟢' : 'ПРОДАЖА 🔴'}</div>
-                        <div class="h-date">${dateStr}</div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                        <div>
-                            <div class="h-fiat">${t.fiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
-                            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${t.crypto} USDT по ${t.rate}</div>
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn-mini-action" onclick="openEditModal(${t.id}, ${t.crypto}, ${t.rate})">✏️ Изменить</button>
-                            <button class="btn-mini-del" onclick="sendToBot('delete_trade', {trade_id: ${t.id}})">🗑</button>
-                        </div>
-                    </div>
-                </div>`;
-            });
-        }
+    /* --------------------------------------------------------------------------
+       6. WAC & SPREAD PROFIT CALCULATOR SLIDERS
+       -------------------------------------------------------------------------- */
+    const sliderTurnover = document.getElementById('sliderTurnover');
+    const sliderSpread = document.getElementById('sliderSpread');
+    const sliderDays = document.getElementById('sliderDays');
 
-        function openEditModal(tradeId, crypto, rate) {
-            tg.HapticFeedback.impactOccurred('light');
-            activeEditTradeId = tradeId;
-            document.getElementById('modal-trade-id').innerText = `Сделка #${tradeId}`;
-            document.getElementById('modal-crypto').value = crypto;
-            document.getElementById('modal-rate').value = rate;
-            calcModalFiat();
-            document.getElementById('edit-modal').classList.add('show');
-        }
+    const valDailyTurnover = document.getElementById('valDailyTurnover');
+    const valSpreadPercent = document.getElementById('valSpreadPercent');
+    const valTradeDays = document.getElementById('valTradeDays');
 
-        function closeEditModal() {
-            document.getElementById('edit-modal').classList.remove('show');
-        }
+    const resDailyProfit = document.getElementById('resDailyProfit');
+    const resMonthlyTurnover = document.getElementById('resMonthlyTurnover');
+    const resSavedProfit = document.getElementById('resSavedProfit');
+    const resMonthlyTotalNet = document.getElementById('resMonthlyTotalNet');
 
-        function calcModalFiat() {
-            const c = parseFloat(document.getElementById('modal-crypto').value) || 0;
-            const r = parseFloat(document.getElementById('modal-rate').value) || 0;
-            document.getElementById('modal-fiat').innerText = (c * r).toLocaleString(undefined, {minimumFractionDigits: 2});
-        }
+    function recalcProfitability() {
+      const dailyTurnover = parseFloat(sliderTurnover.value);
+      const spreadPct = parseFloat(sliderSpread.value);
+      const days = parseInt(sliderDays.value);
 
-        document.getElementById('modal-crypto').addEventListener('input', calcModalFiat);
-        document.getElementById('modal-rate').addEventListener('input', calcModalFiat);
+      valDailyTurnover.innerText = `${dailyTurnover.toLocaleString('en-US')} $`;
+      valSpreadPercent.innerText = `${spreadPct.toFixed(2)} %`;
+      valTradeDays.innerText = `${days} дней`;
 
-        function submitEditTrade() {
-            const c = parseFloat(document.getElementById('modal-crypto').value);
-            const r = parseFloat(document.getElementById('modal-rate').value);
-            if (c > 0 && r > 0 && activeEditTradeId) {
-                sendToBot('edit_trade', { trade_id: activeEditTradeId, crypto: c, rate: r });
-            }
-        }
+      const dailyNet = dailyTurnover * (spreadPct / 100);
+      const monthlyTurn = dailyTurnover * days;
+      const savedErrors = monthlyTurn * 0.005; // 0.5% average saved from WAC confusion
+      const monthlyNet = (dailyNet * days) + savedErrors;
 
-        // 6. СОЗДАНИЕ СДЕЛКИ
-        let currentType = 'buy';
-        function setTradeType(type) {
-            tg.HapticFeedback.impactOccurred('light');
-            currentType = type;
-            document.getElementById('btn-buy').className = `switch-btn ${type === 'buy' ? 'active buy' : ''}`;
-            document.getElementById('btn-sell').className = `switch-btn ${type === 'sell' ? 'active sell' : ''}`;
-            const btn = document.getElementById('btn-save');
-            btn.className = `action-btn ${type === 'sell' ? 'sell-mode' : ''}`;
-            checkInputs();
-        }
+      resDailyProfit.innerText = `+${dailyNet.toFixed(2)} USDT`;
+      resMonthlyTurnover.innerText = `${monthlyTurn.toLocaleString('en-US')} USDT`;
+      resSavedProfit.innerText = `+${savedErrors.toFixed(0)} USDT`;
+      resMonthlyTotalNet.innerText = `+$${monthlyNet.toLocaleString('en-US', { maximumFractionDigits: 0 })} USDT`;
+    }
 
-        function checkInputs() {
-            const c = parseFloat(document.getElementById('inp-crypto').value);
-            const r = parseFloat(document.getElementById('inp-rate').value);
-            const btn = document.getElementById('btn-save');
-            const prev = document.getElementById('trade-preview');
+    sliderTurnover.addEventListener('input', recalcProfitability);
+    sliderSpread.addEventListener('input', recalcProfitability);
+    sliderDays.addEventListener('input', recalcProfitability);
+    recalcProfitability();
 
-            if (c > 0 && r > 0) {
-                const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[appData.settings.currency] || "₽";
-                const fiat = c * r;
-                prev.style.display = 'block';
-                document.getElementById('preview-fiat').innerText = fiat.toLocaleString(undefined, {minimumFractionDigits: 2});
-                btn.innerText = currentType === 'buy' ? `СОХРАНИТЬ ПОКУПКУ: ${c} USDT` : `СОХРАНИТЬ ПРОДАЖУ: ${fiat.toFixed(2)} ${sym}`;
-                btn.style.display = 'block';
-            } else {
-                prev.style.display = 'none';
-                btn.style.display = 'none';
-            }
-        }
 
-        document.getElementById('inp-crypto').addEventListener('input', checkInputs);
-        document.getElementById('inp-rate').addEventListener('input', checkInputs);
+    /* --------------------------------------------------------------------------
+       7. LIFETIME BYBIT UID DIRECT PAYMENT MODAL
+       -------------------------------------------------------------------------- */
+    const openLifetimeModalBtn = document.getElementById('openLifetimeModalBtn');
+    const lifetimeModal = document.getElementById('lifetimeModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
 
-        function saveTrade() {
-            const c = parseFloat(document.getElementById('inp-crypto').value);
-            const r = parseFloat(document.getElementById('inp-rate').value);
-            sendToBot('save_trade', { type: currentType, crypto: c, rate: r, fiat: c * r });
-        }
+    openLifetimeModalBtn.addEventListener('click', () => {
+      lifetimeModal.classList.add('open');
+    });
 
-        // 7. НАСТРОЙКИ, РЕФКА, САППОРТ
-        function updateSettings() {
-            const curr = document.getElementById('set-currency').value;
-            const tz = document.getElementById('set-tz').value;
-            sendToBot('update_settings', { currency: curr, tz_offset: tz });
-        }
+    closeModalBtn.addEventListener('click', () => {
+      lifetimeModal.classList.remove('open');
+    });
 
-        function openSupport() {
-            const sup = appData.support_username || "hsushzje";
-            tg.openTelegramLink(`https://t.me/${sup.replace('@', '')}`);
-        }
+    lifetimeModal.addEventListener('click', (e) => {
+      if (e.target === lifetimeModal) lifetimeModal.classList.remove('open');
+    });
 
-        function copyUid() {
-            navigator.clipboard.writeText(appData.bybit_uid || "");
-            showToast("Bybit UID скопирован!");
-        }
-
-        function copyRefLink() {
-            const link = `https://t.me/${appData.bot_username}?start=${appData.user_id}`;
-            navigator.clipboard.writeText(link);
-            showToast("Партнерская ссылка скопирована!");
-        }
-
-        function shareRefLink() {
-            const link = `https://t.me/${appData.bot_username}?start=${appData.user_id}`;
-            const text = encodeURIComponent("Удобный P2P-терминал для учета сделок и WAC:");
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`);
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
-        }
-
-        function switchTab(tabId, el = null) {
-            tg.HapticFeedback.impactOccurred('light');
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if (el) el.classList.add('active');
-        }
-
-        initApp();
-    </script>
+    confirmPaymentBtn.addEventListener('click', () => {
+      const tgId = document.getElementById('buyerTgId').value.trim();
+      if (!tgId) {
+        alert('Пожалуйста, укажите ваш Telegram username для активации лицензии.');
+        return;
+      }
+      confirmPaymentBtn.innerHTML = '<i data-lucide="check-circle"></i> Запрос отправлен! Ожидайте активации...';
+      lucide.createIcons();
+      setTimeout(() => {
+        lifetimeModal.classList.remove('open');
+        alert(`Запрос на Lifetime Pro для ${tgId} принят! Бот автоматически активирует пожизненный доступ после подтверждения перевода на Bybit UID.`);
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
