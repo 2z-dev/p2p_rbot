@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>P2P Accounting Terminal Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Надежная загрузка Supabase с запасным CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        if (!window.supabase) {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -74,7 +80,7 @@
         }
         .p-tab.active { background: var(--bg-secondary); color: var(--bybit-yellow); }
 
-        /* ФОРМЫ */
+        /* ФОРМЫ И КНОПКИ */
         .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
         .switch-btn {
             flex: 1; padding: 12px; border-radius: 12px; text-align: center;
@@ -174,7 +180,12 @@
 
         .section { display: none; }
         .section.active { display: block; }
-        #loader { position: fixed; inset: 0; background: var(--bg-main); z-index: 10000; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; }
+
+        #loader {
+            position: fixed; inset: 0; background: var(--bg-main); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-weight: 700; font-size: 14px; gap: 12px; padding: 20px; text-align: center;
+        }
 
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
@@ -185,7 +196,10 @@
     </style>
 </head>
 <body>
-    <div id="loader">СИНХРОНИЗАЦИЯ С ОБЛАКОМ...</div>
+    <div id="loader">
+        <div id="loader-spinner">⏳</div>
+        <div id="loader-text">СИНХРОНИЗАЦИЯ С ОБЛАКОМ...</div>
+    </div>
 
     <!-- ЭКРАН ВХОДА ДЛЯ БРАУЗЕРА -->
     <div id="auth-screen" style="display:none; padding: 20px; max-width: 440px; margin: 80px auto;">
@@ -195,7 +209,7 @@
             <p class="subtitle">Вход в облачный P2P-учет</p>
             <div class="input-wrap" style="text-align: left;">
                 <span class="badge">Ваш Telegram ID</span>
-                <input type="number" id="auth-tg-id" class="styled-input" placeholder="Например: 5847661785">
+                <input type="number" id="auth-tg-id" class="styled-input" placeholder="Например: 5172556128">
             </div>
             <button class="action-btn gold" onclick="loginViaWeb()">Войти в терминал</button>
         </div>
@@ -405,7 +419,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: КАССОВАЯ ОПЕРАЦИЯ (ВНЕСТИ / СНЯТЬ) -->
+    <!-- МОДАЛКА: КАССОВАЯ ОПЕРАЦИЯ -->
     <div id="modal-card-op" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;" id="modal-op-title">Кассовая операция</h2>
@@ -448,7 +462,6 @@
         </div>
     </div>
 
-    <!-- ТОСТ -->
     <div id="toast">Действие выполнено!</div>
 
     <!-- НИЖНЯЯ НАВИГАЦИЯ -->
@@ -464,7 +477,11 @@
     <script>
         const SUPABASE_URL = "https://slddpusuckhhvvetpgxa.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZGRwdXN1Y2toaHZ2ZXRwZ3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MDczMjIsImV4cCI6MjEwNDE4MzMyMn0.WISzs6_Bp5q0VDSfRWlNvpguaotpQUM3l-Jmdhtod6s";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let supabase = null;
+        if (window.supabase) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
 
         const tg = window.Telegram?.WebApp;
         if (tg) { try { tg.expand(); tg.ready(); } catch(e){} }
@@ -478,21 +495,53 @@
         let activeOpType = 'deposit';
         let activeEditTradeId = null;
 
-        async function init() {
-            let uid = null;
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-                uid = tg.initDataUnsafe.user.id;
+        // Аварийный таймаут: если сеть зависла на 5 секунд, скрыть загрузчик
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && loader.style.display !== 'none' && !currentUser) {
+                console.warn("Таймаут подключения к Supabase. Открытие резервного режима.");
+                fallbackOpen();
+            }
+        }, 5000);
+
+        function fallbackOpen() {
+            document.getElementById('loader').style.display = 'none';
+            const savedUid = localStorage.getItem('p2p_active_uid');
+            if (savedUid) {
+                currentUser = { tg_id: parseInt(savedUid), currency: 'RUB', tz_offset: 3, is_banned: false, sub_end: '2100-01-01' };
+                document.querySelector('.container').style.display = 'block';
+                document.querySelector('.bottom-nav').style.display = 'flex';
+                renderAll();
             } else {
-                uid = localStorage.getItem('p2p_active_uid');
-            }
-
-            if (!uid) {
-                document.getElementById('loader').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'block';
-                return;
             }
+        }
 
-            await loadUserData(uid);
+        async function init() {
+            try {
+                if (!supabase) {
+                    throw new Error("Библиотека Supabase не загрузилась. Проверьте интернет-соединение.");
+                }
+
+                let uid = null;
+                if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+                    uid = tg.initDataUnsafe.user.id;
+                } else {
+                    uid = localStorage.getItem('p2p_active_uid');
+                }
+
+                if (!uid) {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('auth-screen').style.display = 'block';
+                    return;
+                }
+
+                await loadUserData(uid);
+            } catch (err) {
+                console.error("Критическая ошибка init:", err);
+                document.getElementById('loader-text').innerHTML = `<span style="color: var(--bybit-red);">Ошибка связи с базой:</span><br><small style="font-size:11px;">${err.message || err}</small>`;
+                setTimeout(fallbackOpen, 2000);
+            }
         }
 
         async function loginViaWeb() {
@@ -511,46 +560,62 @@
 
         async function loadUserData(tgId) {
             tgId = parseInt(tgId);
-            // Загрузка пользователя
-            let { data: u } = await supabase.from('users').select('*').eq('tg_id', tgId).single();
-            if (!u) {
-                const { data: created } = await supabase.from('users').insert({ tg_id: tgId }).select().single();
-                u = created;
+            try {
+                // 1. Поиск пользователя через maybeSingle (не падает, если пользователя нет)
+                let { data: u, error: uErr } = await supabase.from('users').select('*').eq('tg_id', tgId).maybeSingle();
+
+                if (uErr) console.warn("Запрос юзера:", uErr);
+
+                if (!u) {
+                    // Создаем пользователя
+                    const { data: created, error: cErr } = await supabase.from('users').insert({ tg_id: tgId }).select().maybeSingle();
+                    if (cErr) {
+                        console.warn("Ошибка вставки юзера (возможно RLS):", cErr);
+                        u = { tg_id: tgId, currency: 'RUB', tz_offset: 3, is_banned: false, sub_end: '2100-01-01' };
+                    } else {
+                        u = created;
+                    }
+                }
+                currentUser = u || { tg_id: tgId, currency: 'RUB', tz_offset: 3, is_banned: false, sub_end: '2100-01-01' };
+
+                // 2. Загрузка данных
+                await refreshData();
+
+                document.getElementById('loader').style.display = 'none';
+                document.querySelector('.container').style.display = 'block';
+                document.querySelector('.bottom-nav').style.display = 'flex';
+
+                checkSubscription();
+
+                document.getElementById('set-currency').value = currentUser.currency || 'RUB';
+                document.getElementById('set-tz').value = currentUser.tz_offset || 3;
+                document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Accounting_Bot?start=${currentUser.tg_id}`;
+
+                renderAll();
+            } catch (e) {
+                console.error("Ошибка в loadUserData:", e);
+                fallbackOpen();
             }
-            currentUser = u;
-
-            // Загрузка карт, сделок, операций
-            await refreshData();
-
-            document.getElementById('loader').style.display = 'none';
-            document.querySelector('.container').style.display = 'block';
-            document.querySelector('.bottom-nav').style.display = 'flex';
-
-            // Проверка подписки
-            checkSubscription();
-
-            // Заполнение настроек
-            document.getElementById('set-currency').value = currentUser.currency || 'RUB';
-            document.getElementById('set-tz').value = currentUser.tz_offset || 3;
-
-            // Рефка
-            document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Accounting_Bot?start=${currentUser.tg_id}`;
-
-            renderAll();
         }
 
         async function refreshData() {
-            const [cRes, tRes, oRes] = await Promise.all([
-                supabase.from('cards').select('*').eq('tg_id', currentUser.tg_id).eq('is_active', true).order('created_at'),
-                supabase.from('trades').select('*').eq('tg_id', currentUser.tg_id).order('date', { ascending: false }),
-                supabase.from('card_operations').select('*').eq('tg_id', currentUser.tg_id)
-            ]);
-            userCards = cRes.data || [];
-            userTrades = tRes.data || [];
-            cardOps = oRes.data || [];
+            if (!currentUser || !currentUser.tg_id) return;
+            try {
+                const [cRes, tRes, oRes] = await Promise.all([
+                    supabase.from('cards').select('*').eq('tg_id', currentUser.tg_id).eq('is_active', true).order('created_at'),
+                    supabase.from('trades').select('*').eq('tg_id', currentUser.tg_id).order('date', { ascending: false }),
+                    supabase.from('card_operations').select('*').eq('tg_id', currentUser.tg_id)
+                ]);
+                userCards = cRes.data || [];
+                userTrades = tRes.data || [];
+                cardOps = oRes.data || [];
+            } catch (err) {
+                console.warn("Ошибка загрузки списков:", err);
+            }
         }
 
         function checkSubscription() {
+            if (!currentUser) return;
             if (currentUser.is_banned) {
                 document.getElementById('paywall-reason').innerText = "Аккаунт заблокирован администратором";
                 document.getElementById('trial-card').style.display = 'none';
@@ -568,7 +633,7 @@
                 switchTab('paywall');
                 document.querySelector('.bottom-nav').style.display = 'none';
             } else {
-                const isForever = subEnd.getFullYear() > 2099;
+                const isForever = subEnd && subEnd.getFullYear() > 2099;
                 document.getElementById('disp-sub-status').innerText = isForever ? "♾️ Навсегда" : `До ${subEnd.toLocaleDateString()}`;
             }
         }
@@ -600,7 +665,7 @@
         }
 
         function calculateStats() {
-            const tz = parseInt(currentUser.tz_offset) || 3;
+            const tz = parseInt(currentUser?.tz_offset) || 3;
             const now = new Date();
             now.setHours(now.getUTCHours() + tz);
 
@@ -614,8 +679,8 @@
 
             let bF = 0, bC = 0, sF = 0, sC = 0;
             filtered.forEach(t => {
-                if (t.type === 'buy') { bF += parseFloat(t.fiat_amount); bC += parseFloat(t.crypto_amount); }
-                else { sF += parseFloat(t.fiat_amount); sC += parseFloat(t.crypto_amount); }
+                if (t.type === 'buy') { bF += parseFloat(t.fiat_amount || 0); bC += parseFloat(t.crypto_amount || 0); }
+                else { sF += parseFloat(t.fiat_amount || 0); sC += parseFloat(t.crypto_amount || 0); }
             });
 
             const wac = bC > 0 ? bF / bC : 0;
@@ -623,7 +688,7 @@
             const profit = sC > 0 ? sF - (sC * wac) : 0;
             const spread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser.currency] || "₽";
+            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
             document.querySelectorAll('.sym').forEach(e => e.innerText = sym);
 
             const pEl = document.getElementById('val-profit');
@@ -636,7 +701,7 @@
             document.getElementById('val-crypto-turn').innerText = (bC + sC).toLocaleString(undefined, {minimumFractionDigits: 2});
         }
 
-        // МОДУЛЬ КАРТ
+        // КАРТЫ
         function renderCards() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
@@ -645,15 +710,13 @@
                 return;
             }
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser.currency] || "₽";
+            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
 
             userCards.forEach(c => {
-                // Покупки и продажи по карте
-                const spentBuy = userTrades.filter(t => t.card_id === c.id && t.type === 'buy').reduce((acc, t) => acc + parseFloat(t.fiat_amount), 0);
-                const gainSell = userTrades.filter(t => t.card_id === c.id && t.type === 'sell').reduce((acc, t) => acc + parseFloat(t.fiat_amount), 0);
-                // Ручные операции
-                const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount), 0);
-                const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount), 0);
+                const spentBuy = userTrades.filter(t => t.card_id === c.id && t.type === 'buy').reduce((acc, t) => acc + parseFloat(t.fiat_amount || 0), 0);
+                const gainSell = userTrades.filter(t => t.card_id === c.id && t.type === 'sell').reduce((acc, t) => acc + parseFloat(t.fiat_amount || 0), 0);
+                const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+                const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
 
                 const balance = deps - wdrs + gainSell - spentBuy;
                 const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
@@ -765,7 +828,7 @@
             const prev = document.getElementById('trade-preview');
 
             if (c > 0 && r > 0) {
-                const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser.currency] || "₽";
+                const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
                 const fiat = c * r;
                 prev.style.display = 'block';
                 document.getElementById('preview-fiat').innerText = fiat.toLocaleString(undefined, {minimumFractionDigits: 2});
@@ -799,7 +862,7 @@
             document.getElementById('inp-rate').value = '';
             checkTradeInputs();
 
-            showToast("✅ Сделка сохранена в единую базу!");
+            showToast("✅ Сделка сохранена!");
             await refreshData();
             renderAll();
             switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
@@ -814,8 +877,8 @@
                 return;
             }
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser.currency] || "₽";
-            const tz = parseInt(currentUser.tz_offset) || 3;
+            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
+            const tz = parseInt(currentUser?.tz_offset) || 3;
 
             userTrades.forEach(t => {
                 const isBuy = t.type === 'buy';
@@ -837,7 +900,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div>
-                                <div style="font-size: 17px; font-weight: 800;">${parseFloat(t.fiat_amount).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                                <div style="font-size: 17px; font-weight: 800;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
                                 <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT по ${t.rate}</div>
                             </div>
                             <div style="display: flex; gap: 8px;">
@@ -888,7 +951,7 @@
             renderAll();
         }
 
-        // НАСТРОЙКИ И ПОДПИСКА
+        // НАСТРОЙКИ
         async function updateSettings() {
             const cur = document.getElementById('set-currency').value;
             const tz = parseInt(document.getElementById('set-tz').value);
@@ -919,6 +982,11 @@
             const url = "https://t.me/hsushzje";
             if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
             else window.open(url, '_blank');
+        }
+
+        function copyUid() {
+            navigator.clipboard.writeText(document.getElementById('disp-bybit-uid').innerText);
+            showToast("Bybit UID скопирован!");
         }
 
         function copyRefLink() {
