@@ -153,7 +153,7 @@
         }
 
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(12px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
             z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
         }
         .modal-overlay.show { display: flex; }
@@ -194,9 +194,9 @@
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
             <h2 style="margin: 0 0 10px 0; font-size: 20px;">Доступ ограничен</h2>
             <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
-                Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>. Ручной вход по ID отключен.
+                Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.
             </p>
-            <button class="action-btn gold" onclick="redirectToBot()">🚀 Открыть бота</button>
+            <button class="action-btn gold" onclick="window.location.href='https://t.me/P2P_Rbot'">🚀 Открыть бота</button>
         </div>
     </div>
 
@@ -353,12 +353,12 @@
                     <option value="7">UTC+7</option>
                 </select>
 
-                <button class="action-btn" style="margin-bottom: 10px;" onclick="redirectToBotPayment()">💎 Оформить / Продлить подписку</button>
+                <button class="action-btn" style="margin-bottom: 10px;" onclick="openSubModal()">💎 Оформить / Продлить подписку</button>
                 <button class="action-btn-secondary" onclick="openSupport()">👨‍💻 Служба поддержки</button>
             </div>
         </div>
 
-        <!-- 7. PAYWALL (ТОЛЬКО ЧЕРЕЗ БОТА) -->
+        <!-- 7. PAYWALL -->
         <div id="paywall" class="section">
             <h1>Доступ к Терминалу 🔒</h1>
             <p class="subtitle" id="paywall-reason">Оформите доступ для использования функций</p>
@@ -368,34 +368,47 @@
                 <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;">
                     🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.
                 </p>
-                <button class="action-btn" onclick="redirectToBot()">🎁 Активировать триал в боте</button>
+                <button class="action-btn" onclick="openSubModal()">🎁 Активировать триал</button>
             </div>
 
             <div class="glass-card" style="margin-top: 15px;">
-                <span class="badge">Оформление подписки</span>
+                <span class="badge">Тарифные планы</span>
                 <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;">
-                    Покупка и проверка оплаты осуществляются строго через Telegram-бота с проверкой UID.
+                    Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.
                 </p>
 
                 <div class="analytics-grid">
-                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="redirectToBotPayment()">
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="openSubModal()">
                         <span class="stat-card-title">1 Месяц</span>
                         <div class="stat-card-val txt-green">5$</div>
                     </div>
-                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="redirectToBotPayment()">
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="openSubModal()">
                         <span class="stat-card-title">Навсегда</span>
                         <div class="stat-card-val txt-gold">49$</div>
                     </div>
                 </div>
 
-                <button class="action-btn gold" style="margin-top: 15px;" onclick="redirectToBotPayment()">
-                    💳 Оформить подписку в боте
+                <button class="action-btn gold" style="margin-top: 15px;" onclick="openSubModal()">
+                    💳 Оформить подписку
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <!-- ВСПЛЫВАЮЩЕЕ ОКНО: ПОДПИСКА ТОЛЬКО В БОТЕ -->
+    <div id="modal-sub-info" class="modal-overlay">
+        <div class="glass-card modal-box" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
+            <h2 style="font-size: 19px; margin: 0 0 10px 0;">Оформление в Telegram-боте</h2>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                Активация 24 часов бесплатного триала и покупка тарифов производятся <b>исключительно в нашем Telegram-боте</b>.<br><br>
+                После отправки перевода и сверки Bybit UID доступ в веб-терминале <b>активируется автоматически</b>!
+            </p>
+            <button class="action-btn gold" onclick="closeModals()">Понятно</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНЫЕ ОКНА КАРТ И СДЕЛОК -->
     <div id="modal-card-create" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;">➕ Добавить карту</h2>
@@ -596,19 +609,9 @@
             }
         }
 
-        function redirectToBot() {
+        function openSubModal() {
             haptic('light');
-            if (tg && tg.close) { tg.close(); }
-            else { window.location.href = "https://t.me/P2P_Rbot"; }
-        }
-
-        function redirectToBotPayment() {
-            haptic('medium');
-            showToast("💳 Открытие меню оплаты в боте...");
-            setTimeout(() => {
-                if (tg && tg.close) { tg.close(); }
-                else { window.location.href = "https://t.me/P2P_Rbot"; }
-            }, 600);
+            document.getElementById('modal-sub-info').classList.add('show');
         }
 
         function renderAll() {
@@ -964,7 +967,6 @@
             if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
             else window.open(url, '_blank');
         }
-
 
         function copyRefLink() {
             haptic('light');
