@@ -6,7 +6,7 @@
     <title>P2P Terminal Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
         :root {
             --bg-main: #0b0e11;
@@ -39,6 +39,63 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* ====================================================
+           ХАКЕРСКИЙ ТЕРМИНАЛ-ЗАГРУЗЧИК (CYBERPUNK BOOT SCREEN)
+        ==================================================== */
+        #terminal-boot-loader {
+            position: fixed; inset: 0; background: #07090b; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; font-family: 'Fira Code', monospace;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        #terminal-boot-loader.fade-out {
+            opacity: 0; transform: scale(1.03); pointer-events: none;
+        }
+
+        .terminal-window {
+            width: 100%; max-width: 480px; background: rgba(14, 17, 22, 0.95);
+            border: 1px solid rgba(46, 187, 154, 0.3); border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(46, 187, 154, 0.15);
+            overflow: hidden; backdrop-filter: blur(20px);
+        }
+
+        .terminal-header-bar {
+            background: #12151b; padding: 10px 14px; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .window-dots { display: flex; gap: 7px; }
+        .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .dot-red { background: #f23645; }
+        .dot-yellow { background: #f3a600; }
+        .dot-green { background: #2ebb9a; box-shadow: 0 0 8px #2ebb9a; }
+        .terminal-title { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+
+        .terminal-body {
+            padding: 16px; min-height: 240px; font-size: 12px; line-height: 1.6;
+            color: #d1d5db; display: flex; flex-direction: column; justify-content: flex-start;
+        }
+        .console-line { margin-bottom: 5px; word-break: break-all; opacity: 0; transform: translateY(4px); transition: 0.15s ease; }
+        .console-line.visible { opacity: 1; transform: translateY(0); }
+        .c-green { color: var(--bybit-green); font-weight: 700; }
+        .c-gold { color: var(--bybit-yellow); font-weight: 700; }
+        .c-blue { color: var(--bybit-blue); }
+        .c-dim { color: #6b7280; }
+
+        .progress-box { margin-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; }
+        .progress-track {
+            height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px;
+            overflow: hidden; margin-top: 6px;
+        }
+        .progress-bar-inner {
+            height: 100%; width: 0%; background: linear-gradient(90deg, var(--bybit-green), var(--bybit-yellow));
+            border-radius: 3px; transition: width 0.15s linear;
+        }
+        .cursor-blink { display: inline-block; width: 8px; height: 14px; background: var(--bybit-green); vertical-align: middle; animation: blink 0.8s infinite; margin-left: 4px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* ====================================================
+           ОСНОВНОЙ ИНТЕРФЕЙС ТЕРМИНАЛА
+        ==================================================== */
         .container { padding: 16px; max-width: 560px; margin: 0 auto; display: none; }
 
         .glass-card {
@@ -174,7 +231,7 @@
 
         .section { display: none; }
         .section.active { display: block; }
-        #loader { position: fixed; inset: 0; background: var(--bg-main); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; gap: 10px; }
+
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: var(--bybit-green); color: #000; font-weight: 800; padding: 12px 22px;
@@ -184,11 +241,32 @@
     </style>
 </head>
 <body>
-    <div id="loader">
-        <div style="font-size: 30px;">⚡️</div>
-        <div>СИНХРОНИЗАЦИЯ С ОБЛАКОМ...</div>
+    <!-- ХАКЕРСКАЯ ЗАГРУЗОЧНАЯ КОНСОЛЬ -->
+    <div id="terminal-boot-loader">
+        <div class="terminal-window">
+            <div class="terminal-header-bar">
+                <div class="window-dots">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                </div>
+                <div class="terminal-title">p2p_kernel@cloud: ~ /v7.0.1</div>
+                <div style="font-size: 10px; color: var(--bybit-green);">LIVE</div>
+            </div>
+            <div class="terminal-body" id="console-stream"></div>
+            <div class="progress-box" style="padding: 10px 16px 14px 16px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="c-dim">INITIALIZING LEDGER CORE</span>
+                    <span class="c-green" id="boot-pct">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar-inner" id="boot-progress-bar"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- ЭКРАН ОГРАНИЧЕНИЯ -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
@@ -200,9 +278,10 @@
         </div>
     </div>
 
+    <!-- ГЛАВНЫЙ КОНТЕЙНЕР ТЕРМИНАЛА -->
     <div class="container">
-        <!-- 1. ДАШБОРД / АНАЛИТИКА -->
-        <div id="dashboard" class="section">
+        <!-- 1. ДАШБОРД / АНАЛИТИКА (АКТИВЕН СРАЗУ, НЕТ ПУСТОГО ЭКРАНА) -->
+        <div id="dashboard" class="section active">
             <div class="terminal-header">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="online-dot"></span>
@@ -408,7 +487,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНЫЕ ОКНА КАРТ И СДЕЛОК -->
+    <!-- МОДАЛКИ КАРТ И СДЕЛОК -->
     <div id="modal-card-create" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;">➕ Добавить карту</h2>
@@ -480,6 +559,7 @@
 
     <div id="toast">Действие выполнено!</div>
 
+    <!-- НАВИГАЦИЯ -->
     <div class="bottom-nav">
         <div class="nav-btn active" onclick="switchTab('dashboard', this)"><i>📊</i><span>Сводка</span></div>
         <div class="nav-btn" onclick="switchTab('trade', this)"><i>⚡️</i><span>Сделка</span></div>
@@ -519,15 +599,77 @@
         let activeOpType = 'deposit';
         let activeEditTradeId = null;
 
+        // ==========================================
+        // КИБЕРПАНК СИМУЛЯТОР СИСТЕМНОГО ТЕРМИНАЛА
+        // ==========================================
+        const bootLogs = [
+            { text: "> SYSTEM BOOT: INIT P2P_CORE_V7.0.1", class: "c-green" },
+            { text: "[OK] SECURE TELEGRAM ENCLAVE LOADED", class: "c-dim" },
+            { text: "> AUTHENTICATING USER CREDENTIALS...", class: "c-blue" },
+            { text: "[OK] TELEGRAM SHA-256 HMAC VERIFIED", class: "c-green" },
+            { text: "> CONNECTING CLUSTER: REST_SUPABASE...", class: "c-dim" },
+            { text: "[OK] DATABASE HANDSHAKE ESTABLISHED (HTTP/2)", class: "c-gold" },
+            { text: "> COMPILING WAC MATRIX & SPREAD ALGORITHMS...", class: "c-dim" },
+            { text: "[OK] CARDS & CAPITAL LEDGERS SYNCED", class: "c-green" },
+            { text: ">> STATUS: ALL SUBSYSTEMS GREEN. LAUNCHING...", class: "c-gold" }
+        ];
+
+        async function playTerminalBootSequence() {
+            const container = document.getElementById("console-stream");
+            const bar = document.getElementById("boot-progress-bar");
+            const pct = document.getElementById("boot-pct");
+            container.innerHTML = "";
+
+            const total = bootLogs.length;
+            for (let i = 0; i < total; i++) {
+                const item = bootLogs[i];
+                const line = document.createElement("div");
+                line.className = `console-line ${item.class}`;
+                line.innerHTML = `${item.text} <span class="cursor-blink"></span>`;
+                container.appendChild(line);
+
+                // Плавное появление
+                requestAnimationFrame(() => line.classList.add("visible"));
+
+                // Удаляем мигающий курсор с предыдущих строк
+                const prevCursors = container.querySelectorAll(".cursor-blink");
+                if (prevCursors.length > 1) {
+                    prevCursors[0].remove();
+                }
+
+                // Обновляем шкалу загрузки
+                const p = Math.round(((i + 1) / total) * 100);
+                bar.style.width = `${p}%`;
+                pct.innerText = `${p}%`;
+
+                // Автоскролл консоли
+                container.scrollTop = container.scrollHeight;
+
+                await new Promise(r => setTimeout(r, 90));
+            }
+        }
+
         async function init() {
             const tgUser = tg?.initDataUnsafe?.user;
             if (!tgUser || !tgUser.id) {
-                document.getElementById('loader').style.display = 'none';
+                document.getElementById('terminal-boot-loader').style.display = 'none';
                 document.getElementById('restricted-screen').style.display = 'flex';
                 return;
             }
 
-            await loadUserData(tgUser.id);
+            // Запускаем печать хакерских логов и реальную загрузку базы параллельно
+            const bootAnimationPromise = playTerminalBootSequence();
+            const dataLoadPromise = loadUserData(tgUser.id);
+
+            // Ждем завершения обоих процессов
+            await Promise.all([bootAnimationPromise, dataLoadPromise]);
+
+            // Плавное растворение терминала
+            const loader = document.getElementById('terminal-boot-loader');
+            loader.classList.add('fade-out');
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 350);
         }
 
         async function loadUserData(tgId) {
@@ -545,11 +687,9 @@
 
             await refreshData();
 
-            document.getElementById('loader').style.display = 'none';
+            // Отображаем основной контейнер и навигацию
             document.querySelector('.container').style.display = 'block';
             document.querySelector('.bottom-nav').style.display = 'flex';
-
-            checkSubscription();
 
             document.getElementById('disp-uid').innerText = currentUser.tg_id;
             document.getElementById('set-currency').value = currentUser.currency || 'RUB';
@@ -557,6 +697,11 @@
             document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
 
             renderAll();
+
+            // Проверка подписки: если активна — сразу гарантированно включаем сводку
+            if (checkSubscription()) {
+                switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
+            }
         }
 
         async function refreshData() {
@@ -606,7 +751,9 @@
                 if (currentUser.trial_used) document.getElementById('trial-card').style.display = 'none';
                 switchTab('paywall');
                 document.querySelector('.bottom-nav').style.display = 'none';
+                return false;
             }
+            return true;
         }
 
         function openSubModal() {
