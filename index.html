@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>P2P Accounting Terminal Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Надежная загрузка Supabase с запасным CDN -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script>
-        if (!window.supabase) {
-            document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
-        }
-    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -80,7 +73,7 @@
         }
         .p-tab.active { background: var(--bg-secondary); color: var(--bybit-yellow); }
 
-        /* ФОРМЫ И КНОПКИ */
+        /* ФОРМЫ */
         .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
         .switch-btn {
             flex: 1; padding: 12px; border-radius: 12px; text-align: center;
@@ -197,7 +190,7 @@
 </head>
 <body>
     <div id="loader">
-        <div id="loader-spinner">⏳</div>
+        <div style="font-size: 28px;">⚡️</div>
         <div id="loader-text">СИНХРОНИЗАЦИЯ С ОБЛАКОМ...</div>
     </div>
 
@@ -389,7 +382,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: СОЗДАНИЕ КАРТЫ -->
+    <!-- МОДАЛКИ КАРТ И СДЕЛОК -->
     <div id="modal-card-create" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;">➕ Добавить карту</h2>
@@ -404,7 +397,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: ЛИМИТ КАРТЫ -->
     <div id="modal-card-limit" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;">⚙️ Лимит покупок</h2>
@@ -419,7 +411,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: КАССОВАЯ ОПЕРАЦИЯ -->
     <div id="modal-card-op" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;" id="modal-op-title">Кассовая операция</h2>
@@ -438,7 +429,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: РЕДАКТИРОВАНИЕ СДЕЛКИ -->
     <div id="edit-modal" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 4px 0;">Редактирование сделки</h2>
@@ -475,12 +465,33 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://slddpusuckhhvvetpgxa.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZGRwdXN1Y2toaHZ2ZXRwZ3hhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODYwNzMyMiwiZXhwIjoyMTA0MTgzMzIyfQ.obfZa6h7dKqVvzdHUAXRQ6TAZ8dSsmBZqmUCtBVO0QM";
+        // Аварийный вывод любых JS ошибок на экран
+        window.onerror = function(msg, url, line) {
+            document.getElementById('loader').innerHTML = '<div style="color:var(--bybit-red);padding:20px;text-align:left;"><b>Критическая ошибка:</b><br>' + msg + '<br><small>Строка: ' + line + '</small></div>';
+        };
+        window.onunhandledrejection = function(e) {
+            document.getElementById('loader').innerHTML = '<div style="color:var(--bybit-red);padding:20px;text-align:left;"><b>Ошибка API:</b><br>' + (e.reason?.message || e.reason) + '</div>';
+        };
 
-        let supabase = null;
-        if (window.supabase) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const API_URL = "https://slddpusuckhhvvetpgxa.supabase.co/rest/v1";
+        const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZGRwdXN1Y2toaHZ2ZXRwZ3hhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODYwNzMyMiwiZXhwIjoyMTA0MTgzMzIyfQ.obfZa6h7dKqVvzdHUAXRQ6TAZ8dSsmBZqmUCtBVO0QM";
+
+        // Прямой HTTP клиент к базе без сторонних CDN
+        async function db(endpoint, options = {}) {
+            const headers = {
+                "apikey": API_KEY,
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json",
+                "Prefer": options.prefer || "return=representation",
+                ...(options.headers || {})
+            };
+            const res = await fetch(`${API_URL}/${endpoint}`, { ...options, headers });
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`HTTP ${res.status}: ${errText}`);
+            }
+            const txt = await res.text();
+            return txt ? JSON.parse(txt) : null;
         }
 
         const tg = window.Telegram?.WebApp;
@@ -495,53 +506,21 @@
         let activeOpType = 'deposit';
         let activeEditTradeId = null;
 
-        // Аварийный таймаут: если сеть зависла на 5 секунд, скрыть загрузчик
-        setTimeout(() => {
-            const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none' && !currentUser) {
-                console.warn("Таймаут подключения к Supabase. Открытие резервного режима.");
-                fallbackOpen();
-            }
-        }, 5000);
-
-        function fallbackOpen() {
-            document.getElementById('loader').style.display = 'none';
-            const savedUid = localStorage.getItem('p2p_active_uid');
-            if (savedUid) {
-                currentUser = { tg_id: parseInt(savedUid), currency: 'RUB', tz_offset: 3, is_banned: false, sub_end: '2100-01-01' };
-                document.querySelector('.container').style.display = 'block';
-                document.querySelector('.bottom-nav').style.display = 'flex';
-                renderAll();
-            } else {
-                document.getElementById('auth-screen').style.display = 'block';
-            }
-        }
-
         async function init() {
-            try {
-                if (!supabase) {
-                    throw new Error("Библиотека Supabase не загрузилась. Проверьте интернет-соединение.");
-                }
-
-                let uid = null;
-                if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-                    uid = tg.initDataUnsafe.user.id;
-                } else {
-                    uid = localStorage.getItem('p2p_active_uid');
-                }
-
-                if (!uid) {
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('auth-screen').style.display = 'block';
-                    return;
-                }
-
-                await loadUserData(uid);
-            } catch (err) {
-                console.error("Критическая ошибка init:", err);
-                document.getElementById('loader-text').innerHTML = `<span style="color: var(--bybit-red);">Ошибка связи с базой:</span><br><small style="font-size:11px;">${err.message || err}</small>`;
-                setTimeout(fallbackOpen, 2000);
+            let uid = null;
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+                uid = tg.initDataUnsafe.user.id;
+            } else {
+                uid = localStorage.getItem('p2p_active_uid');
             }
+
+            if (!uid) {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'block';
+                return;
+            }
+
+            await loadUserData(uid);
         }
 
         async function loginViaWeb() {
@@ -560,58 +539,45 @@
 
         async function loadUserData(tgId) {
             tgId = parseInt(tgId);
-            try {
-                // 1. Поиск пользователя через maybeSingle (не падает, если пользователя нет)
-                let { data: u, error: uErr } = await supabase.from('users').select('*').eq('tg_id', tgId).maybeSingle();
 
-                if (uErr) console.warn("Запрос юзера:", uErr);
-
-                if (!u) {
-                    // Создаем пользователя
-                    const { data: created, error: cErr } = await supabase.from('users').insert({ tg_id: tgId }).select().maybeSingle();
-                    if (cErr) {
-                        console.warn("Ошибка вставки юзера (возможно RLS):", cErr);
-                        u = { tg_id: tgId, currency: 'RUB', tz_offset: 3, is_banned: false, sub_end: '2100-01-01' };
-                    } else {
-                        u = created;
-                    }
-                }
-                currentUser = u || { tg_id: tgId, currency: 'RUB', tz_offset: 3, is_banned: false, sub_end: '2100-01-01' };
-
-                // 2. Загрузка данных
-                await refreshData();
-
-                document.getElementById('loader').style.display = 'none';
-                document.querySelector('.container').style.display = 'block';
-                document.querySelector('.bottom-nav').style.display = 'flex';
-
-                checkSubscription();
-
-                document.getElementById('set-currency').value = currentUser.currency || 'RUB';
-                document.getElementById('set-tz').value = currentUser.tz_offset || 3;
-                document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Accounting_Bot?start=${currentUser.tg_id}`;
-
-                renderAll();
-            } catch (e) {
-                console.error("Ошибка в loadUserData:", e);
-                fallbackOpen();
+            // 1. Чтение или создание пользователя
+            let users = await db(`users?tg_id=eq.${tgId}`);
+            if (!users || users.length === 0) {
+                const created = await db(`users`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tg_id: tgId })
+                });
+                currentUser = created ? created[0] : { tg_id: tgId };
+            } else {
+                currentUser = users[0];
             }
+
+            // 2. Загрузка данных
+            await refreshData();
+
+            document.getElementById('loader').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+            document.querySelector('.bottom-nav').style.display = 'flex';
+
+            checkSubscription();
+
+            document.getElementById('set-currency').value = currentUser.currency || 'RUB';
+            document.getElementById('set-tz').value = currentUser.tz_offset || 3;
+            document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Accounting_Bot?start=${currentUser.tg_id}`;
+
+            renderAll();
         }
 
         async function refreshData() {
-            if (!currentUser || !currentUser.tg_id) return;
-            try {
-                const [cRes, tRes, oRes] = await Promise.all([
-                    supabase.from('cards').select('*').eq('tg_id', currentUser.tg_id).eq('is_active', true).order('created_at'),
-                    supabase.from('trades').select('*').eq('tg_id', currentUser.tg_id).order('date', { ascending: false }),
-                    supabase.from('card_operations').select('*').eq('tg_id', currentUser.tg_id)
-                ]);
-                userCards = cRes.data || [];
-                userTrades = tRes.data || [];
-                cardOps = oRes.data || [];
-            } catch (err) {
-                console.warn("Ошибка загрузки списков:", err);
-            }
+            if (!currentUser) return;
+            const [c, t, o] = await Promise.all([
+                db(`cards?tg_id=eq.${currentUser.tg_id}&is_active=eq.true&order=created_at.asc`),
+                db(`trades?tg_id=eq.${currentUser.tg_id}&order=date.desc`),
+                db(`card_operations?tg_id=eq.${currentUser.tg_id}`)
+            ]);
+            userCards = c || [];
+            userTrades = t || [];
+            cardOps = o || [];
         }
 
         function checkSubscription() {
@@ -656,7 +622,6 @@
             });
         }
 
-        // РАСЧЕТ АНАЛИТИКИ
         function setPeriod(p, el) {
             currentPeriod = p;
             document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
@@ -701,7 +666,6 @@
             document.getElementById('val-crypto-turn').innerText = (bC + sC).toLocaleString(undefined, {minimumFractionDigits: 2});
         }
 
-        // КАРТЫ
         function renderCards() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
@@ -759,7 +723,7 @@
         async function submitCreateCard() {
             const name = document.getElementById('new-card-name').value.trim();
             if (!name) return;
-            await supabase.from('cards').insert({ tg_id: currentUser.tg_id, card_name: name });
+            await db(`cards`, { method: 'POST', body: JSON.stringify({ tg_id: currentUser.tg_id, card_name: name }) });
             closeModals();
             showToast("✅ Карта создана!");
             await refreshData();
@@ -772,7 +736,7 @@
         }
         async function submitCardLimit() {
             const val = parseFloat(document.getElementById('card-limit-val').value) || null;
-            await supabase.from('cards').update({ buy_limit: val }).eq('id', activeCardId);
+            await db(`cards?id=eq.${activeCardId}`, { method: 'PATCH', body: JSON.stringify({ buy_limit: val }) });
             closeModals();
             showToast("✅ Лимит обновлен!");
             await refreshData();
@@ -789,12 +753,15 @@
             const amt = parseFloat(document.getElementById('card-op-amount').value);
             const comm = document.getElementById('card-op-comment').value.trim();
             if (!amt || amt <= 0) return;
-            await supabase.from('card_operations').insert({
-                card_id: activeCardId,
-                tg_id: currentUser.tg_id,
-                type: activeOpType,
-                amount: amt,
-                comment: comm
+            await db(`card_operations`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    card_id: activeCardId,
+                    tg_id: currentUser.tg_id,
+                    type: activeOpType,
+                    amount: amt,
+                    comment: comm
+                })
             });
             closeModals();
             showToast("✅ Кассовая операция записана!");
@@ -804,13 +771,12 @@
 
         async function deleteCard(cid) {
             if (!confirm("Удалить карту? Привязанные сделки сохранятся.")) return;
-            await supabase.from('cards').delete().eq('id', cid);
+            await db(`cards?id=eq.${cid}`, { method: 'DELETE' });
             showToast("🗑 Карта удалена");
             await refreshData();
             renderAll();
         }
 
-        // СДЕЛКИ
         let currentType = 'buy';
         function setTradeType(type) {
             currentType = type;
@@ -849,13 +815,16 @@
             const cardId = document.getElementById('inp-card-sel').value || null;
             if (!c || !r) return;
 
-            await supabase.from('trades').insert({
-                tg_id: currentUser.tg_id,
-                type: currentType,
-                crypto_amount: c,
-                rate: r,
-                fiat_amount: c * r,
-                card_id: cardId ? parseInt(cardId) : null
+            await db(`trades`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    tg_id: currentUser.tg_id,
+                    type: currentType,
+                    crypto_amount: c,
+                    rate: r,
+                    fiat_amount: c * r,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
             });
 
             document.getElementById('inp-crypto').value = '';
@@ -868,7 +837,6 @@
             switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
         }
 
-        // ИСТОРИЯ
         function renderHistory() {
             const container = document.getElementById('history-container');
             container.innerHTML = '';
@@ -930,12 +898,15 @@
             const cardId = document.getElementById('modal-card-sel').value || null;
             if (!c || !r) return;
 
-            await supabase.from('trades').update({
-                crypto_amount: c,
-                rate: r,
-                fiat_amount: c * r,
-                card_id: cardId ? parseInt(cardId) : null
-            }).eq('id', activeEditTradeId);
+            await db(`trades?id=eq.${activeEditTradeId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    crypto_amount: c,
+                    rate: r,
+                    fiat_amount: c * r,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
+            });
 
             closeModals();
             showToast("✏️ Сделка обновлена!");
@@ -945,19 +916,21 @@
 
         async function deleteTradeCloud(tid) {
             if (!confirm("Удалить сделку из базы?")) return;
-            await supabase.from('trades').delete().eq('id', tid);
+            await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
             showToast("🗑 Сделка удалена");
             await refreshData();
             renderAll();
         }
 
-        // НАСТРОЙКИ
         async function updateSettings() {
             const cur = document.getElementById('set-currency').value;
             const tz = parseInt(document.getElementById('set-tz').value);
             currentUser.currency = cur;
             currentUser.tz_offset = tz;
-            await supabase.from('users').update({ currency: cur, tz_offset: tz }).eq('tg_id', currentUser.tg_id);
+            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ currency: cur, tz_offset: tz })
+            });
             showToast("⚙️ Настройки сохранены!");
             renderAll();
         }
@@ -965,7 +938,10 @@
         async function activateTrialCloud() {
             const end = new Date();
             end.setHours(end.getHours() + 24);
-            await supabase.from('users').update({ sub_end: end.toISOString(), trial_used: true }).eq('tg_id', currentUser.tg_id);
+            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ sub_end: end.toISOString(), trial_used: true })
+            });
             currentUser.sub_end = end.toISOString();
             currentUser.trial_used = true;
             showToast("🎁 24 часа доступа активированы!");
