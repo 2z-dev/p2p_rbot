@@ -47,14 +47,12 @@
             border: 1px solid var(--glass-border);
             border-radius: 20px; padding: 18px; margin-bottom: 14px;
             box-shadow: 0 14px 35px rgba(0,0,0,0.45);
-            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
         .subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0; font-weight: 500; }
         .badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 6px; }
 
-        /* ВЕРХНИЙ БАР ТЕРМИНАЛА */
         .terminal-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
             padding: 8px 14px; background: rgba(0,0,0,0.3); border-radius: 14px; border: 1px solid var(--glass-border);
@@ -62,7 +60,6 @@
         .online-dot { width: 8px; height: 8px; background: var(--bybit-green); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--bybit-green); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        /* БЕЙДЖИ ПОДПИСКИ */
         .sub-tier-badge {
             display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px;
             font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
@@ -72,19 +69,13 @@
         .tier-trial { background: rgba(168, 85, 247, 0.15); color: var(--bybit-purple); border: 1px solid rgba(168, 85, 247, 0.4); }
         .tier-expired { background: rgba(242, 54, 69, 0.15); color: var(--bybit-red); border: 1px solid rgba(242, 54, 69, 0.4); }
 
-        /* HERO ДАШБОРД (ПРИБЫЛЬ) */
         .hero-profit-card {
             background: linear-gradient(135deg, rgba(24, 26, 32, 0.95) 0%, rgba(15, 17, 21, 0.95) 100%);
             border: 1px solid rgba(46, 187, 154, 0.2); position: relative; overflow: hidden;
         }
-        .hero-profit-card::after {
-            content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%;
-            background: radial-gradient(circle, var(--glow-green) 0%, transparent 60%); pointer-events: none;
-        }
         .profit-val { font-size: 38px; font-weight: 900; color: var(--bybit-green); letter-spacing: -1px; margin-top: 4px; }
         .profit-val.negative { color: var(--bybit-red); }
 
-        /* СЕТКА АНАЛИТИКИ */
         .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
         .stat-card {
             background: rgba(0, 0, 0, 0.32); border: 1px solid var(--glass-border);
@@ -96,15 +87,13 @@
         .txt-green { color: var(--bybit-green); }
         .txt-blue { color: var(--bybit-blue); }
 
-        /* ТАБЫ */
         .period-tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 4px; margin-bottom: 14px; border: 1px solid var(--glass-border); }
         .p-tab {
             flex: 1; text-align: center; padding: 8px; border-radius: 9px;
             font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s;
         }
-        .p-tab.active { background: var(--bg-secondary); color: var(--bybit-yellow); box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .p-tab.active { background: var(--bg-secondary); color: var(--bybit-yellow); }
 
-        /* ФОРМА СДЕЛОК */
         .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
         .switch-btn {
             flex: 1; padding: 12px; border-radius: 12px; text-align: center;
@@ -137,7 +126,6 @@
             color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer;
         }
 
-        /* КАРТЫ */
         .card-item {
             background: linear-gradient(135deg, rgba(35, 38, 47, 0.95) 0%, rgba(20, 22, 28, 0.95) 100%);
             border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; margin-bottom: 12px;
@@ -153,21 +141,17 @@
             text-align: center; cursor: pointer;
         }
 
-        /* ИСТОРИЯ */
         .history-item {
             background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border);
             border-radius: 14px; padding: 14px; margin-bottom: 10px;
         }
         .card-pill { font-size: 10px; background: rgba(243,166,0,0.15); color: var(--bybit-yellow); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
 
-        /* ЭКРАН ОГРАНИЧЕНИЯ (ДЛЯ ОБЫЧНЫХ БРАУЗЕРОВ) */
         #restricted-screen {
             display: none; height: 100vh; padding: 25px; flex-direction: column;
             justify-content: center; align-items: center; text-align: center;
         }
-        .lock-icon { font-size: 50px; margin-bottom: 15px; }
 
-        /* МОДАЛКИ */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(12px);
             z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
@@ -175,7 +159,6 @@
         .modal-overlay.show { display: flex; }
         .modal-box { width: 100%; max-width: 400px; }
 
-        /* НАВИГАЦИЯ */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(11, 14, 17, 0.95); backdrop-filter: blur(20px);
@@ -195,7 +178,7 @@
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: var(--bybit-green); color: #000; font-weight: 800; padding: 12px 22px;
-            border-radius: 20px; z-index: 10001; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); opacity: 0; font-size: 13px;
+            border-radius: 20px; z-index: 10001; transition: 0.3s; opacity: 0; font-size: 13px;
         }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
@@ -206,19 +189,17 @@
         <div>СИНХРОНИЗАЦИЯ С ОБЛАКОМ...</div>
     </div>
 
-    <!-- ЭКРАН БЛОКИРОВКИ: ДОСТУП ТОЛЬКО ИЗ TELEGRAM -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
-            <div class="lock-icon">🔒</div>
+            <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
             <h2 style="margin: 0 0 10px 0; font-size: 20px;">Доступ ограничен</h2>
             <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
-                В целях безопасности терминал привязан к аккаунту и запускается <b>исключительно через Telegram Mini App</b>. Ручной вход по ID отключен.
+                Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>. Ручной вход по ID отключен.
             </p>
-            <button class="action-btn gold" onclick="window.location.href='https://t.me/P2P_Rbot'">🚀 Открыть бота</button>
+            <button class="action-btn gold" onclick="redirectToBot()">🚀 Открыть бота</button>
         </div>
     </div>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ ТЕРМИНАЛА -->
     <div class="container">
         <!-- 1. ДАШБОРД / АНАЛИТИКА -->
         <div id="dashboard" class="section">
@@ -236,13 +217,11 @@
                 <div class="p-tab" onclick="setPeriod('all', this)">Все время</div>
             </div>
 
-            <!-- Главная карточка прибыли -->
             <div class="glass-card hero-profit-card">
                 <span class="badge" style="color: rgba(255,255,255,0.7);">Чистая прибыль</span>
                 <div class="profit-val" id="val-profit">0.00 <span style="font-size: 20px; color: var(--text-muted);" class="sym">₽</span></div>
             </div>
 
-            <!-- Расширенная сетка метрик -->
             <div class="analytics-grid">
                 <div class="stat-card">
                     <span class="stat-card-title">🔄 Спред круга</span>
@@ -374,30 +353,44 @@
                     <option value="7">UTC+7</option>
                 </select>
 
-                <button class="action-btn" style="margin-bottom: 10px;" onclick="switchTab('paywall')">💎 Продление подписки</button>
+                <button class="action-btn" style="margin-bottom: 10px;" onclick="redirectToBotPayment()">💎 Оформить / Продлить подписку</button>
                 <button class="action-btn-secondary" onclick="openSupport()">👨‍💻 Служба поддержки</button>
             </div>
         </div>
 
-        <!-- 7. PAYWALL -->
+        <!-- 7. PAYWALL (ТОЛЬКО ЧЕРЕЗ БОТА) -->
         <div id="paywall" class="section">
             <h1>Доступ к Терминалу 🔒</h1>
             <p class="subtitle" id="paywall-reason">Оформите доступ для использования функций</p>
+
             <div class="glass-card" id="trial-card">
                 <span class="badge">Бесплатный доступ</span>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Активируйте 24 часа бесплатного доступа для тестирования.</p>
-                <button class="action-btn" onclick="activateTrialCloud()">🎁 Активировать 24 часа</button>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;">
+                    🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.
+                </p>
+                <button class="action-btn" onclick="redirectToBot()">🎁 Активировать триал в боте</button>
             </div>
+
             <div class="glass-card" style="margin-top: 15px;">
-                <span class="badge">Оплата переводом на Bybit UID</span>
-                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
-                    <strong id="disp-bybit-uid">12345678заглушка</strong>
-                    <button class="btn-card-action" style="padding: 5px 12px;" onclick="copyUid()">Копировать</button>
+                <span class="badge">Оформление подписки</span>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;">
+                    Покупка и проверка оплаты осуществляются строго через Telegram-бота с проверкой UID.
+                </p>
+
+                <div class="analytics-grid">
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="redirectToBotPayment()">
+                        <span class="stat-card-title">1 Месяц</span>
+                        <div class="stat-card-val txt-green">5$</div>
+                    </div>
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="redirectToBotPayment()">
+                        <span class="stat-card-title">Навсегда</span>
+                        <div class="stat-card-val txt-gold">49$</div>
+                    </div>
                 </div>
-                <div class="analytics-grid" style="margin-top: 14px;">
-                    <button class="action-btn" onclick="confirmPaymentCloud('month')">1 Месяц (5$)</button>
-                    <button class="action-btn gold" onclick="confirmPaymentCloud('forever')">Навсегда (49$)</button>
-                </div>
+
+                <button class="action-btn gold" style="margin-top: 15px;" onclick="redirectToBotPayment()">
+                    💳 Оформить подписку в боте
+                </button>
             </div>
         </div>
     </div>
@@ -474,7 +467,6 @@
 
     <div id="toast">Действие выполнено!</div>
 
-    <!-- НАВИГАЦИЯ -->
     <div class="bottom-nav">
         <div class="nav-btn active" onclick="switchTab('dashboard', this)"><i>📊</i><span>Сводка</span></div>
         <div class="nav-btn" onclick="switchTab('trade', this)"><i>⚡️</i><span>Сделка</span></div>
@@ -514,7 +506,6 @@
         let activeOpType = 'deposit';
         let activeEditTradeId = null;
 
-        // СТРОГИЙ ВХОД ИСКЛЮЧИТЕЛЬНО ЧЕРЕЗ TELEGRAM
         async function init() {
             const tgUser = tg?.initDataUnsafe?.user;
             if (!tgUser || !tgUser.id) {
@@ -523,8 +514,7 @@
                 return;
             }
 
-            const uid = tgUser.id;
-            await loadUserData(uid);
+            await loadUserData(tgUser.id);
         }
 
         async function loadUserData(tgId) {
@@ -568,28 +558,27 @@
             cardOps = o || [];
         }
 
-        // КРАСИВЫЙ СТАТУС ПОДПИСКИ
         function getSubStatusInfo() {
             if (currentUser.is_banned) {
-                return { text: "⛔️ Аккаунт заблокирован", class: "tier-expired", active: false };
+                return { text: "⛔️ Заблокирован", class: "tier-expired", active: false };
             }
             if (!currentUser.sub_end) {
-                return { text: "❌ Подписка не активна", class: "tier-expired", active: false };
+                return { text: "❌ Нет подписки", class: "tier-expired", active: false };
             }
             const now = new Date();
             const end = new Date(currentUser.sub_end);
             if (end < now) {
-                return { text: "⏳ Срок доступа истек", class: "tier-expired", active: false };
+                return { text: "⏳ Истекла", class: "tier-expired", active: false };
             }
             if (end.getFullYear() > 2099) {
                 return { text: "💎 VIP Навсегда", class: "tier-vip", active: true };
             }
             const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
             const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
-            const dateStr = end.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + end.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = end.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
 
             if (currentUser.trial_used && diffDays <= 2) {
-                return { text: `🎁 Пробный доступ 24ч (до ${dateStr})`, class: "tier-trial", active: true };
+                return { text: `🎁 Триал 24ч (до ${dateStr})`, class: "tier-trial", active: true };
             }
             return { text: `⚡️ Премиум 1 мес (до ${dateStr})`, class: "tier-month", active: true };
         }
@@ -605,6 +594,21 @@
                 switchTab('paywall');
                 document.querySelector('.bottom-nav').style.display = 'none';
             }
+        }
+
+        function redirectToBot() {
+            haptic('light');
+            if (tg && tg.close) { tg.close(); }
+            else { window.location.href = "https://t.me/P2P_Rbot"; }
+        }
+
+        function redirectToBotPayment() {
+            haptic('medium');
+            showToast("💳 Открытие меню оплаты в боте...");
+            setTimeout(() => {
+                if (tg && tg.close) { tg.close(); }
+                else { window.location.href = "https://t.me/P2P_Rbot"; }
+            }, 600);
         }
 
         function renderAll() {
@@ -633,7 +637,6 @@
             calculateStats();
         }
 
-        // РАСЧЕТ РАСШИРЕННОЙ АНАЛИТИКИ
         function calculateStats() {
             const tz = parseInt(currentUser?.tz_offset) || 3;
             const now = new Date();
@@ -679,7 +682,6 @@
             document.getElementById('val-trades-count').innerText = `${filtered.length} (Кругов: ${sellsCount})`;
         }
 
-        // КАРТЫ
         function renderCards() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
@@ -794,7 +796,6 @@
             renderAll();
         }
 
-        // СДЕЛКИ
         let currentType = 'buy';
         function setTradeType(type) {
             haptic('light');
@@ -944,7 +945,6 @@
             renderAll();
         }
 
-        // НАСТРОЙКИ
         async function updateSettings() {
             haptic('light');
             const cur = document.getElementById('set-currency').value;
@@ -959,37 +959,10 @@
             renderAll();
         }
 
-        async function activateTrialCloud() {
-            haptic('success');
-            const end = new Date();
-            end.setHours(end.getHours() + 24);
-            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ sub_end: end.toISOString(), trial_used: true })
-            });
-            currentUser.sub_end = end.toISOString();
-            currentUser.trial_used = true;
-            showToast("🎁 Доступ на 24 часа активирован!");
-            document.querySelector('.bottom-nav').style.display = 'flex';
-            checkSubscription();
-            switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
-        }
-
-        function confirmPaymentCloud(plan) {
-            haptic('medium');
-            showToast("✅ Заявка на проверку передана администратору!");
-        }
-
         function openSupport() {
             const url = "https://t.me/hsushzje";
             if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
             else window.open(url, '_blank');
-        }
-
-        function copyUid() {
-            haptic('light');
-            navigator.clipboard.writeText(document.getElementById('disp-bybit-uid').innerText);
-            showToast("UID Bybit скопирован!");
         }
 
         function copyRefLink() {
