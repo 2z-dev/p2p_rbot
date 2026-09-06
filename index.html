@@ -39,9 +39,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ====================================================
-           ХАКЕРСКИЙ ТЕРМИНАЛ-ЗАГРУЗЧИК (CYBERPUNK BOOT SCREEN)
-        ==================================================== */
+        /* ТЕРМИНАЛ-ЗАГРУЗЧИК */
         #terminal-boot-loader {
             position: fixed; inset: 0; background: #07090b; z-index: 10000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -93,9 +91,7 @@
         .cursor-blink { display: inline-block; width: 8px; height: 14px; background: var(--bybit-green); vertical-align: middle; animation: blink 0.8s infinite; margin-left: 4px; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* ====================================================
-           ОСНОВНОЙ ИНТЕРФЕЙС ТЕРМИНАЛА
-        ==================================================== */
+        /* ОСНОВНОЙ ИНТЕРФЕЙС */
         .container { padding: 16px; max-width: 560px; margin: 0 auto; display: none; }
 
         .glass-card {
@@ -266,7 +262,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН ОГРАНИЧЕНИЯ -->
+    <!-- ЭКРАН ОГРАНИЧЕНИЯ (ДЛЯ ВХОДА ВНЕ TELEGRAM) -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
@@ -280,7 +276,7 @@
 
     <!-- ГЛАВНЫЙ КОНТЕЙНЕР ТЕРМИНАЛА -->
     <div class="container">
-        <!-- 1. ДАШБОРД / АНАЛИТИКА (АКТИВЕН СРАЗУ, НЕТ ПУСТОГО ЭКРАНА) -->
+        <!-- 1. ДАШБОРД / АНАЛИТИКА (АКТИВЕН СРАЗУ) -->
         <div id="dashboard" class="section active">
             <div class="terminal-header">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -334,21 +330,29 @@
             </div>
         </div>
 
-        <!-- 2. СДЕЛКА -->
+        <!-- 2. СДЕЛКА (ВЫБОР: ФИАТ ИЛИ USDT, ФИАТ ПО УМОЛЧАНИЮ) -->
         <div id="trade" class="section">
             <h1>Новая операция</h1>
             <p class="subtitle">Внести круг в облачную базу</p>
             <div class="glass-card">
+                <!-- Тип операции -->
                 <div class="trade-switch">
                     <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
                     <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
                 </div>
+
+                <!-- Переключатель режима: Фиат по умолчанию -->
+                <div class="period-tabs" style="margin-bottom: 16px;">
+                    <div class="p-tab active" id="tab-mode-fiat" onclick="setCalcMode('fiat')">Сумма фиата (<span class="sym">₽</span>)</div>
+                    <div class="p-tab" id="tab-mode-crypto" onclick="setCalcMode('crypto')">Объем USDT (🪙)</div>
+                </div>
+
                 <div class="input-wrap">
-                    <span class="badge">Объем USDT</span>
-                    <input type="number" inputmode="decimal" id="inp-crypto" class="styled-input" placeholder="0.00">
+                    <span class="badge" id="lbl-amount">Сумма в фиате (<span class="sym">₽</span>)</span>
+                    <input type="number" inputmode="decimal" id="inp-amount" class="styled-input" placeholder="0.00">
                 </div>
                 <div class="input-wrap">
-                    <span class="badge">Курс</span>
+                    <span class="badge">Курс USDT</span>
                     <input type="number" inputmode="decimal" id="inp-rate" class="styled-input" placeholder="0.00">
                 </div>
                 <div class="input-wrap">
@@ -357,8 +361,8 @@
                         <option value="">Без привязки к карте</option>
                     </select>
                 </div>
-                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 13px;">
-                    Итоговый фиат: <b id="preview-fiat">0.00</b> <span class="sym">₽</span>
+                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 13px;">
+                    <span id="preview-text">Итог:</span> <b id="preview-result" style="color: var(--bybit-yellow);">0.00</b>
                 </div>
                 <button class="action-btn" id="btn-save" onclick="saveTrade()" style="display: none;">СОХРАНИТЬ СДЕЛКУ</button>
             </div>
@@ -628,21 +632,17 @@
                 line.innerHTML = `${item.text} <span class="cursor-blink"></span>`;
                 container.appendChild(line);
 
-                // Плавное появление
                 requestAnimationFrame(() => line.classList.add("visible"));
 
-                // Удаляем мигающий курсор с предыдущих строк
                 const prevCursors = container.querySelectorAll(".cursor-blink");
                 if (prevCursors.length > 1) {
                     prevCursors[0].remove();
                 }
 
-                // Обновляем шкалу загрузки
                 const p = Math.round(((i + 1) / total) * 100);
                 bar.style.width = `${p}%`;
                 pct.innerText = `${p}%`;
 
-                // Автоскролл консоли
                 container.scrollTop = container.scrollHeight;
 
                 await new Promise(r => setTimeout(r, 90));
@@ -657,14 +657,11 @@
                 return;
             }
 
-            // Запускаем печать хакерских логов и реальную загрузку базы параллельно
             const bootAnimationPromise = playTerminalBootSequence();
             const dataLoadPromise = loadUserData(tgUser.id);
 
-            // Ждем завершения обоих процессов
             await Promise.all([bootAnimationPromise, dataLoadPromise]);
 
-            // Плавное растворение терминала
             const loader = document.getElementById('terminal-boot-loader');
             loader.classList.add('fade-out');
             setTimeout(() => {
@@ -687,7 +684,6 @@
 
             await refreshData();
 
-            // Отображаем основной контейнер и навигацию
             document.querySelector('.container').style.display = 'block';
             document.querySelector('.bottom-nav').style.display = 'flex';
 
@@ -698,7 +694,6 @@
 
             renderAll();
 
-            // Проверка подписки: если активна — сразу гарантированно включаем сводку
             if (checkSubscription()) {
                 switchTab('dashboard', document.querySelectorAll('.nav-btn')[0]);
             }
@@ -946,7 +941,12 @@
             renderAll();
         }
 
+        // ==========================================
+        // УПРАВЛЕНИЕ СДЕЛКОЙ (ФИАТ / USDT)
+        // ==========================================
         let currentType = 'buy';
+        let calcMode = 'fiat'; // По умолчанию ввод в фиате
+
         function setTradeType(type) {
             haptic('light');
             currentType = type;
@@ -957,18 +957,49 @@
             checkTradeInputs();
         }
 
+        function setCalcMode(mode) {
+            haptic('light');
+            calcMode = mode;
+            document.getElementById('tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
+            document.getElementById('tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
+            document.getElementById('lbl-amount').innerHTML = mode === 'fiat'
+                ? `Сумма в фиате (<span class="sym">${sym}</span>)`
+                : `Объем в USDT (🪙)`;
+
+            checkTradeInputs();
+        }
+
         function checkTradeInputs() {
-            const c = parseFloat(document.getElementById('inp-crypto').value);
-            const r = parseFloat(document.getElementById('inp-rate').value);
+            const amount = parseFloat(document.getElementById('inp-amount').value);
+            const rate = parseFloat(document.getElementById('inp-rate').value);
             const btn = document.getElementById('btn-save');
             const prev = document.getElementById('trade-preview');
+            const prevText = document.getElementById('preview-text');
+            const prevResult = document.getElementById('preview-result');
 
-            if (c > 0 && r > 0) {
+            if (amount > 0 && rate > 0) {
                 const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
-                const fiat = c * r;
                 prev.style.display = 'block';
-                document.getElementById('preview-fiat').innerText = fiat.toLocaleString(undefined, {minimumFractionDigits: 2});
-                btn.innerText = currentType === 'buy' ? `СОХРАНИТЬ ПОКУПКУ: ${c} USDT` : `СОХРАНИТЬ ПРОДАЖУ: ${fiat.toFixed(2)} ${sym}`;
+
+                let fiat = 0;
+                let crypto = 0;
+
+                if (calcMode === 'fiat') {
+                    fiat = amount;
+                    crypto = fiat / rate;
+                    prevText.innerText = "Расчетный объем USDT:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
+                } else {
+                    crypto = amount;
+                    fiat = crypto * rate;
+                    prevText.innerText = "Расчетный фиат:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
+                }
+
+                const actionTitle = currentType === 'buy' ? 'ПОКУПКУ' : 'ПРОДАЖУ';
+                btn.innerText = `СОХРАНИТЬ ${actionTitle}: ${fiat.toLocaleString(undefined, {maximumFractionDigits: 2})} ${sym}`;
                 btn.style.display = 'block';
             } else {
                 prev.style.display = 'none';
@@ -976,28 +1007,39 @@
             }
         }
 
-        document.getElementById('inp-crypto').addEventListener('input', checkTradeInputs);
+        document.getElementById('inp-amount').addEventListener('input', checkTradeInputs);
         document.getElementById('inp-rate').addEventListener('input', checkTradeInputs);
 
         async function saveTrade() {
-            const c = parseFloat(document.getElementById('inp-crypto').value);
-            const r = parseFloat(document.getElementById('inp-rate').value);
+            const amount = parseFloat(document.getElementById('inp-amount').value);
+            const rate = parseFloat(document.getElementById('inp-rate').value);
             const cardId = document.getElementById('inp-card-sel').value || null;
-            if (!c || !r) return;
+            if (!amount || !rate || amount <= 0 || rate <= 0) return;
+
+            let fiat = 0;
+            let crypto = 0;
+
+            if (calcMode === 'fiat') {
+                fiat = amount;
+                crypto = parseFloat((fiat / rate).toFixed(2));
+            } else {
+                crypto = amount;
+                fiat = parseFloat((crypto * rate).toFixed(2));
+            }
 
             await db(`trades`, {
                 method: 'POST',
                 body: JSON.stringify({
                     tg_id: currentUser.tg_id,
                     type: currentType,
-                    crypto_amount: c,
-                    rate: r,
-                    fiat_amount: c * r,
+                    crypto_amount: crypto,
+                    rate: rate,
+                    fiat_amount: fiat,
                     card_id: cardId ? parseInt(cardId) : null
                 })
             });
 
-            document.getElementById('inp-crypto').value = '';
+            document.getElementById('inp-amount').value = '';
             document.getElementById('inp-rate').value = '';
             checkTradeInputs();
 
