@@ -100,6 +100,11 @@
             border: 1px solid var(--glass-border);
             border-radius: 20px; padding: 18px; margin-bottom: 14px;
             box-shadow: 0 14px 35px rgba(0,0,0,0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.55);
         }
 
         h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
@@ -133,6 +138,11 @@
         .stat-card {
             background: rgba(0, 0, 0, 0.32); border: 1px solid var(--glass-border);
             border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: scale(1.03);
+            background: rgba(0, 0, 0, 0.45);
         }
         .stat-card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         .stat-card-val { font-size: 17px; font-weight: 800; margin-top: 6px; color: var(--text-main); }
@@ -168,7 +178,11 @@
             width: 100%; padding: 14px; border-radius: 14px; border: none;
             font-size: 14px; font-weight: 800; text-transform: uppercase; cursor: pointer;
             background: var(--bybit-green); color: #000; box-shadow: 0 6px 20px var(--glow-green);
-            transition: transform 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--glow-green);
         }
         .action-btn:active { transform: scale(0.97); }
         .action-btn.sell-mode { background: var(--bybit-red); color: #fff; box-shadow: 0 6px 20px rgba(242,54,69,0.3); }
@@ -182,6 +196,11 @@
         .card-item {
             background: linear-gradient(135deg, rgba(35, 38, 47, 0.95) 0%, rgba(20, 22, 28, 0.95) 100%);
             border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; margin-bottom: 12px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .card-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--bybit-yellow);
         }
         .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .card-title { font-size: 16px; font-weight: 800; }
@@ -192,11 +211,25 @@
             background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
             color: var(--text-main); padding: 8px 4px; border-radius: 10px; font-size: 11px; font-weight: 700;
             text-align: center; cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .btn-card-action:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-1px);
+        }
+        .btn-card-action:active {
+            transform: scale(0.95);
         }
 
         .history-item {
             background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border);
             border-radius: 14px; padding: 14px; margin-bottom: 10px;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .history-item:hover {
+            transform: translateX(4px);
+            background: rgba(0,0,0,0.4);
+            border-color: var(--bybit-yellow);
         }
         .card-pill { font-size: 10px; background: rgba(243,166,0,0.15); color: var(--bybit-yellow); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
 
@@ -293,8 +326,31 @@
             </div>
 
             <div class="glass-card hero-profit-card">
-                <span class="badge" style="color: rgba(255,255,255,0.7);">Чистая прибыль</span>
-                <div class="profit-val" id="val-profit">0.00 <span style="font-size: 20px; color: var(--text-muted);" class="sym">₽</span></div>
+                <span class="badge" style="color: rgba(255,255,255,0.7);">💰 ПРИБЫЛЬ</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Чистая в <span class="sym">₽</span></div>
+                        <div class="profit-val" style="font-size: 24px;" id="val-profit-rub">0.00 <span style="font-size: 14px; color: var(--text-muted);" class="sym">₽</span></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Чистая в USDT</div>
+                        <div class="profit-val" style="font-size: 24px; color: var(--bybit-blue);" id="val-profit-usdt">0.00 <span style="font-size: 14px; color: var(--text-muted);">USDT</span></div>
+                    </div>
+                </div>
+                <div style="height: 1px; background: var(--glass-border); margin: 12px 0;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Общая в <span class="sym">₽</span></div>
+                        <div class="profit-val" style="font-size: 28px;" id="val-total-profit-rub">0.00 <span style="font-size: 16px; color: var(--text-muted);" class="sym">₽</span></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Общая в USDT</div>
+                        <div class="profit-val" style="font-size: 28px; color: var(--bybit-blue);" id="val-total-profit-usdt">0.00 <span style="font-size: 16px; color: var(--text-muted);">USDT</span></div>
+                    </div>
+                </div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 10px; text-align: center;">
+                    💡 Средние курсы: покупка <span id="hint-avg-buy">0</span>, продажа <span id="hint-avg-sell">0</span>
+                </div>
             </div>
 
             <div class="analytics-grid">
@@ -380,9 +436,9 @@
             <div id="cards-container"></div>
         </div>
 
-        <!-- 4. РЕЕСТР (ИСТОРИЯ) -->
+        <!-- 4. ИСТОРИЯ -->
         <div id="history" class="section">
-            <h1>Реестр</h1>
+            <h1>История операций</h1>
             <p class="subtitle">Синхронизированные сделки</p>
             <div class="glass-card">
                 <div id="history-container"></div>
@@ -568,7 +624,7 @@
         <div class="nav-btn active" onclick="switchTab('dashboard', this)"><i>📊</i><span>Сводка</span></div>
         <div class="nav-btn" onclick="switchTab('trade', this)"><i>⚡️</i><span>Сделка</span></div>
         <div class="nav-btn" onclick="switchTab('cards', this)"><i>💳</i><span>Карты</span></div>
-        <div class="nav-btn" onclick="switchTab('history', this)"><i>📓</i><span>Реестр</span></div>
+        <div class="nav-btn" onclick="switchTab('history', this)"><i>📜</i><span>История</span></div>
         <div class="nav-btn" onclick="switchTab('referral', this)"><i>🤝</i><span>Рефка</span></div>
         <div class="nav-btn" onclick="switchTab('profile', this)"><i>⚙️</i><span>Опции</span></div>
     </div>
@@ -805,18 +861,46 @@
 
             const wac = bC > 0 ? bF / bC : 0;
             const avgSell = sC > 0 ? sF / sC : 0;
-            const profit = sC > 0 ? sF - (sC * wac) : 0;
+
+            // Новая логика расчета прибыли
+            const profitRub = sF - bF; // Чистая прибыль в рублях
+            const profitUsdt = sC - bC; // Прибыль в USDT
+            const totalProfitRub = profitRub + (profitUsdt * avgSell); // Общая в рублях
+            const totalProfitUsdt = (wac > 0 ? profitRub / wac : 0) + profitUsdt; // Общая в USDT
+
             const spread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
             const fiatTurn = bF + sF;
             const cryptoTurn = bC + sC;
-            const roi = fiatTurn > 0 ? (profit / fiatTurn) * 100 : 0;
+            const roi = fiatTurn > 0 ? (totalProfitRub / fiatTurn) * 100 : 0;
 
             const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
             document.querySelectorAll('.sym').forEach(e => e.innerText = sym);
 
-            const pEl = document.getElementById('val-profit');
-            pEl.innerHTML = (profit > 0 ? "+" : "") + profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 20px; color: var(--text-muted);">${sym}</span>`;
-            pEl.className = profit < 0 ? 'profit-val negative' : 'profit-val';
+            // Обновление чистой прибыли в рублях
+            const pElRub = document.getElementById('val-profit-rub');
+            pElRub.innerHTML = (profitRub > 0 ? "+" : "") + profitRub.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 14px; color: var(--text-muted);">${sym}</span>`;
+            pElRub.className = profitRub < 0 ? 'profit-val negative' : 'profit-val';
+
+            // Обновление чистой прибыли в USDT
+            const pElUsdt = document.getElementById('val-profit-usdt');
+            pElUsdt.innerHTML = (profitUsdt > 0 ? "+" : "") + profitUsdt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 14px; color: var(--text-muted);">USDT</span>`;
+            pElUsdt.className = profitUsdt < 0 ? 'profit-val negative' : 'profit-val';
+            if (profitUsdt >= 0) pElUsdt.style.color = 'var(--bybit-blue)';
+
+            // Обновление общей прибыли в рублях
+            const pElTotalRub = document.getElementById('val-total-profit-rub');
+            pElTotalRub.innerHTML = (totalProfitRub > 0 ? "+" : "") + totalProfitRub.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 16px; color: var(--text-muted);">${sym}</span>`;
+            pElTotalRub.className = totalProfitRub < 0 ? 'profit-val negative' : 'profit-val';
+
+            // Обновление общей прибыли в USDT
+            const pElTotalUsdt = document.getElementById('val-total-profit-usdt');
+            pElTotalUsdt.innerHTML = (totalProfitUsdt > 0 ? "+" : "") + totalProfitUsdt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 16px; color: var(--text-muted);">USDT</span>`;
+            pElTotalUsdt.className = totalProfitUsdt < 0 ? 'profit-val negative' : 'profit-val';
+            if (totalProfitUsdt >= 0) pElTotalUsdt.style.color = 'var(--bybit-blue)';
+
+            // Подсказка о средних курсах
+            document.getElementById('hint-avg-buy').innerText = wac.toFixed(2);
+            document.getElementById('hint-avg-sell').innerText = avgSell.toFixed(2);
 
             document.getElementById('val-spread').innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
             document.getElementById('val-roi').innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
@@ -824,7 +908,7 @@
             document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('val-fiat-turn').innerText = fiatTurn.toLocaleString(undefined, {minimumFractionDigits: 0});
             document.getElementById('val-crypto-turn').innerText = cryptoTurn.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('val-trades-count').innerText = `${filtered.length} (Кругов: ${sellsCount})`;
+            document.getElementById('val-trades-count').innerText = `${filtered.length} / ${sellsCount}`;
         }
 
         function renderCards() {
