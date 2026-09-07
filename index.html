@@ -10,8 +10,8 @@
 
         :root {
             --bg-main: #05070a;
-            --bg-card: rgba(14, 18, 26, 0.82);
-            --bg-card-hover: rgba(22, 28, 40, 0.92);
+            --bg-card: rgba(14, 18, 26, 0.84);
+            --bg-card-hover: rgba(22, 28, 40, 0.94);
             --bybit-yellow: #f3a600;
             --bybit-green: #2ebb9a;
             --bybit-red: #f23645;
@@ -26,6 +26,7 @@
             --glow-blue: rgba(56, 189, 248, 0.25);
             --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-shatter: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         * {
@@ -45,14 +46,14 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: 130px;
+            padding-bottom: 150px;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             position: relative;
             min-height: 100vh;
         }
 
-        /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ И ТРАНЗАКЦИЙ */
+        /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ */
         #blockchain-canvas {
             position: fixed;
             inset: 0;
@@ -267,7 +268,7 @@
             50% { opacity: 0; }
         }
 
-        /* 3D КОНТЕЙНЕР СО СБОРКОЙ И СКРУЧИВАНИЕМ ИЗ НУЛЯ */
+        /* 3D КОНТЕЙНЕР И ГЛУБОКАЯ ПЕРСПЕКТИВА */
         .container {
             padding: 16px;
             max-width: 580px;
@@ -275,26 +276,122 @@
             position: relative;
             z-index: 3;
             display: none;
-            perspective: 1400px;
-            perspective-origin: center top;
+            perspective: 1600px;
+            perspective-origin: 50% 30%;
         }
 
         .page-section {
-            margin-bottom: 38px;
+            margin-bottom: 48px;
             scroll-margin-top: 24px;
-            opacity: 0;
-            transform: translateY(110px) scale(0.25) rotateX(55deg) rotateY(-30deg) rotateZ(12deg);
-            filter: blur(14px);
-            transform-origin: center top;
-            transition: opacity 0.85s var(--ease-apple), transform 0.85s var(--ease-spring), filter 0.65s ease;
+            position: relative;
             transform-style: preserve-3d;
         }
 
-        .page-section.revealed {
+        /*
+           ====================================================
+           РЕВЕРСИВНАЯ АНИМАЦИЯ: СБОРКА ИЗ ОСКОЛКОВ СТЕКЛА С НУЛЯ
+           ====================================================
+        */
+        .page-section .glass-card,
+        .page-section .stat-card,
+        .page-section .card-item,
+        .page-section h1,
+        .page-section .subtitle,
+        .page-section .period-tabs,
+        .page-section .trade-switch,
+        .page-section .terminal-header {
+            will-change: transform, opacity, filter;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition:
+                transform 0.85s var(--ease-spring),
+                opacity 0.75s var(--ease-shatter),
+                filter 0.65s ease;
+        }
+
+        /* СОСТОЯНИЕ 1: РАЗБИТЫЕ ОСКОЛКИ В 3D ПРОСТРАНСТВЕ (ВЫХОД / ДО ПОЯВЛЕНИЯ) */
+        .page-section:not(.revealed) h1,
+        .page-section:not(.revealed) .terminal-header {
+            opacity: 0;
+            transform: translate3d(-60px, -80px, -320px) rotateX(75deg) rotateY(-40deg) rotateZ(28deg) scale(0.12);
+            filter: blur(16px);
+        }
+
+        .page-section:not(.revealed) .subtitle {
+            opacity: 0;
+            transform: translate3d(80px, -50px, -240px) rotateX(-55deg) rotateY(45deg) rotateZ(-20deg) scale(0.2);
+            filter: blur(12px);
+        }
+
+        .page-section:not(.revealed) .glass-card:nth-of-type(1) {
+            opacity: 0;
+            transform: translate3d(-140px, 120px, -450px) rotateX(80deg) rotateY(-55deg) rotateZ(35deg) scale(0.08);
+            filter: blur(20px);
+        }
+
+        .page-section:not(.revealed) .glass-card:nth-of-type(2) {
+            opacity: 0;
+            transform: translate3d(160px, 140px, -400px) rotateX(-75deg) rotateY(60deg) rotateZ(-40deg) scale(0.08);
+            filter: blur(20px);
+        }
+
+        .page-section:not(.revealed) .period-tabs {
+            opacity: 0;
+            transform: translate3d(0, 90px, -280px) rotateX(-60deg) rotateZ(15deg) scale(0.2);
+            filter: blur(14px);
+        }
+
+        .page-section:not(.revealed) .trade-switch {
+            opacity: 0;
+            transform: translate3d(100px, 60px, -250px) rotateY(-50deg) rotateZ(-15deg) scale(0.2);
+            filter: blur(12px);
+        }
+
+        .page-section:not(.revealed) .stat-card:nth-child(odd) {
+            opacity: 0;
+            transform: translate3d(-120px, 90px, -350px) rotateX(65deg) rotateY(-45deg) rotateZ(30deg) scale(0.1);
+            filter: blur(15px);
+        }
+
+        .page-section:not(.revealed) .stat-card:nth-child(even) {
+            opacity: 0;
+            transform: translate3d(120px, 90px, -350px) rotateX(-65deg) rotateY(45deg) rotateZ(-30deg) scale(0.1);
+            filter: blur(15px);
+        }
+
+        .page-section:not(.revealed) .card-item {
+            opacity: 0;
+            transform: translate3d(0, 140px, -380px) rotateX(70deg) rotateZ(-25deg) scale(0.12);
+            filter: blur(16px);
+        }
+
+        /* СОСТОЯНИЕ 2: СОБРАННЫЕ В ЦЕЛОЕ ЭЛЕМЕНТЫ (.revealed) */
+        .page-section.revealed h1,
+        .page-section.revealed .subtitle,
+        .page-section.revealed .terminal-header,
+        .page-section.revealed .glass-card,
+        .page-section.revealed .stat-card,
+        .page-section.revealed .card-item,
+        .page-section.revealed .period-tabs,
+        .page-section.revealed .trade-switch {
             opacity: 1;
-            transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
             filter: blur(0px);
         }
+
+        /* КАСКАДНАЯ СКОРОСТЬ СБОРКИ (ПРИЛЕТАЮТ И СХЛОПЫВАЮТСЯ ПО ОЧЕРЕДИ) */
+        .page-section.revealed .terminal-header { transition-delay: 0.03s; }
+        .page-section.revealed h1 { transition-delay: 0.06s; }
+        .page-section.revealed .subtitle { transition-delay: 0.1s; }
+        .page-section.revealed .period-tabs { transition-delay: 0.13s; }
+        .page-section.revealed .glass-card:nth-of-type(1) { transition-delay: 0.16s; }
+        .page-section.revealed .glass-card:nth-of-type(2) { transition-delay: 0.22s; }
+        .page-section.revealed .stat-card:nth-child(1) { transition-delay: 0.15s; }
+        .page-section.revealed .stat-card:nth-child(2) { transition-delay: 0.19s; }
+        .page-section.revealed .stat-card:nth-child(3) { transition-delay: 0.23s; }
+        .page-section.revealed .stat-card:nth-child(4) { transition-delay: 0.27s; }
+        .page-section.revealed .stat-card:nth-child(5) { transition-delay: 0.31s; }
+        .page-section.revealed .stat-card:nth-child(6) { transition-delay: 0.35s; }
 
         .glass-card {
             background: var(--bg-card);
@@ -305,7 +402,6 @@
             padding: 22px;
             margin-bottom: 14px;
             box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
-            transition: transform 0.28s var(--ease-spring), border-color 0.28s ease, box-shadow 0.28s ease;
             position: relative;
             overflow: hidden;
         }
@@ -319,14 +415,14 @@
         }
 
         .glass-card:active {
-            transform: scale(0.985);
+            transform: scale(0.988);
         }
 
         /* АДМИНСКАЯ ПАНЕЛЬ */
         .admin-section-card {
-            border: 1.5px dashed rgba(243, 166, 0, 0.5) !important;
-            background: linear-gradient(135deg, rgba(28, 22, 14, 0.9) 0%, rgba(16, 20, 28, 0.94) 100%) !important;
-            box-shadow: 0 20px 50px rgba(243, 166, 0, 0.15) !important;
+            border: 1.5px dashed rgba(243, 166, 0, 0.6) !important;
+            background: linear-gradient(135deg, rgba(28, 22, 14, 0.95) 0%, rgba(16, 20, 28, 0.96) 100%) !important;
+            box-shadow: 0 25px 60px rgba(243, 166, 0, 0.18) !important;
         }
 
         h1 {
@@ -463,13 +559,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.25s var(--ease-spring), background 0.25s ease, border-color 0.25s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            background: rgba(0, 0, 0, 0.45);
-            border-color: rgba(255, 255, 255, 0.15);
+            transition: background 0.25s ease, border-color 0.25s ease;
         }
 
         .stat-card-title {
@@ -643,14 +733,7 @@
             border-radius: 18px;
             padding: 18px;
             margin-bottom: 12px;
-            transition: transform 0.25s var(--ease-spring), border-color 0.25s ease, box-shadow 0.25s ease;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        }
-
-        .card-item:hover {
-            transform: translateY(-2px);
-            border-color: rgba(243, 166, 0, 0.4);
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
         }
 
         .card-top {
@@ -740,7 +823,7 @@
             z-index: 10;
         }
 
-        /* МОДАЛЬНЫЕ ОКНА СТРОГО ПО ЦЕНТРУ ТЕКУЩЕГО ЭКРАНА */
+        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -776,7 +859,7 @@
             transform: scale(1) translateY(0);
         }
 
-        /* ВКЛАДКИ НАВИГАЦИИ ВСЕГДА ВНИЗУ ВИДИМОГО ЭКРАНА */
+        /* НАВИГАЦИЯ ВНИЗУ */
         .bottom-nav {
             position: fixed;
             bottom: max(12px, env(safe-area-inset-bottom));
@@ -784,7 +867,7 @@
             right: 12px;
             max-width: 550px;
             margin: 0 auto;
-            background: rgba(10, 14, 22, 0.92);
+            background: rgba(10, 14, 22, 0.94);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
@@ -856,7 +939,6 @@
             opacity: 1;
         }
 
-        /* АККУРАТНЫЙ ВОДНЫЙ КРУГ ОТ КАМНЯ */
         .water-ripple {
             position: fixed;
             border-radius: 50%;
@@ -894,7 +976,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.0.1</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.0.2</div>
                 <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
@@ -910,7 +992,7 @@
         </div>
     </div>
 
-    <!-- ОГРАНИЧЕНИЕ ВНЕ ТЕЛЕГРАМ -->
+    <!-- ЭКРАН ОГРАНИЧЕНИЯ -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
@@ -922,11 +1004,11 @@
         </div>
     </div>
 
-    <!-- 3D КОНТЕЙНЕР СО СБОРКОЙ -->
+    <!-- 3D КОНТЕЙНЕР СО СБОРКОЙ РАЗДЕЛОВ -->
     <div class="container">
 
-        <!-- 1. ДАШБОРД -->
-        <section id="dashboard" class="page-section">
+        <!-- 1. ДАШБОРД (СРАЗУ СОБРАН) -->
+        <section id="dashboard" class="page-section revealed">
             <div class="terminal-header">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div class="online-dot-wrap">
@@ -1072,7 +1154,7 @@
             </div>
         </section>
 
-        <!-- 5. РЕФЕРАЛКА -->
+        <!-- 5. РЕФЕРАЛКА (ГАРАНТИРОВАННО ВИДНА) -->
         <section id="referral" class="page-section">
             <h1 data-i18n="refTitle">Партнерская сеть</h1>
             <p class="subtitle" data-i18n="refSubtitle">Получайте бонусные дни подписки</p>
@@ -1139,15 +1221,15 @@
         <section id="admin-panel" class="page-section" style="display: none;">
             <div class="glass-card admin-section-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h1 style="margin: 0; color: var(--bybit-yellow);">🛠 Admin & Config</h1>
+                    <h1 style="margin: 0; color: var(--bybit-yellow); font-size: 22px;">🛠 Admin & Config</h1>
                     <span class="badge" style="color: var(--bybit-yellow); border: 1px solid var(--bybit-yellow); padding: 3px 8px; border-radius: 6px;">ROOT ONLY</span>
                 </div>
-                <p class="subtitle">Управление базой данных, тарифами и пользователями в реальном времени</p>
+                <p class="subtitle">Управление глобальным конфигом (/config) и пользователями (/admin)</p>
 
-                <!-- Глобальный конфиг -->
-                <div style="margin-bottom: 18px;">
-                    <span class="badge" style="color: var(--bybit-green);">ГЛОБАЛЬНЫЙ КОНФИГ (/config)</span>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;">
+                <!-- Глобальный конфиг (/config) -->
+                <div style="margin-bottom: 20px;">
+                    <span class="badge" style="color: var(--bybit-green); font-size: 11px;">⚙️ ГЛОБАЛЬНЫЙ КОНФИГ (/config)</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
                         <div class="input-wrap" style="margin-bottom: 8px;">
                             <span style="font-size: 10px; color: var(--text-muted);">PRICE_MONTH ($)</span>
                             <input type="number" id="cfg-inp-month" class="styled-input" style="padding: 10px;">
@@ -1158,10 +1240,10 @@
                         </div>
                     </div>
                     <div class="input-wrap" style="margin-bottom: 8px;">
-                        <span style="font-size: 10px; color: var(--text-muted);">BYBIT_UID ДЕПОЗИТА</span>
+                        <span style="font-size: 10px; color: var(--text-muted);">BYBIT_UID ДЛЯ ОПЛАТ</span>
                         <input type="text" id="cfg-inp-uid" class="styled-input" style="padding: 10px;">
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
                         <div class="input-wrap" style="margin-bottom: 0;">
                             <span style="font-size: 10px; color: var(--text-muted);">TRIAL_DAYS</span>
                             <input type="number" id="cfg-inp-trial" class="styled-input" style="padding: 10px;">
@@ -1171,23 +1253,39 @@
                             <input type="number" id="cfg-inp-ref" class="styled-input" style="padding: 10px;">
                         </div>
                     </div>
-                    <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="saveAdminConfig()">💾 СОХРАНИТЬ КОНФИГ В БАЗУ</button>
+                    <div class="input-wrap" style="margin-bottom: 12px;">
+                        <span style="font-size: 10px; color: var(--text-muted);">ADMIN_IDS (через запятую)</span>
+                        <input type="text" id="cfg-inp-admin-ids" class="styled-input" style="padding: 10px;" placeholder="5172556128, 5847661785">
+                    </div>
+                    <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="saveAdminConfig()">💾 СОХРАНИТЬ КОНФИГУРАЦИЮ В БАЗУ</button>
                 </div>
 
-                <div style="height: 1px; background: var(--glass-border); margin: 16px 0;"></div>
+                <div style="height: 1px; background: var(--glass-border); margin: 20px 0;"></div>
 
-                <!-- Управление юзерами -->
+                <!-- Управление юзерами (/admin) -->
                 <div>
-                    <span class="badge" style="color: var(--bybit-purple);">ДЕЙСТВИЯ С ПОЛЬЗОВАТЕЛЕМ (/admin)</span>
-                    <div class="input-wrap" style="margin: 6px 0 10px 0;">
-                        <input type="number" id="admin-target-uid" class="styled-input" placeholder="Telegram ID пользователя...">
+                    <span class="badge" style="color: var(--bybit-purple); font-size: 11px;">👤 УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ (/admin)</span>
+                    <div class="input-wrap" style="margin: 8px 0 10px 0;">
+                        <input type="number" id="admin-target-uid" class="styled-input" placeholder="Введите Telegram ID пользователя...">
                     </div>
-                    <div class="card-btns-grid" style="margin-top: 0; grid-template-columns: 1fr 1fr;">
-                        <div class="btn-card-action" style="color: var(--bybit-green);" onclick="adminUserAction('grant30')">📅 +30 дней</div>
-                        <div class="btn-card-action" style="color: var(--bybit-yellow);" onclick="adminUserAction('grantVIP')">♾️ VIP Навсегда</div>
-                        <div class="btn-card-action" style="color: #ff9900;" onclick="adminUserAction('revoke')">❌ Снять подписку</div>
-                        <div class="btn-card-action" style="color: var(--bybit-red);" onclick="adminUserAction('ban')">⛔️ Забанить</div>
+                    <div class="card-btns-grid" style="margin-top: 0; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <div class="btn-card-action" style="color: var(--bybit-green); padding: 11px;" onclick="adminUserAction('grant30')">📅 +30 дней</div>
+                        <div class="btn-card-action" style="color: var(--bybit-yellow); padding: 11px;" onclick="adminUserAction('grantVIP')">♾️ VIP Навсегда</div>
+                        <div class="btn-card-action" style="color: #ff9900; padding: 11px;" onclick="adminUserAction('revoke')">❌ Снять подписку</div>
+                        <div class="btn-card-action" style="color: var(--bybit-red); padding: 11px;" onclick="adminUserAction('ban')">⛔️ Забанить</div>
                     </div>
+                    <div class="analytics-grid" style="margin-top: 10px;">
+                        <button class="btn-card-action" style="color: var(--bybit-blue); padding: 11px;" onclick="adminInspectUser()">🔎 Досье юзера</button>
+                        <button class="btn-card-action" style="color: var(--bybit-green); padding: 11px;" onclick="adminUserAction('unban')">🟢 Разбанить</button>
+                    </div>
+
+                    <!-- Досье юзера -->
+                    <div id="admin-user-dossier" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; margin-top: 12px; font-size: 12px; line-height: 1.6;"></div>
+
+                    <!-- Экспорт базы в CSV/Excel -->
+                    <button class="action-btn-secondary" style="margin-top: 15px; background: rgba(46, 187, 154, 0.15); border-color: var(--bybit-green); color: var(--bybit-green); font-weight: 800;" onclick="adminExportDatabase()">
+                        📥 ВЫГРУЗИТЬ БАЗУ ПОЛЬЗОВАТЕЛЕЙ (CSV / EXCEL)
+                    </button>
                 </div>
             </div>
         </section>
@@ -1732,7 +1830,7 @@
             requestAnimationFrame(update);
         }
 
-        /* КРИПТОГРАФИЧЕСКИЙ БЛОКЧЕЙН ХОЛСТ (ХЕШИ, БЛОКИ, P2P ТРАНЗАКЦИИ) */
+        /* КРИПТОГРАФИЧЕСКИЙ ХОЛСТ */
         function initBlockchainCanvas() {
             const canvas = document.getElementById('blockchain-canvas');
             if (!canvas) return;
@@ -1819,7 +1917,7 @@
         }
 
         const bootLogs = [
-            { text: "> SYSTEM BOOT: INIT P2P_CORE_V8.0.1", class: "c-green" },
+            { text: "> SYSTEM BOOT: INIT P2P_CORE_V8.0.2", class: "c-green" },
             { text: "[OK] SECURE TELEGRAM ENCLAVE LOADED", class: "c-dim" },
             { text: "> AUTHENTICATING USER CREDENTIALS...", class: "c-blue" },
             { text: "[OK] TELEGRAM SHA-256 HMAC VERIFIED", class: "c-green" },
@@ -1858,7 +1956,10 @@
             }
         }
 
-        /* 3D СБОРКА И СКРУЧИВАНИЕ ИЗ НУЛЯ ПРИ СКРОЛЛЕ */
+        /*
+           ДВУНАПРАВЛЕННЫЙ REVERSE SHATTER-OBSERVER:
+           Собирает из осколков при скролле вниз, разбирает обратно при скролле вверх
+        */
         function initScrollAnimations() {
             const sections = document.querySelectorAll('.page-section');
             const navBtns = document.querySelectorAll('.nav-btn');
@@ -1867,9 +1968,18 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('revealed');
+                    } else {
+                        // Если ушли из зоны видимости — разбираем обратно на осколки!
+                        // Дашборд не прячем, если пользователь в самом верху
+                        if (entry.target.id !== 'dashboard' || window.pageYOffset > 180) {
+                            entry.target.classList.remove('revealed');
+                        }
                     }
                 });
-            }, { threshold: 0.1 });
+            }, {
+                threshold: 0.08,
+                rootMargin: "0px 0px -30px 0px"
+            });
 
             sections.forEach(s => observer.observe(s));
 
@@ -1898,6 +2008,7 @@
             haptic('light');
             const target = document.getElementById(id);
             if (target) {
+                target.classList.add('revealed');
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
@@ -1914,7 +2025,6 @@
             if (nav) nav.style.display = 'flex';
         }
 
-        /* АККУРАТНЫЙ ВОДНЫЙ КРУГ ОТ КАМНЯ */
         function initWaterRipple() {
             let startX = 0, startY = 0;
             document.addEventListener('pointerdown', (e) => {
@@ -1941,7 +2051,6 @@
             initWaterRipple();
 
             const failsafeTimer = setTimeout(() => {
-                console.warn("Failsafe: loader auto-dismissed");
                 forceHideLoader();
                 initScrollAnimations();
             }, 3500);
@@ -2016,7 +2125,9 @@
             cardOps = o || [];
         }
 
-        /* ПРОВЕРКА И ЗАГРУЗКА АДМИН-ПАНЕЛИ */
+        /* ====================================================
+           ПРОВЕРКА СТАТУСА АДМИНА И УПРАВЛЕНИЕ (/config & /admin)
+        ==================================================== */
         async function checkAdminStatus(tgId) {
             try {
                 const cfgRes = await db(`bot_config?key=eq.ADMIN_IDS`);
@@ -2039,7 +2150,7 @@
                     if (adminNav) adminNav.style.display = 'none';
                 }
             } catch (e) {
-                console.warn("Admin check failed:", e);
+                console.warn("Admin check warning:", e);
             }
         }
 
@@ -2061,6 +2172,7 @@
                     if (item.key === 'BYBIT_UID') document.getElementById('cfg-inp-uid').value = item.value;
                     if (item.key === 'TRIAL_DAYS') document.getElementById('cfg-inp-trial').value = item.value;
                     if (item.key === 'REF_BONUS_DAYS') document.getElementById('cfg-inp-ref').value = item.value;
+                    if (item.key === 'ADMIN_IDS') document.getElementById('cfg-inp-admin-ids').value = item.value;
                 });
             } catch(e) {}
         }
@@ -2072,6 +2184,14 @@
             const uid = document.getElementById('cfg-inp-uid').value;
             const tr = document.getElementById('cfg-inp-trial').value;
             const ref = document.getElementById('cfg-inp-ref').value;
+            let adminsRaw = document.getElementById('cfg-inp-admin-ids').value;
+
+            // Защита: главный админ всегда должен присутствовать
+            const rawList = adminsRaw.split(',').map(x => x.trim()).filter(x => x);
+            if (!rawList.includes(String(SUPER_ADMIN_ID))) {
+                rawList.unshift(String(SUPER_ADMIN_ID));
+            }
+            adminsRaw = rawList.join(', ');
 
             try {
                 await Promise.all([
@@ -2079,7 +2199,8 @@
                     db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: f }) }),
                     db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: uid }) }),
                     db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: tr }) }),
-                    db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: ref }) })
+                    db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: ref }) }),
+                    db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: adminsRaw }) })
                 ]);
                 showToast("✅ Конфигурация сохранена в базу!");
                 loadAdminConfigValues();
@@ -2096,7 +2217,7 @@
             }
 
             if (targetId === SUPER_ADMIN_ID && (action === 'ban' || action === 'revoke')) {
-                return alert("⚠️ Нельзя забанить или ограничить главного администратора!");
+                return alert("⚠️ Главного администратора нельзя ограничить!");
             }
 
             try {
@@ -2114,10 +2235,74 @@
                 } else if (action === 'ban') {
                     await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
                     showToast(`⛔️ ID ${targetId}: забанен!`);
+                } else if (action === 'unban') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: false }) });
+                    showToast(`🟢 ID ${targetId}: разбанен!`);
                 }
                 await refreshData();
             } catch (e) {
                 showToast("❌ Ошибка выполнения действия");
+            }
+        }
+
+        async function adminInspectUser() {
+            haptic('light');
+            const targetId = parseInt(document.getElementById('admin-target-uid').value);
+            if (!targetId) return showToast("⚠️ Введите ID!");
+
+            try {
+                const [uRes, tRes] = await Promise.all([
+                    db(`users?tg_id=eq.${targetId}`),
+                    db(`trades?tg_id=eq.${targetId}`)
+                ]);
+                const box = document.getElementById('admin-user-dossier');
+                if (!uRes || uRes.length === 0) {
+                    box.style.display = 'block';
+                    box.innerHTML = `<span style="color: var(--bybit-red);">Пользователь не найден в базе данных.</span>`;
+                    return;
+                }
+                const u = uRes[0];
+                const trades = tRes || [];
+                const fiatTurn = trades.reduce((acc, x) => acc + parseFloat(x.fiat_amount || 0), 0);
+                const cryptoTurn = trades.reduce((acc, x) => acc + parseFloat(x.crypto_amount || 0), 0);
+
+                box.style.display = 'block';
+                box.innerHTML = `
+                    <div style="font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px;">🔎 ДОСЬЕ: ${u.first_name || ''} (@${u.username || 'нет'})</div>
+                    ID: <code>${u.tg_id}</code><br>
+                    Подписка: <b>${u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? 'VIP Навсегда' : new Date(u.sub_end).toLocaleString()) : 'Нет'}</b><br>
+                    Статус: <b>${u.is_banned ? '🔴 ЗАБАНЕН' : '🟢 АКТИВЕН'}</b><br>
+                    Сделок в базе: <b>${trades.length}</b><br>
+                    Оборот: <b>${fiatTurn.toLocaleString()} ₽</b> / <b>${cryptoTurn.toLocaleString()} USDT</b>
+                `;
+            } catch (e) {
+                showToast("Ошибка загрузки досье");
+            }
+        }
+
+        async function adminExportDatabase() {
+            haptic('medium');
+            showToast("⏳ Формирование CSV...");
+            try {
+                const users = await db(`users?order=reg_date.desc`);
+                if (!users || users.length === 0) return showToast("База пуста");
+
+                let csv = "TG_ID,Username,First_Name,Sub_End,Is_Banned,Reg_Date,Ref_By\n";
+                users.forEach(u => {
+                    csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}","${u.ref_by || ''}"\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `P2P_Users_Export_${new Date().toISOString().slice(0,10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("✅ Выгрузка завершена!");
+            } catch (e) {
+                showToast("Ошибка выгрузки базы");
             }
         }
 
@@ -2550,7 +2735,6 @@
             });
         }
 
-        /* РЕДАКТИРОВАНИЕ СДЕЛКИ */
         function setEditCalcMode(mode) {
             haptic('light');
             editCalcMode = mode;
