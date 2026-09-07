@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>P2P Terminal Pro</title>
+    <title>P2P Terminal Pro — Cloud Accounting & WAC</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
             --bg-main: #06080b;
-            --bg-card: rgba(16, 20, 27, 0.76);
-            --bg-card-hover: rgba(23, 29, 39, 0.88);
+            --bg-card: rgba(16, 20, 28, 0.78);
+            --bg-card-hover: rgba(24, 30, 42, 0.9);
             --bybit-yellow: #f3a600;
             --bybit-green: #2ebb9a;
             --bybit-red: #f23645;
             --bybit-purple: #a855f7;
             --bybit-blue: #38bdf8;
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-focus: rgba(243, 166, 0, 0.5);
+            --glass-border-focus: rgba(243, 166, 0, 0.55);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --glow-yellow: rgba(243, 166, 0, 0.28);
             --glow-green: rgba(46, 187, 154, 0.28);
+            --glow-blue: rgba(56, 189, 248, 0.25);
             --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -38,103 +39,147 @@
         }
 
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             background-color: var(--bg-main);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: 110px;
+            padding-bottom: 120px;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             position: relative;
             min-height: 100vh;
         }
 
-        /* АТМОСФЕРНЫЙ ЖИВОЙ ФОН */
+        /* ====================================================
+           1. ДИНАМИЧЕСКИЙ КИБЕР-ХОЛСТ (PARTICLE MESH CANVAS)
+        ==================================================== */
+        #cyber-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ====================================================
+           2. ПЛАВАЮЩИЕ РАДИАЛЬНЫЕ ОРЕОЛЫ (AMBIENT GLOW)
+        ==================================================== */
         .ambient-canvas-wrap {
-            position: fixed; inset: 0;
-            overflow: hidden; pointer-events: none; z-index: 0;
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .ambient-orb {
-            position: absolute; border-radius: 50%;
-            filter: blur(100px); opacity: 0.24;
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(105px);
+            opacity: 0.25;
             will-change: transform;
         }
 
         .orb-1 {
-            width: 440px; height: 440px;
-            background: radial-gradient(circle, var(--bybit-yellow) 0%, rgba(243,166,0,0) 70%);
-            top: -70px; left: -90px;
+            width: 460px;
+            height: 460px;
+            background: radial-gradient(circle, var(--bybit-yellow) 0%, rgba(243, 166, 0, 0) 70%);
+            top: -80px;
+            left: -100px;
             animation: floatOrb1 22s ease-in-out infinite alternate;
         }
 
         .orb-2 {
-            width: 490px; height: 490px;
-            background: radial-gradient(circle, var(--bybit-green) 0%, rgba(46,187,154,0) 70%);
-            bottom: 40px; right: -100px;
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, var(--bybit-green) 0%, rgba(46, 187, 154, 0) 70%);
+            bottom: 30px;
+            right: -110px;
             animation: floatOrb2 26s ease-in-out infinite alternate;
         }
 
         .orb-3 {
-            width: 380px; height: 380px;
-            background: radial-gradient(circle, var(--bybit-purple) 0%, rgba(168,85,247,0) 70%);
-            top: 45%; left: 25%; opacity: 0.14;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--bybit-purple) 0%, rgba(168, 85, 247, 0) 70%);
+            top: 42%;
+            left: 28%;
+            opacity: 0.16;
             animation: floatOrb3 30s ease-in-out infinite alternate;
         }
 
         @keyframes floatOrb1 {
             0% { transform: translate3d(0, 0, 0) scale(1); }
-            50% { transform: translate3d(90px, 130px, 0) scale(1.15); }
-            100% { transform: translate3d(-40px, 200px, 0) scale(0.92); }
+            50% { transform: translate3d(90px, 140px, 0) scale(1.15); }
+            100% { transform: translate3d(-50px, 210px, 0) scale(0.92); }
         }
 
         @keyframes floatOrb2 {
             0% { transform: translate3d(0, 0, 0) scale(1); }
-            50% { transform: translate3d(-110px, -100px, 0) scale(1.12); }
-            100% { transform: translate3d(50px, -160px, 0) scale(0.95); }
+            50% { transform: translate3d(-110px, -110px, 0) scale(1.12); }
+            100% { transform: translate3d(60px, -170px, 0) scale(0.95); }
         }
 
         @keyframes floatOrb3 {
             0% { transform: translate3d(0, 0, 0) scale(0.9); }
-            50% { transform: translate3d(-70px, 80px, 0) scale(1.2); }
-            100% { transform: translate3d(80px, -60px, 0) scale(1); }
+            50% { transform: translate3d(-70px, 90px, 0) scale(1.22); }
+            100% { transform: translate3d(90px, -60px, 0) scale(1); }
         }
 
-        /* ПАРЯЩИЕ КИБЕР-ФИГУРЫ */
+        /* ====================================================
+           3. 3D ПАРЯЩИЕ КИБЕР-ФИГУРЫ (BACKGROUND DEPTH)
+        ==================================================== */
         .ambient-cyber-shapes {
-            position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
         }
 
         .cyber-shape {
             position: absolute;
-            stroke: rgba(255, 255, 255, 0.05);
             fill: none;
             will-change: transform;
         }
 
         .shape-hex1 {
-            width: 130px; height: 130px; top: 18%; right: -20px;
-            stroke: rgba(243, 166, 0, 0.09);
-            animation: rotateShape 35s linear infinite, floatShape1 16s ease-in-out infinite alternate;
+            width: 140px;
+            height: 140px;
+            top: 16%;
+            right: -25px;
+            stroke: rgba(243, 166, 0, 0.1);
+            animation: rotateShape 36s linear infinite, floatShape1 18s ease-in-out infinite alternate;
         }
 
         .shape-cube1 {
-            width: 160px; height: 160px; top: 48%; left: -30px;
-            stroke: rgba(46, 187, 154, 0.08);
-            animation: rotateShapeRev 42s linear infinite, floatShape2 20s ease-in-out infinite alternate;
+            width: 170px;
+            height: 170px;
+            top: 46%;
+            left: -35px;
+            stroke: rgba(46, 187, 154, 0.09);
+            animation: rotateShapeRev 44s linear infinite, floatShape2 22s ease-in-out infinite alternate;
         }
 
         .shape-ring1 {
-            width: 190px; height: 190px; bottom: 15%; right: 5%;
-            stroke: rgba(168, 85, 247, 0.07);
-            animation: rotateShape 48s linear infinite;
+            width: 210px;
+            height: 210px;
+            bottom: 12%;
+            right: 4%;
+            stroke: rgba(168, 85, 247, 0.08);
+            animation: rotateShape 52s linear infinite;
         }
 
         .shape-hex2 {
-            width: 100px; height: 100px; bottom: 35%; left: 8%;
-            stroke: rgba(56, 189, 248, 0.07);
-            animation: rotateShapeRev 28s linear infinite;
+            width: 110px;
+            height: 110px;
+            bottom: 38%;
+            left: 6%;
+            stroke: rgba(56, 189, 248, 0.08);
+            animation: rotateShapeRev 32s linear infinite;
         }
 
         @keyframes rotateShape {
@@ -149,81 +194,171 @@
 
         @keyframes floatShape1 {
             0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-25px, 35px) rotate(180deg); }
-            100% { transform: translate(15px, -20px) rotate(360deg); }
+            50% { transform: translate(-25px, 40px) rotate(180deg); }
+            100% { transform: translate(20px, -25px) rotate(360deg); }
         }
 
         @keyframes floatShape2 {
             0% { transform: translate(0, 0) rotate(360deg); }
-            50% { transform: translate(30px, -40px) rotate(180deg); }
-            100% { transform: translate(-20px, 20px) rotate(0deg); }
+            50% { transform: translate(35px, -45px) rotate(180deg); }
+            100% { transform: translate(-25px, 25px) rotate(0deg); }
         }
 
         .ambient-grid {
-            position: fixed; inset: 0;
+            position: fixed;
+            inset: 0;
             background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-            background-size: 36px 36px;
-            pointer-events: none; z-index: 2;
+                linear-gradient(to right, rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+            background-size: 38px 38px;
+            pointer-events: none;
+            z-index: 2;
         }
 
-        /* ТЕРМИНАЛ-ЗАГРУЗЧИК */
+        /* ====================================================
+           4. ХАКЕРСКИЙ ТЕРМИНАЛ-ЗАГРУЗЧИК
+        ==================================================== */
         #terminal-boot-loader {
-            position: fixed; inset: 0; background: #050709; z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px; font-family: 'Fira Code', monospace;
+            position: fixed;
+            inset: 0;
+            background: #040608;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
             transition: opacity 0.45s var(--ease-apple), transform 0.45s var(--ease-apple);
         }
+
         #terminal-boot-loader.fade-out {
-            opacity: 0; transform: scale(1.05); pointer-events: none;
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
         }
 
         .terminal-window {
-            width: 100%; max-width: 460px; background: rgba(14, 18, 25, 0.94);
-            border: 1px solid rgba(46, 187, 154, 0.35); border-radius: 22px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 35px rgba(46, 187, 154, 0.2);
-            overflow: hidden; backdrop-filter: blur(25px);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(13, 17, 24, 0.95);
+            border: 1px solid rgba(46, 187, 154, 0.35);
+            border-radius: 22px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(46, 187, 154, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(25px);
         }
 
         .terminal-header-bar {
-            background: rgba(18, 24, 34, 0.9); padding: 12px 16px; display: flex; align-items: center;
-            justify-content: space-between; border-bottom: 1px solid var(--glass-border);
+            background: rgba(18, 24, 34, 0.92);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--glass-border);
         }
-        .window-dots { display: flex; gap: 7px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        .window-dots {
+            display: flex;
+            gap: 7px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
         .dot-red { background: #f23645; }
         .dot-yellow { background: #f3a600; }
-        .dot-green { background: #2ebb9a; box-shadow: 0 0 10px #2ebb9a; }
-        .terminal-title { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        .dot-green {
+            background: #2ebb9a;
+            box-shadow: 0 0 10px #2ebb9a;
+        }
+
+        .terminal-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 
         .terminal-body {
-            padding: 18px; min-height: 230px; font-size: 12px; line-height: 1.6;
-            color: #cbd5e1; display: flex; flex-direction: column; justify-content: flex-start;
+            padding: 18px;
+            min-height: 235px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
-        .console-line { margin-bottom: 5px; word-break: break-all; opacity: 0; transform: translateY(4px); transition: 0.15s ease; }
-        .console-line.visible { opacity: 1; transform: translateY(0); }
+
+        .console-line {
+            margin-bottom: 5px;
+            word-break: break-all;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: 0.15s ease;
+        }
+
+        .console-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .c-green { color: var(--bybit-green); font-weight: 700; }
         .c-gold { color: var(--bybit-yellow); font-weight: 700; }
         .c-blue { color: var(--bybit-blue); }
         .c-dim { color: #64748b; }
 
-        .progress-box { margin-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; }
-        .progress-track {
-            height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px;
-            overflow: hidden; margin-top: 6px;
+        .progress-box {
+            margin-top: 14px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
         }
-        .progress-bar-inner {
-            height: 100%; width: 0%; background: linear-gradient(90deg, var(--bybit-green), var(--bybit-yellow));
-            border-radius: 3px; transition: width 0.12s linear;
-        }
-        .cursor-blink { display: inline-block; width: 8px; height: 13px; background: var(--bybit-green); vertical-align: middle; animation: blink 0.8s infinite; margin-left: 4px; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--bybit-green), var(--bybit-yellow));
+            border-radius: 3px;
+            transition: width 0.12s linear;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 13px;
+            background: var(--bybit-green);
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* ====================================================
+           5. ОСНОВНОЙ СКРОЛЛ-КОНТЕЙНЕР
+        ==================================================== */
         .container {
-            padding: 16px; max-width: 580px; margin: 0 auto;
-            position: relative; z-index: 3; display: none;
+            padding: 16px;
+            max-width: 580px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 3;
+            display: none;
         }
 
         .page-section {
@@ -241,250 +376,562 @@
 
         .glass-card {
             background: var(--bg-card);
-            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 22px; margin-bottom: 14px;
-            box-shadow: 0 14px 45px rgba(0,0,0,0.48);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 22px;
+            margin-bottom: 14px;
+            box-shadow: 0 14px 45px rgba(0, 0, 0, 0.48);
             transition: transform 0.28s var(--ease-spring), border-color 0.28s ease, box-shadow 0.28s ease;
-            position: relative; overflow: hidden;
+            position: relative;
+            overflow: hidden;
         }
 
         .glass-card::before {
-            content: ''; position: absolute; inset: 0;
+            content: '';
+            position: absolute;
+            inset: 0;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
             pointer-events: none;
         }
 
-        .glass-card:active { transform: scale(0.988); }
+        .glass-card:active {
+            transform: scale(0.988);
+        }
 
-        h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0; font-weight: 500; }
-        .badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 6px; }
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0 0 16px 0;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
 
         .terminal-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-            padding: 10px 16px; background: rgba(0,0,0,0.42); border-radius: 18px; border: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.42);
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
             backdrop-filter: blur(15px);
         }
 
         .online-dot-wrap {
-            position: relative; width: 10px; height: 10px;
-            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            width: 10px;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .online-dot {
-            width: 8px; height: 8px; background: var(--bybit-green); border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            background: var(--bybit-green);
+            border-radius: 50%;
             box-shadow: 0 0 12px var(--bybit-green);
         }
+
         .online-ring {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
             border: 1.5px solid var(--bybit-green);
             animation: radarPulse 2s infinite ease-out;
         }
+
         @keyframes radarPulse {
             0% { transform: scale(1); opacity: 0.9; }
             100% { transform: scale(2.6); opacity: 0; }
         }
 
         .sub-tier-badge {
-            display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px;
-            font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             transition: all 0.3s var(--ease-apple);
         }
-        .tier-vip { background: rgba(243, 166, 0, 0.15); color: var(--bybit-yellow); border: 1px solid rgba(243, 166, 0, 0.4); box-shadow: 0 0 20px var(--glow-yellow); }
-        .tier-month { background: rgba(46, 187, 154, 0.15); color: var(--bybit-green); border: 1px solid rgba(46, 187, 154, 0.4); box-shadow: 0 0 20px var(--glow-green); }
-        .tier-trial { background: rgba(168, 85, 247, 0.15); color: var(--bybit-purple); border: 1px solid rgba(168, 85, 247, 0.4); }
-        .tier-expired { background: rgba(242, 54, 69, 0.15); color: var(--bybit-red); border: 1px solid rgba(242, 54, 69, 0.4); }
+
+        .tier-vip {
+            background: rgba(243, 166, 0, 0.15);
+            color: var(--bybit-yellow);
+            border: 1px solid rgba(243, 166, 0, 0.4);
+            box-shadow: 0 0 20px var(--glow-yellow);
+        }
+
+        .tier-month {
+            background: rgba(46, 187, 154, 0.15);
+            color: var(--bybit-green);
+            border: 1px solid rgba(46, 187, 154, 0.4);
+            box-shadow: 0 0 20px var(--glow-green);
+        }
+
+        .tier-trial {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--bybit-purple);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+
+        .tier-expired {
+            background: rgba(242, 54, 69, 0.15);
+            color: var(--bybit-red);
+            border: 1px solid rgba(242, 54, 69, 0.4);
+        }
 
         .hero-profit-card {
             background: linear-gradient(145deg, rgba(24, 29, 38, 0.92) 0%, rgba(13, 16, 22, 0.96) 100%);
             border: 1px solid rgba(46, 187, 154, 0.25);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
+
         .profit-val {
-            font-size: 34px; font-weight: 900; letter-spacing: -0.8px;
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -0.8px;
             transition: color 0.3s ease, transform 0.2s ease;
         }
 
-        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
         .stat-card {
-            background: rgba(0, 0, 0, 0.35); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             transition: transform 0.25s var(--ease-spring), background 0.25s ease, border-color 0.25s ease;
         }
+
         .stat-card:hover {
             transform: translateY(-2px);
             background: rgba(0, 0, 0, 0.45);
             border-color: rgba(255, 255, 255, 0.15);
         }
-        .stat-card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-card-val { font-size: 17px; font-weight: 800; margin-top: 6px; color: var(--text-main); }
+
+        .stat-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-val {
+            font-size: 17px;
+            font-weight: 800;
+            margin-top: 6px;
+            color: var(--text-main);
+        }
+
         .txt-gold { color: var(--bybit-yellow); }
         .txt-green { color: var(--bybit-green); }
         .txt-blue { color: var(--bybit-blue); }
 
         .period-tabs {
-            display: flex; background: rgba(0,0,0,0.45); border-radius: 14px; padding: 4px;
-            margin-bottom: 14px; border: 1px solid var(--glass-border); position: relative;
+            display: flex;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 14px;
+            border: 1px solid var(--glass-border);
+            position: relative;
         }
+
         .p-tab {
-            flex: 1; text-align: center; padding: 9px; border-radius: 10px;
-            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+            flex: 1;
+            text-align: center;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
             transition: all 0.25s var(--ease-spring);
         }
-        .p-tab:active { transform: scale(0.96); }
+
+        .p-tab:active {
+            transform: scale(0.96);
+        }
+
         .p-tab.active {
             background: rgba(255, 255, 255, 0.09);
             color: var(--bybit-yellow);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
         }
 
-        .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
+        .trade-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
         .switch-btn {
-            flex: 1; padding: 13px; border-radius: 14px; text-align: center;
-            font-size: 13px; font-weight: 800; border: 1px solid var(--glass-border);
-            color: var(--text-muted); cursor: pointer; transition: all 0.25s var(--ease-spring);
-            background: rgba(0,0,0,0.25);
-        }
-        .switch-btn:active { transform: scale(0.96); }
-        .switch-btn.active.buy {
-            background: rgba(46,187,154,0.18);
-            color: var(--bybit-green); border-color: var(--bybit-green);
-            box-shadow: 0 0 25px rgba(46,187,154,0.25);
-        }
-        .switch-btn.active.sell {
-            background: rgba(242,54,69,0.18);
-            color: var(--bybit-red); border-color: var(--bybit-red);
-            box-shadow: 0 0 25px rgba(242,54,69,0.25);
+            flex: 1;
+            padding: 13px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 800;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-spring);
+            background: rgba(0, 0, 0, 0.25);
         }
 
-        .input-wrap { margin-bottom: 14px; }
-        .styled-input {
-            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
-            color: var(--text-main); padding: 14px 16px; border-radius: 14px;
-            font-size: 15px; font-weight: 600; outline: none; transition: all 0.25s var(--ease-apple);
+        .switch-btn:active {
+            transform: scale(0.96);
         }
+
+        .switch-btn.active.buy {
+            background: rgba(46, 187, 154, 0.18);
+            color: var(--bybit-green);
+            border-color: var(--bybit-green);
+            box-shadow: 0 0 25px rgba(46, 187, 154, 0.25);
+        }
+
+        .switch-btn.active.sell {
+            background: rgba(242, 54, 69, 0.18);
+            color: var(--bybit-red);
+            border-color: var(--bybit-red);
+            box-shadow: 0 0 25px rgba(242, 54, 69, 0.25);
+        }
+
+        .input-wrap {
+            margin-bottom: 14px;
+        }
+
+        .styled-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.25s var(--ease-apple);
+        }
+
         .styled-input:focus {
             border-color: var(--glass-border-focus);
-            background: rgba(0,0,0,0.6);
-            box-shadow: 0 0 20px rgba(243,166,0,0.15);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 20px rgba(243, 166, 0, 0.15);
             transform: translateY(-1px);
         }
 
         .action-btn {
-            width: 100%; padding: 15px; border-radius: 16px; border: none;
-            font-size: 14px; font-weight: 800; text-transform: uppercase; cursor: pointer;
-            background: var(--bybit-green); color: #000; box-shadow: 0 8px 25px var(--glow-green);
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: var(--bybit-green);
+            color: #000;
+            box-shadow: 0 8px 25px var(--glow-green);
             transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease, filter 0.2s ease;
         }
-        .action-btn:hover { filter: brightness(1.06); }
-        .action-btn:active { transform: scale(0.96); }
-        .action-btn.sell-mode { background: var(--bybit-red); color: #fff; box-shadow: 0 8px 25px rgba(242,54,69,0.35); }
-        .action-btn.gold { background: var(--bybit-yellow); color: #000; box-shadow: 0 8px 25px var(--glow-yellow); }
+
+        .action-btn:hover {
+            filter: brightness(1.06);
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .action-btn.sell-mode {
+            background: var(--bybit-red);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(242, 54, 69, 0.35);
+        }
+
+        .action-btn.gold {
+            background: var(--bybit-yellow);
+            color: #000;
+            box-shadow: 0 8px 25px var(--glow-yellow);
+        }
+
         .action-btn-secondary {
-            width: 100%; padding: 13px; border-radius: 14px;
-            background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
-            color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer;
+            width: 100%;
+            padding: 13px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
-        .action-btn-secondary:active { transform: scale(0.97); }
+
+        .action-btn-secondary:active {
+            transform: scale(0.97);
+        }
 
         .card-item {
             background: linear-gradient(145deg, rgba(32, 36, 46, 0.95) 0%, rgba(18, 20, 26, 0.95) 100%);
-            border: 1px solid var(--glass-border); border-radius: 18px; padding: 18px; margin-bottom: 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 12px;
             transition: transform 0.25s var(--ease-spring), border-color 0.25s ease, box-shadow 0.25s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         }
+
         .card-item:hover {
-            transform: translateY(-2px); border-color: rgba(243, 166, 0, 0.4);
-            box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+            transform: translateY(-2px);
+            border-color: rgba(243, 166, 0, 0.4);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
         }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .card-title { font-size: 16px; font-weight: 800; }
-        .progress-bar-wrap { background: rgba(0,0,0,0.55); height: 7px; border-radius: 4px; overflow: hidden; margin: 8px 0 4px 0; }
-        .progress-bar-fill { height: 100%; background: var(--bybit-green); transition: width 0.4s var(--ease-apple); }
-        .card-btns-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .progress-bar-wrap {
+            background: rgba(0, 0, 0, 0.55);
+            height: 7px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0 4px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--bybit-green);
+            transition: width 0.4s var(--ease-apple);
+        }
+
+        .card-btns-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
         .btn-card-action {
-            background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
-            color: var(--text-main); padding: 9px 4px; border-radius: 11px; font-size: 11px; font-weight: 700;
-            text-align: center; cursor: pointer; transition: all 0.2s var(--ease-spring);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 9px 4px;
+            border-radius: 11px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-spring);
         }
-        .btn-card-action:active { transform: scale(0.94); background: rgba(255,255,255,0.12); }
+
+        .btn-card-action:active {
+            transform: scale(0.94);
+            background: rgba(255, 255, 255, 0.12);
+        }
 
         .history-item {
-            background: rgba(0,0,0,0.28); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 14px; margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
             transition: all 0.25s var(--ease-spring);
         }
+
         .history-item:hover {
-            transform: translateX(3px); background: rgba(0,0,0,0.45);
-            border-color: rgba(255,255,255,0.14);
+            transform: translateX(3px);
+            background: rgba(0, 0, 0, 0.45);
+            border-color: rgba(255, 255, 255, 0.14);
         }
-        .card-pill { font-size: 10px; background: rgba(243,166,0,0.15); color: var(--bybit-yellow); padding: 3px 8px; border-radius: 7px; font-weight: 700; }
+
+        .card-pill {
+            font-size: 10px;
+            background: rgba(243, 166, 0, 0.15);
+            color: var(--bybit-yellow);
+            padding: 3px 8px;
+            border-radius: 7px;
+            font-weight: 700;
+        }
 
         #restricted-screen {
-            display: none; height: 100vh; padding: 25px; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            position: relative; z-index: 10;
+            display: none;
+            height: 100vh;
+            padding: 25px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 10;
         }
 
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px);
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
-            opacity: 0; transition: opacity 0.3s var(--ease-apple);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s var(--ease-apple);
         }
-        .modal-overlay.show { display: flex; opacity: 1; }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
         .modal-box {
-            width: 100%; max-width: 420px;
+            width: 100%;
+            max-width: 420px;
             transform: scale(0.9) translateY(20px);
             transition: transform 0.35s var(--ease-spring);
         }
-        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
+
+        .modal-overlay.show .modal-box {
+            transform: scale(1) translateY(0);
+        }
 
         /* ПЛАВАЮЩАЯ НАВИГАЦИЯ */
         .bottom-nav {
-            position: fixed; bottom: 12px; left: 14px; right: 14px; max-width: 550px; margin: 0 auto;
+            position: fixed;
+            bottom: 12px;
+            left: 14px;
+            right: 14px;
+            max-width: 550px;
+            margin: 0 auto;
             background: rgba(10, 14, 20, 0.88);
-            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
             border: 1px solid var(--glass-border);
             border-radius: 26px;
-            display: none; justify-content: space-around; padding: 8px 4px 10px 4px; z-index: 1000;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.65);
+            display: none;
+            justify-content: space-around;
+            padding: 8px 4px 10px 4px;
+            z-index: 1000;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
         }
+
         .nav-btn {
-            color: var(--text-muted); font-size: 10px; font-weight: 700; text-align: center;
-            display: flex; flex-direction: column; gap: 3px; align-items: center; cursor: pointer; width: 16%;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+            cursor: pointer;
+            width: 16%;
             transition: color 0.2s var(--ease-apple), transform 0.2s var(--ease-spring);
             padding: 4px 2px;
             border-radius: 12px;
         }
-        .nav-btn:active { transform: scale(0.88); }
+
+        .nav-btn:active {
+            transform: scale(0.88);
+        }
+
         .nav-btn.active {
             color: var(--bybit-yellow);
             background: rgba(243, 166, 0, 0.08);
         }
-        .nav-btn i { font-size: 18px; font-style: normal; transition: transform 0.25s var(--ease-spring); }
-        .nav-btn.active i { transform: scale(1.18); }
+
+        .nav-btn i {
+            font-size: 18px;
+            font-style: normal;
+            transition: transform 0.25s var(--ease-spring);
+        }
+
+        .nav-btn.active i {
+            transform: scale(1.18);
+        }
 
         #toast {
-            position: fixed; top: 20px; left: 50%;
+            position: fixed;
+            top: 20px;
+            left: 50%;
             transform: translateX(-50%) translateY(-120px) scale(0.9);
             background: rgba(18, 24, 32, 0.95);
-            border: 1px solid var(--bybit-green); color: var(--text-main);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.6), 0 0 20px rgba(46,187,154,0.3);
-            backdrop-filter: blur(20px); font-weight: 700; padding: 12px 24px;
-            border-radius: 30px; z-index: 10001; transition: all 0.4s var(--ease-apple);
-            opacity: 0; font-size: 13px; pointer-events: none;
+            border: 1px solid var(--bybit-green);
+            color: var(--text-main);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(46, 187, 154, 0.3);
+            backdrop-filter: blur(20px);
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            z-index: 10001;
+            transition: all 0.4s var(--ease-apple);
+            opacity: 0;
+            font-size: 13px;
+            pointer-events: none;
         }
-        #toast.show { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0) scale(1);
+            opacity: 1;
+        }
 
         .touch-ripple {
-            position: fixed; border-radius: 50%;
-            pointer-events: none; z-index: 99999;
-            background: radial-gradient(circle, rgba(243,166,0,0.4) 0%, rgba(46,187,154,0) 75%);
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            background: radial-gradient(circle, rgba(243, 166, 0, 0.4) 0%, rgba(46, 187, 154, 0) 75%);
             transform: translate(-50%, -50%) scale(0);
             animation: rippleAnim 0.5s ease-out forwards;
         }
+
         @keyframes rippleAnim {
             0% { width: 0; height: 0; opacity: 1; transform: translate(-50%, -50%) scale(0); }
             100% { width: 140px; height: 140px; opacity: 0; transform: translate(-50%, -50%) scale(1); }
@@ -492,6 +939,10 @@
     </style>
 </head>
 <body>
+    <!-- ИНТЕРАКТИВНЫЙ ХОЛСТ СЕТКИ ЧАСТИЦ -->
+    <canvas id="cyber-canvas"></canvas>
+
+    <!-- НЕОНОВЫЕ ОРЕОЛЫ -->
     <div class="ambient-canvas-wrap">
         <div class="ambient-orb orb-1"></div>
         <div class="ambient-orb orb-2"></div>
@@ -520,7 +971,7 @@
 
     <div class="ambient-grid"></div>
 
-    <!-- ХАКЕРСКАЯ ЗАГРУЗОЧНАЯ КОНСОЛЬ -->
+    <!-- ХАКЕРСКАЯ ЗАГРУЗОЧНАЯ КОНСОЛЬ С БЕЗОПАСНЫМ ТАЙМЕРОМ -->
     <div id="terminal-boot-loader">
         <div class="terminal-window">
             <div class="terminal-header-bar">
@@ -687,7 +1138,7 @@
             </div>
         </section>
 
-        <!-- 3. ИСТОРИЯ (ПОМЕНЯНА МЕСТАМИ С КАРТАМИ) -->
+        <!-- 3. ИСТОРИЯ (РАНЕЕ КАРТ) -->
         <section id="history" class="page-section">
             <h1 data-i18n="historyTitle">История операций</h1>
             <p class="subtitle" data-i18n="historySubtitle">Синхронизированные сделки</p>
@@ -696,7 +1147,7 @@
             </div>
         </section>
 
-        <!-- 4. МОИ КАРТЫ (ПОМЕНЯНЫ МЕСТАМИ С ИСТОРИЕЙ) -->
+        <!-- 4. МОИ КАРТЫ -->
         <section id="cards" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                 <div>
@@ -726,7 +1177,7 @@
             </div>
         </section>
 
-        <!-- 6. НАСТРОЙКИ -->
+        <!-- 6. НАСТРОЙКИ (7 ЯЗЫКОВ В СЕЛЕКТОРЕ) -->
         <section id="profile" class="page-section">
             <h1 data-i18n="profileTitle">Настройки</h1>
             <p class="subtitle" data-i18n="profileSubtitle">Конфигурация аккаунта</p>
@@ -736,7 +1187,6 @@
                     <div style="font-size: 16px; font-weight: 800; margin-top: 2px;" id="disp-uid">...</div>
                 </div>
 
-                <!-- Выбор языка: 7 языков по популярности -->
                 <span class="badge" data-i18n="lblLang">Язык интерфейса</span>
                 <select id="set-lang" class="styled-input" onchange="changeLanguage(this.value)" style="margin-bottom: 14px;">
                     <option value="ru">🇷🇺 Русский (Russian)</option>
@@ -772,7 +1222,7 @@
             </div>
         </section>
 
-        <!-- 7. PAYWALL (ЗАГЛУШКА БЕЗ ПОДПИСКИ) -->
+        <!-- 7. PAYWALL (ПРИ ОТСУТСТВИИ ДОСТУПА) -->
         <div id="paywall" class="page-section" style="display: none;">
             <h1 data-i18n="paywallTitle">Доступ к Терминалу 🔒</h1>
             <p class="subtitle" id="paywall-reason" data-i18n="paywallSubtitle">Оформите доступ для использования функций</p>
@@ -933,258 +1383,568 @@
         const API_URL = "https://slddpusuckhhvvetpgxa.supabase.co/rest/v1";
         const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZGRwdXN1Y2toaHZ2ZXRwZ3hhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODYwNzMyMiwiZXhwIjoyMTA0MTgzMzIyfQ.obfZa6h7dKqVvzdHUAXRQ6TAZ8dSsmBZqmUCtBVO0QM";
 
-        /* СЛОВАРЬ ИНТЕРФЕЙСА: RU, EN, ES, FR, DE, UK, KK */
+        /* ====================================================
+           ПОЛНЫЙ НЕОБРЕЗАННЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
+        ==================================================== */
         const I18N = {
             ru: {
-                tabToday: "За сегодня", tabMonth: "За месяц", tabAll: "Все время",
-                totalProfitBadge: "💰 ОБЩАЯ ПРИБЫЛЬ", netIn: "Чистая в", netInUsdt: "Чистая в USDT",
-                formulaFiat: "Продажа − Покупка", formulaUsdt: "Покупка − Продажа",
-                midPriceHint: "⚖️ Средняя цена (Mid Price):", statSpread: "🔄 Спред круга",
-                statRoi: "📈 ROI от оборота", statWac: "🛒 WAC Закупка", statAvgSell: "🏷 Ср. Продажа",
-                statFiatTurn: "💸 Оборот фиата", statCryptoTurn: "💎 Оборот USDT", statOps: "🔢 Всего операций / Продаж",
-                newTradeTitle: "Новая операция", newTradeSubtitle: "Внести круг в облачную базу",
-                buyBtn: "ПОКУПКА 🟢", sellBtn: "ПРОДАЖА 🔴", modeFiat: "Сумма фиата", modeCrypto: "Объем USDT",
-                lblRate: "Курс USDT", lblCardOpt: "Банковская карта (Опционально)", noCardOpt: "Без привязки к карте",
-                cardsTitle: "Мои карты", cardsSubtitle: "Контроль кассы и лимитов", btnCreateCard: "➕ Создать",
-                historyTitle: "История операций", historySubtitle: "Синхронизированные сделки",
-                refTitle: "Партнерская сеть", refSubtitle: "Получайте бонусные дни подписки",
-                refInvited: "Приглашено пользователей", refYourLink: "Ваша партнерская ссылка",
-                btnCopy: "📋 Скопировать", btnShare: "🚀 Отправить",
+                tabToday: "За сегодня",
+                tabMonth: "За месяц",
+                tabAll: "Все время",
+                totalProfitBadge: "💰 ОБЩАЯ ПРИБЫЛЬ",
+                netIn: "Чистая в",
+                netInUsdt: "Чистая в USDT",
+                formulaFiat: "Продажа − Покупка",
+                formulaUsdt: "Покупка − Продажа",
+                midPriceHint: "⚖️ Средняя цена (Mid Price):",
+                statSpread: "🔄 Спред круга",
+                statRoi: "📈 ROI от оборота",
+                statWac: "🛒 WAC Закупка",
+                statAvgSell: "🏷 Ср. Продажа",
+                statFiatTurn: "💸 Оборот фиата",
+                statCryptoTurn: "💎 Оборот USDT",
+                statOps: "🔢 Всего операций / Продаж",
+                newTradeTitle: "Новая операция",
+                newTradeSubtitle: "Внести круг в облачную базу",
+                buyBtn: "ПОКУПКА 🟢",
+                sellBtn: "ПРОДАЖА 🔴",
+                modeFiat: "Сумма фиата",
+                modeCrypto: "Объем USDT",
+                lblRate: "Курс USDT",
+                lblCardOpt: "Банковская карта (Опционально)",
+                noCardOpt: "Без привязки к карте",
+                cardsTitle: "Мои карты",
+                cardsSubtitle: "Контроль кассы и лимитов",
+                btnCreateCard: "➕ Создать",
+                historyTitle: "История операций",
+                historySubtitle: "Синхронизированные сделки",
+                refTitle: "Партнерская сеть",
+                refSubtitle: "Получайте бонусные дни подписки",
+                refInvited: "Приглашено пользователей",
+                refYourLink: "Ваша партнерская ссылка",
+                btnCopy: "📋 Скопировать",
+                btnShare: "🚀 Отправить",
                 shareText: "Удобный P2P-терминал учета кругов и WAC:",
-                profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта",
-                lblYourId: "ВАШ TELEGRAM ID", lblLang: "Язык интерфейса", lblBaseCur: "Базовая валюта",
-                lblTimezone: "Часовой пояс (UTC)", btnSubModal: "💎 Оформить / Продлить подписку",
-                btnSupport: "👨‍💻 Служба поддержки", paywallTitle: "Доступ к Терминалу 🔒",
+                profileTitle: "Настройки",
+                profileSubtitle: "Конфигурация аккаунта",
+                lblYourId: "ВАШ TELEGRAM ID",
+                lblLang: "Язык интерфейса",
+                lblBaseCur: "Базовая валюта",
+                lblTimezone: "Часовой пояс (UTC)",
+                btnSubModal: "💎 Оформить / Продлить подписку",
+                btnSupport: "👨‍💻 Служба поддержки",
+                paywallTitle: "Доступ к Терминалу 🔒",
                 paywallSubtitle: "Оформите доступ для использования функций",
-                trialBadge: "Бесплатный доступ", trialDesc: "🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.",
-                btnActivateTrial: "🎁 Активировать триал", plansBadge: "Тарифные планы",
+                trialBadge: "Бесплатный доступ",
+                trialDesc: "🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.",
+                btnActivateTrial: "🎁 Активировать триал",
+                plansBadge: "Тарифные планы",
                 plansDesc: "Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.",
-                plan1m: "1 Месяц", planForever: "Навсегда", btnBuySub: "💳 Оформить подписку",
+                plan1m: "1 Месяц",
+                planForever: "Навсегда",
+                btnBuySub: "💳 Оформить подписку",
                 subModalTitle: "Оформление в Telegram-боте",
                 subModalDesc: "Активация 24 часов бесплатного триала и покупка тарифов производятся <b>исключительно в нашем Telegram-боте</b>.<br><br>После отправки перевода и сверки Bybit UID доступ в веб-терминале <b>активируется автоматически</b>!",
-                btnGotIt: "Понятно", cardModalTitle: "➕ Добавить карту", cardNameLbl: "Название карты",
-                btnCancel: "Отмена", btnCreate: "Создать", limitModalTitle: "⚙️ Лимит покупок",
-                limitModalLbl: "Лимит в фиате (0 = без лимита)", btnSave: "Сохранить",
-                opAmountLbl: "Сумма в фиате", opCommentLbl: "Комментарий", btnApply: "Применить",
-                editModalTitle: "Редактирование сделки", navSummary: "Сводка", navTrade: "Сделка",
-                navHistory: "История", navCards: "Карты", navRef: "Рефка", navOptions: "Опции",
-                restrictedTitle: "Доступ ограничен", restrictedDesc: "Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.",
+                btnGotIt: "Понятно",
+                cardModalTitle: "➕ Добавить карту",
+                cardNameLbl: "Название карты",
+                btnCancel: "Отмена",
+                btnCreate: "Создать",
+                limitModalTitle: "⚙️ Лимит покупок",
+                limitModalLbl: "Лимит в фиате (0 = без лимита)",
+                btnSave: "Сохранить",
+                opAmountLbl: "Сумма в фиате",
+                opCommentLbl: "Комментарий",
+                btnApply: "Применить",
+                editModalTitle: "Редактирование сделки",
+                navSummary: "Сводка",
+                navTrade: "Сделка",
+                navHistory: "История",
+                navCards: "Карты",
+                navRef: "Рефка",
+                navOptions: "Опции",
+                restrictedTitle: "Доступ ограничен",
+                restrictedDesc: "Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.",
                 openBotBtn: "🚀 Открыть бота"
             },
             en: {
-                tabToday: "Today", tabMonth: "This Month", tabAll: "All Time",
-                totalProfitBadge: "💰 TOTAL PROFIT", netIn: "Net in", netInUsdt: "Net in USDT",
-                formulaFiat: "Sell − Buy", formulaUsdt: "Buy − Sell",
-                midPriceHint: "⚖️ Mid Price:", statSpread: "🔄 Cycle Spread",
-                statRoi: "📈 ROI on Turnover", statWac: "🛒 WAC Buy Price", statAvgSell: "🏷 Avg Sell Price",
-                statFiatTurn: "💸 Fiat Turnover", statCryptoTurn: "💎 USDT Turnover", statOps: "🔢 Total Operations / Sells",
-                newTradeTitle: "New Operation", newTradeSubtitle: "Record cycle into cloud ledger",
-                buyBtn: "BUY 🟢", sellBtn: "SELL 🔴", modeFiat: "Fiat Amount", modeCrypto: "USDT Volume",
-                lblRate: "USDT Rate", lblCardOpt: "Bank Card (Optional)", noCardOpt: "No card bound",
-                cardsTitle: "My Cards", cardsSubtitle: "Cash & limits control", btnCreateCard: "➕ Add Card",
-                historyTitle: "Operations History", historySubtitle: "Synchronized ledger trades",
-                refTitle: "Partner Network", refSubtitle: "Earn bonus subscription days",
-                refInvited: "Invited Traders", refYourLink: "Your Referral Link",
-                btnCopy: "📋 Copy", btnShare: "🚀 Share",
+                tabToday: "Today",
+                tabMonth: "This Month",
+                tabAll: "All Time",
+                totalProfitBadge: "💰 TOTAL PROFIT",
+                netIn: "Net in",
+                netInUsdt: "Net in USDT",
+                formulaFiat: "Sell − Buy",
+                formulaUsdt: "Buy − Sell",
+                midPriceHint: "⚖️ Mid Price:",
+                statSpread: "🔄 Cycle Spread",
+                statRoi: "📈 ROI on Turnover",
+                statWac: "🛒 WAC Buy Price",
+                statAvgSell: "🏷 Avg Sell Price",
+                statFiatTurn: "💸 Fiat Turnover",
+                statCryptoTurn: "💎 USDT Turnover",
+                statOps: "🔢 Total Operations / Sells",
+                newTradeTitle: "New Operation",
+                newTradeSubtitle: "Record cycle into cloud ledger",
+                buyBtn: "BUY 🟢",
+                sellBtn: "SELL 🔴",
+                modeFiat: "Fiat Amount",
+                modeCrypto: "USDT Volume",
+                lblRate: "USDT Rate",
+                lblCardOpt: "Bank Card (Optional)",
+                noCardOpt: "No card bound",
+                cardsTitle: "My Cards",
+                cardsSubtitle: "Cash & limits control",
+                btnCreateCard: "➕ Add Card",
+                historyTitle: "Operations History",
+                historySubtitle: "Synchronized ledger trades",
+                refTitle: "Partner Network",
+                refSubtitle: "Earn bonus subscription days",
+                refInvited: "Invited Traders",
+                refYourLink: "Your Referral Link",
+                btnCopy: "📋 Copy",
+                btnShare: "🚀 Share",
                 shareText: "Professional P2P terminal for WAC & cycle accounting:",
-                profileTitle: "Preferences", profileSubtitle: "Account configuration",
-                lblYourId: "YOUR TELEGRAM ID", lblLang: "Interface Language", lblBaseCur: "Base Currency",
-                lblTimezone: "Timezone (UTC)", btnSubModal: "💎 Upgrade / Renew Pass",
-                btnSupport: "👨‍💻 Support Center", paywallTitle: "Terminal Access 🔒",
+                profileTitle: "Preferences",
+                profileSubtitle: "Account configuration",
+                lblYourId: "YOUR TELEGRAM ID",
+                lblLang: "Interface Language",
+                lblBaseCur: "Base Currency",
+                lblTimezone: "Timezone (UTC)",
+                btnSubModal: "💎 Upgrade / Renew Pass",
+                btnSupport: "👨‍💻 Support Center",
+                paywallTitle: "Terminal Access 🔒",
                 paywallSubtitle: "Unlock full terminal features",
-                trialBadge: "Free Trial", trialDesc: "🎁 <b>24-Hour Free Trial</b> is activated exclusively inside our Telegram Bot.",
-                btnActivateTrial: "🎁 Activate Trial", plansBadge: "Subscription Plans",
+                trialBadge: "Free Trial",
+                trialDesc: "🎁 <b>24-Hour Free Trial</b> is activated exclusively inside our Telegram Bot.",
+                btnActivateTrial: "🎁 Activate Trial",
+                plansBadge: "Subscription Plans",
                 plansDesc: "Bybit payment and UID verification are processed securely in our Telegram Bot.",
-                plan1m: "1 Month", planForever: "Lifetime VIP", btnBuySub: "💳 Get Subscription",
+                plan1m: "1 Month",
+                planForever: "Lifetime VIP",
+                btnBuySub: "💳 Get Subscription",
                 subModalTitle: "Purchase in Telegram Bot",
                 subModalDesc: "Trial activation and paid plans are processed <b>exclusively inside our Telegram Bot</b>.<br><br>After transfer and Bybit UID verification, terminal access is <b>activated automatically</b>!",
-                btnGotIt: "Got It", cardModalTitle: "➕ Add Card", cardNameLbl: "Card Label",
-                btnCancel: "Cancel", btnCreate: "Create", limitModalTitle: "⚙️ Buy Limit",
-                limitModalLbl: "Fiat limit (0 = none)", btnSave: "Save",
-                opAmountLbl: "Amount in fiat", opCommentLbl: "Comment", btnApply: "Apply",
-                editModalTitle: "Edit Trade", navSummary: "Summary", navTrade: "Trade",
-                navHistory: "History", navCards: "Cards", navRef: "Referral", navOptions: "Options",
-                restrictedTitle: "Access Restricted", restrictedDesc: "This terminal is secured and launches <b>strictly via Telegram Mini App</b>.",
+                btnGotIt: "Got It",
+                cardModalTitle: "➕ Add Card",
+                cardNameLbl: "Card Label",
+                btnCancel: "Cancel",
+                btnCreate: "Create",
+                limitModalTitle: "⚙️ Buy Limit",
+                limitModalLbl: "Fiat limit (0 = none)",
+                btnSave: "Save",
+                opAmountLbl: "Amount in fiat",
+                opCommentLbl: "Comment",
+                btnApply: "Apply",
+                editModalTitle: "Edit Trade",
+                navSummary: "Summary",
+                navTrade: "Trade",
+                navHistory: "History",
+                navCards: "Cards",
+                navRef: "Referral",
+                navOptions: "Options",
+                restrictedTitle: "Access Restricted",
+                restrictedDesc: "This terminal is secured and launches <b>strictly via Telegram Mini App</b>.",
                 openBotBtn: "🚀 Open Telegram Bot"
             },
             es: {
-                tabToday: "Hoy", tabMonth: "Este mes", tabAll: "Todo el tiempo",
-                totalProfitBadge: "💰 BENEFICIO TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
-                formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta",
-                midPriceHint: "⚖️ Precio medio (Mid Price):", statSpread: "🔄 Spread del ciclo",
-                statRoi: "📈 ROI de facturación", statWac: "🛒 Compra WAC", statAvgSell: "🏷 Venta media",
-                statFiatTurn: "💸 Volumen Fiat", statCryptoTurn: "💎 Volumen USDT", statOps: "🔢 Operaciones / Ventas",
-                newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar ciclo en la nube",
-                buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴", modeFiat: "Monto Fiat", modeCrypto: "Volumen USDT",
-                lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria (Opcional)", noCardOpt: "Sin tarjeta vinculada",
-                cardsTitle: "Mis tarjetas", cardsSubtitle: "Control de caja y límites", btnCreateCard: "➕ Crear",
-                historyTitle: "Historial de operaciones", historySubtitle: "Operaciones sincronizadas",
-                refTitle: "Red de afiliados", refSubtitle: "Obtenga días de suscripción",
-                refInvited: "Usuarios invitados", refYourLink: "Su enlace de afiliado",
-                btnCopy: "📋 Copiar", btnShare: "🚀 Enviar",
+                tabToday: "Hoy",
+                tabMonth: "Este mes",
+                tabAll: "Todo el tiempo",
+                totalProfitBadge: "💰 BENEFICIO TOTAL",
+                netIn: "Neto en",
+                netInUsdt: "Neto en USDT",
+                formulaFiat: "Venta − Compra",
+                formulaUsdt: "Compra − Venta",
+                midPriceHint: "⚖️ Precio medio (Mid Price):",
+                statSpread: "🔄 Spread del ciclo",
+                statRoi: "📈 ROI de facturación",
+                statWac: "🛒 Compra WAC",
+                statAvgSell: "🏷 Venta media",
+                statFiatTurn: "💸 Volumen Fiat",
+                statCryptoTurn: "💎 Volumen USDT",
+                statOps: "🔢 Operaciones / Ventas",
+                newTradeTitle: "Nueva operación",
+                newTradeSubtitle: "Registrar ciclo en la nube",
+                buyBtn: "COMPRA 🟢",
+                sellBtn: "VENTA 🔴",
+                modeFiat: "Monto Fiat",
+                modeCrypto: "Volumen USDT",
+                lblRate: "Tasa USDT",
+                lblCardOpt: "Tarjeta bancaria (Opcional)",
+                noCardOpt: "Sin tarjeta vinculada",
+                cardsTitle: "Mis tarjetas",
+                cardsSubtitle: "Control de caja y límites",
+                btnCreateCard: "➕ Crear",
+                historyTitle: "Historial de operaciones",
+                historySubtitle: "Operaciones sincronizadas",
+                refTitle: "Red de afiliados",
+                refSubtitle: "Obtenga días de suscripción",
+                refInvited: "Usuarios invitados",
+                refYourLink: "Su enlace de afiliado",
+                btnCopy: "📋 Copiar",
+                btnShare: "🚀 Enviar",
                 shareText: "Terminal P2P profesional para contabilidad de ciclos:",
-                profileTitle: "Ajustes", profileSubtitle: "Configuración de cuenta",
-                lblYourId: "SU TELEGRAM ID", lblLang: "Idioma del sistema", lblBaseCur: "Moneda base",
-                lblTimezone: "Zona horaria (UTC)", btnSubModal: "💎 Comprar / Renovar pase",
-                btnSupport: "👨‍💻 Soporte técnico", paywallTitle: "Acceso al Terminal 🔒",
+                profileTitle: "Ajustes",
+                profileSubtitle: "Configuración de cuenta",
+                lblYourId: "SU TELEGRAM ID",
+                lblLang: "Idioma del sistema",
+                lblBaseCur: "Moneda base",
+                lblTimezone: "Zona horaria (UTC)",
+                btnSubModal: "💎 Comprar / Renovar pase",
+                btnSupport: "👨‍💻 Soporte técnico",
+                paywallTitle: "Acceso al Terminal 🔒",
                 paywallSubtitle: "Desbloquee las funciones completas",
-                trialBadge: "Acceso gratuito", trialDesc: "🎁 <b>Prueba gratuita de 24 horas</b> se activa en nuestro bot.",
-                btnActivateTrial: "🎁 Activar prueba", plansBadge: "Planes de suscripción",
+                trialBadge: "Acceso gratuito",
+                trialDesc: "🎁 <b>Prueba gratuita de 24 horas</b> se activa en nuestro bot.",
+                btnActivateTrial: "🎁 Activar prueba",
+                plansBadge: "Planes de suscripción",
                 plansDesc: "El pago de Bybit y la verificación se realizan en el bot.",
-                plan1m: "1 Mes", planForever: "Para siempre", btnBuySub: "💳 Suscribirse",
+                plan1m: "1 Mes",
+                planForever: "Para siempre",
+                btnBuySub: "💳 Suscribirse",
                 subModalTitle: "Compra en Telegram Bot",
                 subModalDesc: "La activación y compra se realizan <b>en nuestro bot</b>.<br><br>¡El acceso se activa automáticamente!",
-                btnGotIt: "Entendido", cardModalTitle: "➕ Agregar tarjeta", cardNameLbl: "Nombre de tarjeta",
-                btnCancel: "Cancelar", btnCreate: "Crear", limitModalTitle: "⚙️ Límite de compra",
-                limitModalLbl: "Límite fiat (0 = sin límite)", btnSave: "Guardar",
-                opAmountLbl: "Monto en fiat", opCommentLbl: "Comentario", btnApply: "Aplicar",
-                editModalTitle: "Editar operación", navSummary: "Resumen", navTrade: "Orden",
-                navHistory: "Historial", navCards: "Tarjetas", navRef: "Afiliados", navOptions: "Ajustes",
-                restrictedTitle: "Acceso restringido", restrictedDesc: "Terminal protegido, se abre <b>solo en Telegram Mini App</b>.",
+                btnGotIt: "Entendido",
+                cardModalTitle: "➕ Agregar tarjeta",
+                cardNameLbl: "Nombre de tarjeta",
+                btnCancel: "Cancelar",
+                btnCreate: "Crear",
+                limitModalTitle: "⚙️ Límite de compra",
+                limitModalLbl: "Límite fiat (0 = sin límite)",
+                btnSave: "Guardar",
+                opAmountLbl: "Monto en fiat",
+                opCommentLbl: "Comentario",
+                btnApply: "Aplicar",
+                editModalTitle: "Editar operación",
+                navSummary: "Resumen",
+                navTrade: "Orden",
+                navHistory: "Historial",
+                navCards: "Tarjetas",
+                navRef: "Afiliados",
+                navOptions: "Ajustes",
+                restrictedTitle: "Acceso restringido",
+                restrictedDesc: "Terminal protegido, se abre <b>solo en Telegram Mini App</b>.",
                 openBotBtn: "🚀 Abrir bot"
             },
             fr: {
-                tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps",
-                totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
-                formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente",
-                midPriceHint: "⚖️ Prix moyen (Mid Price):", statSpread: "🔄 Spread du cycle",
-                statRoi: "📈 ROI du volume", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne",
-                statFiatTurn: "💸 Volume Fiat", statCryptoTurn: "💎 Volume USDT", statOps: "🔢 Total Opérations / Ventes",
-                newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer le cycle dans le cloud",
-                buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴", modeFiat: "Montant Fiat", modeCrypto: "Volume USDT",
-                lblRate: "Taux USDT", lblCardOpt: "Carte bancaire (Facultatif)", noCardOpt: "Aucune carte liée",
-                cardsTitle: "Mes cartes", cardsSubtitle: "Contrôle de caisse et limites", btnCreateCard: "➕ Créer",
-                historyTitle: "Historique des ordres", historySubtitle: "Transactions synchronisées",
-                refTitle: "Programme d'affiliation", refSubtitle: "Gagnez des jours d'abonnement",
-                refInvited: "Utilisateurs invités", refYourLink: "Votre lien d'affiliation",
-                btnCopy: "📋 Copier", btnShare: "🚀 Partager",
+                tabToday: "Aujourd'hui",
+                tabMonth: "Ce mois",
+                tabAll: "Tout temps",
+                totalProfitBadge: "💰 PROFIT TOTAL",
+                netIn: "Net en",
+                netInUsdt: "Net en USDT",
+                formulaFiat: "Vente − Achat",
+                formulaUsdt: "Achat − Vente",
+                midPriceHint: "⚖️ Prix moyen (Mid Price):",
+                statSpread: "🔄 Spread du cycle",
+                statRoi: "📈 ROI du volume",
+                statWac: "🛒 Achat WAC",
+                statAvgSell: "🏷 Vente moyenne",
+                statFiatTurn: "💸 Volume Fiat",
+                statCryptoTurn: "💎 Volume USDT",
+                statOps: "🔢 Total Opérations / Ventes",
+                newTradeTitle: "Nouvelle opération",
+                newTradeSubtitle: "Enregistrer le cycle dans le cloud",
+                buyBtn: "ACHAT 🟢",
+                sellBtn: "VENTE 🔴",
+                modeFiat: "Montant Fiat",
+                modeCrypto: "Volume USDT",
+                lblRate: "Taux USDT",
+                lblCardOpt: "Carte bancaire (Facultatif)",
+                noCardOpt: "Aucune carte liée",
+                cardsTitle: "Mes cartes",
+                cardsSubtitle: "Contrôle de caisse et limites",
+                btnCreateCard: "➕ Créer",
+                historyTitle: "Historique des ordres",
+                historySubtitle: "Transactions synchronisées",
+                refTitle: "Programme d'affiliation",
+                refSubtitle: "Gagnez des jours d'abonnement",
+                refInvited: "Utilisateurs invités",
+                refYourLink: "Votre lien d'affiliation",
+                btnCopy: "📋 Copier",
+                btnShare: "🚀 Partager",
                 shareText: "Terminal P2P professionnel pour la comptabilité des cycles:",
-                profileTitle: "Paramètres", profileSubtitle: "Configuration du compte",
-                lblYourId: "VOTRE TELEGRAM ID", lblLang: "Langue du système", lblBaseCur: "Devise principale",
-                lblTimezone: "Fuseau horaire (UTC)", btnSubModal: "💎 Souscrire un abonnement",
-                btnSupport: "👨‍💻 Service client", paywallTitle: "Accès au Terminal 🔒",
+                profileTitle: "Paramètres",
+                profileSubtitle: "Configuration du compte",
+                lblYourId: "VOTRE TELEGRAM ID",
+                lblLang: "Langue du système",
+                lblBaseCur: "Devise principale",
+                lblTimezone: "Fuseau horaire (UTC)",
+                btnSubModal: "💎 Souscrire un abonnement",
+                btnSupport: "👨‍💻 Service client",
+                paywallTitle: "Accès au Terminal 🔒",
                 paywallSubtitle: "Débloquez les fonctionnalités",
-                trialBadge: "Essai gratuit", trialDesc: "🎁 <b>Essai 24 heures</b> activable dans notre bot Telegram.",
-                btnActivateTrial: "🎁 Activer l'essai", plansBadge: "Formules d'abonnement",
+                trialBadge: "Essai gratuit",
+                trialDesc: "🎁 <b>Essai 24 heures</b> activable dans notre bot Telegram.",
+                btnActivateTrial: "🎁 Activer l'essai",
+                plansBadge: "Formules d'abonnement",
                 plansDesc: "Paiement Bybit sécurisé vérifié dans le bot.",
-                plan1m: "1 Mois", planForever: "À vie (VIP)", btnBuySub: "💳 S'abonner",
+                plan1m: "1 Mois",
+                planForever: "À vie (VIP)",
+                btnBuySub: "💳 S'abonner",
                 subModalTitle: "Souscription dans Telegram",
                 subModalDesc: "Paiement et vérification UID <b>dans notre bot</b>.<br><br>Activation immédiate et automatique!",
-                btnGotIt: "Compris", cardModalTitle: "➕ Ajouter une carte", cardNameLbl: "Nom de la carte",
-                btnCancel: "Annuler", btnCreate: "Créer", limitModalTitle: "⚙️ Limite d'achat",
-                limitModalLbl: "Limite fiat (0 = aucune)", btnSave: "Enregistrer",
-                opAmountLbl: "Montant en fiat", opCommentLbl: "Commentaire", btnApply: "Appliquer",
-                editModalTitle: "Modifier l'ordre", navSummary: "Bilan", navTrade: "Ordre",
-                navHistory: "Historique", navCards: "Cartes", navRef: "Parrainage", navOptions: "Options",
-                restrictedTitle: "Accès restreint", restrictedDesc: "Terminal sécurisé <b>exclusivement dans Telegram Mini App</b>.",
+                btnGotIt: "Compris",
+                cardModalTitle: "➕ Ajouter une carte",
+                cardNameLbl: "Nom de la carte",
+                btnCancel: "Annuler",
+                btnCreate: "Créer",
+                limitModalTitle: "⚙️ Limite d'achat",
+                limitModalLbl: "Limite fiat (0 = aucune)",
+                btnSave: "Enregistrer",
+                opAmountLbl: "Montant en fiat",
+                opCommentLbl: "Commentaire",
+                btnApply: "Appliquer",
+                editModalTitle: "Modifier l'ordre",
+                navSummary: "Bilan",
+                navTrade: "Ordre",
+                navHistory: "Historique",
+                navCards: "Cartes",
+                navRef: "Parrainage",
+                navOptions: "Options",
+                restrictedTitle: "Accès restreint",
+                restrictedDesc: "Terminal sécurisé <b>exclusivement dans Telegram Mini App</b>.",
                 openBotBtn: "🚀 Ouvrir le bot"
             },
             de: {
-                tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit",
-                totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
-                formulaFiat: "Verkauf − Kauf", formulaUsdt: "Kauf − Verkauf",
-                midPriceHint: "⚖️ Durchschnittspreis (Mid Price):", statSpread: "🔄 Zyklus-Spread",
-                statRoi: "📈 ROI auf Umsatz", statWac: "🛒 WAC Kaufpreis", statAvgSell: "🏷 Durchschn. Verkauf",
-                statFiatTurn: "💸 Fiat-Umsatz", statCryptoTurn: "💎 USDT-Umsatz", statOps: "🔢 Gesamt Operationen / Verkäufe",
-                newTradeTitle: "Neue Operation", newTradeSubtitle: "Zyklus im Cloud-Hauptbuch buchen",
-                buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴", modeFiat: "Fiat-Betrag", modeCrypto: "USDT-Volumen",
-                lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte (Optional)", noCardOpt: "Keine Karte gebunden",
-                cardsTitle: "Meine Karten", cardsSubtitle: "Kassen- & Limitkontrolle", btnCreateCard: "➕ Erstellen",
-                historyTitle: "Transaktionshistorie", historySubtitle: "Synchronisierte Trades",
-                refTitle: "Partnerprogramm", refSubtitle: "Bonus-Abonnementtage erhalten",
-                refInvited: "Eingeladene Benutzer", refYourLink: "Ihr Partner-Link",
-                btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen",
+                tabToday: "Heute",
+                tabMonth: "Diesen Monat",
+                tabAll: "Gesamtzeit",
+                totalProfitBadge: "💰 GESAMTGEWINN",
+                netIn: "Netto in",
+                netInUsdt: "Netto in USDT",
+                formulaFiat: "Verkauf − Kauf",
+                formulaUsdt: "Kauf − Verkauf",
+                midPriceHint: "⚖️ Durchschnittspreis (Mid Price):",
+                statSpread: "🔄 Zyklus-Spread",
+                statRoi: "📈 ROI auf Umsatz",
+                statWac: "🛒 WAC Kaufpreis",
+                statAvgSell: "🏷 Durchschn. Verkauf",
+                statFiatTurn: "💸 Fiat-Umsatz",
+                statCryptoTurn: "💎 USDT-Umsatz",
+                statOps: "🔢 Gesamt Operationen / Verkäufe",
+                newTradeTitle: "Neue Operation",
+                newTradeSubtitle: "Zyklus im Cloud-Hauptbuch buchen",
+                buyBtn: "KAUF 🟢",
+                sellBtn: "VERKAUF 🔴",
+                modeFiat: "Fiat-Betrag",
+                modeCrypto: "USDT-Volumen",
+                lblRate: "USDT-Kurs",
+                lblCardOpt: "Bankkarte (Optional)",
+                noCardOpt: "Keine Karte gebunden",
+                cardsTitle: "Meine Karten",
+                cardsSubtitle: "Kassen- & Limitkontrolle",
+                btnCreateCard: "➕ Erstellen",
+                historyTitle: "Transaktionshistorie",
+                historySubtitle: "Synchronisierte Trades",
+                refTitle: "Partnerprogramm",
+                refSubtitle: "Bonus-Abonnementtage erhalten",
+                refInvited: "Eingeladene Benutzer",
+                refYourLink: "Ihr Partner-Link",
+                btnCopy: "📋 Kopieren",
+                btnShare: "🚀 Teilen",
                 shareText: "Professionelles P2P-Terminal für Buchhaltung:",
-                profileTitle: "Einstellungen", profileSubtitle: "Kontokonfiguration",
-                lblYourId: "IHRE TELEGRAM-ID", lblLang: "Systemsprache", lblBaseCur: "Basiswährung",
-                lblTimezone: "Zeitzone (UTC)", btnSubModal: "💎 Abo abschließen / erneuern",
-                btnSupport: "👨‍💻 Kundenservice", paywallTitle: "Terminal-Zugriff 🔒",
+                profileTitle: "Einstellungen",
+                profileSubtitle: "Kontokonfiguration",
+                lblYourId: "IHRE TELEGRAM-ID",
+                lblLang: "Systemsprache",
+                lblBaseCur: "Basiswährung",
+                lblTimezone: "Zeitzone (UTC)",
+                btnSubModal: "💎 Abo abschließen / erneuern",
+                btnSupport: "👨‍💻 Kundenservice",
+                paywallTitle: "Terminal-Zugriff 🔒",
                 paywallSubtitle: "Schalten Sie die Funktionen frei",
-                trialBadge: "Kostenloser Test", trialDesc: "🎁 <b>24-Stunden-Test</b> wird im Telegram-Bot aktiviert.",
-                btnActivateTrial: "🎁 Test aktivieren", plansBadge: "Abonnement-Tarife",
+                trialBadge: "Kostenloser Test",
+                trialDesc: "🎁 <b>24-Stunden-Test</b> wird im Telegram-Bot aktiviert.",
+                btnActivateTrial: "🎁 Test aktivieren",
+                plansBadge: "Abonnement-Tarife",
                 plansDesc: "Bybit-Zahlung und UID-Prüfung erfolgen im Bot.",
-                plan1m: "1 Monat", planForever: "Lebenslang", btnBuySub: "💳 Abonnieren",
+                plan1m: "1 Monat",
+                planForever: "Lebenslang",
+                btnBuySub: "💳 Abonnieren",
                 subModalTitle: "Kauf im Telegram-Bot",
                 subModalDesc: "Aktivierung und Tarife werden <b>im Bot gebucht</b>.<br><br>Zugang schaltet sich automatisch frei!",
-                btnGotIt: "Verstanden", cardModalTitle: "➕ Karte hinzufügen", cardNameLbl: "Kartenbezeichnung",
-                btnCancel: "Abbrechen", btnCreate: "Erstellen", limitModalTitle: "⚙️ Kauflimit",
-                limitModalLbl: "Fiat-Limit (0 = kein Limit)", btnSave: "Speichern",
-                opAmountLbl: "Betrag in Fiat", opCommentLbl: "Kommentar", btnApply: "Anwenden",
-                editModalTitle: "Trade bearbeiten", navSummary: "Übersicht", navTrade: "Trade",
-                navHistory: "Historie", navCards: "Karten", navRef: "Partner", navOptions: "Optionen",
-                restrictedTitle: "Zugriff beschränkt", restrictedDesc: "Terminal startet <b>nur über Telegram Mini App</b>.",
+                btnGotIt: "Verstanden",
+                cardModalTitle: "➕ Karte hinzufügen",
+                cardNameLbl: "Kartenbezeichnung",
+                btnCancel: "Abbrechen",
+                btnCreate: "Erstellen",
+                limitModalTitle: "⚙️ Kauflimit",
+                limitModalLbl: "Fiat-Limit (0 = kein Limit)",
+                btnSave: "Speichern",
+                opAmountLbl: "Betrag in Fiat",
+                opCommentLbl: "Kommentar",
+                btnApply: "Anwenden",
+                editModalTitle: "Trade bearbeiten",
+                navSummary: "Übersicht",
+                navTrade: "Trade",
+                navHistory: "Historie",
+                navCards: "Karten",
+                navRef: "Partner",
+                navOptions: "Optionen",
+                restrictedTitle: "Zugriff beschränkt",
+                restrictedDesc: "Terminal startet <b>nur über Telegram Mini App</b>.",
                 openBotBtn: "🚀 Bot öffnen"
             },
             uk: {
-                tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час",
-                totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий у USDT",
-                formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж",
-                midPriceHint: "⚖️ Середня ціна (Mid Price):", statSpread: "🔄 Спред кола",
-                statRoi: "📈 ROI від обороту", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж",
-                statFiatTurn: "💸 Оборот фіату", statCryptoTurn: "💎 Оборот USDT", statOps: "🔢 Всього операцій / Продажів",
-                newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло в хмарну базу",
-                buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴", modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT",
-                lblRate: "Курс USDT", lblCardOpt: "Банківська картка (Опціонально)", noCardOpt: "Без прив'язки до картки",
-                cardsTitle: "Мої картки", cardsSubtitle: "Контроль каси та лімітів", btnCreateCard: "➕ Створити",
-                historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди",
-                refTitle: "Партнерська мережа", refSubtitle: "Отримуйте бонусні дні підписки",
-                refInvited: "Запрошено користувачів", refYourLink: "Ваше партнерське посилання",
-                btnCopy: "📋 Скопіювати", btnShare: "🚀 Надіслати",
+                tabToday: "За сьогодні",
+                tabMonth: "За місяць",
+                tabAll: "Весь час",
+                totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК",
+                netIn: "Чистий у",
+                netInUsdt: "Чистий у USDT",
+                formulaFiat: "Продаж − Купівля",
+                formulaUsdt: "Купівля − Продаж",
+                midPriceHint: "⚖️ Середня ціна (Mid Price):",
+                statSpread: "🔄 Спред кола",
+                statRoi: "📈 ROI від обороту",
+                statWac: "🛒 WAC Закупівля",
+                statAvgSell: "🏷 Сер. Продаж",
+                statFiatTurn: "💸 Оборот фіату",
+                statCryptoTurn: "💎 Оборот USDT",
+                statOps: "🔢 Всього операцій / Продажів",
+                newTradeTitle: "Нова операція",
+                newTradeSubtitle: "Внести коло в хмарну базу",
+                buyBtn: "КУПІВЛЯ 🟢",
+                sellBtn: "ПРОДАЖ 🔴",
+                modeFiat: "Сума фіату",
+                modeCrypto: "Об'єм USDT",
+                lblRate: "Курс USDT",
+                lblCardOpt: "Банківська картка (Опціонально)",
+                noCardOpt: "Без прив'язки до картки",
+                cardsTitle: "Мої картки",
+                cardsSubtitle: "Контроль каси та лімітів",
+                btnCreateCard: "➕ Створити",
+                historyTitle: "Історія операцій",
+                historySubtitle: "Синхронізовані угоди",
+                refTitle: "Партнерська мережа",
+                refSubtitle: "Отримуйте бонусні дні підписки",
+                refInvited: "Запрошено користувачів",
+                refYourLink: "Ваше партнерське посилання",
+                btnCopy: "📋 Скопіювати",
+                btnShare: "🚀 Надіслати",
                 shareText: "Зручний P2P-термінал обліку кіл та WAC:",
-                profileTitle: "Налаштування", profileSubtitle: "Конфігурація акаунта",
-                lblYourId: "ВАШ TELEGRAM ID", lblLang: "Мова інтерфейсу", lblBaseCur: "Базова валюта",
-                lblTimezone: "Часовий пояс (UTC)", btnSubModal: "💎 Оформити / Продовжити підписку",
-                btnSupport: "👨‍💻 Служба підтримки", paywallTitle: "Доступ до Термінала 🔒",
+                profileTitle: "Налаштування",
+                profileSubtitle: "Конфігурація акаунта",
+                lblYourId: "ВАШ TELEGRAM ID",
+                lblLang: "Мова інтерфейсу",
+                lblBaseCur: "Базова валюта",
+                lblTimezone: "Часовий пояс (UTC)",
+                btnSubModal: "💎 Оформити / Продовжити підписку",
+                btnSupport: "👨‍💻 Служба підтримки",
+                paywallTitle: "Доступ до Термінала 🔒",
                 paywallSubtitle: "Оформіть доступ для користування",
-                trialBadge: "Безкоштовний доступ", trialDesc: "🎁 <b>Пробний період 24 години</b> активується в Telegram-боті.",
-                btnActivateTrial: "🎁 Активувати тріал", plansBadge: "Тарифні плани",
+                trialBadge: "Безкоштовний доступ",
+                trialDesc: "🎁 <b>Пробний період 24 години</b> активується в Telegram-боті.",
+                btnActivateTrial: "🎁 Активувати тріал",
+                plansBadge: "Тарифні плани",
                 plansDesc: "Оплата Bybit та звірка UID проводяться в боті.",
-                plan1m: "1 Місяць", planForever: "Назавжди (VIP)", btnBuySub: "💳 Оформити підписку",
+                plan1m: "1 Місяць",
+                planForever: "Назавжди (VIP)",
+                btnBuySub: "💳 Оформити підписку",
                 subModalTitle: "Оформлення в Telegram-боті",
                 subModalDesc: "Активація та оплата проводяться <b>в нашому боті</b>.<br><br>Доступ активується автоматично!",
-                btnGotIt: "Зрозуміло", cardModalTitle: "➕ Додати картку", cardNameLbl: "Назва картки",
-                btnCancel: "Скасувати", btnCreate: "Створити", limitModalTitle: "⚙️ Ліміт купівлі",
-                limitModalLbl: "Ліміт у фіаті (0 = без ліміту)", btnSave: "Зберегти",
-                opAmountLbl: "Сума у фіаті", opCommentLbl: "Коментар", btnApply: "Застосувати",
-                editModalTitle: "Редагування угоди", navSummary: "Зведення", navTrade: "Угода",
-                navHistory: "Історія", navCards: "Картки", navRef: "Рефка", navOptions: "Опції",
-                restrictedTitle: "Доступ обмежено", restrictedDesc: "Термінал захищений і запускається <b>лише через Telegram Mini App</b>.",
+                btnGotIt: "Зрозуміло",
+                cardModalTitle: "➕ Додати картку",
+                cardNameLbl: "Назва картки",
+                btnCancel: "Скасувати",
+                btnCreate: "Створити",
+                limitModalTitle: "⚙️ Ліміт купівлі",
+                limitModalLbl: "Ліміт у фіаті (0 = без ліміту)",
+                btnSave: "Зберегти",
+                opAmountLbl: "Сума у фіаті",
+                opCommentLbl: "Коментар",
+                btnApply: "Застосувати",
+                editModalTitle: "Редагування угоди",
+                navSummary: "Зведення",
+                navTrade: "Угода",
+                navHistory: "Історія",
+                navCards: "Картки",
+                navRef: "Рефка",
+                navOptions: "Опції",
+                restrictedTitle: "Доступ обмежено",
+                restrictedDesc: "Термінал захищений і запускається <b>лише через Telegram Mini App</b>.",
                 openBotBtn: "🚀 Відкрити бота"
             },
             kk: {
-                tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт",
-                totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза табыс:", netInUsdt: "USDT таза пайда",
-                formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату",
-                midPriceHint: "⚖️ Орташа баға (Mid Price):", statSpread: "🔄 Айналым спреді",
-                statRoi: "📈 Айналымнан ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату",
-                statFiatTurn: "💸 Фиат айналымы", statCryptoTurn: "💎 USDT айналымы", statOps: "🔢 Барлық операция / Сату",
-                newTradeTitle: "Жаңа операция", newTradeSubtitle: "Айналымды бұлтты базаға енгізу",
-                buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴", modeFiat: "Фиат сомасы", modeCrypto: "USDT көлемі",
-                lblRate: "USDT бағамы", lblCardOpt: "Банк картасы (Міндетті емес)", noCardOpt: "Карта таңдалмаған",
-                cardsTitle: "Менің карталарым", cardsSubtitle: "Касса мен лимитті бақылау", btnCreateCard: "➕ Қосу",
-                historyTitle: "Операциялар тарихы", historySubtitle: "Синхрондалған мәмілелер",
-                refTitle: "Серіктестік желі", refSubtitle: "Бонустық жазылым күндерін алыңыз",
-                refInvited: "Шақырылған трейдерлер", refYourLink: "Сіздің реферал сілтемеңіз",
-                btnCopy: "📋 Көшіру", btnShare: "🚀 Бөлісу",
+                tabToday: "Бүгін",
+                tabMonth: "Осы айда",
+                tabAll: "Барлық уақыт",
+                totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА",
+                netIn: "Таза табыс:",
+                netInUsdt: "USDT таза пайда",
+                formulaFiat: "Сату − Сатып алу",
+                formulaUsdt: "Сатып алу − Сату",
+                midPriceHint: "⚖️ Орташа баға (Mid Price):",
+                statSpread: "🔄 Айналым спреді",
+                statRoi: "📈 Айналымнан ROI",
+                statWac: "🛒 WAC Сатып алу",
+                statAvgSell: "🏷 Орташа сату",
+                statFiatTurn: "💸 Фиат айналымы",
+                statCryptoTurn: "💎 USDT айналымы",
+                statOps: "🔢 Барлық операция / Сату",
+                newTradeTitle: "Жаңа операция",
+                newTradeSubtitle: "Айналымды бұлтты базаға енгізу",
+                buyBtn: "САТЫП АЛУ 🟢",
+                sellBtn: "САТУ 🔴",
+                modeFiat: "Фиат сомасы",
+                modeCrypto: "USDT көлемі",
+                lblRate: "USDT бағамы",
+                lblCardOpt: "Банк картасы (Міндетті емес)",
+                noCardOpt: "Карта таңдалмаған",
+                cardsTitle: "Менің карталарым",
+                cardsSubtitle: "Касса мен лимитті бақылау",
+                btnCreateCard: "➕ Қосу",
+                historyTitle: "Операциялар тарихы",
+                historySubtitle: "Синхрондалған мәмілелер",
+                refTitle: "Серіктестік желі",
+                refSubtitle: "Бонустық жазылым күндерін алыңыз",
+                refInvited: "Шақырылған трейдерлер",
+                refYourLink: "Сіздің реферал сілтемеңіз",
+                btnCopy: "📋 Көшіру",
+                btnShare: "🚀 Бөлісу",
                 shareText: "Кругтар мен WAC есебіне арналған P2P-терминалы:",
-                profileTitle: "Баптаулар", profileSubtitle: "Аккаунтты конфигурациялау",
-                lblYourId: "СІЗДІҢ TELEGRAM ID", lblLang: "Интерфейс тілі", lblBaseCur: "Негізгі валюта",
-                lblTimezone: "Уақыт белдеуі (UTC)", btnSubModal: "💎 Жазылымды рәсімдеу",
-                btnSupport: "👨‍💻 Қолдау қызметі", paywallTitle: "Терминалға кіру 🔒",
+                profileTitle: "Баптаулар",
+                profileSubtitle: "Аккаунтты конфигурациялау",
+                lblYourId: "СІЗДІҢ TELEGRAM ID",
+                lblLang: "Интерфейс тілі",
+                lblBaseCur: "Негізгі валюта",
+                lblTimezone: "Уақыт белдеуі (UTC)",
+                btnSubModal: "💎 Жазылымды рәсімдеу",
+                btnSupport: "👨‍💻 Қолдау қызметі",
+                paywallTitle: "Терминалға кіру 🔒",
                 paywallSubtitle: "Барлық функцияларды ашыңыз",
-                trialBadge: "Тегін сынақ", trialDesc: "🎁 <b>24 сағаттық сынақ</b> тек біздің ботта қосылады.",
-                btnActivateTrial: "🎁 Сынақты қосу", plansBadge: "Тарифтік жоспарлар",
+                trialBadge: "Тегін сынақ",
+                trialDesc: "🎁 <b>24 сағаттық сынақ</b> тек біздің ботта қосылады.",
+                btnActivateTrial: "🎁 Сынақты қосу",
+                plansBadge: "Тарифтік жоспарлар",
                 plansDesc: "Bybit арқылы төлеу және UID тексеру ботта орындалады.",
-                plan1m: "1 Ай", planForever: "Мәңгілік (VIP)", btnBuySub: "💳 Жазылым сатып алу",
+                plan1m: "1 Ай",
+                planForever: "Мәңгілік (VIP)",
+                btnBuySub: "💳 Жазылым сатып алу",
                 subModalTitle: "Telegram-бот арқылы сатып алу",
                 subModalDesc: "Барлық тарифтер мен тексеру <b>біздің ботта</b> жүреді.<br><br>Қолжетімділік автоматты түрде беріледі!",
-                btnGotIt: "Түсінікті", cardModalTitle: "➕ Карта қосу", cardNameLbl: "Карта атауы",
-                btnCancel: "Болдырмау", btnCreate: "Құру", limitModalTitle: "⚙️ Сатып алу лимиті",
-                limitModalLbl: "Фиат лимиті (0 = шектеусіз)", btnSave: "Сақтау",
-                opAmountLbl: "Фиат сомасы", opCommentLbl: "Түсініктеме", btnApply: "Қолдану",
-                editModalTitle: "Мәмілені өңдеу", navSummary: "Есеп", navTrade: "Мәміле",
-                navHistory: "Тарих", navCards: "Карталар", navRef: "Реферал", navOptions: "Баптау",
-                restrictedTitle: "Кіру шектелген", restrictedDesc: "Терминал тек <b>Telegram Mini App арқылы</b> ашылады.",
+                btnGotIt: "Түсінікті",
+                cardModalTitle: "➕ Карта қосу",
+                cardNameLbl: "Карта атауы",
+                btnCancel: "Болдырмау",
+                btnCreate: "Құру",
+                limitModalTitle: "⚙️ Сатып алу лимиті",
+                limitModalLbl: "Фиат лимиті (0 = шектеусіз)",
+                btnSave: "Сақтау",
+                opAmountLbl: "Фиат сомасы",
+                opCommentLbl: "Түсініктеме",
+                btnApply: "Қолдану",
+                editModalTitle: "Мәмілені өңдеу",
+                navSummary: "Есеп",
+                navTrade: "Мәміле",
+                navHistory: "Тарих",
+                navCards: "Карталар",
+                navRef: "Реферал",
+                navOptions: "Баптау",
+                restrictedTitle: "Кіру шектелген",
+                restrictedDesc: "Терминал тек <b>Telegram Mini App арқылы</b> ашылады.",
                 openBotBtn: "🚀 Ботты ашу"
             }
         };
@@ -1219,20 +1979,6 @@
             };
             showToast(msgs[lang] || "Language switched");
             renderAll();
-        }
-
-        async function db(endpoint, options = {}) {
-            const headers = {
-                "apikey": API_KEY,
-                "Authorization": `Bearer ${API_KEY}`,
-                "Content-Type": "application/json",
-                "Prefer": options.prefer || "return=representation",
-                ...(options.headers || {})
-            };
-            const res = await fetch(`${API_URL}/${endpoint}`, { ...options, headers });
-            if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-            const txt = await res.text();
-            return txt ? JSON.parse(txt) : null;
         }
 
         const tg = window.Telegram?.WebApp;
@@ -1307,6 +2053,70 @@
                 }
             }
             requestAnimationFrame(update);
+        }
+
+        /* ИНТЕРАКТИВНЫЙ ХОЛСТ ЧАСТИЦ (CANVAS MESH) */
+        function initCyberCanvas() {
+            const canvas = document.getElementById('cyber-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            let particles = [];
+            const particleCount = 45;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.45,
+                    vy: (Math.random() - 0.5) * 0.45,
+                    radius: Math.random() * 1.6 + 0.6,
+                    color: Math.random() > 0.5 ? 'rgba(243, 166, 0, ' : 'rgba(46, 187, 154, '
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < particleCount; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = w;
+                    if (p.x > w) p.x = 0;
+                    if (p.y < 0) p.y = h;
+                    if (p.y > h) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + '0.45)';
+                    ctx.fill();
+
+                    for (let j = i + 1; j < particleCount; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 110) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.12 * (1 - dist / 110)})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
         }
 
         const bootLogs = [
@@ -1407,8 +2217,9 @@
 
         async function init() {
             applyLanguage(currentLang);
+            initCyberCanvas();
 
-            // АВАРИЙНЫЙ ТАЙМЕР: 3.5 секунды максимум, экран логов гарантированно закроется
+            // АВАРИЙНЫЙ ТАЙМЕР: 3.5 секунды максимум, экран логов закроется при любых ошибках
             const failsafeTimer = setTimeout(() => {
                 console.warn("Failsafe triggered: loader auto-dismissed");
                 forceHideLoader();
@@ -1452,7 +2263,7 @@
                 if (!users || users.length === 0) {
                     const created = await db(`users`, {
                         method: 'POST',
-                        body: JSON.stringify({ tg_id: tgId }) // Не шлем lang в БД, чтобы не ловить 400
+                        body: JSON.stringify({ tg_id: tgId }) // Не шлем lang в БД, чтобы не ловить ошибку схемы
                     });
                     currentUser = created ? created[0] : { tg_id: tgId };
                 } else {
@@ -1583,6 +2394,7 @@
             const wac = bC > 0 ? bF / bC : 0;
             const avgSell = sC > 0 ? sF / sC : 0;
 
+            // ЕДИНАЯ СРЕДНЯЯ ЦЕНА (MID PRICE)
             let midPrice = 0;
             if (wac > 0 && avgSell > 0) {
                 midPrice = (wac + avgSell) / 2;
