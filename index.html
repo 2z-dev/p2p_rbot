@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>P2P Terminal Pro — Enterprise Ledger</title>
+    <title>P2P Terminal Pro — Enterprise Ledger & WAC</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
-            --bg-main: #06080b;
-            --bg-card: rgba(16, 20, 28, 0.82);
+            --bg-main: #05070a;
+            --bg-card: rgba(14, 18, 26, 0.82);
+            --bg-card-hover: rgba(22, 28, 40, 0.92);
             --bybit-yellow: #f3a600;
             --bybit-green: #2ebb9a;
             --bybit-red: #f23645;
             --bybit-purple: #a855f7;
             --bybit-blue: #38bdf8;
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-focus: rgba(243, 166, 0, 0.55);
+            --glass-border-focus: rgba(243, 166, 0, 0.65);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --glow-yellow: rgba(243, 166, 0, 0.28);
             --glow-green: rgba(46, 187, 154, 0.28);
+            --glow-blue: rgba(56, 189, 248, 0.25);
             --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -29,6 +31,7 @@
         * {
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         html {
@@ -39,17 +42,17 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-main);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: calc(90px + env(safe-area-inset-bottom, 16px));
+            padding-bottom: 130px;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             position: relative;
             min-height: 100vh;
         }
 
-        /* 1. БЛОКЧЕЙН-ХОЛСТ ХЕШЕЙ И БЛОКОВ */
+        /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ И ТРАНЗАКЦИЙ */
         #blockchain-canvas {
             position: fixed;
             inset: 0;
@@ -70,36 +73,201 @@
         .ambient-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(105px);
-            opacity: 0.22;
+            filter: blur(120px);
+            opacity: 0.2;
             will-change: transform;
         }
 
         .orb-1 {
-            width: 440px; height: 440px;
+            width: 500px;
+            height: 500px;
             background: radial-gradient(circle, var(--bybit-yellow) 0%, transparent 70%);
-            top: -60px; left: -80px;
-            animation: orbFloat1 20s infinite alternate ease-in-out;
+            top: -120px;
+            left: -140px;
+            animation: floatOrb1 24s ease-in-out infinite alternate;
         }
 
         .orb-2 {
-            width: 500px; height: 500px;
+            width: 550px;
+            height: 550px;
             background: radial-gradient(circle, var(--bybit-green) 0%, transparent 70%);
-            bottom: 40px; right: -90px;
-            animation: orbFloat2 24s infinite alternate ease-in-out;
+            bottom: 20px;
+            right: -130px;
+            animation: floatOrb2 28s ease-in-out infinite alternate;
         }
 
-        @keyframes orbFloat1 {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(70px, 120px) scale(1.15); }
+        .orb-3 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, var(--bybit-blue) 0%, transparent 70%);
+            top: 45%;
+            left: 20%;
+            opacity: 0.12;
+            animation: floatOrb3 32s ease-in-out infinite alternate;
         }
 
-        @keyframes orbFloat2 {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(-80px, -100px) scale(1.12); }
+        @keyframes floatOrb1 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(80px, 120px, 0) scale(1.1); }
+            100% { transform: translate3d(-40px, 180px, 0) scale(0.95); }
         }
 
-        /* 2. ТРАНСФОРМАЦИЯ СБОРА СЕКЦИЙ ИЗ НУЛЯ */
+        @keyframes floatOrb2 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-100px, -90px, 0) scale(1.15); }
+            100% { transform: translate3d(50px, -150px, 0) scale(0.92); }
+        }
+
+        @keyframes floatOrb3 {
+            0% { transform: translate3d(0, 0, 0) scale(0.9); }
+            50% { transform: translate3d(-60px, 70px, 0) scale(1.2); }
+            100% { transform: translate3d(70px, -50px, 0) scale(1); }
+        }
+
+        .ambient-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ТЕРМИНАЛ-ЗАГРУЗЧИК */
+        #terminal-boot-loader {
+            position: fixed;
+            inset: 0;
+            background: #030508;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            transition: opacity 0.4s var(--ease-apple), transform 0.4s var(--ease-apple);
+        }
+
+        #terminal-boot-loader.fade-out {
+            opacity: 0;
+            transform: scale(1.04);
+            pointer-events: none;
+        }
+
+        .terminal-window {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(12, 16, 24, 0.96);
+            border: 1px solid rgba(46, 187, 154, 0.35);
+            border-radius: 22px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 30px rgba(46, 187, 154, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(25px);
+        }
+
+        .terminal-header-bar {
+            background: rgba(18, 24, 34, 0.94);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 7px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #f23645; }
+        .dot-yellow { background: #f3a600; }
+        .dot-green {
+            background: #2ebb9a;
+            box-shadow: 0 0 10px #2ebb9a;
+        }
+
+        .terminal-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .terminal-body {
+            padding: 18px;
+            min-height: 220px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .console-line {
+            margin-bottom: 5px;
+            word-break: break-all;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: 0.15s ease;
+        }
+
+        .console-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .c-green { color: var(--bybit-green); font-weight: 700; }
+        .c-gold { color: var(--bybit-yellow); font-weight: 700; }
+        .c-blue { color: var(--bybit-blue); }
+        .c-dim { color: #64748b; }
+
+        .progress-box {
+            margin-top: 14px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--bybit-green), var(--bybit-yellow));
+            border-radius: 3px;
+            transition: width 0.12s linear;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 13px;
+            background: var(--bybit-green);
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 3D КОНТЕЙНЕР СО СБОРКОЙ И СКРУЧИВАНИЕМ ИЗ НУЛЯ */
         .container {
             padding: 16px;
             max-width: 580px;
@@ -108,21 +276,23 @@
             z-index: 3;
             display: none;
             perspective: 1400px;
+            perspective-origin: center top;
         }
 
         .page-section {
-            margin-bottom: 30px;
-            scroll-margin-top: 20px;
+            margin-bottom: 38px;
+            scroll-margin-top: 24px;
             opacity: 0;
-            transform: scale(0.3) rotateX(45deg) rotateY(-25deg) translateY(120px);
-            filter: blur(16px);
+            transform: translateY(110px) scale(0.25) rotateX(55deg) rotateY(-30deg) rotateZ(12deg);
+            filter: blur(14px);
             transform-origin: center top;
-            transition: opacity 0.8s var(--ease-apple), transform 0.8s var(--ease-spring), filter 0.8s var(--ease-apple);
+            transition: opacity 0.85s var(--ease-apple), transform 0.85s var(--ease-spring), filter 0.65s ease;
+            transform-style: preserve-3d;
         }
 
         .page-section.revealed {
             opacity: 1;
-            transform: scale(1) rotateX(0deg) rotateY(0deg) translateY(0);
+            transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
             filter: blur(0px);
         }
 
@@ -135,32 +305,495 @@
             padding: 22px;
             margin-bottom: 14px;
             box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
-            transition: transform 0.25s var(--ease-spring), border-color 0.25s ease;
+            transition: transform 0.28s var(--ease-spring), border-color 0.28s ease, box-shadow 0.28s ease;
             position: relative;
             overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .glass-card:active {
             transform: scale(0.985);
         }
 
-        /* 3. НАВИГАЦИЯ ВСЕГДА ВНИЗУ ЭКРАНА */
+        /* АДМИНСКАЯ ПАНЕЛЬ */
+        .admin-section-card {
+            border: 1.5px dashed rgba(243, 166, 0, 0.5) !important;
+            background: linear-gradient(135deg, rgba(28, 22, 14, 0.9) 0%, rgba(16, 20, 28, 0.94) 100%) !important;
+            box-shadow: 0 20px 50px rgba(243, 166, 0, 0.15) !important;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0 0 16px 0;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+        }
+
+        .online-dot-wrap {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--bybit-green);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--bybit-green);
+        }
+
+        .online-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1.5px solid var(--bybit-green);
+            animation: radarPulse 2s infinite ease-out;
+        }
+
+        @keyframes radarPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(2.6); opacity: 0; }
+        }
+
+        .sub-tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s var(--ease-apple);
+        }
+
+        .tier-vip {
+            background: rgba(243, 166, 0, 0.15);
+            color: var(--bybit-yellow);
+            border: 1px solid rgba(243, 166, 0, 0.4);
+            box-shadow: 0 0 20px var(--glow-yellow);
+        }
+
+        .tier-month {
+            background: rgba(46, 187, 154, 0.15);
+            color: var(--bybit-green);
+            border: 1px solid rgba(46, 187, 154, 0.4);
+            box-shadow: 0 0 20px var(--glow-green);
+        }
+
+        .tier-trial {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--bybit-purple);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+
+        .tier-expired {
+            background: rgba(242, 54, 69, 0.15);
+            color: var(--bybit-red);
+            border: 1px solid rgba(242, 54, 69, 0.4);
+        }
+
+        .hero-profit-card {
+            background: linear-gradient(145deg, rgba(24, 29, 38, 0.92) 0%, rgba(13, 16, 22, 0.96) 100%);
+            border: 1px solid rgba(46, 187, 154, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .profit-val {
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -0.8px;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.25s var(--ease-spring), background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            background: rgba(0, 0, 0, 0.45);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-val {
+            font-size: 17px;
+            font-weight: 800;
+            margin-top: 6px;
+            color: var(--text-main);
+        }
+
+        .txt-gold { color: var(--bybit-yellow); }
+        .txt-green { color: var(--bybit-green); }
+        .txt-blue { color: var(--bybit-blue); }
+
+        .period-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 14px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .p-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-spring);
+        }
+
+        .p-tab:active {
+            transform: scale(0.96);
+        }
+
+        .p-tab.active {
+            background: rgba(255, 255, 255, 0.09);
+            color: var(--bybit-yellow);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+        }
+
+        .trade-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .switch-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 800;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-spring);
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .switch-btn:active {
+            transform: scale(0.96);
+        }
+
+        .switch-btn.active.buy {
+            background: rgba(46, 187, 154, 0.18);
+            color: var(--bybit-green);
+            border-color: var(--bybit-green);
+            box-shadow: 0 0 25px rgba(46, 187, 154, 0.25);
+        }
+
+        .switch-btn.active.sell {
+            background: rgba(242, 54, 69, 0.18);
+            color: var(--bybit-red);
+            border-color: var(--bybit-red);
+            box-shadow: 0 0 25px rgba(242, 54, 69, 0.25);
+        }
+
+        .input-wrap {
+            margin-bottom: 14px;
+        }
+
+        .styled-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.25s var(--ease-apple);
+        }
+
+        .styled-input:focus {
+            border-color: var(--glass-border-focus);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 20px rgba(243, 166, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: var(--bybit-green);
+            color: #000;
+            box-shadow: 0 8px 25px var(--glow-green);
+            transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.06);
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .action-btn.sell-mode {
+            background: var(--bybit-red);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(242, 54, 69, 0.35);
+        }
+
+        .action-btn.gold {
+            background: var(--bybit-yellow);
+            color: #000;
+            box-shadow: 0 8px 25px var(--glow-yellow);
+        }
+
+        .action-btn-secondary {
+            width: 100%;
+            padding: 13px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn-secondary:active {
+            transform: scale(0.97);
+        }
+
+        .card-item {
+            background: linear-gradient(145deg, rgba(32, 36, 46, 0.95) 0%, rgba(18, 20, 26, 0.95) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: transform 0.25s var(--ease-spring), border-color 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(243, 166, 0, 0.4);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .progress-bar-wrap {
+            background: rgba(0, 0, 0, 0.55);
+            height: 7px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0 4px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--bybit-green);
+            transition: width 0.4s var(--ease-apple);
+        }
+
+        .card-btns-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
+        .btn-card-action {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 9px 4px;
+            border-radius: 11px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-spring);
+        }
+
+        .btn-card-action:active {
+            transform: scale(0.94);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .history-item {
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            transition: all 0.25s var(--ease-spring);
+        }
+
+        .history-item:hover {
+            transform: translateX(3px);
+            background: rgba(0, 0, 0, 0.45);
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        .card-pill {
+            font-size: 10px;
+            background: rgba(243, 166, 0, 0.15);
+            color: var(--bybit-yellow);
+            padding: 3px 8px;
+            border-radius: 7px;
+            font-weight: 700;
+        }
+
+        #restricted-screen {
+            display: none;
+            height: 100vh;
+            padding: 25px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* МОДАЛЬНЫЕ ОКНА СТРОГО ПО ЦЕНТРУ ТЕКУЩЕГО ЭКРАНА */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100dvh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s var(--ease-apple);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 420px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.35s var(--ease-spring);
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: scale(1) translateY(0);
+        }
+
+        /* ВКЛАДКИ НАВИГАЦИИ ВСЕГДА ВНИЗУ ВИДИМОГО ЭКРАНА */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            background: rgba(8, 11, 16, 0.94);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border-top: 1px solid var(--glass-border);
-            border-radius: 22px 22px 0 0;
-            display: flex !important;
+            bottom: max(12px, env(safe-area-inset-bottom));
+            left: 12px;
+            right: 12px;
+            max-width: 550px;
+            margin: 0 auto;
+            background: rgba(10, 14, 22, 0.92);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 26px;
+            display: none;
             justify-content: space-around;
-            padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 12px)) 10px;
+            padding: 8px 4px 10px 4px;
             z-index: 99999;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8);
         }
 
         .nav-btn {
@@ -173,10 +806,10 @@
             gap: 3px;
             align-items: center;
             cursor: pointer;
-            width: 16%;
+            width: 14%;
+            transition: color 0.2s var(--ease-apple), transform 0.2s var(--ease-spring);
             padding: 4px 2px;
             border-radius: 12px;
-            transition: color 0.2s var(--ease-apple), transform 0.2s var(--ease-spring);
         }
 
         .nav-btn:active {
@@ -185,137 +818,60 @@
 
         .nav-btn.active {
             color: var(--bybit-yellow);
-            background: rgba(243, 166, 0, 0.08);
+            background: rgba(243, 166, 0, 0.1);
         }
 
         .nav-btn i {
-            font-size: 18px;
+            font-size: 17px;
             font-style: normal;
+            transition: transform 0.25s var(--ease-spring);
         }
 
-        /* 4. МОДАЛЬНЫЕ ОКНА: ЦЕНТР ЭКРАНА И БЛОКИРОВКА СКРОЛЛА */
-        .modal-overlay {
+        .nav-btn.active i {
+            transform: scale(1.18);
+        }
+
+        #toast {
             position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            background: rgba(0, 0, 0, 0.86);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            z-index: 100000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
-            overscroll-behavior: contain;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px) scale(0.9);
+            background: rgba(18, 24, 32, 0.96);
+            border: 1px solid var(--bybit-green);
+            color: var(--text-main);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(46, 187, 154, 0.35);
+            backdrop-filter: blur(20px);
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            z-index: 1000001;
+            transition: all 0.4s var(--ease-apple);
+            opacity: 0;
+            font-size: 13px;
+            pointer-events: none;
         }
 
-        .modal-overlay.show {
-            display: flex !important;
+        #toast.show {
+            transform: translateX(-50%) translateY(0) scale(1);
+            opacity: 1;
         }
 
-        .modal-box {
-            width: 100%;
-            max-width: 420px;
-            margin: auto;
-            max-height: 90dvh;
-            overflow-y: auto;
-            transform: scale(0.85);
-            transition: transform 0.3s var(--ease-spring);
-        }
-
-        .modal-overlay.show .modal-box {
-            transform: scale(1);
-        }
-
-        /* 5. КРУГ НА ВОДЕ (ВОДНАЯ ВОЛНА ПРИ КЛИКЕ) */
+        /* АККУРАТНЫЙ ВОДНЫЙ КРУГ ОТ КАМНЯ */
         .water-ripple {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
             pointer-events: none;
-            border: 2px solid rgba(46, 187, 154, 0.6);
-            background: radial-gradient(circle, rgba(46, 187, 154, 0.15) 0%, transparent 70%);
+            z-index: 9999999;
+            border: 1.5px solid rgba(243, 166, 0, 0.5);
+            background: radial-gradient(circle, rgba(46, 187, 154, 0.18) 0%, transparent 75%);
             transform: translate(-50%, -50%) scale(0);
-            animation: waterSpread 0.6s ease-out forwards;
-            z-index: 9999;
+            animation: waterRippleAnim 0.55s ease-out forwards;
         }
 
-        @keyframes waterSpread {
+        @keyframes waterRippleAnim {
             0% { width: 0; height: 0; opacity: 1; transform: translate(-50%, -50%) scale(0); }
-            100% { width: 220px; height: 220px; opacity: 0; transform: translate(-50%, -50%) scale(1); }
+            100% { width: 130px; height: 130px; opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
         }
-
-        /* КНОПКИ, ИНПУТЫ, КАРТОЧКИ */
-        h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0; font-weight: 500; }
-        .badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 6px; }
-
-        .terminal-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-            padding: 10px 16px; background: rgba(0, 0, 0, 0.42); border-radius: 18px; border: 1px solid var(--glass-border);
-        }
-
-        .online-dot-wrap { position: relative; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; }
-        .online-dot { width: 8px; height: 8px; background: var(--bybit-green); border-radius: 50%; box-shadow: 0 0 12px var(--bybit-green); }
-        .online-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid var(--bybit-green); animation: radarPulse 2s infinite ease-out; }
-        @keyframes radarPulse { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(2.6); opacity: 0; } }
-
-        .sub-tier-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .tier-vip { background: rgba(243, 166, 0, 0.15); color: var(--bybit-yellow); border: 1px solid rgba(243, 166, 0, 0.4); }
-        .tier-month { background: rgba(46, 187, 154, 0.15); color: var(--bybit-green); border: 1px solid rgba(46, 187, 154, 0.4); }
-        .tier-trial { background: rgba(168, 85, 247, 0.15); color: var(--bybit-purple); border: 1px solid rgba(168, 85, 247, 0.4); }
-        .tier-expired { background: rgba(242, 54, 69, 0.15); color: var(--bybit-red); border: 1px solid rgba(242, 54, 69, 0.4); }
-
-        .hero-profit-card { background: linear-gradient(145deg, rgba(24, 29, 38, 0.92) 0%, rgba(13, 16, 22, 0.96) 100%); border: 1px solid rgba(46, 187, 154, 0.25); }
-        .profit-val { font-size: 34px; font-weight: 900; letter-spacing: -0.8px; }
-
-        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .stat-card { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
-        .stat-card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .stat-card-val { font-size: 17px; font-weight: 800; margin-top: 6px; }
-        .txt-gold { color: var(--bybit-yellow); }
-        .txt-green { color: var(--bybit-green); }
-        .txt-blue { color: var(--bybit-blue); }
-
-        .period-tabs { display: flex; background: rgba(0, 0, 0, 0.45); border-radius: 14px; padding: 4px; margin-bottom: 14px; border: 1px solid var(--glass-border); }
-        .p-tab { flex: 1; text-align: center; padding: 9px; border-radius: 10px; font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer; }
-        .p-tab.active { background: rgba(255, 255, 255, 0.09); color: var(--bybit-yellow); }
-
-        .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
-        .switch-btn { flex: 1; padding: 13px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 800; border: 1px solid var(--glass-border); color: var(--text-muted); cursor: pointer; background: rgba(0, 0, 0, 0.25); }
-        .switch-btn.active.buy { background: rgba(46, 187, 154, 0.18); color: var(--bybit-green); border-color: var(--bybit-green); }
-        .switch-btn.active.sell { background: rgba(242, 54, 69, 0.18); color: var(--bybit-red); border-color: var(--bybit-red); }
-
-        .input-wrap { margin-bottom: 14px; }
-        .styled-input { width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); color: var(--text-main); padding: 14px 16px; border-radius: 14px; font-size: 15px; font-weight: 600; outline: none; }
-        .styled-input:focus { border-color: var(--glass-border-focus); }
-
-        .action-btn { width: 100%; padding: 15px; border-radius: 16px; border: none; font-size: 14px; font-weight: 800; text-transform: uppercase; cursor: pointer; background: var(--bybit-green); color: #000; }
-        .action-btn.sell-mode { background: var(--bybit-red); color: #fff; }
-        .action-btn.gold { background: var(--bybit-yellow); color: #000; }
-        .action-btn-secondary { width: 100%; padding: 13px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; }
-
-        .card-item { background: linear-gradient(145deg, rgba(32, 36, 46, 0.95) 0%, rgba(18, 20, 26, 0.95) 100%); border: 1px solid var(--glass-border); border-radius: 18px; padding: 18px; margin-bottom: 12px; }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .card-title { font-size: 16px; font-weight: 800; }
-        .progress-bar-wrap { background: rgba(0, 0, 0, 0.55); height: 7px; border-radius: 4px; overflow: hidden; margin: 8px 0 4px 0; }
-        .progress-bar-fill { height: 100%; background: var(--bybit-green); }
-        .card-btns-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
-        .btn-card-action { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border); color: var(--text-main); padding: 9px 4px; border-radius: 11px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
-
-        .history-item { background: rgba(0, 0, 0, 0.28); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
-        .card-pill { font-size: 10px; background: rgba(243, 166, 0, 0.15); color: var(--bybit-yellow); padding: 3px 8px; border-radius: 7px; font-weight: 700; }
-
-        #restricted-screen { display: none; height: 100vh; padding: 25px; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; z-index: 10; }
-
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-120px); background: rgba(18, 24, 32, 0.95); border: 1px solid var(--bybit-green); color: var(--text-main); padding: 12px 24px; border-radius: 30px; z-index: 100001; transition: 0.4s var(--ease-apple); opacity: 0; font-size: 13px; pointer-events: none; }
-        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-        #terminal-boot-loader { position: fixed; inset: 0; background: #040608; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; font-family: 'Fira Code', monospace; transition: opacity 0.4s ease; }
-        #terminal-boot-loader.fade-out { opacity: 0; pointer-events: none; }
-        .terminal-window { width: 100%; max-width: 460px; background: rgba(13, 17, 24, 0.95); border: 1px solid rgba(46, 187, 154, 0.35); border-radius: 20px; padding: 18px; }
     </style>
 </head>
 <body>
@@ -324,29 +880,49 @@
     <div class="ambient-canvas-wrap">
         <div class="ambient-orb orb-1"></div>
         <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
     </div>
+
+    <div class="ambient-grid"></div>
 
     <!-- ТЕРМИНАЛ-ЗАГРУЗЧИК -->
     <div id="terminal-boot-loader">
         <div class="terminal-window">
-            <div style="font-size: 11px; color: var(--bybit-green); font-weight: 700; margin-bottom: 12px;">● P2P_BLOCKCHAIN_KERNEL [HTTP/2]</div>
-            <div id="console-stream" style="font-size: 12px; line-height: 1.6; color: #cbd5e1; min-height: 140px;"></div>
+            <div class="terminal-header-bar">
+                <div class="window-dots">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                </div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.0.1</div>
+                <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
+            </div>
+            <div class="terminal-body" id="console-stream"></div>
+            <div class="progress-box" style="padding: 10px 16px 14px 16px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="c-dim">CRYPTOGRAPHIC CORE BOOT</span>
+                    <span class="c-green" id="boot-pct">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar-inner" id="boot-progress-bar"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ЭКРАН ВНЕ TELEGRAM -->
+    <!-- ОГРАНИЧЕНИЕ ВНЕ ТЕЛЕГРАМ -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
-            <h2 style="margin: 0 0 10px 0; font-size: 20px;">Доступ ограничен</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                Терминал защищен и открывается <b>исключительно внутри Telegram Mini App</b>.
+            <h2 style="margin: 0 0 10px 0; font-size: 20px;" data-i18n="restrictedTitle">Доступ ограничен</h2>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;" data-i18n="restrictedDesc">
+                Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.
             </p>
-            <button class="action-btn gold" onclick="window.location.href='https://t.me/P2P_Rbot'">🚀 Открыть бота</button>
+            <button class="action-btn gold" onclick="window.location.href='https://t.me/P2P_Rbot'" data-i18n="openBotBtn">🚀 Открыть бота</button>
         </div>
     </div>
 
-    <!-- ЕДИНЫЙ КОНТЕЙНЕР (СБОРКА ИЗ НУЛЯ) -->
+    <!-- 3D КОНТЕЙНЕР СО СБОРКОЙ -->
     <div class="container">
 
         <!-- 1. ДАШБОРД -->
@@ -357,7 +933,7 @@
                         <span class="online-dot"></span>
                         <span class="online-ring"></span>
                     </div>
-                    <span style="font-size: 12px; font-weight: 800; color: var(--text-muted);">P2P TERMINAL PRO</span>
+                    <span style="font-size: 12px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px;">P2P TERMINAL PRO</span>
                 </div>
                 <div id="disp-tier-badge" class="sub-tier-badge tier-vip">Загрузка...</div>
             </div>
@@ -475,16 +1051,7 @@
             </div>
         </section>
 
-        <!-- 3. ИСТОРИЯ -->
-        <section id="history" class="page-section">
-            <h1 data-i18n="historyTitle">История операций</h1>
-            <p class="subtitle" data-i18n="historySubtitle">Синхронизированные сделки</p>
-            <div class="glass-card">
-                <div id="history-container"></div>
-            </div>
-        </section>
-
-        <!-- 4. КАРТЫ -->
+        <!-- 3. КАРТЫ -->
         <section id="cards" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                 <div>
@@ -494,6 +1061,15 @@
                 <button class="btn-card-action" style="padding: 7px 12px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
             </div>
             <div id="cards-container"></div>
+        </section>
+
+        <!-- 4. ИСТОРИЯ -->
+        <section id="history" class="page-section">
+            <h1 data-i18n="historyTitle">История операций</h1>
+            <p class="subtitle" data-i18n="historySubtitle">Синхронизированные сделки</p>
+            <div class="glass-card">
+                <div id="history-container"></div>
+            </div>
         </section>
 
         <!-- 5. РЕФЕРАЛКА -->
@@ -526,13 +1102,13 @@
 
                 <span class="badge" data-i18n="lblLang">Язык интерфейса</span>
                 <select id="set-lang" class="styled-input" onchange="changeLanguage(this.value)" style="margin-bottom: 14px;">
-                    <option value="ru">🇷🇺 Русский</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                    <option value="uk">🇺🇦 Українська</option>
-                    <option value="kk">🇰🇿 Қазақша</option>
+                    <option value="ru">🇷🇺 Русский (Russian)</option>
+                    <option value="en">🇬🇧 English (English)</option>
+                    <option value="es">🇪🇸 Español (Spanish)</option>
+                    <option value="fr">🇫🇷 Français (French)</option>
+                    <option value="de">🇩🇪 Deutsch (German)</option>
+                    <option value="uk">🇺🇦 Українська (Ukrainian)</option>
+                    <option value="kk">🇰🇿 Қазақша (Kazakh)</option>
                 </select>
 
                 <span class="badge" data-i18n="lblBaseCur">Базовая валюта</span>
@@ -559,52 +1135,101 @@
             </div>
         </section>
 
-        <!-- 7. АДМИН-ПАНЕЛЬ (ДЛЯ АДМИНИСТРАТОРОВ) -->
+        <!-- 7. АДМИН-ПАНЕЛЬ И КОНФИГУРАТОР (СТРОГО ДЛЯ АДМИНОВ) -->
         <section id="admin-panel" class="page-section" style="display: none;">
-            <div class="glass-card" style="border: 1.5px dashed var(--bybit-yellow); background: rgba(28, 22, 14, 0.9);">
+            <div class="glass-card admin-section-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <h1 style="margin: 0; color: var(--bybit-yellow);">🛠 Admin & Config</h1>
-                    <span class="badge" style="color: var(--bybit-yellow); border: 1px solid var(--bybit-yellow); padding: 2px 6px; border-radius: 6px;">ROOT ONLY</span>
+                    <span class="badge" style="color: var(--bybit-yellow); border: 1px solid var(--bybit-yellow); padding: 3px 8px; border-radius: 6px;">ROOT ONLY</span>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
-                    <div class="input-wrap" style="margin: 0;">
-                        <span style="font-size: 10px; color: var(--text-muted);">PRICE_MONTH ($)</span>
-                        <input type="number" id="cfg-inp-month" class="styled-input" style="padding: 10px;">
-                    </div>
-                    <div class="input-wrap" style="margin: 0;">
-                        <span style="font-size: 10px; color: var(--text-muted);">PRICE_FOREVER ($)</span>
-                        <input type="number" id="cfg-inp-forever" class="styled-input" style="padding: 10px;">
-                    </div>
-                </div>
-                <div class="input-wrap" style="margin-bottom: 8px;">
-                    <span style="font-size: 10px; color: var(--text-muted);">BYBIT_UID ДЕПОЗИТА</span>
-                    <input type="text" id="cfg-inp-uid" class="styled-input" style="padding: 10px;">
-                </div>
-                <button class="action-btn gold" style="padding: 10px; font-size: 12px; margin-bottom: 14px;" onclick="saveAdminConfig()">💾 СОХРАНИТЬ КОНФИГ В БАЗУ</button>
+                <p class="subtitle">Управление базой данных, тарифами и пользователями в реальном времени</p>
 
-                <div class="input-wrap" style="margin-bottom: 8px;">
-                    <input type="number" id="admin-target-uid" class="styled-input" placeholder="Telegram ID пользователя...">
+                <!-- Глобальный конфиг -->
+                <div style="margin-bottom: 18px;">
+                    <span class="badge" style="color: var(--bybit-green);">ГЛОБАЛЬНЫЙ КОНФИГ (/config)</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;">
+                        <div class="input-wrap" style="margin-bottom: 8px;">
+                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_MONTH ($)</span>
+                            <input type="number" id="cfg-inp-month" class="styled-input" style="padding: 10px;">
+                        </div>
+                        <div class="input-wrap" style="margin-bottom: 8px;">
+                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_FOREVER ($)</span>
+                            <input type="number" id="cfg-inp-forever" class="styled-input" style="padding: 10px;">
+                        </div>
+                    </div>
+                    <div class="input-wrap" style="margin-bottom: 8px;">
+                        <span style="font-size: 10px; color: var(--text-muted);">BYBIT_UID ДЕПОЗИТА</span>
+                        <input type="text" id="cfg-inp-uid" class="styled-input" style="padding: 10px;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div class="input-wrap" style="margin-bottom: 0;">
+                            <span style="font-size: 10px; color: var(--text-muted);">TRIAL_DAYS</span>
+                            <input type="number" id="cfg-inp-trial" class="styled-input" style="padding: 10px;">
+                        </div>
+                        <div class="input-wrap" style="margin-bottom: 0;">
+                            <span style="font-size: 10px; color: var(--text-muted);">REF_BONUS_DAYS</span>
+                            <input type="number" id="cfg-inp-ref" class="styled-input" style="padding: 10px;">
+                        </div>
+                    </div>
+                    <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="saveAdminConfig()">💾 СОХРАНИТЬ КОНФИГ В БАЗУ</button>
                 </div>
-                <div class="card-btns-grid" style="margin-top: 0; grid-template-columns: 1fr 1fr;">
-                    <div class="btn-card-action" style="color: var(--bybit-green);" onclick="adminUserAction('grant30')">📅 +30 дней</div>
-                    <div class="btn-card-action" style="color: var(--bybit-yellow);" onclick="adminUserAction('grantVIP')">♾️ VIP Навсегда</div>
-                    <div class="btn-card-action" style="color: #ff9900;" onclick="adminUserAction('revoke')">❌ Аннулировать</div>
-                    <div class="btn-card-action" style="color: var(--bybit-red);" onclick="adminUserAction('ban')">⛔️ Забанить</div>
+
+                <div style="height: 1px; background: var(--glass-border); margin: 16px 0;"></div>
+
+                <!-- Управление юзерами -->
+                <div>
+                    <span class="badge" style="color: var(--bybit-purple);">ДЕЙСТВИЯ С ПОЛЬЗОВАТЕЛЕМ (/admin)</span>
+                    <div class="input-wrap" style="margin: 6px 0 10px 0;">
+                        <input type="number" id="admin-target-uid" class="styled-input" placeholder="Telegram ID пользователя...">
+                    </div>
+                    <div class="card-btns-grid" style="margin-top: 0; grid-template-columns: 1fr 1fr;">
+                        <div class="btn-card-action" style="color: var(--bybit-green);" onclick="adminUserAction('grant30')">📅 +30 дней</div>
+                        <div class="btn-card-action" style="color: var(--bybit-yellow);" onclick="adminUserAction('grantVIP')">♾️ VIP Навсегда</div>
+                        <div class="btn-card-action" style="color: #ff9900;" onclick="adminUserAction('revoke')">❌ Снять подписку</div>
+                        <div class="btn-card-action" style="color: var(--bybit-red);" onclick="adminUserAction('ban')">⛔️ Забанить</div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 8. PAYWALL -->
+        <!-- 8. PAYWALL (ЕСЛИ НЕТ ПОДПИСКИ) -->
         <div id="paywall" class="page-section" style="display: none;">
             <h1 data-i18n="paywallTitle">Доступ к Терминалу 🔒</h1>
             <p class="subtitle" id="paywall-reason" data-i18n="paywallSubtitle">Оформите доступ для использования функций</p>
-            <div class="glass-card">
-                <button class="action-btn gold" onclick="openSubModal()" data-i18n="btnBuySub">💳 Оформить подписку</button>
+
+            <div class="glass-card" id="trial-card">
+                <span class="badge" data-i18n="trialBadge">Бесплатный доступ</span>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;" data-i18n="trialDesc">
+                    🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.
+                </p>
+                <button class="action-btn" onclick="openSubModal()" data-i18n="btnActivateTrial">🎁 Активировать триал</button>
+            </div>
+
+            <div class="glass-card" style="margin-top: 15px;">
+                <span class="badge" data-i18n="plansBadge">Тарифные планы</span>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;" data-i18n="plansDesc">
+                    Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.
+                </p>
+
+                <div class="analytics-grid">
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="openSubModal()">
+                        <span class="stat-card-title" data-i18n="plan1m">1 Месяц</span>
+                        <div class="stat-card-val txt-green" id="disp-price-month">5$</div>
+                    </div>
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="openSubModal()">
+                        <span class="stat-card-title" data-i18n="planForever">Навсегда</span>
+                        <div class="stat-card-val txt-gold" id="disp-price-forever">49$</div>
+                    </div>
+                </div>
+
+                <button class="action-btn gold" style="margin-top: 15px;" onclick="openSubModal()" data-i18n="btnBuySub">
+                    💳 Оформить подписку
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНЫЕ ОКНА С ЦЕНТРИРОВАНИЕМ -->
+    <!-- МОДАЛЬНЫЕ ОКНА -->
     <div id="modal-sub-info" class="modal-overlay">
         <div class="glass-card modal-box" style="text-align: center;">
             <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
@@ -663,6 +1288,7 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА РЕДАКТИРОВАНИЯ СДЕЛКИ -->
     <div id="edit-modal" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 4px 0;" data-i18n="editModalTitle">Редактирование сделки</h2>
@@ -701,7 +1327,7 @@
 
     <div id="toast">Действие выполнено!</div>
 
-    <!-- ВСЕГДА ПРИЖАТАЯ К НИЗУ НАВИГАЦИЯ -->
+    <!-- НАВИГАЦИЯ ВСЕГДА ВНИЗУ ЭКРАНА -->
     <div class="bottom-nav">
         <div class="nav-btn active" data-target="dashboard" onclick="scrollToSection('dashboard', this)">
             <i>📊</i><span data-i18n="navSummary">Сводка</span>
@@ -709,17 +1335,20 @@
         <div class="nav-btn" data-target="trade" onclick="scrollToSection('trade', this)">
             <i>⚡️</i><span data-i18n="navTrade">Сделка</span>
         </div>
-        <div class="nav-btn" data-target="history" onclick="scrollToSection('history', this)">
-            <i>📜</i><span data-i18n="navHistory">История</span>
-        </div>
         <div class="nav-btn" data-target="cards" onclick="scrollToSection('cards', this)">
             <i>💳</i><span data-i18n="navCards">Карты</span>
+        </div>
+        <div class="nav-btn" data-target="history" onclick="scrollToSection('history', this)">
+            <i>📜</i><span data-i18n="navHistory">История</span>
         </div>
         <div class="nav-btn" data-target="referral" onclick="scrollToSection('referral', this)">
             <i>🤝</i><span data-i18n="navRef">Рефка</span>
         </div>
         <div class="nav-btn" data-target="profile" onclick="scrollToSection('profile', this)">
             <i>⚙️</i><span data-i18n="navOptions">Опции</span>
+        </div>
+        <div class="nav-btn" id="nav-btn-admin" data-target="admin-panel" style="display: none;" onclick="scrollToSection('admin-panel', this)">
+            <i>🛠</i><span>Админ</span>
         </div>
     </div>
 
@@ -730,7 +1359,9 @@
         const SUPER_ADMIN_ID = 5172556128;
         let adminIds = [SUPER_ADMIN_ID];
 
-        /* ЯЗЫКИ (I18N) */
+        /* ====================================================
+           ЯЗЫКОВОЙ СЛОВАРЬ (7 ЯЗЫКОВ)
+        ==================================================== */
         const I18N = {
             ru: {
                 tabToday: "За сегодня", tabMonth: "За месяц", tabAll: "Все время",
@@ -764,7 +1395,7 @@
                 limitModalLbl: "Лимит в фиате (0 = без лимита)", btnSave: "Сохранить",
                 opAmountLbl: "Сумма в фиате", opCommentLbl: "Комментарий", btnApply: "Применить",
                 editModalTitle: "Редактирование сделки", navSummary: "Сводка", navTrade: "Сделка",
-                navHistory: "История", navCards: "Карты", navRef: "Рефка", navOptions: "Опции",
+                navCards: "Карты", navHistory: "История", navRef: "Рефка", navOptions: "Опции",
                 restrictedTitle: "Доступ ограничен", restrictedDesc: "Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.",
                 openBotBtn: "🚀 Открыть бота"
             },
@@ -800,9 +1431,189 @@
                 limitModalLbl: "Fiat limit (0 = none)", btnSave: "Save",
                 opAmountLbl: "Amount in fiat", opCommentLbl: "Comment", btnApply: "Apply",
                 editModalTitle: "Edit Trade", navSummary: "Summary", navTrade: "Trade",
-                navHistory: "History", navCards: "Cards", navRef: "Referral", navOptions: "Options",
+                navCards: "Cards", navHistory: "History", navRef: "Referral", navOptions: "Options",
                 restrictedTitle: "Access Restricted", restrictedDesc: "This terminal is secured and launches <b>strictly via Telegram Mini App</b>.",
                 openBotBtn: "🚀 Open Telegram Bot"
+            },
+            es: {
+                tabToday: "Hoy", tabMonth: "Este mes", tabAll: "Todo el tiempo",
+                totalProfitBadge: "💰 BENEFICIO TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
+                formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta",
+                midPriceHint: "⚖️ Precio medio (Mid Price):", statSpread: "🔄 Spread del ciclo",
+                statRoi: "📈 ROI de facturación", statWac: "🛒 Compra WAC", statAvgSell: "🏷 Venta media",
+                statFiatTurn: "💸 Volumen Fiat", statCryptoTurn: "💎 Volumen USDT", statOps: "🔢 Operaciones / Ventas",
+                newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar ciclo en la nube",
+                buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴", modeFiat: "Monto Fiat", modeCrypto: "Volumen USDT",
+                lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria (Opcional)", noCardOpt: "Sin tarjeta vinculada",
+                cardsTitle: "Mis tarjetas", cardsSubtitle: "Control de caja y límites", btnCreateCard: "➕ Crear",
+                historyTitle: "Historial de operaciones", historySubtitle: "Operaciones sincronizadas",
+                refTitle: "Red de afiliados", refSubtitle: "Obtenga días de suscripción",
+                refInvited: "Usuarios invitados", refYourLink: "Su enlace de afiliado",
+                btnCopy: "📋 Copiar", btnShare: "🚀 Enviar",
+                shareText: "Terminal P2P profesional para contabilidad de ciclos:",
+                profileTitle: "Ajustes", profileSubtitle: "Configuración de cuenta",
+                lblYourId: "SU TELEGRAM ID", lblLang: "Idioma del sistema", lblBaseCur: "Moneda base",
+                lblTimezone: "Zona horaria (UTC)", btnSubModal: "💎 Comprar / Renovar pase",
+                btnSupport: "👨‍💻 Soporte técnico", paywallTitle: "Acceso al Terminal 🔒",
+                paywallSubtitle: "Desbloquee las funciones completas",
+                trialBadge: "Acceso gratuito", trialDesc: "🎁 <b>Prueba gratuita de 24 horas</b> se activa en nuestro bot.",
+                btnActivateTrial: "🎁 Activar prueba", plansBadge: "Planes de suscripción",
+                plansDesc: "El pago de Bybit y la verificación se realizan en el bot.",
+                plan1m: "1 Mes", planForever: "Para siempre", btnBuySub: "💳 Suscribirse",
+                subModalTitle: "Compra en Telegram Bot",
+                subModalDesc: "La activación y compra se realizan <b>en nuestro bot</b>.<br><br>¡El acceso se activa automáticamente!",
+                btnGotIt: "Entendido", cardModalTitle: "➕ Agregar tarjeta", cardNameLbl: "Nombre de tarjeta",
+                btnCancel: "Cancelar", btnCreate: "Crear", limitModalTitle: "⚙️ Límite de compra",
+                limitModalLbl: "Límite fiat (0 = sin límite)", btnSave: "Guardar",
+                opAmountLbl: "Monto en fiat", opCommentLbl: "Comentario", btnApply: "Aplicar",
+                editModalTitle: "Editar operación", navSummary: "Resumen", navTrade: "Orden",
+                navCards: "Tarjetas", navHistory: "Historial", navRef: "Afiliados", navOptions: "Ajustes",
+                restrictedTitle: "Acceso restringido", restrictedDesc: "Terminal protegido, se abre <b>solo en Telegram Mini App</b>.",
+                openBotBtn: "🚀 Abrir bot"
+            },
+            fr: {
+                tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps",
+                totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
+                formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente",
+                midPriceHint: "⚖️ Prix moyen (Mid Price):", statSpread: "🔄 Spread du cycle",
+                statRoi: "📈 ROI du volume", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne",
+                statFiatTurn: "💸 Volume Fiat", statCryptoTurn: "💎 Volume USDT", statOps: "🔢 Total Opérations / Ventes",
+                newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer le cycle dans le cloud",
+                buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴", modeFiat: "Montant Fiat", modeCrypto: "Volume USDT",
+                lblRate: "Taux USDT", lblCardOpt: "Carte bancaire (Facultatif)", noCardOpt: "Aucune carte liée",
+                cardsTitle: "Mes cartes", cardsSubtitle: "Contrôle de caisse et limites", btnCreateCard: "➕ Créer",
+                historyTitle: "Historique des ordres", historySubtitle: "Transactions synchronisées",
+                refTitle: "Programme d'affiliation", refSubtitle: "Gagnez des jours d'abonnement",
+                refInvited: "Utilisateurs invités", refYourLink: "Votre lien d'affiliation",
+                btnCopy: "📋 Copier", btnShare: "🚀 Partager",
+                shareText: "Terminal P2P professionnel pour la comptabilité des cycles:",
+                profileTitle: "Paramètres", profileSubtitle: "Configuration du compte",
+                lblYourId: "VOTRE TELEGRAM ID", lblLang: "Langue du système", lblBaseCur: "Devise principale",
+                lblTimezone: "Fuseau horaire (UTC)", btnSubModal: "💎 Souscrire un abonnement",
+                btnSupport: "👨‍💻 Service client", paywallTitle: "Accès au Terminal 🔒",
+                paywallSubtitle: "Débloquez les fonctionnalités",
+                trialBadge: "Essai gratuit", trialDesc: "🎁 <b>Essai 24 heures</b> activable dans notre bot Telegram.",
+                btnActivateTrial: "🎁 Activer l'essai", plansBadge: "Formules d'abonnement",
+                plansDesc: "Paiement Bybit sécurisé vérifié dans le bot.",
+                plan1m: "1 Mois", planForever: "À vie (VIP)", btnBuySub: "💳 S'abonner",
+                subModalTitle: "Souscription dans Telegram",
+                subModalDesc: "Paiement et vérification UID <b>dans notre bot</b>.<br><br>Activation immédiate et automatique!",
+                btnGotIt: "Compris", cardModalTitle: "➕ Ajouter une carte", cardNameLbl: "Nom de la carte",
+                btnCancel: "Annuler", btnCreate: "Créer", limitModalTitle: "⚙️ Limite d'achat",
+                limitModalLbl: "Limite fiat (0 = aucune)", btnSave: "Enregistrer",
+                opAmountLbl: "Montant en fiat", opCommentLbl: "Commentaire", btnApply: "Appliquer",
+                editModalTitle: "Modifier l'ordre", navSummary: "Bilan", navTrade: "Ordre",
+                navCards: "Cartes", navHistory: "Historique", navRef: "Parrainage", navOptions: "Options",
+                restrictedTitle: "Accès restreint", restrictedDesc: "Terminal sécurisé <b>exclusivement dans Telegram Mini App</b>.",
+                openBotBtn: "🚀 Ouvrir le bot"
+            },
+            de: {
+                tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit",
+                totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
+                formulaFiat: "Verkauf − Kauf", formulaUsdt: "Kauf − Verkauf",
+                midPriceHint: "⚖️ Durchschnittspreis (Mid Price):", statSpread: "🔄 Zyklus-Spread",
+                statRoi: "📈 ROI auf Umsatz", statWac: "🛒 WAC Kaufpreis", statAvgSell: "🏷 Durchschn. Verkauf",
+                statFiatTurn: "💸 Fiat-Umsatz", statCryptoTurn: "💎 USDT-Umsatz", statOps: "🔢 Gesamt Operationen / Verkäufe",
+                newTradeTitle: "Neue Operation", newTradeSubtitle: "Zyklus im Cloud-Hauptbuch buchen",
+                buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴", modeFiat: "Fiat-Betrag", modeCrypto: "USDT-Volumen",
+                lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte (Optional)", noCardOpt: "Keine Karte gebunden",
+                cardsTitle: "Meine Karten", cardsSubtitle: "Kassen- & Limitkontrolle", btnCreateCard: "➕ Erstellen",
+                historyTitle: "Transaktionshistorie", historySubtitle: "Synchronisierte Trades",
+                refTitle: "Partnerprogramm", refSubtitle: "Bonus-Abonnementtage erhalten",
+                refInvited: "Eingeladene Benutzer", refYourLink: "Ihr Partner-Link",
+                btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen",
+                shareText: "Professionelles P2P-Terminal für Buchhaltung:",
+                profileTitle: "Einstellungen", profileSubtitle: "Kontokonfiguration",
+                lblYourId: "IHRE TELEGRAM-ID", lblLang: "Systemsprache", lblBaseCur: "Basiswährung",
+                lblTimezone: "Zeitzone (UTC)", btnSubModal: "💎 Abo abschließen / erneuern",
+                btnSupport: "👨‍💻 Kundenservice", paywallTitle: "Terminal-Zugriff 🔒",
+                paywallSubtitle: "Schalten Sie die Funktionen frei",
+                trialBadge: "Kostenloser Test", trialDesc: "🎁 <b>24-Stunden-Test</b> wird im Telegram-Bot aktiviert.",
+                btnActivateTrial: "🎁 Test aktivieren", plansBadge: "Abonnement-Tarife",
+                plansDesc: "Bybit-Zahlung und UID-Prüfung erfolgen im Bot.",
+                plan1m: "1 Monat", planForever: "Lebenslang", btnBuySub: "💳 Abonnieren",
+                subModalTitle: "Kauf im Telegram-Bot",
+                subModalDesc: "Aktivierung und Tarife werden <b>im Bot gebucht</b>.<br><br>Zugang schaltet sich automatisch frei!",
+                btnGotIt: "Verstanden", cardModalTitle: "➕ Karte hinzufügen", cardNameLbl: "Kartenbezeichnung",
+                btnCancel: "Abbrechen", btnCreate: "Erstellen", limitModalTitle: "⚙️ Kauflimit",
+                limitModalLbl: "Fiat-Limit (0 = kein Limit)", btnSave: "Speichern",
+                opAmountLbl: "Betrag in Fiat", opCommentLbl: "Kommentar", btnApply: "Anwenden",
+                editModalTitle: "Trade bearbeiten", navSummary: "Übersicht", navTrade: "Trade",
+                navCards: "Karten", navHistory: "Historie", navRef: "Partner", navOptions: "Optionen",
+                restrictedTitle: "Zugriff beschränkt", restrictedDesc: "Terminal startet <b>nur über Telegram Mini App</b>.",
+                openBotBtn: "🚀 Bot öffnen"
+            },
+            uk: {
+                tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час",
+                totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий у USDT",
+                formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж",
+                midPriceHint: "⚖️ Середня ціна (Mid Price):", statSpread: "🔄 Спред кола",
+                statRoi: "📈 ROI від обороту", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж",
+                statFiatTurn: "💸 Оборот фіату", statCryptoTurn: "💎 Оборот USDT", statOps: "🔢 Всього операцій / Продажів",
+                newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло в хмарну базу",
+                buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴", modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT",
+                lblRate: "Курс USDT", lblCardOpt: "Банківська картка (Опціонально)", noCardOpt: "Без прив'язки до картки",
+                cardsTitle: "Мої картки", cardsSubtitle: "Контроль каси та лімітів", btnCreateCard: "➕ Створити",
+                historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди",
+                refTitle: "Партнерська мережа", refSubtitle: "Отримуйте бонусні дні підписки",
+                refInvited: "Запрошено користувачів", refYourLink: "Ваше партнерське посилання",
+                btnCopy: "📋 Скопіювати", btnShare: "🚀 Надіслати",
+                shareText: "Зручний P2P-термінал обліку кіл та WAC:",
+                profileTitle: "Налаштування", profileSubtitle: "Конфігурація акаунта",
+                lblYourId: "ВАШ TELEGRAM ID", lblLang: "Мова інтерфейсу", lblBaseCur: "Базова валюта",
+                lblTimezone: "Часовий пояс (UTC)", btnSubModal: "💎 Оформити / Продовжити підписку",
+                btnSupport: "👨‍💻 Підтримка", paywallTitle: "Доступ до Термінала 🔒",
+                paywallSubtitle: "Оформіть доступ для користування",
+                trialBadge: "Безкоштовний доступ", trialDesc: "🎁 <b>Пробний період 24 години</b> активується в Telegram-боті.",
+                btnActivateTrial: "🎁 Активувати тріал", plansBadge: "Тарифні плани",
+                plansDesc: "Оплата Bybit та звірка UID проводяться в боті.",
+                plan1m: "1 Місяць", planForever: "Назавжди (VIP)", btnBuySub: "💳 Оформити підписку",
+                subModalTitle: "Оформлення в Telegram-боті",
+                subModalDesc: "Активація та оплата проводяться <b>в нашому боті</b>.<br><br>Доступ активується автоматично!",
+                btnGotIt: "Зрозуміло", cardModalTitle: "➕ Додати картку", cardNameLbl: "Назва картки",
+                btnCancel: "Скасувати", btnCreate: "Створити", limitModalTitle: "⚙️ Ліміт купівлі",
+                limitModalLbl: "Ліміт у фіаті (0 = без ліміту)", btnSave: "Зберегти",
+                opAmountLbl: "Сума у фіаті", opCommentLbl: "Коментар", btnApply: "Застосувати",
+                editModalTitle: "Редагування угоди", navSummary: "Зведення", navTrade: "Угода",
+                navCards: "Картки", navHistory: "Історія", navRef: "Рефка", navOptions: "Опції",
+                restrictedTitle: "Доступ обмежено", restrictedDesc: "Термінал захищений і запускається <b>лише через Telegram Mini App</b>.",
+                openBotBtn: "🚀 Відкрити бота"
+            },
+            kk: {
+                tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт",
+                totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза табыс:", netInUsdt: "USDT таза пайда",
+                formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату",
+                midPriceHint: "⚖️ Орташа баға (Mid Price):", statSpread: "🔄 Айналым спреді",
+                statRoi: "📈 Айналымнан ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату",
+                statFiatTurn: "💸 Фиат айналымы", statCryptoTurn: "💎 USDT айналымы", statOps: "🔢 Барлық операция / Сату",
+                newTradeTitle: "Жаңа операция", newTradeSubtitle: "Айналымды бұлтты базаға енгізу",
+                buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴", modeFiat: "Фиат сомасы", modeCrypto: "USDT көлемі",
+                lblRate: "USDT бағамы", lblCardOpt: "Банк картасы (Міндетті емес)", noCardOpt: "Карта таңдалмаған",
+                cardsTitle: "Менің карталарым", cardsSubtitle: "Касса мен лимитті бақылау", btnCreateCard: "➕ Қосу",
+                historyTitle: "Операциялар тарихы", historySubtitle: "Синхрондалған мәмілелер",
+                refTitle: "Серіктестік желі", refSubtitle: "Бонустық жазылым күндерін алыңыз",
+                refInvited: "Шақырылған трейдерлер", refYourLink: "Сіздің реферал сілтемеңіз",
+                btnCopy: "📋 Көшіру", btnShare: "🚀 Бөлісу",
+                shareText: "Кругтар мен WAC есебіне арналған P2P-терминалы:",
+                profileTitle: "Баптаулар", profileSubtitle: "Аккаунтты конфигурациялау",
+                lblYourId: "СІЗДІҢ TELEGRAM ID", lblLang: "Интерфейс тілі", lblBaseCur: "Негізгі валюта",
+                lblTimezone: "Уақыт белдеуі (UTC)", btnSubModal: "💎 Жазылымды рәсімдеу",
+                btnSupport: "👨‍💻 Қолдау қызметі", paywallTitle: "Терминалға кіру 🔒",
+                paywallSubtitle: "Барлық функцияларды ашыңыз",
+                trialBadge: "Тегін сынақ", trialDesc: "🎁 <b>24 сағаттық сынақ</b> тек біздің ботта қосылады.",
+                btnActivateTrial: "🎁 Сынақты қосу", plansBadge: "Тарифтік жоспарлар",
+                plansDesc: "Bybit арқылы төлеу және UID тексеру ботта орындалады.",
+                plan1m: "1 Ай", planForever: "Мәңгілік (VIP)", btnBuySub: "💳 Жазылым сатып алу",
+                subModalTitle: "Telegram-бот арқылы сатып алу",
+                subModalDesc: "Барлық тарифтер мен тексеру <b>біздің ботта</b> жүреді.<br><br>Қолжетімділік автоматты түрде беріледі!",
+                btnGotIt: "Түсінікті", cardModalTitle: "➕ Карта қосу", cardNameLbl: "Карта атауы",
+                btnCancel: "Болдырмау", btnCreate: "Құру", limitModalTitle: "⚙️ Сатып алу лимиті",
+                limitModalLbl: "Фиат лимиті (0 = шектеусіз)", btnSave: "Сақтау",
+                opAmountLbl: "Фиат сомасы", opCommentLbl: "Түсініктеме", btnApply: "Қолдану",
+                editModalTitle: "Мәмілені өңдеу", navSummary: "Есеп", navTrade: "Мәміле",
+                navCards: "Карталар", navHistory: "Тарих", navRef: "Реферал", navOptions: "Баптау",
+                restrictedTitle: "Кіру шектелген", restrictedDesc: "Терминал тек <b>Telegram Mini App арқылы</b> ашылады.",
+                openBotBtn: "🚀 Ботты ашу"
             }
         };
 
@@ -811,10 +1622,11 @@
         function applyLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('p2p_terminal_lang', lang);
-            const dict = I18N[lang] || I18N.ru;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (dict[key]) el.innerHTML = dict[key];
+                if (I18N[lang] && I18N[lang][key]) {
+                    el.innerHTML = I18N[lang][key];
+                }
             });
             const selLang = document.getElementById('set-lang');
             if (selLang) selLang.value = lang;
@@ -822,8 +1634,13 @@
         }
 
         async function changeLanguage(lang) {
+            haptic('light');
             applyLanguage(lang);
-            showToast(lang === 'ru' ? "🇷🇺 Язык: Русский" : "🇬🇧 Language: English");
+            const msgs = {
+                ru: "🇷🇺 Язык: Русский", en: "🇬🇧 Language: English", es: "🇪🇸 Idioma: Español",
+                fr: "🇫🇷 Langue: Français", de: "🇩🇪 Sprache: Deutsch", uk: "🇺🇦 Мова: Українська", kk: "🇰🇿 Тіл: Қазақша"
+            };
+            showToast(msgs[lang] || "Language switched");
             renderAll();
         }
 
@@ -862,25 +1679,65 @@
         function updateAllCurrencySymbols() {
             const sym = getCurrencySymbol();
             document.querySelectorAll('.sym').forEach(el => el.innerText = sym);
+
             const t = I18N[currentLang] || I18N.ru;
             const tabFiat = document.getElementById('tab-mode-fiat');
             if (tabFiat) tabFiat.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+
             const lblAmt = document.getElementById('lbl-amount');
-            if (lblAmt && calcMode === 'fiat') lblAmt.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+            if (lblAmt && calcMode === 'fiat') {
+                lblAmt.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+            }
+
             const modTabFiat = document.getElementById('modal-tab-mode-fiat');
             if (modTabFiat) modTabFiat.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+
             const modLblAmt = document.getElementById('modal-lbl-amount');
-            if (modLblAmt && editCalcMode === 'fiat') modLblAmt.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+            if (modLblAmt && editCalcMode === 'fiat') {
+                modLblAmt.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+            }
         }
 
-        /* 1. БЛОКЧЕЙН ХОЛСТ: ХЕШИ И БЛОКИ */
+        function animateNumber(element, target, prefix = '', suffix = '', decimals = 2, suffixSize = '13px') {
+            const start = parseFloat(element.dataset.curVal || 0);
+            const duration = 650;
+            const startTime = performance.now();
+
+            function easeOutExpo(x) {
+                return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+            }
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = start + (target - start) * easeOutExpo(progress);
+
+                const sign = current > 0 ? '+' : '';
+                element.innerHTML = `${sign}${current.toLocaleString(undefined, {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals
+                })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.dataset.curVal = target;
+                    const finalSign = target > 0 ? '+' : '';
+                    element.innerHTML = `${finalSign}${target.toLocaleString(undefined, {
+                        minimumFractionDigits: decimals,
+                        maximumFractionDigits: decimals
+                    })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        /* КРИПТОГРАФИЧЕСКИЙ БЛОКЧЕЙН ХОЛСТ (ХЕШИ, БЛОКИ, P2P ТРАНЗАКЦИИ) */
         function initBlockchainCanvas() {
             const canvas = document.getElementById('blockchain-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             let w, h;
-            let blocks = [];
-            const blockCount = 22;
 
             function resize() {
                 w = canvas.width = window.innerWidth;
@@ -889,54 +1746,69 @@
             window.addEventListener('resize', resize);
             resize();
 
-            const hashes = ["0x7f4b...3a9c", "SHA-256", "TX: 100 USDT", "BLOCK #8912", "NONCE: 4910", "P2P_LEDGER", "VALIDATED", "BYBIT_UID"];
+            const hexChars = "0123456789ABCDEF";
+            function randomHash(len=10) {
+                let s = "0x";
+                for (let i = 0; i < len; i++) s += hexChars[Math.floor(Math.random() * hexChars.length)];
+                return s;
+            }
 
-            for (let i = 0; i < blockCount; i++) {
-                blocks.push({
+            const cryptoLabels = [
+                "USDT/RUB", "TX 250.00", "BLOCK #", "SHA256", "WAC 96.2", "MATCHED", "NONCE: ", "PEER_OK"
+            ];
+
+            let nodes = [];
+            const nodeCount = 28;
+            for (let i = 0; i < nodeCount; i++) {
+                nodes.push({
                     x: Math.random() * w,
                     y: Math.random() * h,
                     vx: (Math.random() - 0.5) * 0.35,
-                    vy: (Math.random() * 0.4 + 0.15),
-                    text: hashes[Math.floor(Math.random() * hashes.length)],
-                    color: Math.random() > 0.5 ? "rgba(243, 166, 0, " : "rgba(46, 187, 154, ",
-                    size: Math.random() * 20 + 40
+                    vy: (Math.random() - 0.5) * 0.35,
+                    hash: randomHash(6),
+                    tag: cryptoLabels[i % cryptoLabels.length] + (i % 3 === 0 ? Math.floor(Math.random()*900+100) : ""),
+                    isBlock: Math.random() > 0.6,
+                    color: Math.random() > 0.5 ? '#f3a600' : '#2ebb9a'
                 });
             }
 
             function draw() {
                 ctx.clearRect(0, 0, w, h);
-                for (let i = 0; i < blockCount; i++) {
-                    const b = blocks[i];
-                    b.x += b.vx;
-                    b.y -= b.vy;
 
-                    if (b.y < -50) b.y = h + 50;
-                    if (b.x < -50) b.x = w + 50;
-                    if (b.x > w + 50) b.x = -50;
+                for (let i = 0; i < nodeCount; i++) {
+                    const n = nodes[i];
+                    n.x += n.vx;
+                    n.y += n.vy;
 
-                    // Блок
-                    ctx.strokeStyle = b.color + "0.15)";
-                    ctx.fillStyle = b.color + "0.03)";
-                    ctx.strokeRect(b.x, b.y, b.size * 1.6, b.size * 0.65);
-                    ctx.fillRect(b.x, b.y, b.size * 1.6, b.size * 0.65);
+                    if (n.x < 0) n.x = w;
+                    if (n.x > w) n.x = 0;
+                    if (n.y < 0) n.y = h;
+                    if (n.y > h) n.y = 0;
 
-                    // Текст хеша
-                    ctx.font = "8px 'Fira Code', monospace";
-                    ctx.fillStyle = b.color + "0.35)";
-                    ctx.fillText(b.text, b.x + 6, b.y + 14);
+                    if (n.isBlock) {
+                        ctx.strokeStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.18)' : 'rgba(46, 187, 154, 0.18)';
+                        ctx.strokeRect(n.x - 16, n.y - 10, 32, 20);
+                    }
 
-                    // Линии связи блокчейна
-                    for (let j = i + 1; j < blockCount; j++) {
-                        const b2 = blocks[j];
-                        const dx = b.x - b2.x;
-                        const dy = b.y - b2.y;
+                    ctx.fillStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.45)' : 'rgba(46, 187, 154, 0.45)';
+                    ctx.font = '9px Fira Code, monospace';
+                    ctx.fillText(n.hash, n.x + 8, n.y - 4);
+
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.font = '8px Inter, sans-serif';
+                    ctx.fillText(n.tag, n.x + 8, n.y + 8);
+
+                    for (let j = i + 1; j < nodeCount; j++) {
+                        const n2 = nodes[j];
+                        const dx = n.x - n2.x;
+                        const dy = n.y - n2.y;
                         const dist = Math.sqrt(dx * dx + dy * dy);
                         if (dist < 130) {
                             ctx.beginPath();
-                            ctx.moveTo(b.x + 20, b.y + 10);
-                            ctx.lineTo(b2.x + 20, b2.y + 10);
-                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 * (1 - dist / 130)})`;
-                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(n.x, n.y);
+                            ctx.lineTo(n2.x, n2.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 130)})`;
+                            ctx.lineWidth = 0.6;
                             ctx.stroke();
                         }
                     }
@@ -946,7 +1818,47 @@
             draw();
         }
 
-        /* 2. ТРАНСФОРМАЦИЯ И СКРОЛЛ НАБЛЮДАТЕЛЬ */
+        const bootLogs = [
+            { text: "> SYSTEM BOOT: INIT P2P_CORE_V8.0.1", class: "c-green" },
+            { text: "[OK] SECURE TELEGRAM ENCLAVE LOADED", class: "c-dim" },
+            { text: "> AUTHENTICATING USER CREDENTIALS...", class: "c-blue" },
+            { text: "[OK] TELEGRAM SHA-256 HMAC VERIFIED", class: "c-green" },
+            { text: "> CONNECTING CLUSTER: REST_SUPABASE...", class: "c-dim" },
+            { text: "[OK] DATABASE HANDSHAKE ESTABLISHED (HTTP/2)", class: "c-gold" },
+            { text: "> COMPILING WAC MATRIX & BLOCKCHAIN ENGINE...", class: "c-dim" },
+            { text: "[OK] CARDS & CAPITAL LEDGERS SYNCED", class: "c-green" },
+            { text: ">> STATUS: ALL SUBSYSTEMS GREEN. LAUNCHING...", class: "c-gold" }
+        ];
+
+        async function playTerminalBootSequence() {
+            const container = document.getElementById("console-stream");
+            const bar = document.getElementById("boot-progress-bar");
+            const pct = document.getElementById("boot-pct");
+            container.innerHTML = "";
+
+            const total = bootLogs.length;
+            for (let i = 0; i < total; i++) {
+                const item = bootLogs[i];
+                const line = document.createElement("div");
+                line.className = `console-line ${item.class}`;
+                line.innerHTML = `${item.text} <span class="cursor-blink"></span>`;
+                container.appendChild(line);
+
+                requestAnimationFrame(() => line.classList.add("visible"));
+
+                const prevCursors = container.querySelectorAll(".cursor-blink");
+                if (prevCursors.length > 1) prevCursors[0].remove();
+
+                const p = Math.round(((i + 1) / total) * 100);
+                bar.style.width = `${p}%`;
+                pct.innerText = `${p}%`;
+                container.scrollTop = container.scrollHeight;
+
+                await new Promise(r => setTimeout(r, 60));
+            }
+        }
+
+        /* 3D СБОРКА И СКРУЧИВАНИЕ ИЗ НУЛЯ ПРИ СКРОЛЛЕ */
         function initScrollAnimations() {
             const sections = document.querySelectorAll('.page-section');
             const navBtns = document.querySelectorAll('.nav-btn');
@@ -957,7 +1869,7 @@
                         entry.target.classList.add('revealed');
                     }
                 });
-            }, { threshold: 0.08 });
+            }, { threshold: 0.1 });
 
             sections.forEach(s => observer.observe(s));
 
@@ -966,7 +1878,7 @@
                 const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
                 sections.forEach(section => {
-                    const top = section.offsetTop - 160;
+                    const top = section.offsetTop - 140;
                     if (scrollY >= top) {
                         currentId = section.getAttribute('id');
                     }
@@ -983,41 +1895,56 @@
         }
 
         function scrollToSection(id, el) {
-            triggerWaterRipple(el || event.target);
+            haptic('light');
             const target = document.getElementById(id);
             if (target) {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
-        /* 3. ЭФФЕКТ КРУГА НА ВОДЕ (НЕ ЗАЛИПАЕТ ПРИ СКРОЛЛЕ) */
-        function triggerWaterRipple(el) {
-            if (!el) return;
-            const rect = el.getBoundingClientRect();
-            const ripple = document.createElement('div');
-            ripple.className = 'water-ripple';
-            ripple.style.left = `${rect.left + rect.width / 2}px`;
-            ripple.style.top = `${rect.top + rect.height / 2}px`;
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
+        function forceHideLoader() {
+            const loader = document.getElementById('terminal-boot-loader');
+            if (loader && loader.style.display !== 'none') {
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; }, 350);
+            }
+            const container = document.querySelector('.container');
+            const nav = document.querySelector('.bottom-nav');
+            if (container) container.style.display = 'block';
+            if (nav) nav.style.display = 'flex';
         }
 
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.action-btn, .btn-card-action, .p-tab, .switch-btn');
-            if (btn) triggerWaterRipple(btn);
-        });
+        /* АККУРАТНЫЙ ВОДНЫЙ КРУГ ОТ КАМНЯ */
+        function initWaterRipple() {
+            let startX = 0, startY = 0;
+            document.addEventListener('pointerdown', (e) => {
+                startX = e.clientX;
+                startY = e.clientY;
+            }, { passive: true });
 
-        /* ЗАГРУЗКА И СИНХРОНИЗАЦИЯ */
+            document.addEventListener('pointerup', (e) => {
+                const diff = Math.hypot(e.clientX - startX, e.clientY - startY);
+                if (diff < 8) {
+                    const ripple = document.createElement('div');
+                    ripple.className = 'water-ripple';
+                    ripple.style.left = `${e.clientX}px`;
+                    ripple.style.top = `${e.clientY}px`;
+                    document.body.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 550);
+                }
+            }, { passive: true });
+        }
+
         async function init() {
             applyLanguage(currentLang);
             initBlockchainCanvas();
+            initWaterRipple();
 
             const failsafeTimer = setTimeout(() => {
-                const loader = document.getElementById('terminal-boot-loader');
-                if (loader) loader.style.display = 'none';
-                document.querySelector('.container').style.display = 'block';
+                console.warn("Failsafe: loader auto-dismissed");
+                forceHideLoader();
                 initScrollAnimations();
-            }, 3000);
+            }, 3500);
 
             const tgUser = tg?.initDataUnsafe?.user;
             if (!tgUser || !tgUser.id) {
@@ -1028,17 +1955,14 @@
             }
 
             try {
-                await loadUserData(tgUser.id);
-            } catch (e) {
-                console.error(e);
+                const bootAnimationPromise = playTerminalBootSequence();
+                const dataLoadPromise = loadUserData(tgUser.id);
+                await Promise.all([bootAnimationPromise, dataLoadPromise]);
+            } catch (err) {
+                console.error("Init data load error:", err);
             } finally {
                 clearTimeout(failsafeTimer);
-                const loader = document.getElementById('terminal-boot-loader');
-                if (loader) {
-                    loader.classList.add('fade-out');
-                    setTimeout(() => loader.style.display = 'none', 300);
-                }
-                document.querySelector('.container').style.display = 'block';
+                forceHideLoader();
                 initScrollAnimations();
             }
         }
@@ -1050,18 +1974,23 @@
                 if (!users || users.length === 0) {
                     const created = await db(`users`, {
                         method: 'POST',
-                        body: JSON.stringify({ tg_id: tgId })
+                        body: JSON.stringify({ tg_id: tgId, lang: currentLang })
                     });
                     currentUser = created ? created[0] : { tg_id: tgId };
                 } else {
                     currentUser = users[0];
                 }
             } catch (e) {
-                currentUser = { tg_id: tgId, currency: 'RUB', tz_offset: 3 };
+                console.warn("Local user profile fallback:", e);
+                currentUser = { tg_id: tgId, currency: 'RUB', tz_offset: 3, lang: currentLang };
             }
 
-            await refreshData();
-            await checkAdminStatus(tgId);
+            try {
+                await refreshData();
+                await checkAdminStatus(tgId);
+            } catch (e) {
+                console.warn("Refresh error:", e);
+            }
 
             document.getElementById('disp-uid').innerText = currentUser.tg_id;
             document.getElementById('set-currency').value = currentUser.currency || 'RUB';
@@ -1075,31 +2004,43 @@
 
         async function refreshData() {
             if (!currentUser) return;
-            const [c, t, o] = await Promise.all([
+            const [u, c, t, o] = await Promise.all([
+                db(`users?tg_id=eq.${currentUser.tg_id}`),
                 db(`cards?tg_id=eq.${currentUser.tg_id}&is_active=eq.true&order=created_at.asc`),
                 db(`trades?tg_id=eq.${currentUser.tg_id}&order=date.desc`),
                 db(`card_operations?tg_id=eq.${currentUser.tg_id}`)
             ]);
+            if (u && u.length > 0) currentUser = u[0];
             userCards = c || [];
             userTrades = t || [];
             cardOps = o || [];
         }
 
+        /* ПРОВЕРКА И ЗАГРУЗКА АДМИН-ПАНЕЛИ */
         async function checkAdminStatus(tgId) {
             try {
                 const cfgRes = await db(`bot_config?key=eq.ADMIN_IDS`);
                 if (cfgRes && cfgRes.length > 0) {
-                    adminIds = cfgRes[0].value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+                    const raw = cfgRes[0].value;
+                    adminIds = raw.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
                 }
-                if (!adminIds.includes(SUPER_ADMIN_ID)) adminIds.push(SUPER_ADMIN_ID);
+                if (!adminIds.includes(SUPER_ADMIN_ID)) {
+                    adminIds.push(SUPER_ADMIN_ID);
+                }
 
+                const adminSec = document.getElementById('admin-panel');
+                const adminNav = document.getElementById('nav-btn-admin');
                 if (adminIds.includes(tgId)) {
-                    document.getElementById('admin-panel').style.display = 'block';
+                    if (adminSec) adminSec.style.display = 'block';
+                    if (adminNav) adminNav.style.display = 'flex';
                     loadAdminConfigValues();
                 } else {
-                    document.getElementById('admin-panel').style.display = 'none';
+                    if (adminSec) adminSec.style.display = 'none';
+                    if (adminNav) adminNav.style.display = 'none';
                 }
-            } catch(e) {}
+            } catch (e) {
+                console.warn("Admin check failed:", e);
+            }
         }
 
         async function loadAdminConfigValues() {
@@ -1107,57 +2048,97 @@
                 const configs = await db(`bot_config`);
                 if (!configs) return;
                 configs.forEach(item => {
-                    if (item.key === 'PRICE_MONTH') document.getElementById('cfg-inp-month').value = item.value;
-                    if (item.key === 'PRICE_FOREVER') document.getElementById('cfg-inp-forever').value = item.value;
+                    if (item.key === 'PRICE_MONTH') {
+                        document.getElementById('cfg-inp-month').value = item.value;
+                        const el = document.getElementById('disp-price-month');
+                        if (el) el.innerText = `${item.value}$`;
+                    }
+                    if (item.key === 'PRICE_FOREVER') {
+                        document.getElementById('cfg-inp-forever').value = item.value;
+                        const el = document.getElementById('disp-price-forever');
+                        if (el) el.innerText = `${item.value}$`;
+                    }
                     if (item.key === 'BYBIT_UID') document.getElementById('cfg-inp-uid').value = item.value;
+                    if (item.key === 'TRIAL_DAYS') document.getElementById('cfg-inp-trial').value = item.value;
+                    if (item.key === 'REF_BONUS_DAYS') document.getElementById('cfg-inp-ref').value = item.value;
                 });
             } catch(e) {}
         }
 
         async function saveAdminConfig() {
+            haptic('medium');
             const m = document.getElementById('cfg-inp-month').value;
             const f = document.getElementById('cfg-inp-forever').value;
             const uid = document.getElementById('cfg-inp-uid').value;
-            await Promise.all([
-                db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: m }) }),
-                db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: f }) }),
-                db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: uid }) })
-            ]);
-            showToast("✅ Конфиг сохранен в базу!");
+            const tr = document.getElementById('cfg-inp-trial').value;
+            const ref = document.getElementById('cfg-inp-ref').value;
+
+            try {
+                await Promise.all([
+                    db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: m }) }),
+                    db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: f }) }),
+                    db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: uid }) }),
+                    db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: tr }) }),
+                    db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: ref }) })
+                ]);
+                showToast("✅ Конфигурация сохранена в базу!");
+                loadAdminConfigValues();
+            } catch (e) {
+                showToast("❌ Ошибка сохранения");
+            }
         }
 
         async function adminUserAction(action) {
+            haptic('medium');
             const targetId = parseInt(document.getElementById('admin-target-uid').value);
-            if (!targetId) return showToast("⚠️ Введите ID пользователя!");
-            if (targetId === SUPER_ADMIN_ID && (action === 'ban' || action === 'revoke')) {
-                return alert("⚠️ Нельзя ограничить главного админа!");
+            if (!targetId) {
+                return showToast("⚠️ Введите ID пользователя!");
             }
-            const now = new Date();
-            if (action === 'grant30') {
-                now.setDate(now.getDate() + 30);
-                await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
-                showToast(`✅ ID ${targetId}: +30 дней!`);
-            } else if (action === 'grantVIP') {
-                await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
-                showToast(`✅ ID ${targetId}: VIP выдан!`);
-            } else if (action === 'revoke') {
-                await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
-                showToast(`❌ ID ${targetId}: подписка снята!`);
-            } else if (action === 'ban') {
-                await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
-                showToast(`⛔️ ID ${targetId}: забанен!`);
+
+            if (targetId === SUPER_ADMIN_ID && (action === 'ban' || action === 'revoke')) {
+                return alert("⚠️ Нельзя забанить или ограничить главного администратора!");
+            }
+
+            try {
+                const now = new Date();
+                if (action === 'grant30') {
+                    now.setDate(now.getDate() + 30);
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
+                    showToast(`✅ ID ${targetId}: выдано 30 дней!`);
+                } else if (action === 'grantVIP') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
+                    showToast(`✅ ID ${targetId}: выдан VIP навсегда!`);
+                } else if (action === 'revoke') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
+                    showToast(`❌ ID ${targetId}: подписка аннулирована!`);
+                } else if (action === 'ban') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
+                    showToast(`⛔️ ID ${targetId}: забанен!`);
+                }
+                await refreshData();
+            } catch (e) {
+                showToast("❌ Ошибка выполнения действия");
             }
         }
 
         function getSubStatusInfo() {
+            const t = I18N[currentLang] || I18N.ru;
             if (currentUser.is_banned) return { text: "⛔️ Banned", class: "tier-expired", active: false };
             if (!currentUser.sub_end) return { text: "❌ No Pass", class: "tier-expired", active: false };
+
             const now = new Date();
             const end = new Date(currentUser.sub_end);
             if (end < now) return { text: "⏳ Expired", class: "tier-expired", active: false };
             if (end.getFullYear() > 2099) return { text: "💎 VIP Lifetime", class: "tier-vip", active: true };
+
+            const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
+            const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
             const dateStr = end.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { day: '2-digit', month: '2-digit' });
-            return { text: `⚡️ Premium (${dateStr})`, class: "tier-month", active: true };
+
+            if (currentUser.trial_used && diffDays <= 2) {
+                return { text: `🎁 Trial 24h (${dateStr})`, class: "tier-trial", active: true };
+            }
+            return { text: `⚡️ Premium 1mo (${dateStr})`, class: "tier-month", active: true };
         }
 
         function checkSubscription() {
@@ -1165,7 +2146,9 @@
             const badgeEl = document.getElementById('disp-tier-badge');
             badgeEl.className = `sub-tier-badge ${statusInfo.class}`;
             badgeEl.innerText = statusInfo.text;
+
             if (!statusInfo.active) {
+                if (currentUser.trial_used) document.getElementById('trial-card').style.display = 'none';
                 document.getElementById('paywall').style.display = 'block';
                 return false;
             }
@@ -1174,13 +2157,9 @@
         }
 
         function openSubModal() {
-            document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+            haptic('light');
+            document.body.style.overflow = 'hidden';
             document.getElementById('modal-sub-info').classList.add('show');
-        }
-
-        function closeModals() {
-            document.body.style.overflow = ''; // Разблокируем скролл
-            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
         }
 
         function renderAll() {
@@ -1204,6 +2183,7 @@
         }
 
         function setPeriod(p, el) {
+            haptic('light');
             currentPeriod = p;
             document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
@@ -1233,10 +2213,15 @@
 
             const wac = bC > 0 ? bF / bC : 0;
             const avgSell = sC > 0 ? sF / sC : 0;
-            const midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || 0);
+
+            let midPrice = 0;
+            if (wac > 0 && avgSell > 0) midPrice = (wac + avgSell) / 2;
+            else if (wac > 0) midPrice = wac;
+            else if (avgSell > 0) midPrice = avgSell;
 
             const profitFiat = sF - bF;
             const profitUsdt = bC - sC;
+
             const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
             const totalProfitUsdt = profitUsdt + (midPrice > 0 ? profitFiat / midPrice : 0);
 
@@ -1247,33 +2232,40 @@
 
             const sym = getCurrencySymbol();
 
-            function setColor(el, val) {
+            function updateMetricColor(el, val) {
                 el.style.color = val < 0 ? 'var(--bybit-red)' : (val > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
             }
 
             const elTotalFiat = document.getElementById('val-total-profit-rub');
-            setColor(elTotalFiat, totalProfitFiat);
-            elTotalFiat.innerHTML = `${totalProfitFiat > 0 ? '+' : ''}${totalProfitFiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
+            updateMetricColor(elTotalFiat, totalProfitFiat);
+            animateNumber(elTotalFiat, totalProfitFiat, '', sym, 2, '18px');
 
             const elTotalUsdt = document.getElementById('val-total-profit-usdt');
-            setColor(elTotalUsdt, totalProfitUsdt);
-            elTotalUsdt.innerText = `${totalProfitUsdt > 0 ? '+' : ''}${totalProfitUsdt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
+            updateMetricColor(elTotalUsdt, totalProfitUsdt);
+            animateNumber(elTotalUsdt, totalProfitUsdt, '', 'USDT', 2, '12px');
 
             const elProfitFiat = document.getElementById('val-profit-rub');
-            setColor(elProfitFiat, profitFiat);
-            elProfitFiat.innerText = `${profitFiat > 0 ? '+' : ''}${profitFiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+            updateMetricColor(elProfitFiat, profitFiat);
+            animateNumber(elProfitFiat, profitFiat, '', sym, 2, '12px');
 
             const elProfitUsdt = document.getElementById('val-profit-usdt');
-            setColor(elProfitUsdt, profitUsdt);
-            elProfitUsdt.innerText = `${profitUsdt > 0 ? '+' : ''}${profitUsdt.toLocaleString(undefined, {minimumFractionDigits: 2})} USDT`;
+            updateMetricColor(elProfitUsdt, profitUsdt);
+            animateNumber(elProfitUsdt, profitUsdt, '', 'USDT', 2, '12px');
 
-            document.getElementById('hint-mid-price').innerText = midPrice.toFixed(2);
-            document.getElementById('val-spread').innerText = `${spread > 0 ? '+' : ''}${spread.toFixed(2)}%`;
-            document.getElementById('val-roi').innerText = `${roi > 0 ? '+' : ''}${roi.toFixed(2)}%`;
-            document.getElementById('val-wac').innerText = wac.toFixed(2);
-            document.getElementById('val-avg-sell').innerText = avgSell.toFixed(2);
-            document.getElementById('val-fiat-turn').innerText = fiatTurn.toLocaleString(undefined, {maximumFractionDigits: 0});
-            document.getElementById('val-crypto-turn').innerText = cryptoTurn.toFixed(2);
+            document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            const spreadEl = document.getElementById('val-spread');
+            spreadEl.innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
+            updateMetricColor(spreadEl, spread);
+
+            const roiEl = document.getElementById('val-roi');
+            roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
+            updateMetricColor(roiEl, roi);
+
+            document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('val-fiat-turn').innerText = fiatTurn.toLocaleString(undefined, {minimumFractionDigits: 0});
+            document.getElementById('val-crypto-turn').innerText = cryptoTurn.toLocaleString(undefined, {minimumFractionDigits: 2});
             document.getElementById('val-trades-count').innerText = `${filtered.length} / ${sellsCount}`;
         }
 
@@ -1281,72 +2273,91 @@
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
             if (userCards.length === 0) {
-                container.innerHTML = `<div class="glass-card" style="text-align: center; color: var(--text-muted);">Карт пока нет. Добавьте первую!</div>`;
+                container.innerHTML = `<div class="glass-card" style="text-align: center; color: var(--text-muted);">${currentLang === 'ru' ? 'Карт пока нет. Добавьте первую!' : 'No cards added yet. Create your first card!'}</div>`;
                 return;
             }
+
             const sym = getCurrencySymbol();
+
             userCards.forEach(c => {
                 const spentBuy = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
                 const gainSell = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
                 const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
                 const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+
                 const balance = deps - wdrs + gainSell - spentBuy;
                 const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
 
-                let limitHtml = `<div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Лимит: Не установлен</div>`;
+                let limitHtml = `<div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">${currentLang === 'ru' ? 'Лимит покупок: Не установлен' : 'Purchase Limit: None'}</div>`;
                 if (limit) {
                     const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
                     limitHtml = `
                         <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 6px;">
-                            <span>Лимит покупок:</span>
+                            <span>${currentLang === 'ru' ? 'Лимит покупок:' : 'Limit:'}</span>
                             <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
                         </div>
-                        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: ${pct}%;"></div></div>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+                        </div>
                     `;
                 }
 
                 container.innerHTML += `
                     <div class="card-item">
-                        <div class="card-top"><div class="card-title">💳 ${c.card_name}</div><span class="badge" style="margin: 0; color: var(--bybit-green);">АКТИВНА</span></div>
+                        <div class="card-top">
+                            <div class="card-title">💳 ${c.card_name}</div>
+                            <span class="badge" style="margin: 0; color: var(--bybit-green);">${currentLang === 'ru' ? 'АКТИВНА' : 'ACTIVE'}</span>
+                        </div>
                         <div style="font-size: 20px; font-weight: 800;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
                         ${limitHtml}
                         <div class="card-btns-grid">
-                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">➕ Внести</div>
-                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'withdraw')">➖ Снять</div>
-                            <div class="btn-card-action" onclick="openCardLimitModal(${c.id})">⚙️ Лимит</div>
-                            <div class="btn-card-action" style="color: var(--bybit-red);" onclick="deleteCard(${c.id})">🗑 Удалить</div>
+                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">${currentLang === 'ru' ? '➕ Внести' : '➕ Deposit'}</div>
+                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'withdraw')">${currentLang === 'ru' ? '➖ Снять' : '➖ Withdraw'}</div>
+                            <div class="btn-card-action" onclick="openCardLimitModal(${c.id})">${currentLang === 'ru' ? '⚙️ Лимит' : '⚙️ Limit'}</div>
+                            <div class="btn-card-action" style="color: var(--bybit-red);" onclick="deleteCard(${c.id})">${currentLang === 'ru' ? '🗑 Удалить' : '🗑 Delete'}</div>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function openNewCardModal() { document.body.style.overflow = 'hidden'; document.getElementById('modal-card-create').classList.add('show'); }
+        function openNewCardModal() { haptic('light'); document.body.style.overflow = 'hidden'; document.getElementById('modal-card-create').classList.add('show'); }
         async function submitCreateCard() {
             const name = document.getElementById('new-card-name').value.trim();
             if (!name) return;
             await db(`cards`, { method: 'POST', body: JSON.stringify({ tg_id: currentUser.tg_id, card_name: name }) });
             closeModals();
-            showToast("✅ Карта создана!");
+            showToast(currentLang === 'ru' ? "✅ Карта создана!" : "✅ Card created!");
+            haptic('success');
             await refreshData();
             renderAll();
         }
 
-        function openCardLimitModal(cid) { activeCardId = cid; document.body.style.overflow = 'hidden'; document.getElementById('modal-card-limit').classList.add('show'); }
+        function openCardLimitModal(cid) {
+            haptic('light'); activeCardId = cid;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-card-limit').classList.add('show');
+        }
         async function submitCardLimit() {
             const val = parseFloat(document.getElementById('card-limit-val').value) || null;
             await db(`cards?id=eq.${activeCardId}`, { method: 'PATCH', body: JSON.stringify({ buy_limit: val }) });
             closeModals();
-            showToast("✅ Лимит обновлен!");
+            showToast(currentLang === 'ru' ? "✅ Лимит обновлен!" : "✅ Limit updated!");
+            haptic('success');
             await refreshData();
             renderCards();
         }
 
         function openCardOpModal(cid, type) {
-            activeCardId = cid; activeOpType = type;
+            haptic('light'); activeCardId = cid; activeOpType = type;
             document.body.style.overflow = 'hidden';
-            document.getElementById('modal-op-title').innerText = type === 'deposit' ? '➕ Пополнение кассы' : '➖ Снятие / Инкассация';
-            document.getElementById('modal-op-btn').innerText = type === 'deposit' ? 'Внести' : 'Списать';
+            const isRu = currentLang === 'ru';
+            document.getElementById('modal-op-title').innerText = type === 'deposit'
+                ? (isRu ? '➕ Пополнение кассы' : '➕ Cash Deposit')
+                : (isRu ? '➖ Снятие / Инкассация' : '➖ Cash Withdrawal');
+            document.getElementById('modal-op-btn').innerText = type === 'deposit'
+                ? (isRu ? 'Внести' : 'Deposit')
+                : (isRu ? 'Списать' : 'Withdraw');
             document.getElementById('modal-card-op').classList.add('show');
         }
         async function submitCardOp() {
@@ -1355,18 +2366,27 @@
             if (!amt || amt <= 0) return;
             await db(`card_operations`, {
                 method: 'POST',
-                body: JSON.stringify({ card_id: activeCardId, tg_id: currentUser.tg_id, type: activeOpType, amount: amt, comment: comm })
+                body: JSON.stringify({
+                    card_id: activeCardId,
+                    tg_id: currentUser.tg_id,
+                    type: activeOpType,
+                    amount: amt,
+                    comment: comm
+                })
             });
             closeModals();
-            showToast("✅ Операция записана!");
+            showToast(currentLang === 'ru' ? "✅ Операция записана!" : "✅ Operation saved!");
+            haptic('success');
             await refreshData();
             renderCards();
         }
 
         async function deleteCard(cid) {
-            if (!confirm("Удалить карту? Все сделки сохранятся.")) return;
+            haptic('medium');
+            const confirmMsg = currentLang === 'ru' ? "Удалить карту? Все привязанные сделки сохранятся." : "Delete card? Linked trades will be preserved.";
+            if (!confirm(confirmMsg)) return;
             await db(`cards?id=eq.${cid}`, { method: 'DELETE' });
-            showToast("🗑 Карта удалена");
+            showToast(currentLang === 'ru' ? "🗑 Карта удалена" : "🗑 Card deleted");
             await refreshData();
             renderAll();
         }
@@ -1375,23 +2395,32 @@
         let calcMode = 'fiat';
 
         function setTradeType(type) {
+            haptic('light');
             currentType = type;
             document.getElementById('btn-buy').className = `switch-btn ${type === 'buy' ? 'active buy' : ''}`;
             document.getElementById('btn-sell').className = `switch-btn ${type === 'sell' ? 'active sell' : ''}`;
-            document.getElementById('btn-save').className = `action-btn ${type === 'sell' ? 'sell-mode' : ''}`;
+            const btn = document.getElementById('btn-save');
+            btn.className = `action-btn ${type === 'sell' ? 'sell-mode' : ''}`;
             checkTradeInputs();
         }
 
         function setCalcMode(mode) {
+            haptic('light');
             calcMode = mode;
             document.getElementById('tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
             document.getElementById('tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const t = I18N[currentLang] || I18N.ru;
             const sym = getCurrencySymbol();
-            document.getElementById('lbl-amount').innerHTML = mode === 'fiat' ? `Сумма в фиате (<span class="sym">${sym}</span>)` : `Объем в USDT (🪙)`;
+            document.getElementById('lbl-amount').innerHTML = mode === 'fiat'
+                ? `${t.modeFiat} (<span class="sym">${sym}</span>)`
+                : `${t.modeCrypto} (🪙)`;
+
             checkTradeInputs();
         }
 
         function checkTradeInputs() {
+            const isRu = currentLang === 'ru';
             const amount = parseFloat(document.getElementById('inp-amount').value);
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const btn = document.getElementById('btn-save');
@@ -1402,17 +2431,26 @@
             if (amount > 0 && rate > 0) {
                 const sym = getCurrencySymbol();
                 prev.style.display = 'block';
-                let fiat = 0, crypto = 0;
+
+                let fiat = 0;
+                let crypto = 0;
+
                 if (calcMode === 'fiat') {
-                    fiat = amount; crypto = fiat / rate;
-                    prevText.innerText = "Расчетный объем USDT:";
-                    prevResult.innerText = `${crypto.toFixed(2)} USDT`;
+                    fiat = amount;
+                    crypto = fiat / rate;
+                    prevText.innerText = isRu ? "Расчетный объем USDT:" : "Estimated USDT Volume:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
                 } else {
-                    crypto = amount; fiat = crypto * rate;
-                    prevText.innerText = "Расчетный фиат:";
-                    prevResult.innerText = `${fiat.toFixed(2)} ${sym}`;
+                    crypto = amount;
+                    fiat = crypto * rate;
+                    prevText.innerText = isRu ? "Расчетный фиат:" : "Estimated Fiat:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
                 }
-                btn.innerText = `СОХРАНИТЬ ${currentType === 'buy' ? 'ПОКУПКУ' : 'ПРОДАЖУ'}: ${fiat.toFixed(2)} ${sym}`;
+
+                const actionTitle = currentType === 'buy'
+                    ? (isRu ? 'ПОКУПКУ' : 'BUY')
+                    : (isRu ? 'ПРОДАЖУ' : 'SELL');
+                btn.innerText = `${isRu ? 'СОХРАНИТЬ' : 'SAVE'} ${actionTitle}: ${fiat.toLocaleString(undefined, {maximumFractionDigits: 2})} ${sym}`;
                 btn.style.display = 'block';
             } else {
                 prev.style.display = 'none';
@@ -1427,50 +2465,72 @@
             const amount = parseFloat(document.getElementById('inp-amount').value);
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const cardId = document.getElementById('inp-card-sel').value || null;
-            if (!amount || !rate) return;
+            if (!amount || !rate || amount <= 0 || rate <= 0) return;
 
-            let fiat = calcMode === 'fiat' ? amount : parseFloat((amount * rate).toFixed(2));
-            let crypto = calcMode === 'fiat' ? parseFloat((amount / rate).toFixed(2)) : amount;
+            let fiat = 0;
+            let crypto = 0;
+
+            if (calcMode === 'fiat') {
+                fiat = amount;
+                crypto = parseFloat((fiat / rate).toFixed(2));
+            } else {
+                crypto = amount;
+                fiat = parseFloat((crypto * rate).toFixed(2));
+            }
 
             await db(`trades`, {
                 method: 'POST',
                 body: JSON.stringify({
-                    tg_id: currentUser.tg_id, type: currentType, crypto_amount: crypto,
-                    rate: rate, fiat_amount: fiat, card_id: cardId ? parseInt(cardId) : null
+                    tg_id: currentUser.tg_id,
+                    type: currentType,
+                    crypto_amount: crypto,
+                    rate: rate,
+                    fiat_amount: fiat,
+                    card_id: cardId ? parseInt(cardId) : null
                 })
             });
 
             document.getElementById('inp-amount').value = '';
             document.getElementById('inp-rate').value = '';
             checkTradeInputs();
-            showToast("✅ Сделка сохранена!");
+
+            showToast(currentLang === 'ru' ? "✅ Сделка сохранена!" : "✅ Trade saved!");
+            haptic('success');
             await refreshData();
             renderAll();
             scrollToSection('dashboard');
         }
 
         function renderHistory() {
+            const isRu = currentLang === 'ru';
             const container = document.getElementById('history-container');
             container.innerHTML = '';
             if (userTrades.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">Сделок пока нет.</div>`;
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">${isRu ? 'Сделок пока нет.' : 'No trades recorded.'}</div>`;
                 return;
             }
+
             const sym = getCurrencySymbol();
             const tz = parseInt(currentUser?.tz_offset) || 3;
+
             userTrades.forEach(t => {
                 const isBuy = t.type === 'buy';
                 const d = new Date(t.date);
                 d.setHours(d.getUTCHours() + tz);
-                const dateStr = d.toLocaleDateString('ru-RU', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                const dateStr = d.toLocaleDateString(isRu ? 'ru-RU' : 'en-US', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
                 const boundCard = userCards.find(c => c.id === t.card_id);
                 const cardBadge = boundCard ? `<span class="card-pill">💳 ${boundCard.card_name}</span>` : '';
+
+                const labelType = isBuy
+                    ? (isRu ? 'ПОКУПКА 🟢' : 'BUY 🟢')
+                    : (isRu ? 'ПРОДАЖА 🔴' : 'SELL 🔴');
 
                 container.innerHTML += `
                     <div class="history-item">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: flex; gap: 6px; align-items: center;">
-                                <span style="font-size: 11px; font-weight: 800; color: ${isBuy ? 'var(--bybit-green)' : 'var(--bybit-red)'};">${isBuy ? 'ПОКУПКА 🟢' : 'ПРОДАЖА 🔴'}</span>
+                                <span style="font-size: 11px; font-weight: 800; color: ${isBuy ? 'var(--bybit-green)' : 'var(--bybit-red)'};">${labelType}</span>
                                 ${cardBadge}
                             </div>
                             <span style="font-size: 11px; color: var(--text-muted);">${dateStr}</span>
@@ -1490,30 +2550,43 @@
             });
         }
 
+        /* РЕДАКТИРОВАНИЕ СДЕЛКИ */
         function setEditCalcMode(mode) {
+            haptic('light');
             editCalcMode = mode;
             document.getElementById('modal-tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
             document.getElementById('modal-tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const t = I18N[currentLang] || I18N.ru;
             const sym = getCurrencySymbol();
-            document.getElementById('modal-lbl-amount').innerHTML = mode === 'fiat' ? `Сумма в фиате (<span class="sym">${sym}</span>)` : `Объем в USDT (🪙)`;
+            document.getElementById('modal-lbl-amount').innerHTML = mode === 'fiat'
+                ? `${t.modeFiat} (<span class="sym">${sym}</span>)`
+                : `${t.modeCrypto} (🪙)`;
+
             const tr = userTrades.find(x => x.id === activeEditTradeId);
-            if (tr) document.getElementById('modal-inp-amount').value = mode === 'fiat' ? tr.fiat_amount : tr.crypto_amount;
+            if (tr) {
+                document.getElementById('modal-inp-amount').value = mode === 'fiat' ? tr.fiat_amount : tr.crypto_amount;
+            }
             checkEditTradeInputs();
         }
 
         function checkEditTradeInputs() {
+            const isRu = currentLang === 'ru';
             const amount = parseFloat(document.getElementById('modal-inp-amount').value);
             const rate = parseFloat(document.getElementById('modal-rate').value);
             const prevText = document.getElementById('modal-preview-text');
             const prevResult = document.getElementById('modal-preview-result');
+
             if (amount > 0 && rate > 0) {
                 const sym = getCurrencySymbol();
                 if (editCalcMode === 'fiat') {
-                    prevText.innerText = "Расчетный объем USDT:";
-                    prevResult.innerText = `${(amount / rate).toFixed(2)} USDT`;
+                    const crypto = amount / rate;
+                    prevText.innerText = isRu ? "Расчетный объем USDT:" : "Estimated USDT:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
                 } else {
-                    prevText.innerText = "Расчетный фиат:";
-                    prevResult.innerText = `${(amount * rate).toFixed(2)} ${sym}`;
+                    const fiat = amount * rate;
+                    prevText.innerText = isRu ? "Расчетный фиат:" : "Estimated Fiat:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
                 }
             }
         }
@@ -1522,16 +2595,21 @@
         document.getElementById('modal-rate').addEventListener('input', checkEditTradeInputs);
 
         function openEditTradeModal(tid) {
+            haptic('light');
             activeEditTradeId = tid;
             const tr = userTrades.find(x => x.id === tid);
             if (!tr) return;
-            document.body.style.overflow = 'hidden';
-            document.getElementById('modal-trade-id').innerText = `Сделка #${tid}`;
+
+            const isRu = currentLang === 'ru';
+            document.getElementById('modal-trade-id').innerText = `${isRu ? 'Сделка' : 'Trade'} #${tid}`;
             document.getElementById('modal-rate').value = tr.rate;
             document.getElementById('modal-card-sel').value = tr.card_id || "";
+
             setEditCalcMode('fiat');
             document.getElementById('modal-inp-amount').value = tr.fiat_amount;
             checkEditTradeInputs();
+
+            document.body.style.overflow = 'hidden';
             document.getElementById('edit-modal').classList.add('show');
         }
 
@@ -1539,35 +2617,57 @@
             const amount = parseFloat(document.getElementById('modal-inp-amount').value);
             const r = parseFloat(document.getElementById('modal-rate').value);
             const cardId = document.getElementById('modal-card-sel').value || null;
-            if (!amount || !r) return;
-            let f = editCalcMode === 'fiat' ? amount : parseFloat((amount * r).toFixed(2));
-            let c = editCalcMode === 'fiat' ? parseFloat((amount / r).toFixed(2)) : amount;
+            if (!amount || !r || amount <= 0 || r <= 0) return;
+
+            let c = 0;
+            let f = 0;
+
+            if (editCalcMode === 'fiat') {
+                f = amount;
+                c = parseFloat((f / r).toFixed(2));
+            } else {
+                c = amount;
+                f = parseFloat((c * r).toFixed(2));
+            }
 
             await db(`trades?id=eq.${activeEditTradeId}`, {
                 method: 'PATCH',
-                body: JSON.stringify({ crypto_amount: c, rate: r, fiat_amount: f, card_id: cardId ? parseInt(cardId) : null })
+                body: JSON.stringify({
+                    crypto_amount: c,
+                    rate: r,
+                    fiat_amount: f,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
             });
+
             closeModals();
-            showToast("✏️ Сделка обновлена!");
+            showToast(currentLang === 'ru' ? "✏️ Сделка обновлена!" : "✏️ Trade updated!");
+            haptic('success');
             await refreshData();
             renderAll();
         }
 
         async function deleteTradeCloud(tid) {
-            if (!confirm("Удалить сделку из базы?")) return;
+            haptic('medium');
+            const confirmMsg = currentLang === 'ru' ? "Удалить сделку из базы?" : "Delete trade from database?";
+            if (!confirm(confirmMsg)) return;
             await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
-            showToast("🗑 Сделка удалена");
+            showToast(currentLang === 'ru' ? "🗑 Сделка удалена" : "🗑 Trade deleted");
             await refreshData();
             renderAll();
         }
 
         async function updateSettings() {
+            haptic('light');
             const cur = document.getElementById('set-currency').value;
             const tz = parseInt(document.getElementById('set-tz').value);
             currentUser.currency = cur;
             currentUser.tz_offset = tz;
-            await db(`users?tg_id=eq.${currentUser.tg_id}`, { method: 'PATCH', body: JSON.stringify({ currency: cur, tz_offset: tz }) });
-            showToast("⚙️ Настройки сохранены!");
+            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ currency: cur, tz_offset: tz })
+            });
+            showToast(currentLang === 'ru' ? "⚙️ Настройки сохранены!" : "⚙️ Settings saved!");
             renderAll();
         }
 
@@ -1578,22 +2678,39 @@
         }
 
         function copyRefLink() {
+            haptic('light');
             navigator.clipboard.writeText(document.getElementById('ref-link-box').innerText);
-            showToast("Ссылка скопирована!");
+            showToast(currentLang === 'ru' ? "Ссылка скопирована!" : "Link copied!");
         }
 
         function shareRefLink() {
+            haptic('light');
             const link = document.getElementById('ref-link-box').innerText;
-            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent("Удобный P2P-терминал учета кругов и WAC:")}`;
+            const t = I18N[currentLang] || I18N.ru;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.shareText)}`;
             if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
             else window.open(url, '_blank');
+        }
+
+        function closeModals() {
+            document.body.style.overflow = '';
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
         }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2200);
+            setTimeout(() => t.classList.remove('show'), 2300);
+        }
+
+        function haptic(type) {
+            try {
+                if (tg && tg.HapticFeedback) {
+                    if (type === 'light' || type === 'medium') tg.HapticFeedback.impactOccurred(type);
+                    if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+                }
+            } catch(e) {}
         }
 
         init();
