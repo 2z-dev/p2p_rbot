@@ -6,78 +6,153 @@
     <title>P2P Terminal Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
-            --bg-main: #0b0e11;
-            --bg-secondary: #181a20;
+            --bg-main: #07090c;
+            --bg-card: rgba(18, 22, 29, 0.72);
+            --bg-card-hover: rgba(26, 32, 42, 0.82);
             --bybit-yellow: #f3a600;
             --bybit-green: #2ebb9a;
             --bybit-red: #f23645;
             --bybit-purple: #a855f7;
-            --bybit-blue: #3b82f6;
-            --glass-bg: rgba(24, 26, 32, 0.78);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #eaecef;
-            --text-muted: #848e9c;
-            --glow-yellow: rgba(243, 166, 0, 0.25);
-            --glow-green: rgba(46, 187, 154, 0.25);
+            --bybit-blue: #38bdf8;
+            --glass-border: rgba(255, 255, 255, 0.09);
+            --glass-border-focus: rgba(243, 166, 0, 0.45);
+            --text-main: #f3f4f6;
+            --text-muted: #94a3b8;
+            --glow-yellow: rgba(243, 166, 0, 0.28);
+            --glow-green: rgba(46, 187, 154, 0.28);
+            --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-main);
-            background-image:
-                radial-gradient(circle at 10% 10%, rgba(243, 166, 0, 0.06) 0%, transparent 45%),
-                radial-gradient(circle at 90% 90%, rgba(46, 187, 154, 0.06) 0%, transparent 45%);
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
             padding-bottom: 95px;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* ЖИВОЙ АТМОСФЕРНЫЙ ФОН */
+        .ambient-canvas-wrap {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(95px);
+            opacity: 0.28;
+            will-change: transform;
+        }
+
+        .orb-1 {
+            width: 380px; height: 380px;
+            background: radial-gradient(circle, var(--bybit-yellow) 0%, rgba(243,166,0,0) 70%);
+            top: -60px; left: -80px;
+            animation: floatOrb1 20s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 440px; height: 440px;
+            background: radial-gradient(circle, var(--bybit-green) 0%, rgba(46,187,154,0) 70%);
+            bottom: 40px; right: -90px;
+            animation: floatOrb2 24s ease-in-out infinite alternate;
+        }
+
+        .orb-3 {
+            width: 320px; height: 320px;
+            background: radial-gradient(circle, var(--bybit-purple) 0%, rgba(168,85,247,0) 70%);
+            top: 45%; left: 35%;
+            opacity: 0.18;
+            animation: floatOrb3 28s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatOrb1 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(80px, 120px, 0) scale(1.15); }
+            100% { transform: translate3d(-30px, 180px, 0) scale(0.9); }
+        }
+
+        @keyframes floatOrb2 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-100px, -90px, 0) scale(1.1); }
+            100% { transform: translate3d(40px, -150px, 0) scale(0.95); }
+        }
+
+        @keyframes floatOrb3 {
+            0% { transform: translate3d(0, 0, 0) scale(0.9); }
+            50% { transform: translate3d(-60px, 70px, 0) scale(1.2); }
+            100% { transform: translate3d(70px, -50px, 0) scale(1); }
+        }
+
+        .ambient-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* ТЕРМИНАЛ-ЗАГРУЗЧИК */
         #terminal-boot-loader {
-            position: fixed; inset: 0; background: #07090b; z-index: 10000;
+            position: fixed; inset: 0; background: #050709; z-index: 10000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 20px; font-family: 'Fira Code', monospace;
-            transition: opacity 0.35s ease, transform 0.35s ease;
+            transition: opacity 0.45s var(--ease-apple), transform 0.45s var(--ease-apple);
         }
         #terminal-boot-loader.fade-out {
-            opacity: 0; transform: scale(1.03); pointer-events: none;
+            opacity: 0; transform: scale(1.05); pointer-events: none;
         }
 
         .terminal-window {
-            width: 100%; max-width: 480px; background: rgba(14, 17, 22, 0.95);
-            border: 1px solid rgba(46, 187, 154, 0.3); border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(46, 187, 154, 0.15);
-            overflow: hidden; backdrop-filter: blur(20px);
+            width: 100%; max-width: 460px; background: rgba(14, 18, 25, 0.94);
+            border: 1px solid rgba(46, 187, 154, 0.35); border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 35px rgba(46, 187, 154, 0.2);
+            overflow: hidden; backdrop-filter: blur(25px);
         }
 
         .terminal-header-bar {
-            background: #12151b; padding: 10px 14px; display: flex; align-items: center;
-            justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(18, 24, 34, 0.9); padding: 12px 16px; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid var(--glass-border);
         }
         .window-dots { display: flex; gap: 7px; }
-        .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .dot-red { background: #f23645; }
         .dot-yellow { background: #f3a600; }
-        .dot-green { background: #2ebb9a; box-shadow: 0 0 8px #2ebb9a; }
+        .dot-green { background: #2ebb9a; box-shadow: 0 0 10px #2ebb9a; }
         .terminal-title { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
 
         .terminal-body {
-            padding: 16px; min-height: 240px; font-size: 12px; line-height: 1.6;
-            color: #d1d5db; display: flex; flex-direction: column; justify-content: flex-start;
+            padding: 18px; min-height: 230px; font-size: 12px; line-height: 1.6;
+            color: #cbd5e1; display: flex; flex-direction: column; justify-content: flex-start;
         }
         .console-line { margin-bottom: 5px; word-break: break-all; opacity: 0; transform: translateY(4px); transition: 0.15s ease; }
         .console-line.visible { opacity: 1; transform: translateY(0); }
         .c-green { color: var(--bybit-green); font-weight: 700; }
         .c-gold { color: var(--bybit-yellow); font-weight: 700; }
         .c-blue { color: var(--bybit-blue); }
-        .c-dim { color: #6b7280; }
+        .c-dim { color: #64748b; }
 
         .progress-box { margin-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; }
         .progress-track {
@@ -86,26 +161,44 @@
         }
         .progress-bar-inner {
             height: 100%; width: 0%; background: linear-gradient(90deg, var(--bybit-green), var(--bybit-yellow));
-            border-radius: 3px; transition: width 0.15s linear;
+            border-radius: 3px; transition: width 0.12s linear;
         }
-        .cursor-blink { display: inline-block; width: 8px; height: 14px; background: var(--bybit-green); vertical-align: middle; animation: blink 0.8s infinite; margin-left: 4px; }
+        .cursor-blink { display: inline-block; width: 8px; height: 13px; background: var(--bybit-green); vertical-align: middle; animation: blink 0.8s infinite; margin-left: 4px; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* ОСНОВНОЙ ИНТЕРФЕЙС */
-        .container { padding: 16px; max-width: 560px; margin: 0 auto; display: none; }
+        /* ГЛАВНЫЙ КОНТЕЙНЕР */
+        .container {
+            padding: 16px;
+            max-width: 560px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            display: none;
+        }
 
         .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            background: var(--bg-card);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 18px; margin-bottom: 14px;
-            box-shadow: 0 14px 35px rgba(0,0,0,0.45);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 22px;
+            padding: 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+            transition: transform 0.28s var(--ease-apple), border-color 0.28s ease, box-shadow 0.28s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+            pointer-events: none;
         }
+
+        .glass-card:active { transform: scale(0.985); }
 
         h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
         .subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0; font-weight: 500; }
@@ -113,183 +206,245 @@
 
         .terminal-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-            padding: 8px 14px; background: rgba(0,0,0,0.3); border-radius: 14px; border: 1px solid var(--glass-border);
+            padding: 10px 16px; background: rgba(0,0,0,0.38); border-radius: 16px; border: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
         }
-        .online-dot { width: 8px; height: 8px; background: var(--bybit-green); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--bybit-green); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        .online-dot-wrap {
+            position: relative;
+            width: 10px; height: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .online-dot {
+            width: 8px; height: 8px; background: var(--bybit-green); border-radius: 50%;
+            box-shadow: 0 0 12px var(--bybit-green);
+        }
+        .online-ring {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            border: 1.5px solid var(--bybit-green);
+            animation: radarPulse 2s infinite ease-out;
+        }
+        @keyframes radarPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(2.6); opacity: 0; }
+        }
 
         .sub-tier-badge {
-            display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px;
             font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            transition: all 0.3s var(--ease-apple);
         }
-        .tier-vip { background: rgba(243, 166, 0, 0.15); color: var(--bybit-yellow); border: 1px solid rgba(243, 166, 0, 0.4); box-shadow: 0 0 15px var(--glow-yellow); }
-        .tier-month { background: rgba(46, 187, 154, 0.15); color: var(--bybit-green); border: 1px solid rgba(46, 187, 154, 0.4); box-shadow: 0 0 15px var(--glow-green); }
+        .tier-vip { background: rgba(243, 166, 0, 0.15); color: var(--bybit-yellow); border: 1px solid rgba(243, 166, 0, 0.4); box-shadow: 0 0 20px var(--glow-yellow); }
+        .tier-month { background: rgba(46, 187, 154, 0.15); color: var(--bybit-green); border: 1px solid rgba(46, 187, 154, 0.4); box-shadow: 0 0 20px var(--glow-green); }
         .tier-trial { background: rgba(168, 85, 247, 0.15); color: var(--bybit-purple); border: 1px solid rgba(168, 85, 247, 0.4); }
         .tier-expired { background: rgba(242, 54, 69, 0.15); color: var(--bybit-red); border: 1px solid rgba(242, 54, 69, 0.4); }
 
         .hero-profit-card {
-            background: linear-gradient(135deg, rgba(24, 26, 32, 0.95) 0%, rgba(15, 17, 21, 0.95) 100%);
-            border: 1px solid rgba(46, 187, 154, 0.2); position: relative; overflow: hidden;
+            background: linear-gradient(145deg, rgba(24, 29, 38, 0.92) 0%, rgba(13, 16, 22, 0.96) 100%);
+            border: 1px solid rgba(46, 187, 154, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255,255,255,0.1);
         }
         .profit-val {
-            font-size: 38px; font-weight: 900; letter-spacing: -1px; margin-top: 4px;
-            transition: all 0.3s ease;
+            font-size: 34px; font-weight: 900; letter-spacing: -0.8px;
+            transition: color 0.3s ease, transform 0.2s ease;
         }
 
         .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
         .stat-card {
-            background: rgba(0, 0, 0, 0.32); border: 1px solid var(--glass-border);
-            border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;
-            transition: transform 0.2s ease, background 0.2s ease;
+            background: rgba(0, 0, 0, 0.35); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
+            transition: transform 0.25s var(--ease-apple), background 0.25s ease, border-color 0.25s ease;
         }
         .stat-card:hover {
-            transform: scale(1.03);
+            transform: translateY(-2px);
             background: rgba(0, 0, 0, 0.45);
+            border-color: rgba(255, 255, 255, 0.15);
         }
-        .stat-card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .stat-card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-card-val { font-size: 17px; font-weight: 800; margin-top: 6px; color: var(--text-main); }
         .txt-gold { color: var(--bybit-yellow); }
         .txt-green { color: var(--bybit-green); }
         .txt-blue { color: var(--bybit-blue); }
 
-        .period-tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 4px; margin-bottom: 14px; border: 1px solid var(--glass-border); }
-        .p-tab {
-            flex: 1; text-align: center; padding: 8px; border-radius: 9px;
-            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
-            transition: all 0.2s ease;
+        .period-tabs {
+            display: flex; background: rgba(0,0,0,0.45); border-radius: 14px; padding: 4px;
+            margin-bottom: 14px; border: 1px solid var(--glass-border); position: relative;
         }
-        .p-tab:active { transform: scale(0.95); }
+        .p-tab {
+            flex: 1; text-align: center; padding: 9px; border-radius: 10px;
+            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+            transition: all 0.25s var(--ease-apple);
+        }
+        .p-tab:active { transform: scale(0.96); }
         .p-tab.active {
-            background: var(--bg-secondary);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--bybit-yellow);
-            box-shadow: 0 0 15px rgba(243, 166, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.35);
         }
 
         .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
         .switch-btn {
-            flex: 1; padding: 12px; border-radius: 12px; text-align: center;
+            flex: 1; padding: 13px; border-radius: 14px; text-align: center;
             font-size: 13px; font-weight: 800; border: 1px solid var(--glass-border);
-            color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;
+            color: var(--text-muted); cursor: pointer; transition: all 0.25s var(--ease-apple);
+            background: rgba(0,0,0,0.25);
         }
-        .switch-btn:active { transform: scale(0.95); }
+        .switch-btn:active { transform: scale(0.96); }
         .switch-btn.active.buy {
-            background: rgba(46,187,154,0.15);
+            background: rgba(46,187,154,0.18);
             color: var(--bybit-green);
             border-color: var(--bybit-green);
-            box-shadow: 0 0 20px rgba(46,187,154,0.3);
+            box-shadow: 0 0 25px rgba(46,187,154,0.25);
         }
         .switch-btn.active.sell {
-            background: rgba(242,54,69,0.15);
+            background: rgba(242,54,69,0.18);
             color: var(--bybit-red);
             border-color: var(--bybit-red);
-            box-shadow: 0 0 20px rgba(242,54,69,0.3);
+            box-shadow: 0 0 25px rgba(242,54,69,0.25);
         }
 
         .input-wrap { margin-bottom: 14px; }
         .styled-input {
-            width: 100%; background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border);
-            color: var(--text-main); padding: 14px; border-radius: 14px;
-            font-size: 15px; font-weight: 600; outline: none; transition: 0.2s;
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+            color: var(--text-main); padding: 14px 16px; border-radius: 14px;
+            font-size: 15px; font-weight: 600; outline: none; transition: all 0.25s var(--ease-apple);
         }
-        .styled-input:focus { border-color: var(--bybit-yellow); }
+        .styled-input:focus {
+            border-color: var(--glass-border-focus);
+            background: rgba(0,0,0,0.6);
+            box-shadow: 0 0 20px rgba(243,166,0,0.15);
+            transform: translateY(-1px);
+        }
 
         .action-btn {
-            width: 100%; padding: 14px; border-radius: 14px; border: none;
+            width: 100%; padding: 15px; border-radius: 16px; border: none;
             font-size: 14px; font-weight: 800; text-transform: uppercase; cursor: pointer;
-            background: var(--bybit-green); color: #000; box-shadow: 0 6px 20px var(--glow-green);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            background: var(--bybit-green); color: #000; box-shadow: 0 8px 25px var(--glow-green);
+            transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s ease, filter 0.2s ease;
         }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px var(--glow-green);
-        }
-        .action-btn:active { transform: scale(0.97); }
-        .action-btn.sell-mode { background: var(--bybit-red); color: #fff; box-shadow: 0 6px 20px rgba(242,54,69,0.3); }
-        .action-btn.gold { background: var(--bybit-yellow); color: #000; box-shadow: 0 6px 20px var(--glow-yellow); }
+        .action-btn:hover { filter: brightness(1.06); }
+        .action-btn:active { transform: scale(0.96); }
+        .action-btn.sell-mode { background: var(--bybit-red); color: #fff; box-shadow: 0 8px 25px rgba(242,54,69,0.35); }
+        .action-btn.gold { background: var(--bybit-yellow); color: #000; box-shadow: 0 8px 25px var(--glow-yellow); }
         .action-btn-secondary {
-            width: 100%; padding: 12px; border-radius: 14px;
+            width: 100%; padding: 13px; border-radius: 14px;
             background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
             color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease;
         }
+        .action-btn-secondary:active { transform: scale(0.97); }
 
         .card-item {
-            background: linear-gradient(135deg, rgba(35, 38, 47, 0.95) 0%, rgba(20, 22, 28, 0.95) 100%);
-            border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; margin-bottom: 12px;
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            background: linear-gradient(145deg, rgba(32, 36, 46, 0.95) 0%, rgba(18, 20, 26, 0.95) 100%);
+            border: 1px solid var(--glass-border); border-radius: 18px; padding: 18px; margin-bottom: 12px;
+            transition: transform 0.25s var(--ease-apple), border-color 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
         }
         .card-item:hover {
-            transform: translateY(-3px);
-            border-color: var(--bybit-yellow);
+            transform: translateY(-2px);
+            border-color: rgba(243, 166, 0, 0.4);
+            box-shadow: 0 14px 40px rgba(0,0,0,0.5);
         }
         .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .card-title { font-size: 16px; font-weight: 800; }
-        .progress-bar-wrap { background: rgba(0,0,0,0.5); height: 7px; border-radius: 4px; overflow: hidden; margin: 8px 0 4px 0; }
-        .progress-bar-fill { height: 100%; background: var(--bybit-green); transition: 0.3s; }
+        .progress-bar-wrap { background: rgba(0,0,0,0.55); height: 7px; border-radius: 4px; overflow: hidden; margin: 8px 0 4px 0; }
+        .progress-bar-fill { height: 100%; background: var(--bybit-green); transition: width 0.4s var(--ease-apple); }
         .card-btns-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
         .btn-card-action {
             background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
-            color: var(--text-main); padding: 8px 4px; border-radius: 10px; font-size: 11px; font-weight: 700;
-            text-align: center; cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
+            color: var(--text-main); padding: 9px 4px; border-radius: 11px; font-size: 11px; font-weight: 700;
+            text-align: center; cursor: pointer; transition: all 0.2s var(--ease-apple);
         }
-        .btn-card-action:hover {
-            background: rgba(255,255,255,0.12);
-            transform: translateY(-1px);
-        }
-        .btn-card-action:active { transform: scale(0.95); }
+        .btn-card-action:active { transform: scale(0.94); background: rgba(255,255,255,0.12); }
 
         .history-item {
-            background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border);
-            border-radius: 14px; padding: 14px; margin-bottom: 10px;
-            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            background: rgba(0,0,0,0.28); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 14px; margin-bottom: 10px;
+            transition: all 0.25s var(--ease-apple);
         }
         .history-item:hover {
-            transform: translateX(4px);
-            background: rgba(0,0,0,0.4);
-            border-color: var(--bybit-yellow);
+            transform: translateX(3px);
+            background: rgba(0,0,0,0.45);
+            border-color: rgba(255,255,255,0.14);
         }
-        .card-pill { font-size: 10px; background: rgba(243,166,0,0.15); color: var(--bybit-yellow); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
+        .card-pill { font-size: 10px; background: rgba(243,166,0,0.15); color: var(--bybit-yellow); padding: 3px 8px; border-radius: 7px; font-weight: 700; }
 
         #restricted-screen {
             display: none; height: 100vh; padding: 25px; flex-direction: column;
             justify-content: center; align-items: center; text-align: center;
+            position: relative; z-index: 10;
         }
 
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
+            opacity: 0; transition: opacity 0.3s var(--ease-apple);
         }
-        .modal-overlay.show { display: flex; }
-        .modal-box { width: 100%; max-width: 400px; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-box {
+            width: 100%; max-width: 410px;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.35s var(--ease-apple);
+        }
+        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(11, 14, 17, 0.95); backdrop-filter: blur(20px);
+            background: rgba(9, 12, 16, 0.88);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-top: 1px solid var(--glass-border);
             display: none; justify-content: space-around; padding: 10px 0 20px 0; z-index: 1000;
         }
         .nav-btn {
             color: var(--text-muted); font-size: 10px; font-weight: 700; text-align: center;
             display: flex; flex-direction: column; gap: 4px; align-items: center; cursor: pointer; width: 16%;
-            transition: color 0.2s ease, transform 0.1s ease;
+            transition: color 0.2s var(--ease-apple), transform 0.2s var(--ease-bounce);
         }
-        .nav-btn:active { transform: scale(0.9); }
+        .nav-btn:active { transform: scale(0.88); }
         .nav-btn.active { color: var(--bybit-yellow); }
-        .nav-btn i { font-size: 18px; font-style: normal; transition: transform 0.2s ease; }
-        .nav-btn.active i { transform: scale(1.2); }
+        .nav-btn i { font-size: 18px; font-style: normal; transition: transform 0.25s var(--ease-bounce); }
+        .nav-btn.active i { transform: scale(1.18); }
 
         .section { display: none; }
-        .section.active { display: block; }
+        .section.active {
+            display: block;
+            animation: appleSectionIn 0.35s var(--ease-apple);
+        }
+        @keyframes appleSectionIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.99); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
         #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: var(--bybit-green); color: #000; font-weight: 800; padding: 12px 22px;
-            border-radius: 20px; z-index: 10001; transition: 0.3s; opacity: 0; font-size: 13px;
+            position: fixed; top: 20px; left: 50%;
+            transform: translateX(-50%) translateY(-120px) scale(0.9);
+            background: rgba(18, 24, 32, 0.95);
+            border: 1px solid var(--bybit-green);
+            color: var(--text-main);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.6), 0 0 20px rgba(46,187,154,0.3);
+            backdrop-filter: blur(20px);
+            font-weight: 700; padding: 12px 24px;
+            border-radius: 30px; z-index: 10001;
+            transition: all 0.4s var(--ease-apple);
+            opacity: 0; font-size: 13px;
+            pointer-events: none;
         }
-        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        #toast.show {
+            transform: translateX(-50%) translateY(0) scale(1);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <div class="ambient-canvas-wrap">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+    <div class="ambient-grid"></div>
+
     <!-- ХАКЕРСКАЯ ЗАГРУЗОЧНАЯ КОНСОЛЬ -->
     <div id="terminal-boot-loader">
         <div class="terminal-window">
@@ -300,7 +455,7 @@
                     <div class="dot dot-green"></div>
                 </div>
                 <div class="terminal-title">p2p_kernel@cloud: ~ /v7.0.1</div>
-                <div style="font-size: 10px; color: var(--bybit-green);">LIVE</div>
+                <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">LIVE</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
             <div class="progress-box" style="padding: 10px 16px 14px 16px;">
@@ -315,7 +470,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН ОГРАНИЧЕНИЯ (ДЛЯ ВХОДА ВНЕ TELEGRAM) -->
+    <!-- ЭКРАН ОГРАНИЧЕНИЯ (ВХОД ВНЕ TELEGRAM) -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
@@ -332,9 +487,12 @@
         <!-- 1. ДАШБОРД / АНАЛИТИКА -->
         <div id="dashboard" class="section active">
             <div class="terminal-header">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="online-dot"></span>
-                    <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">P2P TERMINAL PRO</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="online-dot-wrap">
+                        <span class="online-dot"></span>
+                        <span class="online-ring"></span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px;">P2P TERMINAL PRO</span>
                 </div>
                 <div id="disp-tier-badge" class="sub-tier-badge tier-vip">Загрузка...</div>
             </div>
@@ -345,34 +503,37 @@
                 <div class="p-tab" onclick="setPeriod('all', this)">Все время</div>
             </div>
 
-            <!-- ОБНОВЛЕННЫЙ БЛОК ПРИБЫЛИ -->
+            <!-- БЛОК ПРИБЫЛИ -->
             <div class="glass-card hero-profit-card">
                 <span class="badge" style="color: rgba(255,255,255,0.7);">💰 ОБЩАЯ ПРИБЫЛЬ</span>
 
-                <!-- Верхняя строка: крупная общая в фиате, рядом маленькая общая в USDT -->
                 <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px 0;">
-                    <div id="val-total-profit-rub" class="profit-val" style="font-size: 34px; line-height: 1;">
+                    <div id="val-total-profit-rub" class="profit-val">
                         0.00 <span style="font-size: 18px; color: var(--text-muted);" class="sym">₽</span>
                     </div>
-                    <div id="val-total-profit-usdt" style="font-size: 16px; font-weight: 800; padding: 4px 10px; border-radius: 8px; background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border);">
+                    <div id="val-total-profit-usdt" style="font-size: 15px; font-weight: 800; padding: 5px 12px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);">
                         0.00 USDT
                     </div>
                 </div>
 
                 <div style="height: 1px; background: var(--glass-border); margin-bottom: 12px;"></div>
 
-                <!-- Нижняя строка: Чистая в рублях и чистая в USDT с формулами расчета -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px 12px;">
+                    <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px 13px;">
                         <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Чистая в <span class="sym">₽</span></div>
                         <div id="val-profit-rub" style="font-size: 17px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
                         <div style="font-size: 10px; color: var(--text-muted);">Продажа − Покупка</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px 12px;">
+                    <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px 13px;">
                         <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Чистая в USDT</div>
                         <div id="val-profit-usdt" style="font-size: 17px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
                         <div style="font-size: 10px; color: var(--text-muted);">Покупка − Продажа</div>
                     </div>
+                </div>
+
+                <!-- ЕДИНАЯ СРЕДНЯЯ ЦЕНА КРУГА -->
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 12px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
+                    ⚖️ Средняя цена (Mid Price): <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
                 </div>
             </div>
 
@@ -438,7 +599,7 @@
                         <option value="">Без привязки к карте</option>
                     </select>
                 </div>
-                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 13px;">
+                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 13px; border-radius: 14px; margin-bottom: 16px; font-size: 13px;">
                     <span id="preview-text">Итог:</span> <b id="preview-result" style="color: var(--bybit-yellow);">0.00</b>
                 </div>
                 <button class="action-btn" id="btn-save" onclick="saveTrade()" style="display: none;">СОХРАНИТЬ СДЕЛКУ</button>
@@ -452,7 +613,7 @@
                     <h1 style="margin: 0;">Мои карты</h1>
                     <p class="subtitle" style="margin: 0;">Контроль кассы и лимитов</p>
                 </div>
-                <button class="btn-card-action" style="padding: 6px 10px;" onclick="openNewCardModal()">➕ Создать</button>
+                <button class="btn-card-action" style="padding: 7px 12px;" onclick="openNewCardModal()">➕ Создать</button>
             </div>
             <div id="cards-container"></div>
         </div>
@@ -471,11 +632,11 @@
             <h1>Партнерская сеть</h1>
             <p class="subtitle">Получайте бонусные дни подписки</p>
             <div class="glass-card">
-                <div style="text-align: center; padding: 15px; background: rgba(0,0,0,0.25); border-radius: 14px;">
-                    <div style="font-size: 32px; font-weight: 800; color: var(--bybit-yellow);" id="ref-count-val">0</div>
+                <div style="text-align: center; padding: 18px; background: rgba(0,0,0,0.3); border-radius: 16px;">
+                    <div style="font-size: 36px; font-weight: 900; color: var(--bybit-yellow);" id="ref-count-val">0</div>
                     <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Приглашено пользователей</div>
                 </div>
-                <span class="badge" style="margin-top: 15px;">Ваша партнерская ссылка</span>
+                <span class="badge" style="margin-top: 16px;">Ваша партнерская ссылка</span>
                 <div class="styled-input" style="word-break: break-all; font-family: monospace; font-size: 12px;" id="ref-link-box">...</div>
                 <div class="analytics-grid" style="margin-top: 15px;">
                     <button class="action-btn" onclick="copyRefLink()">📋 Скопировать</button>
@@ -555,7 +716,7 @@
         </div>
     </div>
 
-    <!-- ВСПЛЫВАЮЩЕЕ ОКНО ПОДПИСКИ -->
+    <!-- МОДАЛЬНЫЕ ОКНА -->
     <div id="modal-sub-info" class="modal-overlay">
         <div class="glass-card modal-box" style="text-align: center;">
             <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
@@ -568,7 +729,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКИ КАРТ И СДЕЛОК -->
     <div id="modal-card-create" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;">➕ Добавить карту</h2>
@@ -680,6 +840,54 @@
         let activeOpType = 'deposit';
         let activeEditTradeId = null;
 
+        function getCurrencySymbol() {
+            const map = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"};
+            return map[currentUser?.currency || 'RUB'] || (currentUser?.currency || '₽');
+        }
+
+        function updateAllCurrencySymbols() {
+            const sym = getCurrencySymbol();
+            document.querySelectorAll('.sym').forEach(el => el.innerText = sym);
+            const tabFiat = document.getElementById('tab-mode-fiat');
+            if (tabFiat) tabFiat.innerHTML = `Сумма фиата (<span class="sym">${sym}</span>)`;
+            const lblAmt = document.getElementById('lbl-amount');
+            if (lblAmt && calcMode === 'fiat') lblAmt.innerHTML = `Сумма в фиате (<span class="sym">${sym}</span>)`;
+        }
+
+        function animateNumber(element, target, prefix = '', suffix = '', decimals = 2, suffixSize = '13px') {
+            const start = parseFloat(element.dataset.curVal || 0);
+            const duration = 650;
+            const startTime = performance.now();
+
+            function easeOutExpo(x) {
+                return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+            }
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = start + (target - start) * easeOutExpo(progress);
+
+                const sign = current > 0 ? '+' : '';
+                element.innerHTML = `${sign}${current.toLocaleString(undefined, {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals
+                })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.dataset.curVal = target;
+                    const finalSign = target > 0 ? '+' : '';
+                    element.innerHTML = `${finalSign}${target.toLocaleString(undefined, {
+                        minimumFractionDigits: decimals,
+                        maximumFractionDigits: decimals
+                    })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
         const bootLogs = [
             { text: "> SYSTEM BOOT: INIT P2P_CORE_V7.0.1", class: "c-green" },
             { text: "[OK] SECURE TELEGRAM ENCLAVE LOADED", class: "c-dim" },
@@ -716,7 +924,7 @@
                 pct.innerText = `${p}%`;
                 container.scrollTop = container.scrollHeight;
 
-                await new Promise(r => setTimeout(r, 90));
+                await new Promise(r => setTimeout(r, 70));
             }
         }
 
@@ -735,7 +943,7 @@
 
             const loader = document.getElementById('terminal-boot-loader');
             loader.classList.add('fade-out');
-            setTimeout(() => { loader.style.display = 'none'; }, 350);
+            setTimeout(() => { loader.style.display = 'none'; }, 400);
         }
 
         async function loadUserData(tgId) {
@@ -820,6 +1028,7 @@
         }
 
         function renderAll() {
+            updateAllCurrencySymbols();
             calculateStats();
             renderCards();
             renderHistory();
@@ -869,59 +1078,69 @@
             const wac = bC > 0 ? bF / bC : 0;
             const avgSell = sC > 0 ? sF / sC : 0;
 
-            // Расчет прибыли по новым правилам:
-            // 1. Чистая в фиате = Сумма продажи − Сумма покупки
-            const profitRub = sF - bF;
+            // ЕДИНАЯ СРЕДНЯЯ ЦЕНА КРУГА (MID PRICE)
+            let midPrice = 0;
+            if (wac > 0 && avgSell > 0) {
+                midPrice = (wac + avgSell) / 2;
+            } else if (wac > 0) {
+                midPrice = wac;
+            } else if (avgSell > 0) {
+                midPrice = avgSell;
+            }
 
-            // 2. Чистая в USDT = Сумма покупок − Сумма продаж (остаток крипты на руках)
+            // 1. Чистая в фиате = Продажи − Покупки
+            const profitFiat = sF - bF;
+
+            // 2. Чистая в USDT = Покупки − Продажи (остаток крипты на балансе)
             const profitUsdt = bC - sC;
 
-            // 3. Общая в фиате = Чистая в фиате + (Остаток USDT * средний курс продажи или закупки)
-            const rateRub = avgSell > 0 ? avgSell : wac;
-            const totalProfitRub = profitRub + (profitUsdt * rateRub);
-
-            // 4. Общая в USDT = Чистая в USDT + (Чистая в фиате / средний курс закупки или продажи)
-            const rateUsdt = wac > 0 ? wac : avgSell;
-            const totalProfitUsdt = profitUsdt + (rateUsdt > 0 ? profitRub / rateUsdt : 0);
+            // 3. Общая прибыль в фиате и USDT через единый midPrice
+            const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
+            const totalProfitUsdt = profitUsdt + (midPrice > 0 ? profitFiat / midPrice : 0);
 
             const spread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
             const fiatTurn = bF + sF;
             const cryptoTurn = bC + sC;
-            const roi = fiatTurn > 0 ? (totalProfitRub / fiatTurn) * 100 : 0;
+            const roi = fiatTurn > 0 ? (totalProfitFiat / fiatTurn) * 100 : 0;
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
-            document.querySelectorAll('.sym').forEach(e => e.innerText = sym);
+            const sym = getCurrencySymbol();
+            updateAllCurrencySymbols();
 
-            // Функция подсветки: плюс - зеленый, минус - красный
-            function applyProfitStyle(el, val, suffix, isMain = false) {
-                const isPos = val > 0;
-                const isNeg = val < 0;
-                const sign = isPos ? '+' : '';
-                const color = isNeg ? 'var(--bybit-red)' : (isPos ? 'var(--bybit-green)' : 'var(--text-main)');
-                el.innerHTML = `${sign}${val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span style="font-size: ${isMain ? '18px' : '12px'}; color: var(--text-muted);">${suffix}</span>`;
-                el.style.color = color;
+            function updateMetricColor(el, val) {
+                el.style.color = val < 0 ? 'var(--bybit-red)' : (val > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
             }
 
-            // 1. Общая в рублях (самое крупное)
-            applyProfitStyle(document.getElementById('val-total-profit-rub'), totalProfitRub, sym, true);
+            // 1. Общая в фиате
+            const elTotalFiat = document.getElementById('val-total-profit-rub');
+            updateMetricColor(elTotalFiat, totalProfitFiat);
+            animateNumber(elTotalFiat, totalProfitFiat, '', sym, 2, '18px');
 
-            // 2. Общая в USDT (рядом маленькая)
-            applyProfitStyle(document.getElementById('val-total-profit-usdt'), totalProfitUsdt, 'USDT', false);
+            // 2. Общая в USDT
+            const elTotalUsdt = document.getElementById('val-total-profit-usdt');
+            updateMetricColor(elTotalUsdt, totalProfitUsdt);
+            animateNumber(elTotalUsdt, totalProfitUsdt, '', 'USDT', 2, '12px');
 
-            // 3. Чистая в рублях (ниже с формулой)
-            applyProfitStyle(document.getElementById('val-profit-rub'), profitRub, sym, false);
+            // 3. Чистая в фиате
+            const elProfitFiat = document.getElementById('val-profit-rub');
+            updateMetricColor(elProfitFiat, profitFiat);
+            animateNumber(elProfitFiat, profitFiat, '', sym, 2, '12px');
 
-            // 4. Чистая в USDT (ниже с формулой)
-            applyProfitStyle(document.getElementById('val-profit-usdt'), profitUsdt, 'USDT', false);
+            // 4. Чистая в USDT
+            const elProfitUsdt = document.getElementById('val-profit-usdt');
+            updateMetricColor(elProfitUsdt, profitUsdt);
+            animateNumber(elProfitUsdt, profitUsdt, '', 'USDT', 2, '12px');
+
+            // Подсказка единой средней цены
+            document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
             // Спред и ROI
             const spreadEl = document.getElementById('val-spread');
             spreadEl.innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
-            spreadEl.style.color = spread < 0 ? 'var(--bybit-red)' : (spread > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+            updateMetricColor(spreadEl, spread);
 
             const roiEl = document.getElementById('val-roi');
             roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
-            roiEl.style.color = roi < 0 ? 'var(--bybit-red)' : (roi > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+            updateMetricColor(roiEl, roi);
 
             document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -938,7 +1157,7 @@
                 return;
             }
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
+            const sym = getCurrencySymbol();
 
             userCards.forEach(c => {
                 const spentBuy = userTrades.filter(t => t.card_id === c.id && t.type === 'buy').reduce((acc, t) => acc + parseFloat(t.fiat_amount || 0), 0);
@@ -1063,7 +1282,8 @@
             document.getElementById('tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
             document.getElementById('tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
+            const sym = getCurrencySymbol();
+            document.getElementById('tab-mode-fiat').innerHTML = `Сумма фиата (<span class="sym">${sym}</span>)`;
             document.getElementById('lbl-amount').innerHTML = mode === 'fiat'
                 ? `Сумма в фиате (<span class="sym">${sym}</span>)`
                 : `Объем в USDT (🪙)`;
@@ -1080,7 +1300,7 @@
             const prevResult = document.getElementById('preview-result');
 
             if (amount > 0 && rate > 0) {
-                const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
+                const sym = getCurrencySymbol();
                 prev.style.display = 'block';
 
                 let fiat = 0;
@@ -1158,7 +1378,7 @@
                 return;
             }
 
-            const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
+            const sym = getCurrencySymbol();
             const tz = parseInt(currentUser?.tz_offset) || 3;
 
             userTrades.forEach(t => {
@@ -1182,7 +1402,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div>
                                 <div style="font-size: 17px; font-weight: 800;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
-                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT по ${t.rate}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT по ${t.rate} ${sym}</div>
                             </div>
                             <div style="display: flex; gap: 6px;">
                                 <button class="btn-card-action" style="padding: 5px 10px;" onclick="openEditTradeModal(${t.id})">✏️</button>
@@ -1280,7 +1500,7 @@
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2200);
+            setTimeout(() => t.classList.remove('show'), 2300);
         }
 
         function haptic(type) {
