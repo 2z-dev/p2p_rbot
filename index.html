@@ -131,8 +131,10 @@
             background: linear-gradient(135deg, rgba(24, 26, 32, 0.95) 0%, rgba(15, 17, 21, 0.95) 100%);
             border: 1px solid rgba(46, 187, 154, 0.2); position: relative; overflow: hidden;
         }
-        .profit-val { font-size: 38px; font-weight: 900; color: var(--bybit-green); letter-spacing: -1px; margin-top: 4px; }
-        .profit-val.negative { color: var(--bybit-red); }
+        .profit-val {
+            font-size: 38px; font-weight: 900; letter-spacing: -1px; margin-top: 4px;
+            transition: all 0.3s ease;
+        }
 
         .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
         .stat-card {
@@ -153,18 +155,35 @@
         .period-tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 4px; margin-bottom: 14px; border: 1px solid var(--glass-border); }
         .p-tab {
             flex: 1; text-align: center; padding: 8px; border-radius: 9px;
-            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s;
+            font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .p-tab.active { background: var(--bg-secondary); color: var(--bybit-yellow); }
+        .p-tab:active { transform: scale(0.95); }
+        .p-tab.active {
+            background: var(--bg-secondary);
+            color: var(--bybit-yellow);
+            box-shadow: 0 0 15px rgba(243, 166, 0, 0.2);
+        }
 
         .trade-switch { display: flex; gap: 10px; margin-bottom: 16px; }
         .switch-btn {
             flex: 1; padding: 12px; border-radius: 12px; text-align: center;
             font-size: 13px; font-weight: 800; border: 1px solid var(--glass-border);
-            color: var(--text-muted); cursor: pointer; transition: 0.2s;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;
         }
-        .switch-btn.active.buy { background: rgba(46,187,154,0.15); color: var(--bybit-green); border-color: var(--bybit-green); }
-        .switch-btn.active.sell { background: rgba(242,54,69,0.15); color: var(--bybit-red); border-color: var(--bybit-red); }
+        .switch-btn:active { transform: scale(0.95); }
+        .switch-btn.active.buy {
+            background: rgba(46,187,154,0.15);
+            color: var(--bybit-green);
+            border-color: var(--bybit-green);
+            box-shadow: 0 0 20px rgba(46,187,154,0.3);
+        }
+        .switch-btn.active.sell {
+            background: rgba(242,54,69,0.15);
+            color: var(--bybit-red);
+            border-color: var(--bybit-red);
+            box-shadow: 0 0 20px rgba(242,54,69,0.3);
+        }
 
         .input-wrap { margin-bottom: 14px; }
         .styled-input {
@@ -217,9 +236,7 @@
             background: rgba(255,255,255,0.12);
             transform: translateY(-1px);
         }
-        .btn-card-action:active {
-            transform: scale(0.95);
-        }
+        .btn-card-action:active { transform: scale(0.95); }
 
         .history-item {
             background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border);
@@ -254,9 +271,12 @@
         .nav-btn {
             color: var(--text-muted); font-size: 10px; font-weight: 700; text-align: center;
             display: flex; flex-direction: column; gap: 4px; align-items: center; cursor: pointer; width: 16%;
+            transition: color 0.2s ease, transform 0.1s ease;
         }
+        .nav-btn:active { transform: scale(0.9); }
         .nav-btn.active { color: var(--bybit-yellow); }
-        .nav-btn i { font-size: 18px; font-style: normal; }
+        .nav-btn i { font-size: 18px; font-style: normal; transition: transform 0.2s ease; }
+        .nav-btn.active i { transform: scale(1.2); }
 
         .section { display: none; }
         .section.active { display: block; }
@@ -309,7 +329,7 @@
 
     <!-- ГЛАВНЫЙ КОНТЕЙНЕР ТЕРМИНАЛА -->
     <div class="container">
-        <!-- 1. ДАШБОРД / АНАЛИТИКА (АКТИВЕН СРАЗУ) -->
+        <!-- 1. ДАШБОРД / АНАЛИТИКА -->
         <div id="dashboard" class="section active">
             <div class="terminal-header">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -325,31 +345,34 @@
                 <div class="p-tab" onclick="setPeriod('all', this)">Все время</div>
             </div>
 
+            <!-- ОБНОВЛЕННЫЙ БЛОК ПРИБЫЛИ -->
             <div class="glass-card hero-profit-card">
-                <span class="badge" style="color: rgba(255,255,255,0.7);">💰 ПРИБЫЛЬ</span>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
-                    <div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Чистая в <span class="sym">₽</span></div>
-                        <div class="profit-val" style="font-size: 24px;" id="val-profit-rub">0.00 <span style="font-size: 14px; color: var(--text-muted);" class="sym">₽</span></div>
+                <span class="badge" style="color: rgba(255,255,255,0.7);">💰 ОБЩАЯ ПРИБЫЛЬ</span>
+
+                <!-- Верхняя строка: крупная общая в фиате, рядом маленькая общая в USDT -->
+                <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px 0;">
+                    <div id="val-total-profit-rub" class="profit-val" style="font-size: 34px; line-height: 1;">
+                        0.00 <span style="font-size: 18px; color: var(--text-muted);" class="sym">₽</span>
                     </div>
-                    <div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Чистая в USDT</div>
-                        <div class="profit-val" style="font-size: 24px; color: var(--bybit-blue);" id="val-profit-usdt">0.00 <span style="font-size: 14px; color: var(--text-muted);">USDT</span></div>
-                    </div>
-                </div>
-                <div style="height: 1px; background: var(--glass-border); margin: 12px 0;"></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Общая в <span class="sym">₽</span></div>
-                        <div class="profit-val" style="font-size: 28px;" id="val-total-profit-rub">0.00 <span style="font-size: 16px; color: var(--text-muted);" class="sym">₽</span></div>
-                    </div>
-                    <div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Общая в USDT</div>
-                        <div class="profit-val" style="font-size: 28px; color: var(--bybit-blue);" id="val-total-profit-usdt">0.00 <span style="font-size: 16px; color: var(--text-muted);">USDT</span></div>
+                    <div id="val-total-profit-usdt" style="font-size: 16px; font-weight: 800; padding: 4px 10px; border-radius: 8px; background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border);">
+                        0.00 USDT
                     </div>
                 </div>
-                <div style="font-size: 10px; color: var(--text-muted); margin-top: 10px; text-align: center;">
-                    💡 Средние курсы: покупка <span id="hint-avg-buy">0</span>, продажа <span id="hint-avg-sell">0</span>
+
+                <div style="height: 1px; background: var(--glass-border); margin-bottom: 12px;"></div>
+
+                <!-- Нижняя строка: Чистая в рублях и чистая в USDT с формулами расчета -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px 12px;">
+                        <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Чистая в <span class="sym">₽</span></div>
+                        <div id="val-profit-rub" style="font-size: 17px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Продажа − Покупка</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px 12px;">
+                        <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Чистая в USDT</div>
+                        <div id="val-profit-usdt" style="font-size: 17px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Покупка − Продажа</div>
+                    </div>
                 </div>
             </div>
 
@@ -386,18 +409,16 @@
             </div>
         </div>
 
-        <!-- 2. СДЕЛКА (ВЫБОР: ФИАТ ИЛИ USDT, ФИАТ ПО УМОЛЧАНИЮ) -->
+        <!-- 2. СДЕЛКА -->
         <div id="trade" class="section">
             <h1>Новая операция</h1>
             <p class="subtitle">Внести круг в облачную базу</p>
             <div class="glass-card">
-                <!-- Тип операции -->
                 <div class="trade-switch">
                     <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')">ПОКУПКА 🟢</div>
                     <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')">ПРОДАЖА 🔴</div>
                 </div>
 
-                <!-- Переключатель режима: Фиат по умолчанию -->
                 <div class="period-tabs" style="margin-bottom: 16px;">
                     <div class="p-tab active" id="tab-mode-fiat" onclick="setCalcMode('fiat')">Сумма фиата (<span class="sym">₽</span>)</div>
                     <div class="p-tab" id="tab-mode-crypto" onclick="setCalcMode('crypto')">Объем USDT (🪙)</div>
@@ -534,7 +555,7 @@
         </div>
     </div>
 
-    <!-- ВСПЛЫВАЮЩЕЕ ОКНО: ПОДПИСКА ТОЛЬКО В БОТЕ -->
+    <!-- ВСПЛЫВАЮЩЕЕ ОКНО ПОДПИСКИ -->
     <div id="modal-sub-info" class="modal-overlay">
         <div class="glass-card modal-box" style="text-align: center;">
             <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
@@ -659,9 +680,6 @@
         let activeOpType = 'deposit';
         let activeEditTradeId = null;
 
-        // ==========================================
-        // КИБЕРПАНК СИМУЛЯТОР СИСТЕМНОГО ТЕРМИНАЛА
-        // ==========================================
         const bootLogs = [
             { text: "> SYSTEM BOOT: INIT P2P_CORE_V7.0.1", class: "c-green" },
             { text: "[OK] SECURE TELEGRAM ENCLAVE LOADED", class: "c-dim" },
@@ -691,14 +709,11 @@
                 requestAnimationFrame(() => line.classList.add("visible"));
 
                 const prevCursors = container.querySelectorAll(".cursor-blink");
-                if (prevCursors.length > 1) {
-                    prevCursors[0].remove();
-                }
+                if (prevCursors.length > 1) prevCursors[0].remove();
 
                 const p = Math.round(((i + 1) / total) * 100);
                 bar.style.width = `${p}%`;
                 pct.innerText = `${p}%`;
-
                 container.scrollTop = container.scrollHeight;
 
                 await new Promise(r => setTimeout(r, 90));
@@ -720,9 +735,7 @@
 
             const loader = document.getElementById('terminal-boot-loader');
             loader.classList.add('fade-out');
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 350);
+            setTimeout(() => { loader.style.display = 'none'; }, 350);
         }
 
         async function loadUserData(tgId) {
@@ -768,20 +781,14 @@
         }
 
         function getSubStatusInfo() {
-            if (currentUser.is_banned) {
-                return { text: "⛔️ Заблокирован", class: "tier-expired", active: false };
-            }
-            if (!currentUser.sub_end) {
-                return { text: "❌ Нет подписки", class: "tier-expired", active: false };
-            }
+            if (currentUser.is_banned) return { text: "⛔️ Заблокирован", class: "tier-expired", active: false };
+            if (!currentUser.sub_end) return { text: "❌ Нет подписки", class: "tier-expired", active: false };
+
             const now = new Date();
             const end = new Date(currentUser.sub_end);
-            if (end < now) {
-                return { text: "⏳ Истекла", class: "tier-expired", active: false };
-            }
-            if (end.getFullYear() > 2099) {
-                return { text: "💎 VIP Навсегда", class: "tier-vip", active: true };
-            }
+            if (end < now) return { text: "⏳ Истекла", class: "tier-expired", active: false };
+            if (end.getFullYear() > 2099) return { text: "💎 VIP Навсегда", class: "tier-vip", active: true };
+
             const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
             const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
             const dateStr = end.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
@@ -862,11 +869,20 @@
             const wac = bC > 0 ? bF / bC : 0;
             const avgSell = sC > 0 ? sF / sC : 0;
 
-            // Новая логика расчета прибыли
-            const profitRub = sF - bF; // Чистая прибыль в рублях
-            const profitUsdt = sC - bC; // Прибыль в USDT
-            const totalProfitRub = profitRub + (profitUsdt * avgSell); // Общая в рублях
-            const totalProfitUsdt = (wac > 0 ? profitRub / wac : 0) + profitUsdt; // Общая в USDT
+            // Расчет прибыли по новым правилам:
+            // 1. Чистая в фиате = Сумма продажи − Сумма покупки
+            const profitRub = sF - bF;
+
+            // 2. Чистая в USDT = Сумма покупок − Сумма продаж (остаток крипты на руках)
+            const profitUsdt = bC - sC;
+
+            // 3. Общая в фиате = Чистая в фиате + (Остаток USDT * средний курс продажи или закупки)
+            const rateRub = avgSell > 0 ? avgSell : wac;
+            const totalProfitRub = profitRub + (profitUsdt * rateRub);
+
+            // 4. Общая в USDT = Чистая в USDT + (Чистая в фиате / средний курс закупки или продажи)
+            const rateUsdt = wac > 0 ? wac : avgSell;
+            const totalProfitUsdt = profitUsdt + (rateUsdt > 0 ? profitRub / rateUsdt : 0);
 
             const spread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
             const fiatTurn = bF + sF;
@@ -876,34 +892,37 @@
             const sym = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"}[currentUser?.currency || 'RUB'] || "₽";
             document.querySelectorAll('.sym').forEach(e => e.innerText = sym);
 
-            // Обновление чистой прибыли в рублях
-            const pElRub = document.getElementById('val-profit-rub');
-            pElRub.innerHTML = (profitRub > 0 ? "+" : "") + profitRub.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 14px; color: var(--text-muted);">${sym}</span>`;
-            pElRub.className = profitRub < 0 ? 'profit-val negative' : 'profit-val';
+            // Функция подсветки: плюс - зеленый, минус - красный
+            function applyProfitStyle(el, val, suffix, isMain = false) {
+                const isPos = val > 0;
+                const isNeg = val < 0;
+                const sign = isPos ? '+' : '';
+                const color = isNeg ? 'var(--bybit-red)' : (isPos ? 'var(--bybit-green)' : 'var(--text-main)');
+                el.innerHTML = `${sign}${val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span style="font-size: ${isMain ? '18px' : '12px'}; color: var(--text-muted);">${suffix}</span>`;
+                el.style.color = color;
+            }
 
-            // Обновление чистой прибыли в USDT
-            const pElUsdt = document.getElementById('val-profit-usdt');
-            pElUsdt.innerHTML = (profitUsdt > 0 ? "+" : "") + profitUsdt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 14px; color: var(--text-muted);">USDT</span>`;
-            pElUsdt.className = profitUsdt < 0 ? 'profit-val negative' : 'profit-val';
-            if (profitUsdt >= 0) pElUsdt.style.color = 'var(--bybit-blue)';
+            // 1. Общая в рублях (самое крупное)
+            applyProfitStyle(document.getElementById('val-total-profit-rub'), totalProfitRub, sym, true);
 
-            // Обновление общей прибыли в рублях
-            const pElTotalRub = document.getElementById('val-total-profit-rub');
-            pElTotalRub.innerHTML = (totalProfitRub > 0 ? "+" : "") + totalProfitRub.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 16px; color: var(--text-muted);">${sym}</span>`;
-            pElTotalRub.className = totalProfitRub < 0 ? 'profit-val negative' : 'profit-val';
+            // 2. Общая в USDT (рядом маленькая)
+            applyProfitStyle(document.getElementById('val-total-profit-usdt'), totalProfitUsdt, 'USDT', false);
 
-            // Обновление общей прибыли в USDT
-            const pElTotalUsdt = document.getElementById('val-total-profit-usdt');
-            pElTotalUsdt.innerHTML = (totalProfitUsdt > 0 ? "+" : "") + totalProfitUsdt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ` <span style="font-size: 16px; color: var(--text-muted);">USDT</span>`;
-            pElTotalUsdt.className = totalProfitUsdt < 0 ? 'profit-val negative' : 'profit-val';
-            if (totalProfitUsdt >= 0) pElTotalUsdt.style.color = 'var(--bybit-blue)';
+            // 3. Чистая в рублях (ниже с формулой)
+            applyProfitStyle(document.getElementById('val-profit-rub'), profitRub, sym, false);
 
-            // Подсказка о средних курсах
-            document.getElementById('hint-avg-buy').innerText = wac.toFixed(2);
-            document.getElementById('hint-avg-sell').innerText = avgSell.toFixed(2);
+            // 4. Чистая в USDT (ниже с формулой)
+            applyProfitStyle(document.getElementById('val-profit-usdt'), profitUsdt, 'USDT', false);
 
-            document.getElementById('val-spread').innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
-            document.getElementById('val-roi').innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
+            // Спред и ROI
+            const spreadEl = document.getElementById('val-spread');
+            spreadEl.innerText = (spread > 0 ? "+" : "") + spread.toFixed(2) + "%";
+            spreadEl.style.color = spread < 0 ? 'var(--bybit-red)' : (spread > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+
+            const roiEl = document.getElementById('val-roi');
+            roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
+            roiEl.style.color = roi < 0 ? 'var(--bybit-red)' : (roi > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+
             document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('val-fiat-turn').innerText = fiatTurn.toLocaleString(undefined, {minimumFractionDigits: 0});
@@ -1025,11 +1044,8 @@
             renderAll();
         }
 
-        // ==========================================
-        // УПРАВЛЕНИЕ СДЕЛКОЙ (ФИАТ / USDT)
-        // ==========================================
         let currentType = 'buy';
-        let calcMode = 'fiat'; // По умолчанию ввод в фиате
+        let calcMode = 'fiat';
 
         function setTradeType(type) {
             haptic('light');
