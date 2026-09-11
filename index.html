@@ -283,7 +283,6 @@
             50% { opacity: 0; }
         }
 
-        /* 3D КОНТЕЙНЕР */
         .container {
             padding: 16px;
             max-width: 580px;
@@ -422,7 +421,7 @@
             box-shadow: 0 0 10px var(--glow-yellow);
         }
 
-        /* ПОЛНОЭКРАННАЯ ПЛАШКА ПОДПИСКИ (БЕЗ ОБЛАСТИ В ОБЛАСТИ И ТОЧЕК) */
+        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ НА ГОЛОМ ФОНЕ */
         .sub-tier-badge {
             display: flex;
             align-items: center;
@@ -549,7 +548,36 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
         }
 
-        /* КНОПКА СВОРАЧИВАНИЯ ПОДРОБНОСТЕЙ (ЗАМЕТНАЯ И ЯРКАЯ) */
+        /* КОМПАКТНЫЙ ВЫБОР ДАТ (БЕЗ ПЕРЕСЕЧЕНИЙ) */
+        .date-chip-wrap {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2px 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .compact-date-input {
+            background: transparent !important;
+            border: none !important;
+            color: var(--text-main) !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            font-family: inherit !important;
+            padding: 7px 4px !important;
+            width: auto !important;
+            max-width: 125px !important;
+            outline: none !important;
+            text-align: center !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            display: block;
+        }
+
+        /* ЗАМЕТНАЯ КНОПКА СТАТИСТИКИ */
         .details-toggle-btn {
             width: 100%;
             background: rgba(243, 166, 0, 0.08);
@@ -986,12 +1014,12 @@
 
         <!-- 1. СВОДКА -->
         <section id="dashboard" class="page-section revealed">
-            <!-- ПУНКТ 1: ПОЛНОСТЬЮ ЧИСТАЯ ПЛАШКА ПОДПИСКИ (БЕЗ ОБЛАСТИ В ОБЛАСТИ И МИГАЮЩЕЙ ТОЧКИ) -->
+            <!-- ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ -->
             <div id="disp-tier-badge" class="sub-tier-badge tier-vip">
                 Загрузка...
             </div>
 
-            <!-- ПУНКТ 9: Вкладки периодов с 4-м пунктом «Свой период 📅» -->
+            <!-- Вкладки периодов -->
             <div class="period-tabs">
                 <div class="p-tab active" onclick="setPeriod('today', this)" data-i18n="tabToday">За сегодня</div>
                 <div class="p-tab" onclick="setPeriod('month', this)" data-i18n="tabMonth">За месяц</div>
@@ -999,7 +1027,7 @@
                 <div class="p-tab" id="tab-custom" onclick="toggleCustomDatePanel(this)" data-i18n="tabCustom">Свой период 📅</div>
             </div>
 
-            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ (УСТРАНЕНО ПЕРЕСЕЧЕНИЕ ДАТ) -->
+            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ (КОМПАКТНАЯ, БЕЗ ПЕРЕСЕЧЕНИЙ) -->
             <div id="custom-date-panel" style="display: none; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;">
                     <button class="btn-preset-chip" onclick="setQuickPreset(1)" data-i18n="presetYesterday">Вчера</button>
@@ -1007,16 +1035,23 @@
                     <button class="btn-preset-chip" onclick="setQuickPreset(14)">14 дней</button>
                     <button class="btn-preset-chip" onclick="setQuickPreset(30)" data-i18n="preset30d">30 дней</button>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div style="min-width: 0;">
-                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;" data-i18n="dateFrom">С даты</span>
-                        <input type="date" id="custom-date-from" class="styled-input" style="padding: 10px 8px; font-size: 12px; width: 100%; min-width: 0; box-sizing: border-box;">
+
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;" data-i18n="dateFrom">С даты</span>
+                        <div class="date-chip-wrap">
+                            <input type="date" id="custom-date-from" class="compact-date-input">
+                        </div>
                     </div>
-                    <div style="min-width: 0;">
-                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;" data-i18n="dateTo">По дату</span>
-                        <input type="date" id="custom-date-to" class="styled-input" style="padding: 10px 8px; font-size: 12px; width: 100%; min-width: 0; box-sizing: border-box;">
+                    <div style="color: var(--text-muted); font-size: 14px; font-weight: 800; margin-top: 14px;">—</div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;" data-i18n="dateTo">По дату</span>
+                        <div class="date-chip-wrap">
+                            <input type="date" id="custom-date-to" class="compact-date-input">
+                        </div>
                     </div>
                 </div>
+
                 <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="applyCustomDateFilter()" data-i18n="btnApplyDate">
                     Применить ⚡️
                 </button>
@@ -1039,7 +1074,7 @@
                 </div>
             </div>
 
-            <!-- СПРЕД КРУГА (ПОСЛЕДНИЙ И СРЕДНИЙ) В ОДНОЙ ПЛАШКЕ -->
+            <!-- СПРЕД КРУГА (ПОСЛЕДНИЙ И СРЕДНИЙ) -->
             <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
@@ -1073,7 +1108,7 @@
                 </div>
             </div>
 
-            <!-- ПУНКТ 2: КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ (ПЕРЕНЕСЕНА ПЕРЕД КАЛЬКУЛЯТОРОМ И СДЕЛАНА ЗАМЕТНОЙ) -->
+            <!-- ЗАМЕТНАЯ КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ (ПЕРЕД КАЛЬКУЛЯТОРОМ) -->
             <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
                 <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
                 <span id="toggle-arrow">▾</span>
@@ -1147,17 +1182,18 @@
                         <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
                     </div>
 
+                    <!-- ПЛАШКА: СДЕЛОК ВСЕГО / ПОКУПОК / ПРОДАЖ -->
                     <div class="stat-card">
                         <span class="stat-card-title">
-                            <span data-i18n="statOps">🔢 Всего сделок</span>
+                            <span data-i18n="statOps">🔢 Сделок: всего / покупок / продаж</span>
                             <span class="help-icon" onclick="openHelpModal('operations', event)">?</span>
                         </span>
-                        <div class="stat-card-val" id="val-trades-count">0 / 0</div>
+                        <div class="stat-card-val" id="val-trades-count">0 / 0 / 0</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ПУНКТ 3: КАЛЬКУЛЯТОР КРУГА В СВОДКЕ -->
+            <!-- КАЛЬКУЛЯТОР КРУГА В СВОДКЕ -->
             <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
@@ -1175,7 +1211,6 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <!-- Покупка -->
                     <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 14px; padding: 10px;">
                         <div style="font-size: 11px; font-weight: 800; color: var(--bybit-green); margin-bottom: 6px;">
                             <span data-i18n="calcBuyHeader">ПОКУПКА 🟢</span>
@@ -1187,7 +1222,6 @@
                         </div>
                     </div>
 
-                    <!-- Продажа -->
                     <div style="background: rgba(242, 54, 69, 0.08); border: 1px solid rgba(242, 54, 69, 0.25); border-radius: 14px; padding: 10px;">
                         <div style="font-size: 11px; font-weight: 800; color: var(--bybit-red); margin-bottom: 6px;">
                             <span data-i18n="calcSellHeader">ПРОДАЖА 🔴</span>
@@ -1200,7 +1234,6 @@
                     </div>
                 </div>
 
-                <!-- Результат калькулятора -->
                 <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcSpread">Спред:</span>
@@ -1366,7 +1399,7 @@
                 <button class="action-btn-secondary" onclick="openSupport()" data-i18n="btnSupport">👨‍💻 Служба поддержки</button>
             </div>
 
-            <!-- ПУНКТ 3: ПАРТНЕРСКАЯ СЕТЬ (С РЕАЛЬНЫМ ПОДСЧЕТОМ И ПОДРОБНЫМ ОПИСАНИЕМ БОНУСОВ) -->
+            <!-- ПАРТНЕРСКАЯ СЕТЬ (БЕЗ 1000, С ПРИВЯЗКОЙ К ПЕРЕМЕННОЙ REF_COUNT) -->
             <div class="glass-card" style="margin-top: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div>
@@ -1381,7 +1414,6 @@
                     <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" data-i18n="refInvited">Приглашено пользователей</div>
                 </div>
 
-                <!-- Подробное описание условий начисления бонусов -->
                 <div style="background: rgba(243, 166, 0, 0.08); border: 1px dashed rgba(243, 166, 0, 0.3); border-radius: 14px; padding: 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.5; color: #cbd5e1;" id="ref-bonus-desc">
                     🎁 За каждого приглашенного трейдера вам начисляется <b>+3 дня</b> бесплатной подписки к текущему тарифу. Если подписки нет — доступ активируется сразу!
                 </div>
@@ -1650,7 +1682,7 @@
                 formulaFiat: "Продажа − Покупка", formulaUsdt: "Покупка − Продажа",
                 midPriceHint: "⚖️ Средняя цена (Mid Price):",
                 statRoi: "📈 ROI от оборота", statWac: "🛒 WAC Закупка", statAvgSell: "🏷 Ср. Продажа",
-                statOps: "🔢 Всего сделок", turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
+                statOps: "🔢 Сделок: всего / покупок / продаж", turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
                 spreadCardTitle: "СПРЕД СДЕЛОК", lastCycleSpread: "Последний круг", avgPeriodSpread: "Ср. за период",
                 hintAvgSpread: "По WAC за таймфрейм",
                 calcTitle: "КАЛЬКУЛЯТОР КРУГА", calcDealPrice: "Прайс сделки",
@@ -1699,7 +1731,7 @@
                 formulaFiat: "Sell − Buy", formulaUsdt: "Buy − Sell",
                 midPriceHint: "⚖️ Mid Price:",
                 statRoi: "📈 Turnover ROI", statWac: "🛒 WAC Buy Price", statAvgSell: "🏷 Avg Sell Price",
-                statOps: "🔢 Total Trades", turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
+                statOps: "🔢 Trades: Total / Buys / Sells", turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
                 spreadCardTitle: "TRADE SPREADS", lastCycleSpread: "Last Cycle", avgPeriodSpread: "Period Avg",
                 hintAvgSpread: "By period WAC",
                 calcTitle: "CYCLE CALCULATOR", calcDealPrice: "Deal Budget",
@@ -1747,7 +1779,7 @@
                 totalProfitBadge: "💰 BENEFICIO TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
                 formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta",
                 midPriceHint: "⚖️ Precio medio:", statRoi: "📈 ROI volumen", statWac: "🛒 Compra WAC",
-                statAvgSell: "🏷 Venta media", statOps: "🔢 Total órdenes", turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
+                statAvgSell: "🏷 Venta media", statOps: "🔢 Órdenes: Total / Compras / Ventas", turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
                 spreadCardTitle: "SPREADS DE ÓRDENES", lastCycleSpread: "Último ciclo", avgPeriodSpread: "Promedio",
                 hintAvgSpread: "Por WAC del periodo", calcTitle: "CALCULADORA DE CICLO", calcDealPrice: "Presupuesto",
                 calcBuyHeader: "COMPRA 🟢", calcBuyRate: "Tasa USDT", calcSellHeader: "VENTA 🔴", calcSellRate: "Tasa USDT",
@@ -1779,7 +1811,7 @@
                 tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps", tabCustom: "Période 📅",
                 totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
                 formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente", midPriceHint: "⚖️ Prix moyen:",
-                statRoi: "📈 ROI", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne", statOps: "🔢 Total ordres",
+                statRoi: "📈 ROI", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne", statOps: "🔢 Ordres: Total / Achats / Ventes",
                 turnCombinedTitle: "💸 Volume (Fiat / USDT)", spreadCardTitle: "SPREADS D'ORDRES", lastCycleSpread: "Dernier cycle",
                 avgPeriodSpread: "Moyenne", hintAvgSpread: "WAC période", calcTitle: "CALCULATEUR DE CYCLE",
                 calcDealPrice: "Budget", calcBuyHeader: "ACHAT 🟢", calcBuyRate: "Taux USDT", calcSellHeader: "VENTE 🔴",
@@ -1810,7 +1842,7 @@
                 tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit", tabCustom: "Zeitraum 📅",
                 totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
                 formulaFiat: "Verkauf − Kauf", formulaUsdt: "Kauf − Verkauf", midPriceHint: "⚖️ Durchschnitt:",
-                statRoi: "📈 ROI", statWac: "🛒 WAC Kauf", statAvgSell: "🏷 Durchschn. Verkauf", statOps: "🔢 Gesamt Trades",
+                statRoi: "📈 ROI", statWac: "🛒 WAC Kauf", statAvgSell: "🏷 Durchschn. Verkauf", statOps: "🔢 Trades: Gesamt / Käufe / Verkäufe",
                 turnCombinedTitle: "💸 Umsatz (Fiat / USDT)", spreadCardTitle: "TRADE-SPREADS", lastCycleSpread: "Letzter Zyklus",
                 avgPeriodSpread: "Durchschnitt", hintAvgSpread: "WAC Zeitraum", calcTitle: "ZYKLUS-RECHNER",
                 calcDealPrice: "Auftragssumme", calcBuyHeader: "KAUF 🟢", calcBuyRate: "USDT-Kurs", calcSellHeader: "VERKAUF 🔴",
@@ -1841,7 +1873,7 @@
                 tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час", tabCustom: "Свій період 📅",
                 totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий у USDT",
                 formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж", midPriceHint: "⚖️ Середня ціна:",
-                statRoi: "📈 ROI", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж", statOps: "🔢 Всього угод",
+                statRoi: "📈 ROI", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж", statOps: "🔢 Угод: всього / купівель / продажів",
                 turnCombinedTitle: "💸 Оборот (Фіат / USDT)", spreadCardTitle: "СПРЕД УГОД", lastCycleSpread: "Останнє коло",
                 avgPeriodSpread: "Сер. за період", hintAvgSpread: "По WAC за період", calcTitle: "КАЛЬКУЛЯТОР КОЛА",
                 calcDealPrice: "Сума угоди", calcBuyHeader: "КУПІВЛЯ 🟢", calcBuyRate: "Курс USDT", calcSellHeader: "ПРОДАЖ 🔴",
@@ -1871,7 +1903,7 @@
                 tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт", tabCustom: "Кезең 📅",
                 totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза табыс:", netInUsdt: "USDT таза пайда",
                 formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату", midPriceHint: "⚖️ Орташа баға:",
-                statRoi: "📈 ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату", statOps: "🔢 Барлық мәміле",
+                statRoi: "📈 ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату", statOps: "🔢 Мәмілелер: барлығы / сатып алу / сату",
                 turnCombinedTitle: "💸 Айналым (Фиат / USDT)", spreadCardTitle: "МӘМІЛЕ СПРЕДІ", lastCycleSpread: "Соңғы айналым",
                 avgPeriodSpread: "Орташа", hintAvgSpread: "Кезең бойынша WAC", calcTitle: "АЙНАЛЫМ КАЛЬКУЛЯТОРЫ",
                 calcDealPrice: "Мәміле бағасы", calcBuyHeader: "САТЫП АЛУ 🟢", calcBuyRate: "USDT бағамы", calcSellHeader: "САТУ 🔴",
@@ -1965,9 +1997,8 @@
                 <code>(Общая прибыль / Суммарный оборот фиата) × 100%</code>.`
             },
             operations: {
-                title: "🔢 ВСЕГО СДЕЛОК / ПРОДАЖ",
-                text: `Первое число — общее количество записей в базе данных за период.<br>
-                Второе число — количество завершенных продаж (кругов).`
+                title: "🔢 ВСЕГО СДЕЛОК / ПОКУПОК / ПРОДАЖ",
+                text: `Формат: <code>Всего сделок / Покупок 🟢 / Продаж 🔴</code>.<br><br>• Первое число — общее количество всех совершенных операций за период.<br>• Второе число — количество операций покупки USDT.<br>• Третье число — количество операций продажи USDT (закрытых кругов).`
             },
             ui_mode: {
                 title: "🎨 РЕЖИМ ИНТЕРФЕЙСА",
@@ -2141,16 +2172,14 @@
             requestAnimationFrame(update);
         }
 
-        /* ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ ТАПЕ МИМО ИНПУТОВ */
-        function dismissKeyboardOnOutsideTap(e) {
+        /* МГНОВЕННОЕ ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ ТАПЕ МИМО */
+        document.addEventListener('pointerdown', (e) => {
             if (!e.target.closest('input, select, textarea, button, .action-btn, .btn-card-action, .p-tab, .help-icon, .details-toggle-btn')) {
-                if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'SELECT')) {
+                if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
                     document.activeElement.blur();
                 }
             }
-        }
-        document.addEventListener('touchstart', dismissKeyboardOnOutsideTap, { passive: true });
-        document.addEventListener('click', dismissKeyboardOnOutsideTap);
+        });
 
         /* СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ ВТОРОСТЕПЕННЫХ ПОКАЗАТЕЛЕЙ */
         function toggleSecondaryStats() {
@@ -2244,7 +2273,6 @@
             const soldUsdt = parseFloat((fiat / sellRate).toFixed(2));
 
             try {
-                // Покупка
                 await db('trades', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -2257,7 +2285,6 @@
                     })
                 });
 
-                // Продажа
                 await db('trades', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -2598,7 +2625,7 @@
             runCalculator();
         }
 
-        /* ПОЛУЧЕНИЕ ВСЕХ ДАННЫХ ИЗ SUPABASE ВКЛЮЧАЯ РЕФЕРАЛОВ */
+        /* ПОЛУЧЕНИЕ ДАННЫХ ИЗ SUPABASE: ЗАЩИТА ОТ 1000 И ПРИВЯЗКА К ПЕРЕМЕННОЙ REF_COUNT */
         async function refreshData() {
             if (!currentUser) return;
             const [u, c, t, o, refs] = await Promise.all([
@@ -2606,15 +2633,24 @@
                 db(`cards?tg_id=eq.${currentUser.tg_id}&is_active=eq.true&order=created_at.asc`),
                 db(`trades?tg_id=eq.${currentUser.tg_id}&order=date.desc`),
                 db(`card_operations?tg_id=eq.${currentUser.tg_id}`),
-                db(`users?ref_by=eq.${currentUser.tg_id}`)
+                db(`users?ref_by=eq.${currentUser.tg_id}&select=tg_id`)
             ]);
             if (u && u.length > 0) currentUser = u[0];
             userCards = c || [];
             userTrades = t || [];
             cardOps = o || [];
 
-            // Подсчет реальных рефералов из базы данных
-            const refCount = Array.isArray(refs) ? refs.length : 0;
+            // Приоритет: колонка ref_count из таблицы users в Supabase
+            let refCount = 0;
+            if (currentUser.ref_count !== undefined && currentUser.ref_count !== null) {
+                refCount = parseInt(currentUser.ref_count) || 0;
+            } else if (currentUser.referrals_count !== undefined && currentUser.referrals_count !== null) {
+                refCount = parseInt(currentUser.referrals_count) || 0;
+            } else if (Array.isArray(refs)) {
+                // Защита: если вернулся дефолтный лимит дампы 1000 строк - не показывать ложные 1000
+                refCount = (refs.length === 1000) ? 0 : refs.length;
+            }
+
             const refCountEl = document.getElementById('ref-count-val');
             if (refCountEl) refCountEl.innerText = refCount;
         }
@@ -2871,12 +2907,19 @@
                 return true;
             });
 
-            let bF = 0, bC = 0, sF = 0, sC = 0, sellsCount = 0;
+            let bF = 0, bC = 0, sF = 0, sC = 0, sellsCount = 0, buysCount = 0;
             filtered.forEach(t => {
                 const f = parseFloat(t.fiat_amount || 0);
                 const c = parseFloat(t.crypto_amount || 0);
-                if (t.type === 'buy') { bF += f; bC += c; }
-                else { sF += f; sC += c; sellsCount++; }
+                if (t.type === 'buy') {
+                    bF += f;
+                    bC += c;
+                    buysCount++;
+                } else {
+                    sF += f;
+                    sC += c;
+                    sellsCount++;
+                }
             });
 
             const wac = bC > 0 ? bF / bC : 0;
@@ -2953,7 +2996,10 @@
             document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('val-fiat-turn').innerText = `${fiatTurn.toLocaleString(undefined, {minimumFractionDigits: 0})} ${sym}`;
             document.getElementById('val-crypto-turn').innerText = `${cryptoTurn.toLocaleString(undefined, {minimumFractionDigits: 2})} USDT`;
-            document.getElementById('val-trades-count').innerText = `${filtered.length} / ${sellsCount}`;
+
+            // ТРИ ЧИСЛА: ВСЕГО / ПОКУПОК / ПРОДАЖ
+            const totalCount = filtered.length;
+            document.getElementById('val-trades-count').innerText = `${totalCount} / ${buysCount} / ${sellsCount}`;
         }
 
         function renderCards() {
