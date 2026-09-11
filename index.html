@@ -63,8 +63,7 @@
         body.mode-simple .glass-card,
         body.mode-simple .stat-card,
         body.mode-simple .card-item,
-        body.mode-simple .hero-profit-card,
-        body.mode-simple .terminal-header {
+        body.mode-simple .hero-profit-card {
             background: #0d121c !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
@@ -78,7 +77,7 @@
         body.mode-simple .page-section .subtitle,
         body.mode-simple .page-section .period-tabs,
         body.mode-simple .page-section .trade-switch,
-        body.mode-simple .page-section .terminal-header {
+        body.mode-simple .sub-tier-badge {
             transform: none !important;
             transition: none !important;
             filter: none !important;
@@ -310,7 +309,7 @@
         body.mode-fx .page-section .subtitle,
         body.mode-fx .page-section .period-tabs,
         body.mode-fx .page-section .trade-switch,
-        body.mode-fx .page-section .terminal-header {
+        body.mode-fx .sub-tier-badge {
             will-change: transform, opacity, filter;
             transform-style: preserve-3d;
             backface-visibility: hidden;
@@ -320,8 +319,7 @@
                 filter 0.65s ease;
         }
 
-        body.mode-fx .page-section:not(.revealed) h1,
-        body.mode-fx .page-section:not(.revealed) .terminal-header {
+        body.mode-fx .page-section:not(.revealed) h1 {
             opacity: 0;
             transform: translate3d(-60px, -80px, -320px) rotateX(75deg) rotateY(-40deg) rotateZ(28deg) scale(0.12);
             filter: blur(16px);
@@ -341,12 +339,12 @@
 
         body.mode-fx .page-section.revealed h1,
         body.mode-fx .page-section.revealed .subtitle,
-        body.mode-fx .page-section.revealed .terminal-header,
         body.mode-fx .page-section.revealed .glass-card,
         body.mode-fx .page-section.revealed .stat-card,
         body.mode-fx .page-section.revealed .card-item,
         body.mode-fx .page-section.revealed .period-tabs,
-        body.mode-fx .page-section.revealed .trade-switch {
+        body.mode-fx .page-section.revealed .trade-switch,
+        body.mode-fx .page-section.revealed .sub-tier-badge {
             opacity: 1;
             transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
             filter: blur(0px);
@@ -424,60 +422,22 @@
             box-shadow: 0 0 10px var(--glow-yellow);
         }
 
-        .terminal-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 14px;
-            padding: 10px 16px;
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 18px;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(15px);
-        }
-
-        .online-dot-wrap {
-            position: relative;
-            width: 10px;
-            height: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .online-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--bybit-green);
-            border-radius: 50%;
-            box-shadow: 0 0 12px var(--bybit-green);
-        }
-
-        .online-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 1.5px solid var(--bybit-green);
-            animation: radarPulse 2s infinite ease-out;
-        }
-
-        @keyframes radarPulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            100% { transform: scale(2.6); opacity: 0; }
-        }
-
+        /* ПОЛНОЭКРАННАЯ ПЛАШКА ПОДПИСКИ (БЕЗ ОБЛАСТИ В ОБЛАСТИ И ТОЧЕК) */
         .sub-tier-badge {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 11px;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 16px;
+            font-size: 13px;
             font-weight: 800;
-            text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: all 0.3s var(--ease-apple);
+            box-sizing: border-box;
+            margin-bottom: 14px;
+            text-align: center;
         }
 
         .tier-vip {
@@ -589,34 +549,35 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
         }
 
-        /* КНОПКА СВОРАЧИВАНИЯ ПОДРОБНОСТЕЙ */
+        /* КНОПКА СВОРАЧИВАНИЯ ПОДРОБНОСТЕЙ (ЗАМЕТНАЯ И ЯРКАЯ) */
         .details-toggle-btn {
             width: 100%;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px dashed var(--glass-border);
-            color: var(--text-muted);
-            padding: 11px;
-            border-radius: 14px;
+            background: rgba(243, 166, 0, 0.08);
+            border: 1.5px solid rgba(243, 166, 0, 0.38);
+            color: var(--bybit-yellow);
+            padding: 13px 14px;
+            border-radius: 16px;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
-            margin-bottom: 12px;
+            margin: 12px 0 14px 0;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
             transition: all 0.25s ease;
         }
 
         .details-toggle-btn:active {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(243, 166, 0, 0.18);
             transform: scale(0.98);
         }
 
-        /* СВОРАЧИВАЕМЫЙ БЛОК */
         #secondary-stats-wrap {
             display: none;
             animation: fadeIn 0.3s ease;
+            margin-bottom: 14px;
         }
 
         @keyframes fadeIn {
@@ -671,6 +632,7 @@
             font-weight: 600;
             outline: none;
             transition: all 0.25s var(--ease-apple);
+            box-sizing: border-box;
         }
 
         .styled-input:focus {
@@ -797,7 +759,6 @@
             font-weight: 700;
         }
 
-        /* ТУМБЛЕР (SWITCH TOGGLE) */
         .switch {
             position: relative;
             display: inline-block;
@@ -835,7 +796,6 @@
             background-color: #000;
         }
 
-        /* КНОПКИ ПРЕСЕТОВ ДАТ */
         .btn-preset-chip {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--glass-border);
@@ -867,7 +827,6 @@
             z-index: 10;
         }
 
-        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -897,7 +856,6 @@
 
         .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
 
-        /* НАВИГАЦИЯ ВНИЗУ */
         .bottom-nav {
             position: fixed;
             bottom: max(12px, env(safe-area-inset-bottom));
@@ -1028,15 +986,9 @@
 
         <!-- 1. СВОДКА -->
         <section id="dashboard" class="page-section revealed">
-            <!-- ПУНКТ 5: Убрана надпись P2P TERMINAL PRO, оставлен только индикатор и статус подписки -->
-            <div class="terminal-header">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="online-dot-wrap">
-                        <span class="online-dot"></span>
-                        <span class="online-ring"></span>
-                    </div>
-                    <div id="disp-tier-badge" class="sub-tier-badge tier-vip">Загрузка...</div>
-                </div>
+            <!-- ПУНКТ 1: ПОЛНОСТЬЮ ЧИСТАЯ ПЛАШКА ПОДПИСКИ (БЕЗ ОБЛАСТИ В ОБЛАСТИ И МИГАЮЩЕЙ ТОЧКИ) -->
+            <div id="disp-tier-badge" class="sub-tier-badge tier-vip">
+                Загрузка...
             </div>
 
             <!-- ПУНКТ 9: Вкладки периодов с 4-м пунктом «Свой период 📅» -->
@@ -1047,7 +999,7 @@
                 <div class="p-tab" id="tab-custom" onclick="toggleCustomDatePanel(this)" data-i18n="tabCustom">Свой период 📅</div>
             </div>
 
-            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ -->
+            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ (УСТРАНЕНО ПЕРЕСЕЧЕНИЕ ДАТ) -->
             <div id="custom-date-panel" style="display: none; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;">
                     <button class="btn-preset-chip" onclick="setQuickPreset(1)" data-i18n="presetYesterday">Вчера</button>
@@ -1055,17 +1007,17 @@
                     <button class="btn-preset-chip" onclick="setQuickPreset(14)">14 дней</button>
                     <button class="btn-preset-chip" onclick="setQuickPreset(30)" data-i18n="preset30d">30 дней</button>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-                    <div>
-                        <span style="font-size: 10px; color: var(--text-muted);" data-i18n="dateFrom">С даты</span>
-                        <input type="date" id="custom-date-from" class="styled-input" style="padding: 8px 10px; font-size: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div style="min-width: 0;">
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;" data-i18n="dateFrom">С даты</span>
+                        <input type="date" id="custom-date-from" class="styled-input" style="padding: 10px 8px; font-size: 12px; width: 100%; min-width: 0; box-sizing: border-box;">
                     </div>
-                    <div>
-                        <span style="font-size: 10px; color: var(--text-muted);" data-i18n="dateTo">По дату</span>
-                        <input type="date" id="custom-date-to" class="styled-input" style="padding: 8px 10px; font-size: 12px;">
+                    <div style="min-width: 0;">
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;" data-i18n="dateTo">По дату</span>
+                        <input type="date" id="custom-date-to" class="styled-input" style="padding: 10px 8px; font-size: 12px; width: 100%; min-width: 0; box-sizing: border-box;">
                     </div>
                 </div>
-                <button class="action-btn gold" style="padding: 10px; font-size: 12px;" onclick="applyCustomDateFilter()" data-i18n="btnApplyDate">
+                <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="applyCustomDateFilter()" data-i18n="btnApplyDate">
                     Применить ⚡️
                 </button>
             </div>
@@ -1087,7 +1039,7 @@
                 </div>
             </div>
 
-            <!-- ПУНКТ 4: СПРЕД КРУГА (ПОСЛЕДНИЙ И СРЕДНИЙ) В ОДНОЙ ПЛАШКЕ -->
+            <!-- СПРЕД КРУГА (ПОСЛЕДНИЙ И СРЕДНИЙ) В ОДНОЙ ПЛАШКЕ -->
             <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
@@ -1117,6 +1069,90 @@
                         <div style="font-size: 9px; color: var(--text-muted); margin-top: 2px;" data-i18n="hintAvgSpread">
                             По WAC за таймфрейм
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПУНКТ 2: КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ (ПЕРЕНЕСЕНА ПЕРЕД КАЛЬКУЛЯТОРОМ И СДЕЛАНА ЗАМЕТНОЙ) -->
+            <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
+                <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
+                <span id="toggle-arrow">▾</span>
+            </button>
+
+            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ (СКРЫТЫ ПОД СТРЕЛОЧКУ) -->
+            <div id="secondary-stats-wrap">
+                <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                                    <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
+                                </div>
+                                <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
+                            </div>
+                            <div id="val-profit-rub" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
+                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaFiat">Продажа − Покупка</div>
+                        </div>
+
+                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
+                                <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
+                            </div>
+                            <div id="val-profit-usdt" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
+                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaUsdt">Покупка − Продажа</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 4px;">
+                        <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
+                        <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
+                        <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="stat-card" style="grid-column: span 2;">
+                        <span class="stat-card-title">
+                            <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
+                            <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
+                        </span>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
+                            <div class="stat-card-val" id="val-fiat-turn">0 ₽</div>
+                            <div class="stat-card-val txt-blue" id="val-crypto-turn">0.00 USDT</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <span class="stat-card-title">
+                            <span data-i18n="statWac">🛒 WAC Закупка</span>
+                            <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
+                        </span>
+                        <div class="stat-card-val" id="val-wac">0.00</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <span class="stat-card-title">
+                            <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
+                            <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
+                        </span>
+                        <div class="stat-card-val" id="val-avg-sell">0.00</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <span class="stat-card-title">
+                            <span data-i18n="statRoi">📈 ROI от оборота</span>
+                            <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
+                        </span>
+                        <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <span class="stat-card-title">
+                            <span data-i18n="statOps">🔢 Всего сделок</span>
+                            <span class="help-icon" onclick="openHelpModal('operations', event)">?</span>
+                        </span>
+                        <div class="stat-card-val" id="val-trades-count">0 / 0</div>
                     </div>
                 </div>
             </div>
@@ -1188,91 +1224,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- ПУНКТ 2: КНОПКА СВОРАЧИВАНИЯ ВТОРОСТЕПЕННЫХ ПОКАЗАТЕЛЕЙ ПОД СТРЕЛОЧКУ -->
-            <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
-                <span id="txt-toggle-details" data-i18n="showSecondary">Развернуть подробную статистику</span>
-                <span id="toggle-arrow">▾</span>
-            </button>
-
-            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ (СКРЫТЫ ПО УМОЛЧАНИЮ) -->
-            <div id="secondary-stats-wrap">
-                <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                                    <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
-                                </div>
-                                <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
-                            </div>
-                            <div id="val-profit-rub" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
-                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaFiat">Продажа − Покупка</div>
-                        </div>
-
-                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
-                                <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
-                            </div>
-                            <div id="val-profit-usdt" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
-                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaUsdt">Покупка − Продажа</div>
-                        </div>
-                    </div>
-
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 4px;">
-                        <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
-                        <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
-                        <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
-                    </div>
-                </div>
-
-                <div class="analytics-grid">
-                    <!-- ПУНКТ 2: ОБЪЕДИНЕННАЯ ПЛАШКА ОБОРОТА (ФИАТ + USDT) -->
-                    <div class="stat-card" style="grid-column: span 2;">
-                        <span class="stat-card-title">
-                            <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
-                            <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
-                        </span>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
-                            <div class="stat-card-val" id="val-fiat-turn">0 ₽</div>
-                            <div class="stat-card-val txt-blue" id="val-crypto-turn">0.00 USDT</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statWac">🛒 WAC Закупка</span>
-                            <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
-                        </span>
-                        <div class="stat-card-val" id="val-wac">0.00</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
-                            <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
-                        </span>
-                        <div class="stat-card-val" id="val-avg-sell">0.00</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statRoi">📈 ROI от оборота</span>
-                            <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
-                        </span>
-                        <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statOps">🔢 Всего сделок</span>
-                            <span class="help-icon" onclick="openHelpModal('operations', event)">?</span>
-                        </span>
-                        <div class="stat-card-val" id="val-trades-count">0 / 0</div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- 2. СДЕЛКА -->
@@ -1336,12 +1287,11 @@
             </div>
         </section>
 
-        <!-- 5. ПУНКТ 6: ОБЪЕДИНЕННЫЕ НАСТРОЙКИ (ПРОФИЛЬ + ТУМБЛЕР FX + РЕФКА + ОПЦИИ) -->
+        <!-- 5. НАСТРОЙКИ (ПРОФИЛЬ + ТУМБЛЕР FX + РЕФЕРАЛКА + ОПЦИИ) -->
         <section id="profile" class="page-section">
             <h1 data-i18n="profileTitle">Настройки</h1>
             <p class="subtitle" data-i18n="profileSubtitle">Конфигурация аккаунта и терминала</p>
 
-            <!-- Профиль и ID -->
             <div class="glass-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border);">
                     <div>
@@ -1351,7 +1301,7 @@
                     <button class="btn-card-action" style="padding: 7px 12px; color: var(--bybit-yellow);" onclick="openSubModal()" data-i18n="btnSubModal">💎 Подписка</button>
                 </div>
 
-                <!-- ПУНКТ 7: ТУМБЛЕР ВЫБОРА ИНТЕРФЕЙСА (МИНИМАЛИЗМ / FX) -->
+                <!-- ТУМБЛЕР ВЫБОРА ИНТЕРФЕЙСА -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <div>
                         <div style="font-size: 13px; font-weight: 700;">
@@ -1416,7 +1366,7 @@
                 <button class="action-btn-secondary" onclick="openSupport()" data-i18n="btnSupport">👨‍💻 Служба поддержки</button>
             </div>
 
-            <!-- ПУНКТ 6: ПАРТНЕРСКАЯ СЕТЬ (ОБЪЕДИНЕНА В НАСТРОЙКИ) -->
+            <!-- ПУНКТ 3: ПАРТНЕРСКАЯ СЕТЬ (С РЕАЛЬНЫМ ПОДСЧЕТОМ И ПОДРОБНЫМ ОПИСАНИЕМ БОНУСОВ) -->
             <div class="glass-card" style="margin-top: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div>
@@ -1427,8 +1377,13 @@
                 </div>
 
                 <div style="text-align: center; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 16px; margin-bottom: 14px;">
-                    <div style="font-size: 30px; font-weight: 900; color: var(--bybit-yellow);" id="ref-count-val">0</div>
+                    <div style="font-size: 32px; font-weight: 900; color: var(--bybit-yellow);" id="ref-count-val">0</div>
                     <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" data-i18n="refInvited">Приглашено пользователей</div>
+                </div>
+
+                <!-- Подробное описание условий начисления бонусов -->
+                <div style="background: rgba(243, 166, 0, 0.08); border: 1px dashed rgba(243, 166, 0, 0.3); border-radius: 14px; padding: 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.5; color: #cbd5e1;" id="ref-bonus-desc">
+                    🎁 За каждого приглашенного трейдера вам начисляется <b>+3 дня</b> бесплатной подписки к текущему тарифу. Если подписки нет — доступ активируется сразу!
                 </div>
 
                 <span class="badge" data-i18n="refYourLink">Ваша партнерская ссылка</span>
@@ -1547,7 +1502,7 @@
         </div>
     </div>
 
-    <!-- ПУНКТ 1 & 10: МОДАЛЬНОЕ ОКНО ПОДРОБНЫХ ПОЯСНЕНИЙ (ЗНАК ВОПРОСА) -->
+    <!-- МОДАЛЬНОЕ ОКНО ПОДРОБНЫХ ПОЯСНЕНИЙ (ЗНАК ВОПРОСА) -->
     <div id="modal-info" class="modal-overlay">
         <div class="glass-card modal-box" style="text-align: left; max-height: 85vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
@@ -1559,7 +1514,7 @@
         </div>
     </div>
 
-    <!-- ДРУГИЕ МОДАЛЬНЫЕ ОКНА -->
+    <!-- МОДАЛКИ ПОДПИСКИ И КАРТ -->
     <div id="modal-sub-info" class="modal-overlay">
         <div class="glass-card modal-box" style="text-align: center;">
             <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
@@ -1656,7 +1611,7 @@
 
     <div id="toast">Действие выполнено!</div>
 
-    <!-- ПУНКТ 6: НИЖНЯЯ НАВИГАЦИЯ (РЕФКА ОБЪЕДИНЕНА С ОПЦИЯМИ В «НАСТРОЙКИ») -->
+    <!-- НАВИГАЦИЯ ВНИЗУ -->
     <div class="bottom-nav">
         <div class="nav-btn active" data-target="dashboard" onclick="scrollToSection('dashboard', this)">
             <i>📊</i><span data-i18n="navSummary">Сводка</span>
@@ -1686,7 +1641,7 @@
         let adminIds = [SUPER_ADMIN_ID];
 
         /* ====================================================
-           ЯЗЫКОВОЙ СЛОВАРЬ (7 ЯЗЫКОВ) ДЛЯ ВСЕХ ЭЛЕМЕНТОВ
+           ЯЗЫКОВОЙ СЛОВАРЬ (7 ЯЗЫКОВ)
         ==================================================== */
         const I18N = {
             ru: {
@@ -1703,7 +1658,7 @@
                 calcSellHeader: "ПРОДАЖА 🔴", calcSellRate: "Курс USDT",
                 calcSpread: "Спред:", calcProfit: "Прибыль с круга:",
                 calcSaveCycle: "Сохранить круг ✅", calcClear: "Очистить ❌",
-                showSecondary: "Развернуть подробную статистику", hideSecondary: "Скрыть статистику",
+                showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть подробную статистику",
                 presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней",
                 dateFrom: "С даты", dateTo: "По дату", btnApplyDate: "Применить ⚡️",
                 uiModeLabel: "Визуальные эффекты (FX)",
@@ -1752,7 +1707,7 @@
                 calcSellHeader: "SELL 🔴", calcSellRate: "USDT Rate",
                 calcSpread: "Spread:", calcProfit: "Cycle Profit:",
                 calcSaveCycle: "Save Cycle ✅", calcClear: "Clear ❌",
-                showSecondary: "Show Detailed Stats", hideSecondary: "Hide Stats",
+                showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Detailed Stats",
                 presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days",
                 dateFrom: "Date from", dateTo: "Date to", btnApplyDate: "Apply ⚡️",
                 uiModeLabel: "Visual Effects (FX)",
@@ -1797,7 +1752,7 @@
                 hintAvgSpread: "Por WAC del periodo", calcTitle: "CALCULADORA DE CICLO", calcDealPrice: "Presupuesto",
                 calcBuyHeader: "COMPRA 🟢", calcBuyRate: "Tasa USDT", calcSellHeader: "VENTA 🔴", calcSellRate: "Tasa USDT",
                 calcSpread: "Spread:", calcProfit: "Beneficio:", calcSaveCycle: "Guardar ciclo ✅", calcClear: "Limpiar ❌",
-                showSecondary: "Mostrar estadísticas detalladas", hideSecondary: "Ocultar estadísticas",
+                showSecondary: "📊 Mostrar estadísticas", hideSecondary: "📊 Ocultar estadísticas",
                 presetYesterday: "Ayer", preset7d: "7 días", preset30d: "30 días", dateFrom: "Desde", dateTo: "Hasta",
                 btnApplyDate: "Aplicar ⚡️", uiModeLabel: "Efectos visuales (FX)", uiModeSimpleDesc: "Minimalismo (rápido)",
                 uiModeFxDesc: "FX completo (blockchain y 3D)", newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar ciclo",
@@ -1829,7 +1784,7 @@
                 avgPeriodSpread: "Moyenne", hintAvgSpread: "WAC période", calcTitle: "CALCULATEUR DE CYCLE",
                 calcDealPrice: "Budget", calcBuyHeader: "ACHAT 🟢", calcBuyRate: "Taux USDT", calcSellHeader: "VENTE 🔴",
                 calcSellRate: "Taux USDT", calcSpread: "Spread:", calcProfit: "Profit:", calcSaveCycle: "Enregistrer cycle ✅",
-                calcClear: "Effacer ❌", showSecondary: "Afficher les détails", hideSecondary: "Masquer les détails",
+                calcClear: "Effacer ❌", showSecondary: "📊 Afficher les détails", hideSecondary: "📊 Masquer les détails",
                 presetYesterday: "Hier", preset7d: "7 jours", preset30d: "30 jours", dateFrom: "Du", dateTo: "Au",
                 btnApplyDate: "Appliquer ⚡️", uiModeLabel: "Effets visuels (FX)", uiModeSimpleDesc: "Minimaliste (rapide)",
                 uiModeFxDesc: "FX complet (blockchain & 3D)", newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer l'ordre",
@@ -1860,7 +1815,7 @@
                 avgPeriodSpread: "Durchschnitt", hintAvgSpread: "WAC Zeitraum", calcTitle: "ZYKLUS-RECHNER",
                 calcDealPrice: "Auftragssumme", calcBuyHeader: "KAUF 🟢", calcBuyRate: "USDT-Kurs", calcSellHeader: "VERKAUF 🔴",
                 calcSellRate: "USDT-Kurs", calcSpread: "Spread:", calcProfit: "Gewinn:", calcSaveCycle: "Zyklus buchen ✅",
-                calcClear: "Zurücksetzen ❌", showSecondary: "Details einblenden", hideSecondary: "Details ausblenden",
+                calcClear: "Zurücksetzen ❌", showSecondary: "📊 Details einblenden", hideSecondary: "📊 Details ausblenden",
                 presetYesterday: "Gestern", preset7d: "7 Tage", preset30d: "30 Tage", dateFrom: "Von", dateTo: "Bis",
                 btnApplyDate: "Anwenden ⚡️", uiModeLabel: "Visuelle Effekte (FX)", uiModeSimpleDesc: "Minimalismus (schnell)",
                 uiModeFxDesc: "Volle FX (Blockchain & 3D)", newTradeTitle: "Neuer Trade", newTradeSubtitle: "Zyklus buchen",
@@ -1891,7 +1846,7 @@
                 avgPeriodSpread: "Сер. за період", hintAvgSpread: "По WAC за період", calcTitle: "КАЛЬКУЛЯТОР КОЛА",
                 calcDealPrice: "Сума угоди", calcBuyHeader: "КУПІВЛЯ 🟢", calcBuyRate: "Курс USDT", calcSellHeader: "ПРОДАЖ 🔴",
                 calcSellRate: "Курс USDT", calcSpread: "Спред:", calcProfit: "Прибуток з кола:", calcSaveCycle: "Зберегти коло ✅",
-                calcClear: "Очистити ❌", showSecondary: "Розгорнути статистику", hideSecondary: "Згорнути статистику",
+                calcClear: "Очистити ❌", showSecondary: "📊 Розгорнути статистику", hideSecondary: "📊 Згорнути статистику",
                 presetYesterday: "Вчора", preset7d: "7 днів", preset30d: "30 днів", dateFrom: "З дати", dateTo: "По дату",
                 btnApplyDate: "Застосувати ⚡️", uiModeLabel: "Візуальні ефекти (FX)", uiModeSimpleDesc: "Мінімалізм (швидкий)",
                 uiModeFxDesc: "Повний FX (блокчейн та 3D)", newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло",
@@ -1921,7 +1876,7 @@
                 avgPeriodSpread: "Орташа", hintAvgSpread: "Кезең бойынша WAC", calcTitle: "АЙНАЛЫМ КАЛЬКУЛЯТОРЫ",
                 calcDealPrice: "Мәміле бағасы", calcBuyHeader: "САТЫП АЛУ 🟢", calcBuyRate: "USDT бағамы", calcSellHeader: "САТУ 🔴",
                 calcSellRate: "USDT бағамы", calcSpread: "Спред:", calcProfit: "Айналым пайдасы:", calcSaveCycle: "Айналымды сақтау ✅",
-                calcClear: "Тазалау ❌", showSecondary: "Толық статистиканы ашу", hideSecondary: "Статистиканы жасыру",
+                calcClear: "Тазалау ❌", showSecondary: "📊 Толық статистиканы ашу", hideSecondary: "📊 Статистиканы жасыру",
                 presetYesterday: "Кеше", preset7d: "7 күн", preset30d: "30 күн", dateFrom: "Бастап", dateTo: "Дейін",
                 btnApplyDate: "Қолдану ⚡️", uiModeLabel: "Визуалды эффектілер (FX)", uiModeSimpleDesc: "Минимализм (жылдам)",
                 uiModeFxDesc: "Толық FX (блокчейн және 3D)", newTradeTitle: "Жаңа операция", newTradeSubtitle: "Айналымды сақтау",
@@ -1944,9 +1899,6 @@
             }
         };
 
-        /* ====================================================
-           ПУНКТ 1 & 10: БАЗА ПОЯСНЕНИЙ ДЛЯ ЗНАКОВ ВОПРОСА (?)
-        ==================================================== */
         const HELP_DATA = {
             total_profit: {
                 title: "💰 ОБЩАЯ ПРИБЫЛЬ И ЛОГИКА РАСЧЕТА",
@@ -2032,7 +1984,7 @@
             },
             referral: {
                 title: "🤝 ПАРТНЕРСКАЯ ПРОГРАММА",
-                text: `Приглашайте других P2P-трейдеров по своей персональной ссылке. За каждую регистрацию и оплату вам начисляются бонусные дни к подписке терминала.`
+                text: `Приглашайте других P2P-трейдеров по своей персональной ссылке. За каждого приглашенного пользователя вам начисляются бонусные дни к подписке терминала.`
             }
         };
 
@@ -2189,7 +2141,18 @@
             requestAnimationFrame(update);
         }
 
-        /* ПУНКТ 2: СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ ВТОРОСТЕПЕННЫХ ПОКАЗАТЕЛЕЙ */
+        /* ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ ТАПЕ МИМО ИНПУТОВ */
+        function dismissKeyboardOnOutsideTap(e) {
+            if (!e.target.closest('input, select, textarea, button, .action-btn, .btn-card-action, .p-tab, .help-icon, .details-toggle-btn')) {
+                if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'SELECT')) {
+                    document.activeElement.blur();
+                }
+            }
+        }
+        document.addEventListener('touchstart', dismissKeyboardOnOutsideTap, { passive: true });
+        document.addEventListener('click', dismissKeyboardOnOutsideTap);
+
+        /* СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ ВТОРОСТЕПЕННЫХ ПОКАЗАТЕЛЕЙ */
         function toggleSecondaryStats() {
             haptic('light');
             isSecondaryExpanded = !isSecondaryExpanded;
@@ -2209,7 +2172,7 @@
             }
         }
 
-        /* ПУНКТ 3: ЛОГИКА КАЛЬКУЛЯТОРА КРУГА В СВОДКЕ */
+        /* КАЛЬКУЛЯТОР КРУГА */
         function runCalculator() {
             const fiat = parseFloat(document.getElementById('calc-fiat-amt').value) || 0;
             const buyRate = parseFloat(document.getElementById('calc-buy-rate').value) || 0;
@@ -2325,7 +2288,7 @@
             showToast("Калькулятор очищен");
         }
 
-        /* ПУНКТ 9: ВЫБОР ПРОИЗВОЛЬНОГО ПРОМЕЖУТКА ВРЕМЕНИ (4-Й ВАРИАНТ) */
+        /* ПРОИЗВОЛЬНЫЙ ПРОМЕЖУТОК ВРЕМЕНИ */
         function toggleCustomDatePanel(el) {
             haptic('light');
             const panel = document.getElementById('custom-date-panel');
@@ -2394,7 +2357,6 @@
             calculateStats();
         }
 
-        /* ХОЛСТ ХЕШЕЙ */
         function initBlockchainCanvas() {
             const canvas = document.getElementById('blockchain-canvas');
             if (!canvas) return;
@@ -2636,18 +2598,25 @@
             runCalculator();
         }
 
+        /* ПОЛУЧЕНИЕ ВСЕХ ДАННЫХ ИЗ SUPABASE ВКЛЮЧАЯ РЕФЕРАЛОВ */
         async function refreshData() {
             if (!currentUser) return;
-            const [u, c, t, o] = await Promise.all([
+            const [u, c, t, o, refs] = await Promise.all([
                 db(`users?tg_id=eq.${currentUser.tg_id}`),
                 db(`cards?tg_id=eq.${currentUser.tg_id}&is_active=eq.true&order=created_at.asc`),
                 db(`trades?tg_id=eq.${currentUser.tg_id}&order=date.desc`),
-                db(`card_operations?tg_id=eq.${currentUser.tg_id}`)
+                db(`card_operations?tg_id=eq.${currentUser.tg_id}`),
+                db(`users?ref_by=eq.${currentUser.tg_id}`)
             ]);
             if (u && u.length > 0) currentUser = u[0];
             userCards = c || [];
             userTrades = t || [];
             cardOps = o || [];
+
+            // Подсчет реальных рефералов из базы данных
+            const refCount = Array.isArray(refs) ? refs.length : 0;
+            const refCountEl = document.getElementById('ref-count-val');
+            if (refCountEl) refCountEl.innerText = refCount;
         }
 
         async function checkAdminStatus(tgId) {
@@ -2689,7 +2658,13 @@
                     }
                     if (item.key === 'BYBIT_UID') document.getElementById('cfg-inp-uid').value = item.value;
                     if (item.key === 'TRIAL_DAYS') document.getElementById('cfg-inp-trial').value = item.value;
-                    if (item.key === 'REF_BONUS_DAYS') document.getElementById('cfg-inp-ref').value = item.value;
+                    if (item.key === 'REF_BONUS_DAYS') {
+                        document.getElementById('cfg-inp-ref').value = item.value;
+                        const desc = document.getElementById('ref-bonus-desc');
+                        if (desc) {
+                            desc.innerHTML = `🎁 За каждого приглашенного трейдера вам начисляется <b>+${item.value} дня(-ей)</b> бесплатной подписки к текущему тарифу. Если подписки нет — доступ активируется сразу!`;
+                        }
+                    }
                     if (item.key === 'ADMIN_IDS') document.getElementById('cfg-inp-admin-ids').value = item.value;
                 });
             } catch(e) {}
@@ -2820,20 +2795,20 @@
         }
 
         function getSubStatusInfo() {
-            if (currentUser.is_banned) return { text: "⛔️ Banned", class: "tier-expired", active: false };
-            if (!currentUser.sub_end) return { text: "❌ Нет подписки", class: "tier-expired", active: false };
+            if (currentUser.is_banned) return { text: "⛔️ Доступ заблокирован", class: "tier-expired", active: false };
+            if (!currentUser.sub_end) return { text: "❌ Подписка не активна", class: "tier-expired", active: false };
 
             const now = new Date();
             const end = new Date(currentUser.sub_end);
-            if (end < now) return { text: "⏳ Истекла", class: "tier-expired", active: false };
-            if (end.getFullYear() > 2099) return { text: "💎 VIP Навсегда", class: "tier-vip", active: true };
+            if (end < now) return { text: "⏳ Срок подписки истек", class: "tier-expired", active: false };
+            if (end.getFullYear() > 2099) return { text: "💎 VIP Доступ: Навсегда", class: "tier-vip", active: true };
 
             const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
             const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
             const dateStr = end.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { day: '2-digit', month: '2-digit' });
 
             if (currentUser.trial_used && diffDays <= 2) {
-                return { text: `🎁 Пробный 24ч (до ${dateStr})`, class: "tier-trial", active: true };
+                return { text: `🎁 Пробный период 24ч (до ${dateStr})`, class: "tier-trial", active: true };
             }
             return { text: `⚡️ Подписка (до ${dateStr})`, class: "tier-month", active: true };
         }
@@ -2948,7 +2923,7 @@
 
             document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-            // ПУНКТ 4: РАСЧЕТ СПРЕДА ПОСЛЕДНЕГО КРУГА И СРЕДНЕГО
+            // СПРЕД ПОСЛЕДНЕГО КРУГА И СРЕДНИЙ
             const sortedTrades = [...userTrades].sort((a, b) => new Date(b.date) - new Date(a.date));
             const lastSell = sortedTrades.find(t => t.type === 'sell');
             const lastBuy = sortedTrades.find(t => t.type === 'buy');
