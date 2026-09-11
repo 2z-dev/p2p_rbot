@@ -209,11 +209,7 @@
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .window-dots {
-            display: flex;
-            gap: 7px;
-        }
-
+        .window-dots { display: flex; gap: 7px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; }
         .dot-red { background: #f23645; }
         .dot-yellow { background: #f3a600; }
@@ -1032,7 +1028,7 @@
 
         <!-- 1. СВОДКА -->
         <section id="dashboard" class="page-section revealed">
-            <!-- ПУНКТ 5: Убрана надпись P2P TERMINAL PRO, оставлена только подписка -->
+            <!-- ПУНКТ 5: Убрана надпись P2P TERMINAL PRO, оставлен только индикатор и статус подписки -->
             <div class="terminal-header">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="online-dot-wrap">
@@ -1844,7 +1840,7 @@
                 refInvited: "Invités", refYourLink: "Lien de parrainage", btnCopy: "📋 Copier", btnShare: "🚀 Partager",
                 shareText: "Terminal P2P professionnel:", profileTitle: "Paramètres", profileSubtitle: "Configuration",
                 lblYourId: "VOTRE TELEGRAM ID", lblLang: "Langue", lblBaseCur: "Devise", lblTimezone: "Fuseau horaire",
-                btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support client", paywallTitle: "Accès restreint 🔒",
+                btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Service client", paywallTitle: "Accès restreint 🔒",
                 paywallSubtitle: "Débloquez l'accès", trialBadge: "Essai gratuit", trialDesc: "🎁 Essai 24h dans le bot.",
                 btnActivateTrial: "🎁 Activer essai", plansBadge: "Formules", plansDesc: "Paiement Bybit dans le bot.",
                 plan1m: "1 Mois", planForever: "À vie (VIP)", btnBuySub: "💳 S'abonner", subModalTitle: "Souscription bot",
@@ -1956,7 +1952,7 @@
                 title: "💰 ОБЩАЯ ПРИБЫЛЬ И ЛОГИКА РАСЧЕТА",
                 text: `<b>В P2P-арбитраже прибыль формируется в двух валютах одновременно:</b><br><br>
                 <b>1. Чистая в USDT (Крипто-профит):</b><br>
-                Разница между объемом купленных и проданных монет: <code>Покупка − Продажа</code>.<br>
+                Разница между купленным и проданным объемом монет: <code>Покупка − Продажа</code>.<br>
                 <i>Пример:</i> вы завели 5 000 ₽ и купили <b>70 USDT</b>. Затем продали <b>50 USDT</b> за те же 5 000 ₽. В фиате прибыль 0 ₽, но у вас на кошельке осталось <b>+20 USDT чистой прибыли</b>!<br><br>
                 <b>2. Чистая в фиате (₽):</b><br>
                 Разница между полученными и потраченными деньгами с карт: <code>Продажа − Покупка</code>.<br>
@@ -2041,7 +2037,7 @@
         };
 
         let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
-        let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple'; // ПУНКТ 7: Изначально простой без фона
+        let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
 
         function applyUiMode(mode) {
             uiMode = mode;
@@ -2092,7 +2088,6 @@
             renderAll();
         }
 
-        /* ОТКРЫТИЕ ПОЯСНЯЮЩЕГО МОДАЛЬНОГО ОКНА */
         function openHelpModal(key, event) {
             if (event) event.stopPropagation();
             haptic('light');
@@ -2278,7 +2273,7 @@
             const sellRate = parseFloat(document.getElementById('calc-sell-rate').value);
 
             if (!fiat || !buyRate || !sellRate || fiat <= 0 || buyRate <= 0 || sellRate <= 0) {
-                showToast("⚠️ Заполните сумму и оба курса!");
+                showToast(currentLang === 'ru' ? "⚠️ Заполните сумму и оба курса!" : "⚠️ Fill in budget and rates!");
                 return;
             }
 
@@ -2313,11 +2308,11 @@
                 });
 
                 haptic('success');
-                showToast("✅ Круг сохранен в базу!");
+                showToast(currentLang === 'ru' ? "✅ Круг сохранен в базу!" : "✅ Cycle recorded!");
                 await refreshData();
                 renderAll();
             } catch (e) {
-                showToast("❌ Ошибка сохранения");
+                showToast(currentLang === 'ru' ? "❌ Ошибка сохранения" : "❌ Save error");
             }
         }
 
@@ -2713,4 +2708,723 @@
             if (!rawList.includes(String(SUPER_ADMIN_ID))) rawList.unshift(String(SUPER_ADMIN_ID));
             adminsRaw = rawList.join(', ');
 
-            try {Я всего лишь искусственный интеллект, работающий с текстом. Эта задача не для меня.
+            try {
+                await Promise.all([
+                    db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: m }) }),
+                    db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: f }) }),
+                    db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: uid }) }),
+                    db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: tr }) }),
+                    db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: ref }) }),
+                    db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: adminsRaw }) })
+                ]);
+                showToast("✅ Конфигурация сохранена!");
+                loadAdminConfigValues();
+            } catch (e) {
+                showToast("❌ Ошибка сохранения");
+            }
+        }
+
+        async function adminUserAction(action) {
+            haptic('medium');
+            const targetId = parseInt(document.getElementById('admin-target-uid').value);
+            if (!targetId) return showToast("⚠️ Введите ID пользователя!");
+
+            if (targetId === SUPER_ADMIN_ID && (action === 'ban' || action === 'revoke')) {
+                return alert("⚠️ Главного администратора нельзя ограничить!");
+            }
+
+            try {
+                const now = new Date();
+                if (action === 'grant30') {
+                    now.setDate(now.getDate() + 30);
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
+                    showToast(`✅ ID ${targetId}: +30 дней!`);
+                } else if (action === 'grantVIP') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
+                    showToast(`✅ ID ${targetId}: выдан VIP!`);
+                } else if (action === 'revoke') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
+                    showToast(`❌ ID ${targetId}: снята подписка!`);
+                } else if (action === 'ban') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
+                    showToast(`⛔️ ID ${targetId}: забанен!`);
+                } else if (action === 'unban') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: false }) });
+                    showToast(`🟢 ID ${targetId}: разбанен!`);
+                }
+                await refreshData();
+            } catch (e) {
+                showToast("❌ Ошибка действия");
+            }
+        }
+
+        async function adminInspectUser() {
+            haptic('light');
+            const targetId = parseInt(document.getElementById('admin-target-uid').value);
+            if (!targetId) return showToast("⚠️ Введите ID!");
+
+            try {
+                const [uRes, tRes] = await Promise.all([
+                    db(`users?tg_id=eq.${targetId}`),
+                    db(`trades?tg_id=eq.${targetId}`)
+                ]);
+                const box = document.getElementById('admin-user-dossier');
+                if (!uRes || uRes.length === 0) {
+                    box.style.display = 'block';
+                    box.innerHTML = `<span style="color: var(--bybit-red);">Пользователь не найден в базе данных.</span>`;
+                    return;
+                }
+                const u = uRes[0];
+                const trades = tRes || [];
+                const fiatTurn = trades.reduce((acc, x) => acc + parseFloat(x.fiat_amount || 0), 0);
+                const cryptoTurn = trades.reduce((acc, x) => acc + parseFloat(x.crypto_amount || 0), 0);
+
+                box.style.display = 'block';
+                box.innerHTML = `
+                    <div style="font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px;">🔎 ДОСЬЕ: ${u.first_name || ''} (@${u.username || 'нет'})</div>
+                    ID: <code>${u.tg_id}</code><br>
+                    Подписка: <b>${u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? 'VIP Навсегда' : new Date(u.sub_end).toLocaleString()) : 'Нет'}</b><br>
+                    Статус: <b>${u.is_banned ? '🔴 ЗАБАНЕН' : '🟢 АКТИВЕН'}</b><br>
+                    Сделок: <b>${trades.length}</b><br>
+                    Оборот: <b>${fiatTurn.toLocaleString()} ₽</b> / <b>${cryptoTurn.toLocaleString()} USDT</b>
+                `;
+            } catch (e) {
+                showToast("Ошибка загрузки досье");
+            }
+        }
+
+        async function adminExportDatabase() {
+            haptic('medium');
+            showToast("⏳ Формирование CSV...");
+            try {
+                const users = await db(`users?order=reg_date.desc`);
+                if (!users || users.length === 0) return showToast("База пуста");
+
+                let csv = "TG_ID,Username,First_Name,Sub_End,Is_Banned,Reg_Date,Ref_By\n";
+                users.forEach(u => {
+                    csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}","${u.ref_by || ''}"\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `P2P_Users_Export_${new Date().toISOString().slice(0,10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("✅ Выгрузка завершена!");
+            } catch (e) {
+                showToast("Ошибка выгрузки базы");
+            }
+        }
+
+        function getSubStatusInfo() {
+            if (currentUser.is_banned) return { text: "⛔️ Banned", class: "tier-expired", active: false };
+            if (!currentUser.sub_end) return { text: "❌ Нет подписки", class: "tier-expired", active: false };
+
+            const now = new Date();
+            const end = new Date(currentUser.sub_end);
+            if (end < now) return { text: "⏳ Истекла", class: "tier-expired", active: false };
+            if (end.getFullYear() > 2099) return { text: "💎 VIP Навсегда", class: "tier-vip", active: true };
+
+            const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
+            const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
+            const dateStr = end.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { day: '2-digit', month: '2-digit' });
+
+            if (currentUser.trial_used && diffDays <= 2) {
+                return { text: `🎁 Пробный 24ч (до ${dateStr})`, class: "tier-trial", active: true };
+            }
+            return { text: `⚡️ Подписка (до ${dateStr})`, class: "tier-month", active: true };
+        }
+
+        function checkSubscription() {
+            const statusInfo = getSubStatusInfo();
+            const badgeEl = document.getElementById('disp-tier-badge');
+            badgeEl.className = `sub-tier-badge ${statusInfo.class}`;
+            badgeEl.innerText = statusInfo.text;
+
+            if (!statusInfo.active) {
+                if (currentUser.trial_used) document.getElementById('trial-card').style.display = 'none';
+                document.getElementById('paywall').style.display = 'block';
+                return false;
+            }
+            document.getElementById('paywall').style.display = 'none';
+            return true;
+        }
+
+        function openSubModal() {
+            haptic('light');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-sub-info').classList.add('show');
+        }
+
+        function renderAll() {
+            updateAllCurrencySymbols();
+            calculateStats();
+            renderCards();
+            renderHistory();
+            populateCardSelects();
+        }
+
+        function populateCardSelects() {
+            const t = I18N[currentLang] || I18N.ru;
+            const sel1 = document.getElementById('inp-card-sel');
+            const sel2 = document.getElementById('modal-card-sel');
+            sel1.innerHTML = `<option value="">${t.noCardOpt}</option>`;
+            sel2.innerHTML = `<option value="">${t.noCardOpt}</option>`;
+            userCards.forEach(c => {
+                sel1.innerHTML += `<option value="${c.id}">${c.card_name}</option>`;
+                sel2.innerHTML += `<option value="${c.id}">${c.card_name}</option>`;
+            });
+        }
+
+        function calculateStats() {
+            const tz = parseInt(currentUser?.tz_offset) || 3;
+            const now = new Date();
+            now.setHours(now.getUTCHours() + tz);
+
+            const filtered = userTrades.filter(t => {
+                const d = new Date(t.date);
+                d.setHours(d.getUTCHours() + tz);
+                if (currentPeriod === 'today') return d.toDateString() === now.toDateString();
+                if (currentPeriod === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                if (currentPeriod === 'custom' && customStartDate && customEndDate) {
+                    const tradeTime = new Date(t.date).getTime();
+                    return tradeTime >= customStartDate.getTime() && tradeTime <= customEndDate.getTime();
+                }
+                return true;
+            });
+
+            let bF = 0, bC = 0, sF = 0, sC = 0, sellsCount = 0;
+            filtered.forEach(t => {
+                const f = parseFloat(t.fiat_amount || 0);
+                const c = parseFloat(t.crypto_amount || 0);
+                if (t.type === 'buy') { bF += f; bC += c; }
+                else { sF += f; sC += c; sellsCount++; }
+            });
+
+            const wac = bC > 0 ? bF / bC : 0;
+            const avgSell = sC > 0 ? sF / sC : 0;
+
+            let midPrice = 0;
+            if (wac > 0 && avgSell > 0) midPrice = (wac + avgSell) / 2;
+            else if (wac > 0) midPrice = wac;
+            else if (avgSell > 0) midPrice = avgSell;
+
+            const profitFiat = sF - bF;
+            const profitUsdt = bC - sC;
+
+            const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
+            const totalProfitUsdt = profitUsdt + (midPrice > 0 ? profitFiat / midPrice : 0);
+
+            const avgPeriodSpread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
+            const fiatTurn = bF + sF;
+            const cryptoTurn = bC + sC;
+            const roi = fiatTurn > 0 ? (totalProfitFiat / fiatTurn) * 100 : 0;
+
+            const sym = getCurrencySymbol();
+
+            function updateMetricColor(el, val) {
+                if (!el) return;
+                el.style.color = val < 0 ? 'var(--bybit-red)' : (val > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+            }
+
+            const elTotalFiat = document.getElementById('val-total-profit-rub');
+            updateMetricColor(elTotalFiat, totalProfitFiat);
+            animateNumber(elTotalFiat, totalProfitFiat, '', sym, 2, '18px');
+
+            const elTotalUsdt = document.getElementById('val-total-profit-usdt');
+            updateMetricColor(elTotalUsdt, totalProfitUsdt);
+            animateNumber(elTotalUsdt, totalProfitUsdt, '', 'USDT', 2, '12px');
+
+            const elProfitFiat = document.getElementById('val-profit-rub');
+            updateMetricColor(elProfitFiat, profitFiat);
+            animateNumber(elProfitFiat, profitFiat, '', sym, 2, '12px');
+
+            const elProfitUsdt = document.getElementById('val-profit-usdt');
+            updateMetricColor(elProfitUsdt, profitUsdt);
+            animateNumber(elProfitUsdt, profitUsdt, '', 'USDT', 2, '12px');
+
+            document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            // ПУНКТ 4: РАСЧЕТ СПРЕДА ПОСЛЕДНЕГО КРУГА И СРЕДНЕГО
+            const sortedTrades = [...userTrades].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const lastSell = sortedTrades.find(t => t.type === 'sell');
+            const lastBuy = sortedTrades.find(t => t.type === 'buy');
+            let lastSpread = 0;
+            if (lastSell && lastBuy && parseFloat(lastBuy.rate) > 0) {
+                const sRate = parseFloat(lastSell.rate);
+                const bRate = parseFloat(lastBuy.rate);
+                lastSpread = ((sRate - bRate) / bRate) * 100;
+                document.getElementById('hint-last-spread').innerText = `${bRate.toFixed(2)} → ${sRate.toFixed(2)} ${sym}`;
+            } else {
+                document.getElementById('hint-last-spread').innerText = currentLang === 'ru' ? 'Крайняя продажа vs закупка' : 'Last sell vs buy';
+            }
+
+            const elLastSpread = document.getElementById('val-last-spread');
+            elLastSpread.innerText = (lastSpread > 0 ? "+" : "") + lastSpread.toFixed(2) + "%";
+            updateMetricColor(elLastSpread, lastSpread);
+
+            const elAvgSpread = document.getElementById('val-avg-spread');
+            elAvgSpread.innerText = (avgPeriodSpread > 0 ? "+" : "") + avgPeriodSpread.toFixed(2) + "%";
+            updateMetricColor(elAvgSpread, avgPeriodSpread);
+
+            const roiEl = document.getElementById('val-roi');
+            roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
+            updateMetricColor(roiEl, roi);
+
+            document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('val-fiat-turn').innerText = `${fiatTurn.toLocaleString(undefined, {minimumFractionDigits: 0})} ${sym}`;
+            document.getElementById('val-crypto-turn').innerText = `${cryptoTurn.toLocaleString(undefined, {minimumFractionDigits: 2})} USDT`;
+            document.getElementById('val-trades-count').innerText = `${filtered.length} / ${sellsCount}`;
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+            if (userCards.length === 0) {
+                container.innerHTML = `<div class="glass-card" style="text-align: center; color: var(--text-muted);">${currentLang === 'ru' ? 'Карт пока нет. Добавьте первую!' : 'No cards added yet. Create your first card!'}</div>`;
+                return;
+            }
+
+            const sym = getCurrencySymbol();
+
+            userCards.forEach(c => {
+                const spentBuy = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+                const gainSell = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+                const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+                const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+
+                const balance = deps - wdrs + gainSell - spentBuy;
+                const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
+
+                let limitHtml = `<div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">${currentLang === 'ru' ? 'Лимит покупок: Не установлен' : 'Purchase Limit: None'}</div>`;
+                if (limit) {
+                    const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
+                    limitHtml = `
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 6px;">
+                            <span>${currentLang === 'ru' ? 'Лимит покупок:' : 'Limit:'}</span>
+                            <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
+                        </div>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="card-item">
+                        <div class="card-top">
+                            <div class="card-title">💳 ${c.card_name}</div>
+                            <span class="badge" style="margin: 0; color: var(--bybit-green);">${currentLang === 'ru' ? 'АКТИВНА' : 'ACTIVE'}</span>
+                        </div>
+                        <div style="font-size: 20px; font-weight: 800;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                        ${limitHtml}
+                        <div class="card-btns-grid">
+                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">${currentLang === 'ru' ? '➕ Внести' : '➕ Deposit'}</div>
+                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'withdraw')">${currentLang === 'ru' ? '➖ Снять' : '➖ Withdraw'}</div>
+                            <div class="btn-card-action" onclick="openCardLimitModal(${c.id})">${currentLang === 'ru' ? '⚙️ Лимит' : '⚙️ Limit'}</div>
+                            <div class="btn-card-action" style="color: var(--bybit-red);" onclick="deleteCard(${c.id})">${currentLang === 'ru' ? '🗑 Удалить' : '🗑 Delete'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openNewCardModal() { haptic('light'); document.body.style.overflow = 'hidden'; document.getElementById('modal-card-create').classList.add('show'); }
+        async function submitCreateCard() {
+            const name = document.getElementById('new-card-name').value.trim();
+            if (!name) return;
+            await db(`cards`, { method: 'POST', body: JSON.stringify({ tg_id: currentUser.tg_id, card_name: name }) });
+            closeModals();
+            showToast(currentLang === 'ru' ? "✅ Карта создана!" : "✅ Card created!");
+            haptic('success');
+            await refreshData();
+            renderAll();
+        }
+
+        function openCardLimitModal(cid) {
+            haptic('light'); activeCardId = cid;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-card-limit').classList.add('show');
+        }
+        async function submitCardLimit() {
+            const val = parseFloat(document.getElementById('card-limit-val').value) || null;
+            await db(`cards?id=eq.${activeCardId}`, { method: 'PATCH', body: JSON.stringify({ buy_limit: val }) });
+            closeModals();
+            showToast(currentLang === 'ru' ? "✅ Лимит обновлен!" : "✅ Limit updated!");
+            haptic('success');
+            await refreshData();
+            renderCards();
+        }
+
+        function openCardOpModal(cid, type) {
+            haptic('light'); activeCardId = cid; activeOpType = type;
+            document.body.style.overflow = 'hidden';
+            const isRu = currentLang === 'ru';
+            document.getElementById('modal-op-title').innerText = type === 'deposit'
+                ? (isRu ? '➕ Пополнение кассы' : '➕ Cash Deposit')
+                : (isRu ? '➖ Снятие / Инкассация' : '➖ Cash Withdrawal');
+            document.getElementById('modal-op-btn').innerText = type === 'deposit'
+                ? (isRu ? 'Внести' : 'Deposit')
+                : (isRu ? 'Списать' : 'Withdraw');
+            document.getElementById('modal-card-op').classList.add('show');
+        }
+        async function submitCardOp() {
+            const amt = parseFloat(document.getElementById('card-op-amount').value);
+            const comm = document.getElementById('card-op-comment').value.trim();
+            if (!amt || amt <= 0) return;
+            await db(`card_operations`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    card_id: activeCardId,
+                    tg_id: currentUser.tg_id,
+                    type: activeOpType,
+                    amount: amt,
+                    comment: comm
+                })
+            });
+            closeModals();
+            showToast(currentLang === 'ru' ? "✅ Операция записана!" : "✅ Operation saved!");
+            haptic('success');
+            await refreshData();
+            renderCards();
+        }
+
+        async function deleteCard(cid) {
+            haptic('medium');
+            const confirmMsg = currentLang === 'ru' ? "Удалить карту? Все привязанные сделки сохранятся." : "Delete card? Linked trades will be preserved.";
+            if (!confirm(confirmMsg)) return;
+            await db(`cards?id=eq.${cid}`, { method: 'DELETE' });
+            showToast(currentLang === 'ru' ? "🗑 Карта удалена" : "🗑 Card deleted");
+            await refreshData();
+            renderAll();
+        }
+
+        let currentType = 'buy';
+        let calcMode = 'fiat';
+
+        function setTradeType(type) {
+            haptic('light');
+            currentType = type;
+            document.getElementById('btn-buy').className = `switch-btn ${type === 'buy' ? 'active buy' : ''}`;
+            document.getElementById('btn-sell').className = `switch-btn ${type === 'sell' ? 'active sell' : ''}`;
+            const btn = document.getElementById('btn-save');
+            btn.className = `action-btn ${type === 'sell' ? 'sell-mode' : ''}`;
+            checkTradeInputs();
+        }
+
+        function setCalcMode(mode) {
+            haptic('light');
+            calcMode = mode;
+            document.getElementById('tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
+            document.getElementById('tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const t = I18N[currentLang] || I18N.ru;
+            const sym = getCurrencySymbol();
+            document.getElementById('lbl-amount').innerHTML = mode === 'fiat'
+                ? `${t.modeFiat} (<span class="sym">${sym}</span>)`
+                : `${t.modeCrypto} (🪙)`;
+
+            checkTradeInputs();
+        }
+
+        function checkTradeInputs() {
+            const isRu = currentLang === 'ru';
+            const amount = parseFloat(document.getElementById('inp-amount').value);
+            const rate = parseFloat(document.getElementById('inp-rate').value);
+            const btn = document.getElementById('btn-save');
+            const prev = document.getElementById('trade-preview');
+            const prevText = document.getElementById('preview-text');
+            const prevResult = document.getElementById('preview-result');
+
+            if (amount > 0 && rate > 0) {
+                const sym = getCurrencySymbol();
+                prev.style.display = 'block';
+
+                let fiat = 0;
+                let crypto = 0;
+
+                if (calcMode === 'fiat') {
+                    fiat = amount;
+                    crypto = fiat / rate;
+                    prevText.innerText = isRu ? "Расчетный объем USDT:" : "Estimated USDT Volume:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
+                } else {
+                    crypto = amount;
+                    fiat = crypto * rate;
+                    prevText.innerText = isRu ? "Расчетный фиат:" : "Estimated Fiat:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
+                }
+
+                const actionTitle = currentType === 'buy'
+                    ? (isRu ? 'ПОКУПКУ' : 'BUY')
+                    : (isRu ? 'ПРОДАЖУ' : 'SELL');
+                btn.innerText = `${isRu ? 'СОХРАНИТЬ' : 'SAVE'} ${actionTitle}: ${fiat.toLocaleString(undefined, {maximumFractionDigits: 2})} ${sym}`;
+                btn.style.display = 'block';
+            } else {
+                prev.style.display = 'none';
+                btn.style.display = 'none';
+            }
+        }
+
+        document.getElementById('inp-amount').addEventListener('input', checkTradeInputs);
+        document.getElementById('inp-rate').addEventListener('input', checkTradeInputs);
+
+        async function saveTrade() {
+            const amount = parseFloat(document.getElementById('inp-amount').value);
+            const rate = parseFloat(document.getElementById('inp-rate').value);
+            const cardId = document.getElementById('inp-card-sel').value || null;
+            if (!amount || !rate || amount <= 0 || rate <= 0) return;
+
+            let fiat = 0;
+            let crypto = 0;
+
+            if (calcMode === 'fiat') {
+                fiat = amount;
+                crypto = parseFloat((fiat / rate).toFixed(2));
+            } else {
+                crypto = amount;
+                fiat = parseFloat((crypto * rate).toFixed(2));
+            }
+
+            await db(`trades`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    tg_id: currentUser.tg_id,
+                    type: currentType,
+                    crypto_amount: crypto,
+                    rate: rate,
+                    fiat_amount: fiat,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
+            });
+
+            document.getElementById('inp-amount').value = '';
+            document.getElementById('inp-rate').value = '';
+            checkTradeInputs();
+
+            showToast(currentLang === 'ru' ? "✅ Сделка сохранена!" : "✅ Trade saved!");
+            haptic('success');
+            await refreshData();
+            renderAll();
+            scrollToSection('dashboard');
+        }
+
+        function renderHistory() {
+            const isRu = currentLang === 'ru';
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            if (userTrades.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">${isRu ? 'Сделок пока нет.' : 'No trades recorded.'}</div>`;
+                return;
+            }
+
+            const sym = getCurrencySymbol();
+            const tz = parseInt(currentUser?.tz_offset) || 3;
+
+            userTrades.forEach(t => {
+                const isBuy = t.type === 'buy';
+                const d = new Date(t.date);
+                d.setHours(d.getUTCHours() + tz);
+                const dateStr = d.toLocaleDateString(isRu ? 'ru-RU' : 'en-US', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+                const boundCard = userCards.find(c => c.id === t.card_id);
+                const cardBadge = boundCard ? `<span class="card-pill">💳 ${boundCard.card_name}</span>` : '';
+
+                const labelType = isBuy
+                    ? (isRu ? 'ПОКУПКА 🟢' : 'BUY 🟢')
+                    : (isRu ? 'ПРОДАЖА 🔴' : 'SELL 🔴');
+
+                container.innerHTML += `
+                    <div class="history-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <span style="font-size: 11px; font-weight: 800; color: ${isBuy ? 'var(--bybit-green)' : 'var(--bybit-red)'};">${labelType}</span>
+                                ${cardBadge}
+                            </div>
+                            <span style="font-size: 11px; color: var(--text-muted);">${dateStr}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <div style="font-size: 17px; font-weight: 800;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT @ ${t.rate} ${sym}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn-card-action" style="padding: 6px 11px;" onclick="openEditTradeModal(${t.id})">✏️</button>
+                                <button class="btn-card-action" style="padding: 6px 11px; color: var(--bybit-red);" onclick="deleteTradeCloud(${t.id})">🗑</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function setEditCalcMode(mode) {
+            haptic('light');
+            editCalcMode = mode;
+            document.getElementById('modal-tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
+            document.getElementById('modal-tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const t = I18N[currentLang] || I18N.ru;
+            const sym = getCurrencySymbol();
+            document.getElementById('modal-lbl-amount').innerHTML = mode === 'fiat'
+                ? `${t.modeFiat} (<span class="sym">${sym}</span>)`
+                : `${t.modeCrypto} (🪙)`;
+
+            const tr = userTrades.find(x => x.id === activeEditTradeId);
+            if (tr) {
+                document.getElementById('modal-inp-amount').value = mode === 'fiat' ? tr.fiat_amount : tr.crypto_amount;
+            }
+            checkEditTradeInputs();
+        }
+
+        function checkEditTradeInputs() {
+            const isRu = currentLang === 'ru';
+            const amount = parseFloat(document.getElementById('modal-inp-amount').value);
+            const rate = parseFloat(document.getElementById('modal-rate').value);
+            const prevText = document.getElementById('modal-preview-text');
+            const prevResult = document.getElementById('modal-preview-result');
+
+            if (amount > 0 && rate > 0) {
+                const sym = getCurrencySymbol();
+                if (editCalcMode === 'fiat') {
+                    const crypto = amount / rate;
+                    prevText.innerText = isRu ? "Расчетный объем USDT:" : "Estimated USDT:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
+                } else {
+                    const fiat = amount * rate;
+                    prevText.innerText = isRu ? "Расчетный фиат:" : "Estimated Fiat:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
+                }
+            }
+        }
+
+        document.getElementById('modal-inp-amount').addEventListener('input', checkEditTradeInputs);
+        document.getElementById('modal-rate').addEventListener('input', checkEditTradeInputs);
+
+        function openEditTradeModal(tid) {
+            haptic('light');
+            activeEditTradeId = tid;
+            const tr = userTrades.find(x => x.id === tid);
+            if (!tr) return;
+
+            const isRu = currentLang === 'ru';
+            document.getElementById('modal-trade-id').innerText = `${isRu ? 'Сделка' : 'Trade'} #${tid}`;
+            document.getElementById('modal-rate').value = tr.rate;
+            document.getElementById('modal-card-sel').value = tr.card_id || "";
+
+            setEditCalcMode('fiat');
+            document.getElementById('modal-inp-amount').value = tr.fiat_amount;
+            checkEditTradeInputs();
+
+            document.body.style.overflow = 'hidden';
+            document.getElementById('edit-modal').classList.add('show');
+        }
+
+        async function submitEditTrade() {
+            const amount = parseFloat(document.getElementById('modal-inp-amount').value);
+            const r = parseFloat(document.getElementById('modal-rate').value);
+            const cardId = document.getElementById('modal-card-sel').value || null;
+            if (!amount || !r || amount <= 0 || r <= 0) return;
+
+            let c = 0;
+            let f = 0;
+
+            if (editCalcMode === 'fiat') {
+                f = amount;
+                c = parseFloat((f / r).toFixed(2));
+            } else {
+                c = amount;
+                f = parseFloat((c * r).toFixed(2));
+            }
+
+            await db(`trades?id=eq.${activeEditTradeId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    crypto_amount: c,
+                    rate: r,
+                    fiat_amount: f,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
+            });
+
+            closeModals();
+            showToast(currentLang === 'ru' ? "✏️ Сделка обновлена!" : "✏️ Trade updated!");
+            haptic('success');
+            await refreshData();
+            renderAll();
+        }
+
+        async function deleteTradeCloud(tid) {
+            haptic('medium');
+            const confirmMsg = currentLang === 'ru' ? "Удалить сделку из базы?" : "Delete trade from database?";
+            if (!confirm(confirmMsg)) return;
+            await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
+            showToast(currentLang === 'ru' ? "🗑 Сделка удалена" : "🗑 Trade deleted");
+            await refreshData();
+            renderAll();
+        }
+
+        async function updateSettings() {
+            haptic('light');
+            const cur = document.getElementById('set-currency').value;
+            const tz = parseInt(document.getElementById('set-tz').value);
+            currentUser.currency = cur;
+            currentUser.tz_offset = tz;
+            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ currency: cur, tz_offset: tz })
+            });
+            showToast(currentLang === 'ru' ? "⚙️ Настройки сохранены!" : "⚙️ Settings saved!");
+            renderAll();
+        }
+
+        function openSupport() {
+            const url = "https://t.me/socag";
+            if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+            else window.open(url, '_blank');
+        }
+
+        function copyRefLink() {
+            haptic('light');
+            navigator.clipboard.writeText(document.getElementById('ref-link-box').innerText);
+            showToast(currentLang === 'ru' ? "Ссылка скопирована!" : "Link copied!");
+        }
+
+        function shareRefLink() {
+            haptic('light');
+            const link = document.getElementById('ref-link-box').innerText;
+            const t = I18N[currentLang] || I18N.ru;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.shareText)}`;
+            if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+            else window.open(url, '_blank');
+        }
+
+        function closeModals() {
+            document.body.style.overflow = '';
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2300);
+        }
+
+        function haptic(type) {
+            try {
+                if (tg && tg.HapticFeedback) {
+                    if (type === 'light' || type === 'medium') tg.HapticFeedback.impactOccurred(type);
+                    if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+                }
+            } catch(e) {}
+        }
+
+        init();
+    </script>
+</body>
+</html>
