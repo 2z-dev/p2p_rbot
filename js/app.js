@@ -1,6 +1,6 @@
 /* ====================================================
-   P2P TERMINAL PRO — CORE ENGINE v8.5.0
-   Enterprise Ledger, Smart Cards & Calendar Engine
+   P2P TERMINAL PRO — CORE ENGINE v8.2.0
+   Enterprise Ledger, Card Manager, Calendar & WAC Engine
 ==================================================== */
 
 const API_URL = "https://slddpusuckhhvvetpgxa.supabase.co/rest/v1";
@@ -10,26 +10,7 @@ const SUPER_ADMIN_ID = 5172556128;
 let adminIds = [SUPER_ADMIN_ID];
 
 /* ====================================================
-   БЕЗОПАСНОЕ ХРАНИЛИЩЕ (ЗАЩИТА ОТ КРАШЕЙ В WEBVIEW)
-==================================================== */
-const safeStorage = {
-    get: (key, fallback = null) => {
-        try {
-            const val = localStorage.getItem(key);
-            return val !== null ? val : fallback;
-        } catch (e) {
-            return fallback;
-        }
-    },
-    set: (key, val) => {
-        try {
-            localStorage.setItem(key, val);
-        } catch (e) {}
-    }
-};
-
-/* ====================================================
-   МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ПОЛНЫХ ЯЗЫКОВ)
+   МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
 ==================================================== */
 const I18N = {
     ru: {
@@ -49,6 +30,7 @@ const I18N = {
         dateTo: "По дату",
         btnApplyDate: "Применить ⚡️",
         totalProfitBadge: "💰 ОБЩАЯ ПРИБЫЛЬ",
+        btnPnlCard: "📸 PnL-карточка",
         spreadBadge: "📊 СПРЕД СДЕЛОК",
         lastCycleTitle: "Последний круг",
         avgSpreadTitle: "Ср. за период",
@@ -56,9 +38,9 @@ const I18N = {
         showSecondary: "📊 Развернуть подробную статистику",
         hideSecondary: "📊 Скрыть подробную статистику",
         netIn: "Чистая в",
-        formulaFiat: "Фиатный доход: Продажи − Покупки (строго разница поступившего и отданного фиата на картах)",
+        formulaFiat: "Продажа − Покупка",
         netInUsdt: "Чистая в USDT",
-        formulaUsdt: "Крипто-доход: Покупки − Продажи (чистый остаток монет USDT на бирже)",
+        formulaUsdt: "Покупка − Продажа",
         midPriceHint: "⚖️ Средняя цена (Mid Price):",
         turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
         statWac: "🛒 WAC Закупка",
@@ -88,7 +70,7 @@ const I18N = {
         bankCardOptionalLabel: "Банковская карта (Опционально)",
         saveTradeBtn: "СОХРАНИТЬ СДЕЛКУ",
         cardsTitle: "Мои карты",
-        cardsSubtitle: "Две полоски расходов, лимиты и смены",
+        cardsSubtitle: "Контроль кассы, лимитов и смен",
         btnTransfer: "🔄 Трансфер",
         btnCreateCard: "➕ Создать",
         historyTitle: "История операций",
@@ -110,7 +92,7 @@ const I18N = {
         refTitle: "Партнерская сеть",
         refSubtitle: "Бонусные дни за приглашения",
         refCountLabel: "Приглашено пользователей",
-        refWhyTitle: "В чем польза приглашать трейдеров:",
+        refWhyTitle: "В чем польза звать трейдеров:",
         refWhy1: "• +3 дня Premium начисляются автоматически за каждого активного приглашенного.",
         refWhy2: "• Ваши рефералы навсегда закрепляются за вашим Telegram ID.",
         refWhy3: "• Неограниченная аналитика, калькулятор и облачный синхрон касс.",
@@ -151,6 +133,7 @@ const I18N = {
         dateTo: "To date",
         btnApplyDate: "Apply ⚡️",
         totalProfitBadge: "💰 TOTAL PROFIT",
+        btnPnlCard: "📸 PnL Card",
         spreadBadge: "📊 SPREAD ANALYSIS",
         lastCycleTitle: "Last Cycle",
         avgSpreadTitle: "Period Avg",
@@ -158,9 +141,9 @@ const I18N = {
         showSecondary: "📊 Expand Detailed Stats",
         hideSecondary: "📊 Hide Detailed Stats",
         netIn: "Net in",
-        formulaFiat: "Fiat Profit: Sell − Buy (exact fiat cash difference)",
+        formulaFiat: "Sell − Buy",
         netInUsdt: "Net in USDT",
-        formulaUsdt: "Crypto Balance: Buy − Sell (pure coins on exchange)",
+        formulaUsdt: "Buy − Sell",
         midPriceHint: "⚖️ Mid Price:",
         turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
         statWac: "🛒 WAC Buy Price",
@@ -190,7 +173,7 @@ const I18N = {
         bankCardOptionalLabel: "Bank Card (Optional)",
         saveTradeBtn: "SAVE TRADE",
         cardsTitle: "My Cards",
-        cardsSubtitle: "Dual limits, shifts & rest",
+        cardsSubtitle: "Cashflow, limits and shifts",
         btnTransfer: "🔄 Transfer",
         btnCreateCard: "➕ Add Card",
         historyTitle: "Operations History",
@@ -253,6 +236,7 @@ const I18N = {
         dateTo: "Hasta",
         btnApplyDate: "Aplicar ⚡️",
         totalProfitBadge: "💰 GANANCIA TOTAL",
+        btnPnlCard: "📸 Tarjeta PnL",
         spreadBadge: "📊 SPREAD DE OPERACIONES",
         lastCycleTitle: "Último ciclo",
         avgSpreadTitle: "Prom. período",
@@ -260,9 +244,9 @@ const I18N = {
         showSecondary: "📊 Ver estadísticas detalladas",
         hideSecondary: "📊 Ocultar estadísticas",
         netIn: "Neto en",
-        formulaFiat: "Ingreso Fiat: Ventas − Compras (balance exacto en tarjetas)",
+        formulaFiat: "Venta − Compra",
         netInUsdt: "Neto en USDT",
-        formulaUsdt: "Balance Crypto: Compras − Ventas (monedas netas en exchange)",
+        formulaUsdt: "Compra − Venta",
         midPriceHint: "⚖️ Precio Medio (Mid Price):",
         turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
         statWac: "🛒 WAC Compra",
@@ -292,7 +276,7 @@ const I18N = {
         bankCardOptionalLabel: "Tarjeta (Opcional)",
         saveTradeBtn: "GUARDAR OPERACIÓN",
         cardsTitle: "Mis Tarjetas",
-        cardsSubtitle: "Límites duales, turnos y descansos",
+        cardsSubtitle: "Control de caja, límites y descansos",
         btnTransfer: "🔄 Transferencia",
         btnCreateCard: "➕ Crear",
         historyTitle: "Historial de Operaciones",
@@ -355,6 +339,7 @@ const I18N = {
         dateTo: "Au",
         btnApplyDate: "Appliquer ⚡️",
         totalProfitBadge: "💰 PROFIT TOTAL",
+        btnPnlCard: "📸 Carte PnL",
         spreadBadge: "📊 SPREAD DU CYCLE",
         lastCycleTitle: "Dernier cycle",
         avgSpreadTitle: "Moy. période",
@@ -362,9 +347,9 @@ const I18N = {
         showSecondary: "📊 Voir détails avancés",
         hideSecondary: "📊 Masquer les détails",
         netIn: "Net en",
-        formulaFiat: "Profit Fiat: Ventes − Achats (flux net réel sur cartes)",
+        formulaFiat: "Vente − Achat",
         netInUsdt: "Net en USDT",
-        formulaUsdt: "Solde Crypto: Achats − Ventes (jetons nets sur exchange)",
+        formulaUsdt: "Achat − Vente",
         midPriceHint: "⚖️ Prix Moyen (Mid Price):",
         turnCombinedTitle: "💸 Volume (Fiat / USDT)",
         statWac: "🛒 WAC Achat",
@@ -394,7 +379,7 @@ const I18N = {
         bankCardOptionalLabel: "Carte Bancaire (Optionnel)",
         saveTradeBtn: "ENREGISTRER",
         cardsTitle: "Mes Cartes",
-        cardsSubtitle: "Double limites, repos et statut",
+        cardsSubtitle: "Contrôle caisse, limites et repos",
         btnTransfer: "🔄 Transfert",
         btnCreateCard: "➕ Créer",
         historyTitle: "Historique",
@@ -457,6 +442,7 @@ const I18N = {
         dateTo: "Bis",
         btnApplyDate: "Anwenden ⚡️",
         totalProfitBadge: "💰 GESAMTGEWINN",
+        btnPnlCard: "📸 PnL-Karte",
         spreadBadge: "📊 SPREAD-ANALYSE",
         lastCycleTitle: "Letzter Zyklus",
         avgSpreadTitle: "Ø Zeitraum",
@@ -464,9 +450,9 @@ const I18N = {
         showSecondary: "📊 Detaillierte Statistiken",
         hideSecondary: "📊 Statistiken ausblenden",
         netIn: "Netto in",
-        formulaFiat: "Fiat-Ertrag: Verkauf − Einkauf (reiner Kartensaldo)",
+        formulaFiat: "Verkauf − Einkauf",
         netInUsdt: "Netto in USDT",
-        formulaUsdt: "Krypto-Saldo: Einkauf − Verkauf (Münzen auf Börse)",
+        formulaUsdt: "Einkauf − Verkauf",
         midPriceHint: "⚖️ Mid Price:",
         turnCombinedTitle: "💸 Umsatz (Fiat / USDT)",
         statWac: "🛒 WAC Einkauf",
@@ -496,7 +482,7 @@ const I18N = {
         bankCardOptionalLabel: "Bankkarte (Optional)",
         saveTradeBtn: "SPEICHERN",
         cardsTitle: "Meine Karten",
-        cardsSubtitle: "Doppelte Limits und Ruhezeiten",
+        cardsSubtitle: "Kasse, Limits und Schichten",
         btnTransfer: "🔄 Transfer",
         btnCreateCard: "➕ Erstellen",
         historyTitle: "Verlauf",
@@ -559,6 +545,7 @@ const I18N = {
         dateTo: "По дату",
         btnApplyDate: "Застосувати ⚡️",
         totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК",
+        btnPnlCard: "📸 PnL-картка",
         spreadBadge: "📊 СПРЕД УГОД",
         lastCycleTitle: "Останній круг",
         avgSpreadTitle: "Сер. за період",
@@ -566,9 +553,9 @@ const I18N = {
         showSecondary: "📊 Розгорнути детальну статистику",
         hideSecondary: "📊 Приховати детальну статистику",
         netIn: "Чистий у",
-        formulaFiat: "Фіатний дохід: Продажі − Купівлі (суворо різниця фіату на картках)",
+        formulaFiat: "Продаж − Купівля",
         netInUsdt: "Чистий в USDT",
-        formulaUsdt: "Крипто-дохід: Купівлі − Продажі (чистий залишок монет на біржі)",
+        formulaUsdt: "Купівля − Продаж",
         midPriceHint: "⚖️ Середня ціна (Mid Price):",
         turnCombinedTitle: "💸 Оборот (Фіат / USDT)",
         statWac: "🛒 WAC Закупівля",
@@ -598,7 +585,7 @@ const I18N = {
         bankCardOptionalLabel: "Банківська картка (Опціонально)",
         saveTradeBtn: "ЗБЕРЕГТИ УГОДУ",
         cardsTitle: "Мої картки",
-        cardsSubtitle: "Дві смужки лімітів, зміна та відпочинок",
+        cardsSubtitle: "Контроль каси, лімітів та змін",
         btnTransfer: "🔄 Трансфер",
         btnCreateCard: "➕ Створити",
         historyTitle: "Історія операцій",
@@ -661,6 +648,7 @@ const I18N = {
         dateTo: "Дейін",
         btnApplyDate: "Қолдану ⚡️",
         totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА",
+        btnPnlCard: "📸 PnL-картасы",
         spreadBadge: "📊 МӘМІЛЕ СПРЕДІ",
         lastCycleTitle: "Соңғы айналым",
         avgSpreadTitle: "Кезең орташасы",
@@ -668,9 +656,9 @@ const I18N = {
         showSecondary: "📊 Толық статистиканы ашу",
         hideSecondary: "📊 Статистиканы жасыру",
         netIn: "Таза пайда",
-        formulaFiat: "Фиаттық кіріс: Сату − Сатып алу (карталардағы таза айырма)",
+        formulaFiat: "Сату − Сатып алу",
         netInUsdt: "Таза USDT",
-        formulaUsdt: "Крипто-кіріс: Сатып алу − Сату (биржадағы таза монеталар)",
+        formulaUsdt: "Сатып алу − Сату",
         midPriceHint: "⚖️ Орташа баға (Mid Price):",
         turnCombinedTitle: "💸 Айналым (Фиат / USDT)",
         statWac: "🛒 WAC Сатып алу",
@@ -700,7 +688,7 @@ const I18N = {
         bankCardOptionalLabel: "Банк картасы (Міндетті емес)",
         saveTradeBtn: "МӘМІЛЕНІ САҚТАУ",
         cardsTitle: "Менің карталарым",
-        cardsSubtitle: "Қос лимит сызығы, тынығу және ауысым",
+        cardsSubtitle: "Касса, лимиттер және ауысым",
         btnTransfer: "🔄 Трансфер",
         btnCreateCard: "➕ Қосу",
         historyTitle: "Мәмілелер тарихы",
@@ -749,35 +737,17 @@ const I18N = {
 };
 
 /* ====================================================
-   ПОДРОБНЫЕ ПОДСКАЗКИ СПРАВКИ (?) ИЗ a.js
+   ПОДСКАЗКИ СПРАВКИ (?)
 ==================================================== */
 const HELP_DATA = {
     total_profit: {
         title: "💰 ОБЩАЯ ПРИБЫЛЬ И МАТЕМАТИКА",
-        text: `<b>В арбитраже итоговый заработок складывается из двух величин:</b><br><br>
-        <b>1. Фиатный профит (чистая в фиате):</b> Чистая разница между всеми поступлениями от продаж и расходами на покупку монет.<br>
-        <b>2. Крипто-профит (чистая в USDT):</b> Заработанные монеты, оставшиеся на балансе биржи.<br><br>
-        <b>Формула полной прибыли:</b><br>
+        text: `<b>В арбитраже прибыль формируется в двух активах:</b><br><br>
+        <b>1. Фиатный профит:</b> Разница между полученными и отданными средствами в нацвалюте.<br>
+        <b>2. Крипто-профит (USDT):</b> Остаток монет на балансе биржи.<br><br>
+        <b>Формула итоговой прибыли:</b><br>
         <code>Общая прибыль = Чистая в фиате + (Чистая в USDT × Mid Price)</code>.<br><br>
-        <i>Все дни в календаре рассчитываются строго по этой же формуле, поэтому сумма дней месяца идеально сходится со сводкой!</i>`
-    },
-    net_fiat: {
-        title: "💵 ЧИСТАЯ В ФИАТЕ (ПРОДАЖА − ПОКУПКА)",
-        text: `<b>Фиатный результат торговли:</b><br>
-        <code>Фиатный профит = Поступления на карты (Продажи) − Списания с карт (Покупки) + Доход с закрытых кругов</code>.<br><br>
-        Отражает чистое увеличение денежной массы на банковских картах без учета крипто-остатка.`
-    },
-    net_usdt: {
-        title: "🪙 ЧИСТАЯ В USDT (ПОКУПКА − ПРОДАЖА)",
-        text: `<b>Криптовалютный остаток:</b><br>
-        <code>Крипто-профит = Купленный объем USDT − Проданный объем USDT</code>.<br><br>
-        Показывает количество монет, заработанных сверх стартового депозита.`
-    },
-    mid_price: {
-        title: "⚖️ СРЕДНЯЯ ЦЕНА (MID PRICE)",
-        text: `Справедливая средняя цена доллара USDT за выбранный отрезок времени:<br>
-        <code>Mid Price = (WAC Закупка + Средняя Продажа) / 2</code>.<br>
-        Используется для точной конвертации крипто-остатка в фиат.`
+        <i>Все дни в календаре рассчитываются строго по этой же формуле.</i>`
     },
     calculator: {
         title: "⚡️ КАЛЬКУЛЯТОР КРУГА",
@@ -785,7 +755,20 @@ const HELP_DATA = {
     },
     spread: {
         title: "📊 СПРЕД СДЕЛКИ",
-        text: `Процент доходности к сумме закупки:<br><code>Спред (%) = ((Курс продажи − Курс покупки) / Курс покупки) × 100%</code>.`
+        text: `Процент отдачи на вложенный капитал:<br>
+        <code>Спред (%) = ((Курс продажи − Курс покупки) / Курс покупки) × 100%</code>.`
+    },
+    net_fiat: {
+        title: "💵 ЧИСТАЯ В ФИАТЕ",
+        text: `Разница между всеми поступлениями на карты от продажи крипты и всеми расходами на покупку монет.`
+    },
+    net_usdt: {
+        title: "🪙 ЧИСТАЯ В USDT",
+        text: `Разница между купленным объемом USDT и проданным. Положительное значение означает, что вы заработали монеты сверх депозита.`
+    },
+    mid_price: {
+        title: "⚖️ СРЕДНЯЯ ЦЕНА (MID PRICE)",
+        text: `Справедливая средневзвешенная цена доллара за выбранный отрезок времени. Используется для точной конвертации крипто-остатка.`
     },
     turnover: {
         title: "💸 ТОРГОВЫЙ ОБОРОТ",
@@ -793,37 +776,84 @@ const HELP_DATA = {
     },
     wac: {
         title: "🛒 СРЕДНЕВЗВЕШЕННЫЙ ЗАКУП (WAC)",
-        text: `Weighted Average Cost — реальная себестоимость одного доллара USDT с учетом объема каждой отдельной покупки.`
+        text: `Weighted Average Cost — реальная себестоимость одного доллара USDT с учетом всех ваших покупок.`
     },
     avg_sell: {
         title: "🏷 СРЕДНЯЯ ЦЕНА ПРОДАЖИ",
-        text: `Средний фактический курс, по которому вы сбрасывали USDT покупателям за период.`
+        text: `Средний фактический курс, по которому вы сбрасывали USDT покупателям.`
     },
     roi: {
         title: "📈 ROI ОТ ОБОРОТА",
-        text: `Рентабельность капитала: показывает, сколько чистой прибыли приносит каждая единица торгового оборота.`
+        text: `Рентабельность прокрученного капитала. Показывает, сколько чистой прибыли приносит каждая единица оборота.`
+    },
+    calc_card: {
+        title: "💳 ПРИВЯЗКА КАРТЫ К КРУГУ",
+        text: `Если выбрать карту, прибыль и оборот круга моментально отобразятся в кассе карты, а объем покупки зачтется в суточный расход лимита.`
     },
     calendar: {
         title: "📅 КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ",
-        text: `<b>Интерактивный календарь:</b><br>
-        • <b>Листание месяцев:</b> стрелки ‹ и › позволяют листать историю на годы вперед и назад.<br>
-        • <b>Зажатие и скольжение:</b> зажмите день и ведите пальцем — всплывающая плашка показывает общую прибыль дня и автоматически скрывается при отпускании!<br>
-        • <b>Клик:</b> открывает подробную карточку дня с оборотом, спредом и сделками.`
+        text: `<b>Интерактивное управление:</b><br>
+        • <b>Зажатие и ведение пальцем:</b> открывается плавающая карточка, которая сама закрывается при отпускании пальца. При движении автоматически выбираются другие дни!<br>
+        • <b>Нажатие:</b> открывает подробную модалку за выбранный день.`
+    },
+    single_order: {
+        title: "⚡️ ОДИНОЧНЫЙ ОРДЕР",
+        text: `Внесение частичной сделки (только покупка или только продажа). Подходит для сброса объема частями на разные карты.`
     },
     cards_overview: {
         title: "💳 МОДУЛЬ КАРТ И ЛИМИТОВ",
-        text: `• <b>Две полоски:</b> 1Д (суточный расход) и 1М (месячный расход).<br>
-        • <b>Перетаскивание:</b> зажмите маркер ⋮⋮ и перемещайте карты в любом удобном порядке.<br>
-        • <b>Шаблоны:</b> автогенерация идеальных реквизитов для чата сделки Bybit.`
+        text: `Пагинация по 25 карт на страницу (до 4 страниц). Доступны суточные и месячные лимиты, статус 115-ФЗ, смена цвета, отдельная история и персональная сводка карты.`
+    },
+    history_info: {
+        title: "📜 ИСТОРИЯ ОПЕРАЦИЙ",
+        text: `Пагинация по 25 сделок на страницу (максимум 4 страницы). Поддерживает быстрый повтор круга в калькулятор (🔁), редактирование, палитру цветов и текстовые заметки.`
+    },
+    settings_info: {
+        title: "⚙️ НАСТРОЙКИ СИСТЕМЫ",
+        text: `Управление представлением интерфейса, звуковыми эффектами кассы, сменой валюты и часового пояса.`
+    },
+    promocode: {
+        title: "🎁 ПРОМОКОДЫ",
+        text: `Активация подарочных и бонусных дней подписки без обращения к администратору.`
+    },
+    layout_mode: {
+        title: "📜 РЕЖИМ ЛЕНТЫ ИЛИ ВКЛАДОК",
+        text: `• <b>По раздельности (вкладки):</b> каждый экран открывается индивидуально.<br>
+        • <b>Сплошная лента:</b> все разделы листаются на одной странице.`
+    },
+    ui_mode: {
+        title: "⚡️ ВИЗУАЛЬНЫЕ ЭФФЕКТЫ (FX)",
+        text: `• <b>Минимализм (по умолчанию):</b> глубокий черный OLED фон, мгновенный отклик на любом телефоне.<br>
+        • <b>Полный FX:</b> трехмерная глубина карточек и блокчейн-анимация.`
+    },
+    language: {
+        title: "🌍 МУЛЬТИЯЗЫЧНОСТЬ",
+        text: `Поддерживает 7 языков: Русский, English, Español, Français, Deutsch, Українська, Қазақша.`
+    },
+    currency: {
+        title: "💱 БАЗОВАЯ ВАЛЮТА",
+        text: `Смена валюты (RUB ₽, KZT ₸, UAH ₴, BYN Br, USD $).`
+    },
+    referral: {
+        title: "🤝 ПАРТНЕРСКАЯ ПРОГРАММА",
+        text: `За каждого приглашенного активного трейдера начисляется +3 дня Premium.`
     }
 };
 
 /* ====================================================
-   ИНТЕГРАЦИЯ TELEGRAM MINI APP
+   ИНТЕГРАЦИЯ С TELEGRAM MINI APP
 ==================================================== */
 const tg = window.Telegram?.WebApp;
-try { tg?.expand(); tg?.ready(); } catch(e) {}
+if (tg) {
+    try {
+        tg.expand();
+        tg.ready();
+    } catch(e) {}
+}
 
+/* ====================================================
+   СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+==================================================== */
 let currentUser = null;
 let userCards = [];
 let userTrades = [];
@@ -842,50 +872,28 @@ let activeSelectedCardColor = '#f3a600';
 
 let isSecondaryExpanded = false;
 let isHeatmapOpen = false;
-let calViewDate = new Date();
 
-// ПАГИНАЦИЯ ПО 25 ЭЛЕМЕНТОВ (ДО 4 СТРАНИЦ)
+// ПАГИНАЦИЯ (МАКСИМУМ 25 ШТУК, ДО 4 СТРАНИЦ)
 const ITEMS_PER_PAGE = 25;
 const MAX_PAGES = 4;
 let cardsCurrentPage = 1;
 let historyCurrentPage = 1;
 
+// АДМИН БАЗА ПОЛЬЗОВАТЕЛЕЙ
 let rawAdminUsersList = [];
 let adminDbFilterOnlySub = true;
 
-// ШАБЛОН ДЛЯ РЕКВИЗИТОВ ЧАТА
-const DEFAULT_CARD_TEMPLATE = "{bank}: {number} ({holder})\nОплата строго со своего счета! Третьих лиц не принимаю, чек обязателен.";
-let globalMessageTemplate = safeStorage.get('p2p_card_msg_template', DEFAULT_CARD_TEMPLATE);
-
-// НАСТРОЙКИ СИСТЕМЫ
-let currentLang = safeStorage.get('p2p_terminal_lang', 'ru');
-let uiMode = safeStorage.get('p2p_ui_mode', 'simple');
-let layoutMode = safeStorage.get('p2p_layout_mode', 'pages');
-let isIncognito = safeStorage.get('p2p_incognito', 'false') === 'true';
-let soundEnabled = safeStorage.get('p2p_sound_enabled', 'true') !== 'false';
-
-/* ====================================================
-   ФОРМАТИРОВАНИЕ ЧИСЕЛ (БЕЗ +- СТРОГО - ИЛИ +)
-==================================================== */
-function formatSignedCurrency(amount, sym = '₽', decimals = 2) {
-    const val = parseFloat(amount) || 0;
-    if (Math.abs(val) < 0.0001) {
-        return `0.00 ${sym}`.trim();
-    }
-    const formatted = Math.abs(val).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-    if (val < 0) {
-        return `-${formatted} ${sym}`.trim();
-    }
-    return `+${formatted} ${sym}`.trim();
-}
+// НАСТРОЙКИ
+let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
+let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
+let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages';
+let isIncognito = localStorage.getItem('p2p_incognito') === 'true';
+let soundEnabled = localStorage.getItem('p2p_sound_enabled') !== 'false';
 
 /* ====================================================
    СЕТЕВОЙ МОДУЛЬ (SUPABASE REST)
 ==================================================== */
 async function db(endpoint, options = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-
     const headers = {
         "apikey": API_KEY,
         "Authorization": `Bearer ${API_KEY}`,
@@ -893,21 +901,14 @@ async function db(endpoint, options = {}) {
         "Prefer": options.prefer || "return=representation",
         ...(options.headers || {})
     };
-
-    try {
-        const res = await fetch(`${API_URL}/${endpoint}`, { ...options, headers, signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!res.ok) return null;
-        const txt = await res.text();
-        return txt ? JSON.parse(txt) : null;
-    } catch (e) {
-        clearTimeout(timeoutId);
-        return null;
-    }
+    const res = await fetch(`${API_URL}/${endpoint}`, { ...options, headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+    const txt = await res.text();
+    return txt ? JSON.parse(txt) : null;
 }
 
 /* ====================================================
-   СТРОГИЙ БАРЬЕР ПОДПИСКИ
+   ПРОВЕРКА НАЛИЧИЯ АКТИВНОЙ ПОДПИСКИ ДЛЯ ЛЮБОГО ДЕЙСТВИЯ
 ==================================================== */
 function hasActiveSubscription() {
     if (!currentUser) return false;
@@ -923,12 +924,14 @@ function requireSubscription(actionCallback) {
         showToast("⚠️ Требуется активная подписка!");
         return false;
     }
-    if (typeof actionCallback === 'function') actionCallback();
+    if (typeof actionCallback === 'function') {
+        actionCallback();
+    }
     return true;
 }
 
 /* ====================================================
-   ТАКТИЛЬНЫЙ ЗВУК КАССЫ
+   ТАКТИЛЬНЫЙ ЗВУК КАССЫ И МОНЕТ
 ==================================================== */
 function playCashSound() {
     if (!soundEnabled) return;
@@ -938,24 +941,36 @@ function playCashSound() {
         const audioCtx = new AudioContextClass();
         const now = audioCtx.currentTime;
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1046.50, now);
-        osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.08);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.3);
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(987.77, now);
+        osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.08);
+        gain1.gain.setValueAtTime(0.22, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(1567.98, now + 0.06);
+        gain2.gain.setValueAtTime(0.2, now + 0.06);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now + 0.06);
+        osc2.stop(now + 0.42);
     } catch(e) {}
 }
 
 function switchSoundMode(isChecked) {
+    haptic('light');
     soundEnabled = isChecked;
-    safeStorage.set('p2p_sound_enabled', isChecked);
-    showToast(isChecked ? "🔔 Звук включен" : "🔕 Звук выключен");
+    localStorage.setItem('p2p_sound_enabled', isChecked);
+    showToast(isChecked ? "🔔 Звук кассы включен" : "🔕 Звук выключен");
 }
 
 /* ====================================================
@@ -973,10 +988,11 @@ function applyIncognito() {
 }
 
 function toggleIncognitoMode() {
+    haptic('light');
     isIncognito = !isIncognito;
-    safeStorage.set('p2p_incognito', isIncognito);
+    localStorage.setItem('p2p_incognito', isIncognito);
     applyIncognito();
-    showToast(isIncognito ? "🕶 Балансы скрыты" : "👁 Балансы открыты");
+    showToast(isIncognito ? "🕶 Инкогнито: балансы скрыты" : "👁 Балансы открыты");
 }
 
 /* ====================================================
@@ -993,85 +1009,112 @@ function updateAllCurrencySymbols() {
 }
 
 async function changeCurrency(val) {
+    haptic('medium');
     if (!currentUser) return;
     currentUser.currency = val;
+    localStorage.setItem('p2p_currency', val);
     updateAllCurrencySymbols();
-    await db(`users?tg_id=eq.${currentUser.tg_id}`, { method: 'PATCH', body: JSON.stringify({ currency: val }) });
+    try {
+        await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ currency: val })
+        });
+    } catch(e) {}
     renderAll();
     showToast(`Валюта: ${val}`);
 }
 
 async function updateTimezone(tzVal) {
+    haptic('light');
     if (!currentUser) return;
     currentUser.tz_offset = parseInt(tzVal);
-    await db(`users?tg_id=eq.${currentUser.tg_id}`, { method: 'PATCH', body: JSON.stringify({ tz_offset: currentUser.tz_offset }) });
+    try {
+        await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ tz_offset: currentUser.tz_offset })
+        });
+    } catch(e) {}
     renderAll();
     showToast(`Часовой пояс: UTC+${tzVal}`);
 }
 
 /* ====================================================
-   ЯЗЫК И ИНТЕРФЕЙС
+   МУЛЬТИЯЗЫЧНОСТЬ (7 ЯЗЫКОВ)
 ==================================================== */
 function applyLanguage(lang) {
     currentLang = lang;
-    safeStorage.set('p2p_terminal_lang', lang);
+    localStorage.setItem('p2p_terminal_lang', lang);
     const dict = I18N[lang] || I18N.ru;
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (dict[key]) el.innerText = dict[key];
+        if (dict[key]) {
+            el.innerText = dict[key];
+        }
     });
 
     const tBtn = document.getElementById('txt-toggle-details');
-    if (tBtn) tBtn.innerText = isSecondaryExpanded ? dict.hideSecondary : dict.showSecondary;
+    if (tBtn) {
+        tBtn.innerText = isSecondaryExpanded ? dict.hideSecondary : dict.showSecondary;
+    }
+
     updateAllCurrencySymbols();
 }
 
 function changeLanguage(lang) {
+    haptic('light');
     applyLanguage(lang);
-    showToast("Язык обновлен");
+    showToast("Язык интерфейса обновлен");
     renderAll();
 }
 
 /* ====================================================
-   ЖИВОЙ БАННЕР-РАССЫЛКА (МЕЖДУ ПОДПИСКОЙ И СВОДКОЙ)
+   ЖИВОЙ БАННЕР-ОБЪЯВЛЕНИЕ
 ==================================================== */
 async function loadLiveSiteBanner() {
     const bannerEl = document.getElementById('site-live-banner');
     const textEl = document.getElementById('site-live-banner-text');
     if (!bannerEl || !textEl) return;
 
-    const [txtRes, actRes] = await Promise.all([
-        db(`bot_config?key=eq.SITE_BANNER_TEXT`),
-        db(`bot_config?key=eq.SITE_BANNER_ACTIVE`)
-    ]);
+    try {
+        const [txtRes, actRes] = await Promise.all([
+            db(`bot_config?key=eq.SITE_BANNER_TEXT`),
+            db(`bot_config?key=eq.SITE_BANNER_ACTIVE`)
+        ]);
 
-    const bannerText = txtRes?.[0]?.value || "";
-    const isActive = actRes?.[0]?.value === 'true' || actRes?.[0]?.value === true;
+        const bannerText = txtRes?.[0]?.value || "";
+        const isActive = actRes?.[0]?.value === 'true' || actRes?.[0]?.value === true;
 
-    if (isActive && bannerText.trim().length > 0) {
-        textEl.innerText = bannerText;
-        bannerEl.className = 'banner-active';
-        const adminInp = document.getElementById('admin-banner-text');
-        if (adminInp) adminInp.value = bannerText;
-    } else {
-        textEl.innerText = '';
-        bannerEl.className = 'banner-empty';
+        if (isActive && bannerText.trim().length > 0) {
+            textEl.innerText = bannerText;
+            bannerEl.style.display = 'block';
+            const adminInp = document.getElementById('admin-banner-text');
+            if (adminInp) adminInp.value = bannerText;
+        } else {
+            bannerEl.style.display = 'none';
+        }
+    } catch(e) {
+        bannerEl.style.display = 'none';
     }
 }
 
 async function adminUpdateBanner(isActive) {
-    const text = document.getElementById('admin-banner-text')?.value?.trim() || '';
-    await Promise.all([
-        db(`bot_config?key=eq.SITE_BANNER_TEXT`, { method: 'PATCH', body: JSON.stringify({ value: text }) }),
-        db(`bot_config?key=eq.SITE_BANNER_ACTIVE`, { method: 'PATCH', body: JSON.stringify({ value: String(isActive) }) })
-    ]);
-    showToast(isActive ? "📢 Баннер включен для всех" : "Баннер скрыт");
-    await loadLiveSiteBanner();
+    haptic('medium');
+    const text = document.getElementById('admin-banner-text').value.trim();
+    try {
+        await Promise.all([
+            db(`bot_config?key=eq.SITE_BANNER_TEXT`, { method: 'PATCH', body: JSON.stringify({ value: text }) }),
+            db(`bot_config?key=eq.SITE_BANNER_ACTIVE`, { method: 'PATCH', body: JSON.stringify({ value: String(isActive) }) })
+        ]);
+        showToast(isActive ? "📢 Баннер включен на сайте!" : "Баннер выключен");
+        await loadLiveSiteBanner();
+    } catch(e) {
+        showToast("Ошибка обновления баннера");
+    }
 }
 
 /* ====================================================
-   КАЛЬКУЛЯТОР КРУГА
+   КАЛЬКУЛЯТОР КРУГА (ЕДИНАЯ СДЕЛКА)
 ==================================================== */
 function runCalculator() {
     const fiat = parseFloat(document.getElementById('calc-fiat-amt')?.value) || 0;
@@ -1085,32 +1128,46 @@ function runCalculator() {
     const elProfitFiat = document.getElementById('calc-profit-fiat-val');
     const sym = getCurrencySymbol();
 
-    let boughtUsdt = (fiat > 0 && buyRate > 0) ? fiat / buyRate : 0;
-    let soldUsdt = (fiat > 0 && sellRate > 0) ? fiat / sellRate : 0;
+    let boughtUsdt = 0;
+    let soldUsdt = 0;
 
-    if (elBuyCrypto) elBuyCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
-    if (elSellCrypto) elSellCrypto.innerText = `${soldUsdt.toFixed(2)} USDT`;
+    if (fiat > 0 && buyRate > 0) {
+        boughtUsdt = fiat / buyRate;
+        if (elBuyCrypto) elBuyCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
+    } else if (elBuyCrypto) {
+        elBuyCrypto.innerText = `0.00 USDT`;
+    }
+
+    if (fiat > 0 && sellRate > 0) {
+        soldUsdt = fiat / sellRate;
+        if (elSellCrypto) elSellCrypto.innerText = `${soldUsdt.toFixed(2)} USDT`;
+    } else if (elSellCrypto) {
+        elSellCrypto.innerText = `0.00 USDT`;
+    }
 
     if (fiat > 0 && buyRate > 0 && sellRate > 0) {
         const spreadPct = ((sellRate - buyRate) / buyRate) * 100;
         const profitUsdt = boughtUsdt - soldUsdt;
-        const profitFiat = profitUsdt * ((buyRate + sellRate) / 2);
+        const midRate = (buyRate + sellRate) / 2;
+        const profitFiat = profitUsdt * midRate;
 
         if (elSpread) {
-            elSpread.innerText = (spreadPct >= 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
+            elSpread.innerText = (spreadPct > 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
             elSpread.style.color = spreadPct >= 0 ? 'var(--bybit-yellow)' : 'var(--bybit-red)';
         }
+
         if (elProfitUsdt) {
-            elProfitUsdt.innerText = formatSignedCurrency(profitUsdt, 'USDT', 2);
+            elProfitUsdt.innerText = (profitUsdt > 0 ? "+" : "") + profitUsdt.toFixed(2) + " USDT";
             elProfitUsdt.style.color = profitUsdt >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
         }
+
         if (elProfitFiat) {
-            elProfitFiat.innerText = `≈ ${formatSignedCurrency(profitFiat, sym, 2)}`;
+            elProfitFiat.innerText = `≈ ${(profitFiat > 0 ? "+" : "")}${profitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
         }
     } else {
-        if (elSpread) elSpread.innerText = "0.00%";
-        if (elProfitUsdt) elProfitUsdt.innerText = "0.00 USDT";
-        if (elProfitFiat) elProfitFiat.innerText = `≈ 0.00 ${sym}`;
+        if (elSpread) { elSpread.innerText = "0.00%"; elSpread.style.color = 'var(--text-main)'; }
+        if (elProfitUsdt) { elProfitUsdt.innerText = "0.00 USDT"; elProfitUsdt.style.color = 'var(--text-main)'; }
+        if (elProfitFiat) { elProfitFiat.innerText = `≈ 0.00 ${sym}`; }
     }
 }
 
@@ -1121,6 +1178,7 @@ document.getElementById('calc-sell-rate')?.addEventListener('input', runCalculat
 async function saveCalculatedCycle() {
     if (!requireSubscription()) return;
 
+    haptic('medium');
     const fiat = parseFloat(document.getElementById('calc-fiat-amt')?.value);
     const buyRate = parseFloat(document.getElementById('calc-buy-rate')?.value);
     const sellRate = parseFloat(document.getElementById('calc-sell-rate')?.value);
@@ -1135,35 +1193,41 @@ async function saveCalculatedCycle() {
     const soldUsdt = parseFloat((fiat / sellRate).toFixed(2));
     const spreadPct = parseFloat((((sellRate - buyRate) / buyRate) * 100).toFixed(2));
     const profitUsdt = parseFloat((boughtUsdt - soldUsdt).toFixed(2));
-    const profitFiat = parseFloat((profitUsdt * ((buyRate + sellRate) / 2)).toFixed(2));
+    const midRate = (buyRate + sellRate) / 2;
+    const profitFiat = parseFloat((profitUsdt * midRate).toFixed(2));
 
-    await db('trades', {
-        method: 'POST',
-        body: JSON.stringify({
-            tg_id: currentUser.tg_id,
-            type: 'buy',
-            is_cycle: true,
-            crypto_amount: boughtUsdt,
-            rate: buyRate,
-            buy_rate: buyRate,
-            sell_rate: sellRate,
-            fiat_amount: fiat,
-            cycle_spread: spreadPct,
-            cycle_profit_rub: profitFiat,
-            cycle_profit_usdt: profitUsdt,
-            card_id: cardId ? parseInt(cardId) : null,
-            tag_color: 'green'
-        })
-    });
+    try {
+        await db('trades', {
+            method: 'POST',
+            body: JSON.stringify({
+                tg_id: currentUser.tg_id,
+                type: 'buy',
+                is_cycle: true,
+                crypto_amount: boughtUsdt,
+                rate: buyRate,
+                buy_rate: buyRate,
+                sell_rate: sellRate,
+                fiat_amount: fiat,
+                cycle_spread: spreadPct,
+                cycle_profit_rub: profitFiat,
+                cycle_profit_usdt: profitUsdt,
+                card_id: cardId ? parseInt(cardId) : null,
+                tag_color: 'green'
+            })
+        });
 
-    playCashSound();
-    haptic('success');
-    showToast("✅ Круг сохранен!");
-    await refreshData();
-    renderAll();
+        playCashSound();
+        haptic('success');
+        showToast("✅ Круг сохранен единой записью!");
+        await refreshData();
+        renderAll();
+    } catch(e) {
+        showToast("❌ Ошибка сохранения круга");
+    }
 }
 
 function clearCalculator() {
+    haptic('light');
     const f = document.getElementById('calc-fiat-amt');
     const b = document.getElementById('calc-buy-rate');
     const s = document.getElementById('calc-sell-rate');
@@ -1175,43 +1239,8 @@ function clearCalculator() {
 }
 
 /* ====================================================
-   МАТЕМАТИКА ПРИБЫЛИ СВОДКИ И КАЛЕНДАРЯ
+   МАТЕМАТИКА ПРИБЫЛИ
 ==================================================== */
-function calculateAggregateTrades(tradesList, globalMidFallback = 90) {
-    let bF = 0, bC = 0, sF = 0, sC = 0, cycleRub = 0;
-    tradesList.forEach(t => {
-        const f = parseFloat(t.fiat_amount || 0);
-        const c = parseFloat(t.crypto_amount || 0);
-        if (t.is_cycle) {
-            bF += f; sF += f; bC += c;
-            sC += (t.sell_rate ? f / parseFloat(t.sell_rate) : c);
-            cycleRub += parseFloat(t.cycle_profit_rub || 0);
-        } else if (t.type === 'buy') {
-            bF += f; bC += c;
-        } else {
-            sF += f; sC += c;
-        }
-    });
-
-    const wac = bC > 0 ? (bF / bC) : 0;
-    const avgSell = sC > 0 ? (sF / sC) : 0;
-    const midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || globalMidFallback);
-
-    const profitFiat = (sF - bF) + cycleRub;
-    const profitUsdt = bC - sC;
-    const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
-    const totalProfitUsdt = profitUsdt + (midPrice > 0 ? profitFiat / midPrice : 0);
-
-    return {
-        bF, bC, sF, sC,
-        wac, avgSell, midPrice,
-        profitFiat, profitUsdt,
-        totalProfitFiat, totalProfitUsdt,
-        turnover: bF + sF,
-        cryptoTurn: bC + sC
-    };
-}
-
 function calculateStats() {
     const tz = parseInt(currentUser?.tz_offset) || 3;
     const now = new Date();
@@ -1229,40 +1258,84 @@ function calculateStats() {
         return true;
     });
 
-    const stats = calculateAggregateTrades(filtered);
-    const buysCount = filtered.filter(t => t.type === 'buy' || t.is_cycle).length;
-    const sellsCount = filtered.filter(t => t.type === 'sell' || t.is_cycle).length;
+    let bF = 0, bC = 0, sF = 0, sC = 0, sellsCount = 0, buysCount = 0;
+    let cycleProfitFiatTotal = 0;
 
-    const avgPeriodSpread = (stats.wac > 0 && stats.avgSell > 0) ? ((stats.avgSell / stats.wac) - 1) * 100 : 0;
-    const roi = stats.turnover > 0 ? (stats.totalProfitFiat / stats.turnover) * 100 : 0;
+    filtered.forEach(t => {
+        const f = parseFloat(t.fiat_amount || 0);
+        const c = parseFloat(t.crypto_amount || 0);
+
+        if (t.is_cycle) {
+            bF += f;
+            sF += f;
+            bC += c;
+            const soldC = t.sell_rate ? f / parseFloat(t.sell_rate) : c;
+            sC += soldC;
+            buysCount++;
+            sellsCount++;
+            cycleProfitFiatTotal += parseFloat(t.cycle_profit_rub || 0);
+        } else if (t.type === 'buy') {
+            bF += f;
+            bC += c;
+            buysCount++;
+        } else {
+            sF += f;
+            sC += c;
+            sellsCount++;
+        }
+    });
+
+    const wac = bC > 0 ? bF / bC : 0;
+    const avgSell = sC > 0 ? sF / sC : 0;
+    const midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || 0);
+
+    const profitFiat = (sF - bF) + cycleProfitFiatTotal;
+    const profitUsdt = bC - sC;
+
+    const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
+    const totalProfitUsdt = profitUsdt + (midPrice > 0 ? profitFiat / midPrice : 0);
+
+    const avgPeriodSpread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
+    const fiatTurn = bF + sF;
+    const cryptoTurn = bC + sC;
+    const roi = fiatTurn > 0 ? (totalProfitFiat / fiatTurn) * 100 : 0;
     const sym = getCurrencySymbol();
 
+    function updateMetricColor(el, val) {
+        if (!el) return;
+        el.style.color = val < 0 ? 'var(--bybit-red)' : (val > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+    }
+
     const elTotalFiat = document.getElementById('val-total-profit-rub');
+    updateMetricColor(elTotalFiat, totalProfitFiat);
     if (elTotalFiat) {
-        elTotalFiat.style.color = stats.totalProfitFiat < 0 ? 'var(--bybit-red)' : (stats.totalProfitFiat > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
-        elTotalFiat.innerHTML = `${formatSignedCurrency(stats.totalProfitFiat, '', 2)} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
+        const sign = totalProfitFiat > 0 ? '+' : '';
+        elTotalFiat.innerHTML = `${sign}${totalProfitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
     }
 
     const elTotalUsdt = document.getElementById('val-total-profit-usdt');
+    updateMetricColor(elTotalUsdt, totalProfitUsdt);
     if (elTotalUsdt) {
-        elTotalUsdt.innerText = formatSignedCurrency(stats.totalProfitUsdt, 'USDT', 2);
-        elTotalUsdt.style.color = stats.totalProfitUsdt < 0 ? 'var(--bybit-red)' : (stats.totalProfitUsdt > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+        const sign = totalProfitUsdt > 0 ? '+' : '';
+        elTotalUsdt.innerText = `${sign}${totalProfitUsdt.toFixed(2)} USDT`;
     }
 
     const elProfitFiat = document.getElementById('val-profit-rub');
+    updateMetricColor(elProfitFiat, profitFiat);
     if (elProfitFiat) {
-        elProfitFiat.innerText = formatSignedCurrency(stats.profitFiat, sym, 2);
-        elProfitFiat.style.color = stats.profitFiat < 0 ? 'var(--bybit-red)' : (stats.profitFiat > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+        const sign = profitFiat > 0 ? '+' : '';
+        elProfitFiat.innerText = `${sign}${profitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
     }
 
     const elProfitUsdt = document.getElementById('val-profit-usdt');
+    updateMetricColor(elProfitUsdt, profitUsdt);
     if (elProfitUsdt) {
-        elProfitUsdt.innerText = formatSignedCurrency(stats.profitUsdt, 'USDT', 2);
-        elProfitUsdt.style.color = stats.profitUsdt < 0 ? 'var(--bybit-red)' : (stats.profitUsdt > 0 ? 'var(--bybit-blue)' : 'var(--text-main)');
+        const sign = profitUsdt > 0 ? '+' : '';
+        elProfitUsdt.innerText = `${sign}${profitUsdt.toFixed(2)} USDT`;
     }
 
     const elMidPrice = document.getElementById('hint-mid-price');
-    if (elMidPrice) elMidPrice.innerText = stats.midPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (elMidPrice) elMidPrice.innerText = midPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const lastCycle = userTrades.find(t => t.is_cycle);
     let lastSpread = 0;
@@ -1281,39 +1354,39 @@ function calculateStats() {
 
     const elLastSpread = document.getElementById('val-last-spread');
     if (elLastSpread) {
-        elLastSpread.innerText = (lastSpread >= 0 ? "+" : "") + lastSpread.toFixed(2) + "%";
-        elLastSpread.style.color = lastSpread < 0 ? 'var(--bybit-red)' : 'var(--bybit-yellow)';
+        elLastSpread.innerText = (lastSpread > 0 ? "+" : "") + lastSpread.toFixed(2) + "%";
+        updateMetricColor(elLastSpread, lastSpread);
     }
 
     const elAvgSpread = document.getElementById('val-avg-spread');
     if (elAvgSpread) {
-        elAvgSpread.innerText = (avgPeriodSpread >= 0 ? "+" : "") + avgPeriodSpread.toFixed(2) + "%";
-        elAvgSpread.style.color = avgPeriodSpread < 0 ? 'var(--bybit-red)' : 'var(--bybit-green)';
+        elAvgSpread.innerText = (avgPeriodSpread > 0 ? "+" : "") + avgPeriodSpread.toFixed(2) + "%";
+        updateMetricColor(elAvgSpread, avgPeriodSpread);
     }
 
     const roiEl = document.getElementById('val-roi');
     if (roiEl) {
-        roiEl.innerText = (roi >= 0 ? "+" : "") + roi.toFixed(2) + "%";
-        roiEl.style.color = roi < 0 ? 'var(--bybit-red)' : 'var(--bybit-green)';
+        roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
+        updateMetricColor(roiEl, roi);
     }
 
     const elWac = document.getElementById('val-wac');
-    if (elWac) elWac.innerText = stats.wac.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (elWac) elWac.innerText = wac.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const elAvgSell = document.getElementById('val-avg-sell');
-    if (elAvgSell) elAvgSell.innerText = stats.avgSell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (elAvgSell) elAvgSell.innerText = avgSell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const elFiatTurn = document.getElementById('val-fiat-turn');
-    if (elFiatTurn) elFiatTurn.innerText = `${stats.turnover.toLocaleString(undefined, { minimumFractionDigits: 0 })} ${sym}`;
+    if (elFiatTurn) elFiatTurn.innerText = `${fiatTurn.toLocaleString(undefined, { minimumFractionDigits: 0 })} ${sym}`;
 
     const elCryptoTurn = document.getElementById('val-crypto-turn');
-    if (elCryptoTurn) elCryptoTurn.innerText = `${stats.cryptoTurn.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT`;
+    if (elCryptoTurn) elCryptoTurn.innerText = `${cryptoTurn.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT`;
 
     const elTradesCount = document.getElementById('val-trades-count');
     if (elTradesCount) elTradesCount.innerText = `${filtered.length} / ${buysCount} / ${sellsCount}`;
 
-    calculatePeriodComparison(stats.totalProfitFiat);
-    if (isHeatmapOpen) renderHeatmap();
+    calculatePeriodComparison(totalProfitFiat);
+    if (isHeatmapOpen) renderHeatmap(midPrice);
 }
 
 function calculatePeriodComparison(currentProfit) {
@@ -1364,7 +1437,7 @@ function calculatePeriodComparison(currentProfit) {
 }
 
 /* ====================================================
-   КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ (С ЧИСТОГО ЛИСТА)
+   КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ (СКОЛЬЖЕНИЕ И АВТОЗАКРЫТИЕ)
 ==================================================== */
 function toggleHeatmapPanel() {
     isHeatmapOpen = !isHeatmapOpen;
@@ -1372,133 +1445,149 @@ function toggleHeatmapPanel() {
     const arrow = document.getElementById('heatmap-arrow');
     if (panel) panel.style.display = isHeatmapOpen ? 'block' : 'none';
     if (arrow) arrow.innerText = isHeatmapOpen ? '▴' : '▾';
-    if (isHeatmapOpen) {
-        calViewDate = new Date();
-        renderHeatmap();
-    }
+    if (isHeatmapOpen) renderHeatmap();
 }
 
-function navigateCalendarMonth(delta) {
-    haptic('light');
-    calViewDate.setMonth(calViewDate.getMonth() + delta);
-    renderHeatmap();
-}
-
-function resetCalendarToCurrentMonth() {
-    haptic('light');
-    calViewDate = new Date();
-    renderHeatmap();
-}
-
-function renderHeatmap() {
+function renderHeatmap(globalMidPrice = 0) {
     const container = document.getElementById('calendar-grid-container');
     const popup = document.getElementById('calendar-floating-popup');
     if (!container) return;
     container.innerHTML = '';
 
-    ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(d => container.innerHTML += `<div class="cal-head">${d}</div>`);
+    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    days.forEach(d => container.innerHTML += `<div class="cal-head">${d}</div>`);
 
-    const year = calViewDate.getFullYear();
-    const month = calViewDate.getMonth();
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
     const totalDays = new Date(year, month + 1, 0).getDate();
     const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
 
     const monthTitle = document.getElementById('heatmap-month-title');
     if (monthTitle) {
-        monthTitle.innerText = calViewDate.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' }).toUpperCase();
+        monthTitle.innerText = now.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' }).toUpperCase();
     }
 
-    for (let i = 0; i < firstDayIndex; i++) container.innerHTML += `<div></div>`;
+    for (let i = 0; i < firstDayIndex; i++) {
+        container.innerHTML += `<div></div>`;
+    }
 
-    const tz = parseInt(currentUser?.tz_offset) || 3;
-    const monthTrades = userTrades.filter(t => {
-        const d = new Date(t.date);
-        d.setHours(d.getUTCHours() + tz);
-        return d.getFullYear() === year && d.getMonth() === month;
-    });
-
-    const monthGlobalStats = calculateAggregateTrades(monthTrades);
     const dayCellsData = {};
 
     for (let day = 1; day <= totalDays; day++) {
-        const dayTrades = monthTrades.filter(t => {
+        const dayTrades = userTrades.filter(t => {
             const d = new Date(t.date);
-            d.setHours(d.getUTCHours() + tz);
-            return d.getDate() === day;
+            return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
         });
 
-        // Считается строго по идентичной математике общей сводки
-        const dayStats = calculateAggregateTrades(dayTrades, monthGlobalStats.midPrice);
+        let dayProfitFiat = 0;
+        let dayBoughtUsdt = 0;
+        let daySoldUsdt = 0;
+        let dayTurnover = 0;
+
+        dayTrades.forEach(t => {
+            const f = parseFloat(t.fiat_amount || 0);
+            const c = parseFloat(t.crypto_amount || 0);
+            dayTurnover += f;
+
+            if (t.is_cycle) {
+                dayProfitFiat += parseFloat(t.cycle_profit_rub || 0);
+            } else if (t.type === 'buy') {
+                dayProfitFiat -= f;
+                dayBoughtUsdt += c;
+            } else {
+                dayProfitFiat += f;
+                daySoldUsdt += c;
+            }
+        });
+
+        const dayCryptoDiff = dayBoughtUsdt - daySoldUsdt;
+        const totalDayProfit = dayProfitFiat + (dayCryptoDiff * globalMidPrice);
 
         let colorClass = '';
         if (dayTrades.length > 0) {
-            if (dayStats.totalProfitFiat > 10000) colorClass = 'profit-pos-high';
-            else if (dayStats.totalProfitFiat > 2500) colorClass = 'profit-pos-mid';
-            else if (dayStats.totalProfitFiat >= 0) colorClass = 'profit-pos-low';
+            if (totalDayProfit > 10000) colorClass = 'profit-pos-high';
+            else if (totalDayProfit > 2500) colorClass = 'profit-pos-mid';
+            else if (totalDayProfit >= 0) colorClass = 'profit-pos-low';
             else colorClass = 'profit-neg';
         }
 
         dayCellsData[day] = {
             day,
-            profit: dayStats.totalProfitFiat,
+            profit: totalDayProfit,
             count: dayTrades.length,
-            turnover: dayStats.turnover
+            turnover: dayTurnover
         };
 
         const cell = document.createElement('div');
         cell.className = `cal-day-cell ${colorClass}`;
         cell.dataset.day = String(day);
         cell.innerText = day;
+
         container.appendChild(cell);
     }
 
-    let isTouching = false;
+    let isTouchingCalendar = false;
     let currentHoverDay = null;
 
     function updateFloatingPopup(dayNum) {
-        if (!dayNum || !dayCellsData[dayNum] || !popup) return;
+        if (!dayNum || !dayCellsData[dayNum]) return;
         const data = dayCellsData[dayNum];
         const sym = getCurrencySymbol();
 
-        document.getElementById('pop-date').innerText = `${data.day} ${monthTitle?.innerText || ''}`;
+        document.getElementById('pop-date').innerText = `${data.day} ${monthTitle ? monthTitle.innerText : ''}`;
         const pVal = document.getElementById('pop-profit');
-        pVal.innerText = formatSignedCurrency(data.profit, sym, 2);
-        pVal.style.color = data.profit < 0 ? 'var(--bybit-red)' : (data.profit > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+        pVal.innerText = `${(data.profit >= 0 ? '+' : '')}${data.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+        pVal.style.color = data.profit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
 
         const spreadCalc = data.turnover > 0 ? ((data.profit / data.turnover) * 100).toFixed(2) : "0.00";
         document.getElementById('pop-extra').innerText = `${data.count} сдел. • Спред: ${spreadCalc}%`;
+
         popup.classList.add('show');
     }
 
     function hideFloatingPopup() {
-        isTouching = false;
+        isTouchingCalendar = false;
         currentHoverDay = null;
-        if (popup) popup.classList.remove('show');
+        popup.classList.remove('show');
         container.querySelectorAll('.cal-day-cell').forEach(c => c.classList.remove('touch-active'));
     }
 
     function handlePointerAt(clientX, clientY) {
         const el = document.elementFromPoint(clientX, clientY);
         const cell = el ? el.closest('.cal-day-cell') : null;
-        if (cell && cell.dataset.day && cell.dataset.day !== currentHoverDay) {
-            currentHoverDay = cell.dataset.day;
-            container.querySelectorAll('.cal-day-cell').forEach(c => c.classList.remove('touch-active'));
-            cell.classList.add('touch-active');
-            haptic('light');
-            updateFloatingPopup(currentHoverDay);
+        if (cell && cell.dataset.day) {
+            const d = cell.dataset.day;
+            if (d !== currentHoverDay) {
+                currentHoverDay = d;
+                container.querySelectorAll('.cal-day-cell').forEach(c => c.classList.remove('touch-active'));
+                cell.classList.add('touch-active');
+                haptic('light');
+                updateFloatingPopup(d);
+            }
         }
     }
 
-    container.onpointerdown = (e) => { isTouching = true; handlePointerAt(e.clientX, e.clientY); };
-    container.onpointermove = (e) => { if (isTouching) handlePointerAt(e.clientX, e.clientY); };
+    container.onpointerdown = (e) => {
+        isTouchingCalendar = true;
+        handlePointerAt(e.clientX, e.clientY);
+    };
+
+    container.onpointermove = (e) => {
+        if (!isTouchingCalendar) return;
+        handlePointerAt(e.clientX, e.clientY);
+    };
+
     window.addEventListener('pointerup', hideFloatingPopup);
     window.addEventListener('pointercancel', hideFloatingPopup);
 
     container.onclick = (e) => {
         const cell = e.target.closest('.cal-day-cell');
-        if (cell && cell.dataset.day && dayCellsData[cell.dataset.day]) {
-            const data = dayCellsData[cell.dataset.day];
-            openDayDetailsModal(data.day, data.profit, data.count, data.turnover);
+        if (!cell || !cell.dataset.day) return;
+        const d = parseInt(cell.dataset.day);
+        const data = dayCellsData[d];
+        if (data) {
+            openDayDetailsModal(d, data.profit, data.count, data.turnover);
         }
     };
 }
@@ -1507,37 +1596,27 @@ function openDayDetailsModal(day, profit, count, turnover) {
     const sym = getCurrencySymbol();
     document.getElementById('day-modal-title').innerText = `📅 Сводка за ${day} число`;
     const profitEl = document.getElementById('day-modal-profit-val');
-    profitEl.innerText = formatSignedCurrency(profit, sym, 2);
-    profitEl.style.color = profit < 0 ? 'var(--bybit-red)' : (profit > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+    profitEl.innerText = `${(profit >= 0 ? '+' : '')}${profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+    profitEl.style.color = profit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+
     document.getElementById('day-modal-trades-cnt').innerText = `${count} сделок`;
     document.getElementById('day-modal-turnover-val').innerText = `${turnover.toLocaleString(undefined, { minimumFractionDigits: 2 })} ${sym}`;
-    document.getElementById('day-modal-spread-val').innerText = `${count > 0 && turnover > 0 ? ((profit / turnover) * 100).toFixed(2) : "0.00"}%`;
-    document.getElementById('modal-day-details')?.classList.add('show');
+
+    const spreadAvg = count > 0 ? (turnover > 0 ? ((profit / turnover) * 100).toFixed(2) : "0.00") : "0.00";
+    document.getElementById('day-modal-spread-val').innerText = `${spreadAvg}%`;
+
+    document.getElementById('modal-day-details').classList.add('show');
 }
 
 function closeDayDetailsModal(event) {
     if (event) event.stopPropagation();
-    document.getElementById('modal-day-details')?.classList.remove('show');
+    document.getElementById('modal-day-details').classList.remove('show');
 }
 
 /* ====================================================
-   МОДУЛЬ КАРТ (2 ПОЛОСКИ ЛИМИТОВ, DRAG & DROP, БЕЗ ПРИБЫЛИ)
+   МОДУЛЬ КАРТ: СТАТУСЫ, ЛИМИТЫ, ПАГИНАЦИЯ (МАКСИМУМ 25, ДО 4 СТР)
 ==================================================== */
-function checkCardsCooldown() {
-    const now = new Date();
-    userCards.forEach(c => {
-        if (c.status === 'cooldown' && c.cooldown_until) {
-            if (new Date(c.cooldown_until) <= now) {
-                c.status = 'active';
-                c.cooldown_until = null;
-                db(`cards?id=eq.${c.id}`, { method: 'PATCH', body: JSON.stringify({ status: 'active', cooldown_until: null }) });
-            }
-        }
-    });
-}
-
 function renderCards() {
-    checkCardsCooldown();
     const container = document.getElementById('cards-container');
     const paginationContainer = document.getElementById('cards-pagination');
     if (!container) return;
@@ -1551,153 +1630,119 @@ function renderCards() {
 
     const sym = getCurrencySymbol();
 
-    // Пользовательский порядок Drag & Drop
-    const customOrder = JSON.parse(safeStorage.get(`p2p_card_order_${currentUser?.tg_id}`, '[]'));
-    let sorted = [...userCards];
-    if (customOrder.length > 0) {
-        sorted.sort((a, b) => {
-            const idxA = customOrder.indexOf(a.id);
-            const idxB = customOrder.indexOf(b.id);
-            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-            if (idxA !== -1) return -1;
-            if (idxB !== -1) return 1;
-            return 0;
-        });
-    }
-
-    sorted.sort((a, b) => {
+    const sorted = [...userCards].sort((a, b) => {
         if (a.status === 'burned') return 1;
         if (b.status === 'burned') return -1;
-        return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        return 0;
     });
 
     const totalPages = Math.min(MAX_PAGES, Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE)));
     if (cardsCurrentPage > totalPages) cardsCurrentPage = totalPages;
 
-    const pageItems = sorted.slice((cardsCurrentPage - 1) * ITEMS_PER_PAGE, cardsCurrentPage * ITEMS_PER_PAGE);
-    const now = new Date();
+    const startIndex = (cardsCurrentPage - 1) * ITEMS_PER_PAGE;
+    const pageItems = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     pageItems.forEach(c => {
-        const cTrades = userTrades.filter(tr => tr.card_id === c.id);
-        const spentBuyAll = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const gainSellAll = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const spentBuy = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const gainSell = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
         const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
         const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const balance = deps - wdrs + gainSellAll - spentBuyAll;
+        const wdrsInLimit = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw' && o.count_in_limit).reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
 
-        const spentToday = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString()).reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const spentMonth = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).getMonth() === now.getMonth() && new Date(tr.date).getFullYear() === now.getFullYear()).reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const balance = deps - wdrs + gainSell - spentBuy;
+        const totalUsedLimit = spentBuy + wdrsInLimit;
 
-        // Две полоски лимитов: Дневная (1Д) и Месячная (1М)
-        let dayBarHtml = '';
-        if (c.buy_limit && c.buy_limit > 0) {
-            const dayPct = Math.min(100, Math.round((spentToday / c.buy_limit) * 100));
-            const dayColor = dayPct > 90 ? 'danger' : (dayPct > 70 ? 'warning' : '');
-            dayBarHtml = `
-                <div class="card-bar-line">
-                    <span class="card-bar-tag">1Д</span>
-                    <div class="card-mini-bar">
-                        <div class="card-mini-bar-fill ${dayColor}" style="width: ${dayPct}%;"></div>
-                    </div>
+        const todayTrades = userTrades.filter(tr => {
+            return tr.card_id === c.id && new Date(tr.date).toDateString() === new Date().toDateString();
+        });
+        const buysCount = todayTrades.filter(tr => tr.type === 'buy').length;
+        const sellsCount = todayTrades.filter(tr => tr.type === 'sell' || tr.is_cycle).length;
+
+        const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
+        let miniBarHtml = '';
+        if (limit && limit > 0) {
+            const pct = Math.min(100, Math.round((totalUsedLimit / limit) * 100));
+            const colorClass = pct > 90 ? 'danger' : (pct > 70 ? 'warning' : '');
+            miniBarHtml = `
+                <div class="card-mini-bar">
+                    <div class="card-mini-bar-fill ${colorClass}" style="width: ${pct}%;"></div>
                 </div>
             `;
         }
 
-        let monthBarHtml = '';
-        if (c.month_limit && c.month_limit > 0) {
-            const monthPct = Math.min(100, Math.round((spentMonth / c.month_limit) * 100));
-            const monthColor = monthPct > 90 ? 'danger' : (monthPct > 70 ? 'warning' : '');
-            monthBarHtml = `
-                <div class="card-bar-line">
-                    <span class="card-bar-tag">1М</span>
-                    <div class="card-mini-bar">
-                        <div class="card-mini-bar-fill ${monthColor}" style="width: ${monthPct}%;"></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        let cooldownBadge = '';
-        if (c.status === 'cooldown') {
-            cooldownBadge = `<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>`;
-        }
+        const isBurned = c.status === 'burned';
+        const isPinned = c.is_pinned;
 
         container.innerHTML += `
-            <div class="card-row-item ${c.status === 'burned' ? 'burned' : ''} ${c.is_pinned ? 'pinned' : ''}"
-                 draggable="true"
-                 ondragstart="handleCardDragStart(event, ${c.id})"
-                 ondragover="event.preventDefault()"
-                 ondrop="handleCardDrop(event, ${c.id})"
-                 onclick="openCardBottomSheet(${c.id})">
+            <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}" onclick="openCardBottomSheet(${c.id})">
                 <div class="card-stripe" style="background: ${c.color_accent || 'var(--bybit-yellow)'};"></div>
-                <div class="card-drag-handle" onclick="event.stopPropagation()">⋮⋮</div>
-                <div style="flex: 1; padding-left: 4px;">
+                <div style="flex: 1; padding-left: 8px;">
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <span style="font-weight: 800; font-size: 14px;">${c.card_name}</span>
-                        ${c.is_pinned ? '📌' : ''}
-                        ${c.status === 'burned' ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">115-ФЗ</span>' : ''}
-                        ${cooldownBadge}
+                        ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
+                        ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">115-ФЗ</span>' : ''}
+                        ${c.status === 'cooldown' ? '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>' : ''}
                     </div>
-                    <div class="card-dual-bars-wrap">${dayBarHtml}${monthBarHtml}</div>
+                    ${miniBarHtml}
                 </div>
                 <div style="text-align: right; margin-left: 10px;">
                     <div class="privacy-blur" style="font-size: 15px; font-weight: 900;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 3px;">
+                        <span class="ops-bubble" title="Сделок за сегодня (Покупки/Продажи)">${buysCount}/${sellsCount}</span>
+                    </div>
                 </div>
             </div>
         `;
     });
 
-    if (paginationContainer) {
-        paginationContainer.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) => `<div class="page-btn ${i + 1 === cardsCurrentPage ? 'active' : ''}" onclick="cardsCurrentPage=${i + 1};renderCards();">${i + 1}</div>`).join('') : '';
-    }
-}
-
-let draggedCardId = null;
-function handleCardDragStart(e, cid) {
-    draggedCardId = cid;
-    if (e.dataTransfer) {
-        e.dataTransfer.setData('text/plain', cid);
-        e.dataTransfer.effectAllowed = 'move';
-    }
-}
-
-function handleCardDrop(e, targetCardId) {
-    e.preventDefault();
-    if (!draggedCardId || draggedCardId === targetCardId) return;
-
-    let order = userCards.map(c => c.id);
-    const fromIdx = order.indexOf(draggedCardId);
-    const toIdx = order.indexOf(targetCardId);
-    if (fromIdx !== -1 && toIdx !== -1) {
-        order.splice(fromIdx, 1);
-        order.splice(toIdx, 0, draggedCardId);
-        safeStorage.set(`p2p_card_order_${currentUser?.tg_id}`, JSON.stringify(order));
-        haptic('light');
+    renderPaginationBar(paginationContainer, totalPages, cardsCurrentPage, (p) => {
+        cardsCurrentPage = p;
         renderCards();
-    }
+    });
 }
 
+function renderPaginationBar(containerEl, totalPages, curPage, onChangePage) {
+    if (!containerEl) return;
+    if (totalPages <= 1) {
+        containerEl.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    for (let p = 1; p <= totalPages; p++) {
+        html += `<div class="page-btn ${p === curPage ? 'active' : ''}" onclick="(${onChangePage})(${p})">${p}</div>`;
+    }
+    containerEl.innerHTML = html;
+}
+
+/* ====================================================
+   ШТОРКА КАРТЫ: СВОДКА КАРТЫ, НАСТРОЙКИ, ИСТОРИЯ КАРТЫ
+==================================================== */
 function switchCardSheetTab(tab) {
     haptic('light');
-    ['stats', 'settings', 'history'].forEach(t => {
-        document.getElementById(`tab-csheet-${t}`)?.classList.toggle('active', t === tab);
-        const v = document.getElementById(`csheet-view-${t}`);
-        if (v) v.style.display = (t === tab) ? 'block' : 'none';
+    const tabs = ['stats', 'settings', 'history'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`tab-csheet-${t}`);
+        const view = document.getElementById(`csheet-view-${t}`);
+        if (btn) btn.classList.toggle('active', t === tab);
+        if (view) view.style.display = (t === tab) ? 'block' : 'none';
     });
-    if (tab === 'history') renderCardTradesList();
-}
-
-function toggleCooldownDateInput(statusVal) {
-    const wrap = document.getElementById('wrap-cooldown-until');
-    if (wrap) wrap.style.display = (statusVal === 'cooldown') ? 'block' : 'none';
+    if (tab === 'history') {
+        renderCardTradesList();
+    }
 }
 
 function openCardBottomSheet(cid) {
+    haptic('light');
     activeSheetCard = userCards.find(c => c.id === cid);
     if (!activeSheetCard) return;
-    activeCardId = cid;
 
+    activeCardId = cid;
     document.getElementById('sheet-card-title').innerText = activeSheetCard.card_name;
+
+    // Вкладка настроек карты
     document.getElementById('csheet-inp-name').value = activeSheetCard.card_name || '';
     document.getElementById('csheet-inp-num').value = activeSheetCard.card_number || '';
     document.getElementById('csheet-inp-holder').value = activeSheetCard.holder_name || '';
@@ -1706,40 +1751,78 @@ function openCardBottomSheet(cid) {
     document.getElementById('sheet-set-status').value = activeSheetCard.status || 'active';
     document.getElementById('csheet-inp-notes').value = activeSheetCard.note || '';
 
-    const cdInput = document.getElementById('csheet-inp-cooldown-until');
-    if (cdInput) cdInput.value = activeSheetCard.cooldown_until ? activeSheetCard.cooldown_until.slice(0, 16) : '';
-    toggleCooldownDateInput(activeSheetCard.status || 'active');
-
-    const sym = getCurrencySymbol();
-    const cTrades = userTrades.filter(tr => tr.card_id === cid);
-    let boughtFiat = 0, soldFiat = 0;
-
-    cTrades.forEach(t => {
-        const f = parseFloat(t.fiat_amount || 0);
-        if (t.is_cycle) {
-            boughtFiat += f; soldFiat += f;
-        } else if (t.type === 'buy') {
-            boughtFiat += f;
-        } else {
-            soldFiat += f;
-        }
+    activeSelectedCardColor = activeSheetCard.color_accent || '#f3a600';
+    document.querySelectorAll('#sheet-card-colors .color-swatch-dot').forEach(d => {
+        d.classList.toggle('selected', d.style.background === activeSelectedCardColor || d.getAttribute('style')?.includes(activeSelectedCardColor));
     });
 
+    // Расчет персональной статистики чисто по этой карте
+    const sym = getCurrencySymbol();
+    const cTrades = userTrades.filter(tr => tr.card_id === cid);
+    const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+    const gainSell = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
     const deps = cardOps.filter(o => o.card_id === cid && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
     const wdrs = cardOps.filter(o => o.card_id === cid && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-    const balance = deps - wdrs + soldFiat - boughtFiat;
+    const balance = deps - wdrs + gainSell - spentBuy;
 
     document.getElementById('sheet-card-balance').innerText = `${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
 
-    // Прибыль полностью убрана из карты — отображаются только закупка и приемка
-    const elBought = document.getElementById('csheet-val-bought-fiat');
-    if (elBought) elBought.innerText = `${boughtFiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+    const limitWrap = document.getElementById('sheet-limit-progress-wrap');
+    if (activeSheetCard.buy_limit && parseFloat(activeSheetCard.buy_limit) > 0) {
+        const limit = parseFloat(activeSheetCard.buy_limit);
+        const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
+        limitWrap.innerHTML = `
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
+                <span>Суточный расход:</span>
+                <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
+            </div>
+            <div class="card-mini-bar" style="height: 6px;">
+                <div class="card-mini-bar-fill ${pct > 90 ? 'danger' : ''}" style="width: ${pct}%;"></div>
+            </div>
+        `;
+    } else {
+        limitWrap.innerHTML = `<span style="font-size: 11px; color: var(--text-muted);">Суточный лимит: Без ограничений</span>`;
+    }
 
-    const elSold = document.getElementById('csheet-val-sold-fiat');
-    if (elSold) elSold.innerText = `${soldFiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+    // Метрики чисто карты
+    let cardBuyFiat = 0, cardBuyCrypto = 0, cardSellFiat = 0, cardSellCrypto = 0, cycleRub = 0;
+    let turnToday = 0, turnMonth = 0;
+    const now = new Date();
+
+    cTrades.forEach(t => {
+        const f = parseFloat(t.fiat_amount || 0);
+        const c = parseFloat(t.crypto_amount || 0);
+        const tDate = new Date(t.date);
+
+        if (tDate.toDateString() === now.toDateString()) turnToday += f;
+        if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) turnMonth += f;
+
+        if (t.is_cycle) {
+            cardBuyFiat += f; cardSellFiat += f;
+            cardBuyCrypto += c;
+            const soldC = t.sell_rate ? f / parseFloat(t.sell_rate) : c;
+            cardSellCrypto += soldC;
+            cycleRub += parseFloat(t.cycle_profit_rub || 0);
+        } else if (t.type === 'buy') {
+            cardBuyFiat += f; cardBuyCrypto += c;
+        } else {
+            cardSellFiat += f; cardSellCrypto += c;
+        }
+    });
+
+    const cardProfitFiat = (cardSellFiat - cardBuyFiat) + cycleRub;
+    const cardProfitUsdt = cardBuyCrypto - cardSellCrypto;
+    const cardWac = cardBuyCrypto > 0 ? (cardBuyFiat / cardBuyCrypto) : 0;
+
+    document.getElementById('csheet-val-profit-rub').innerText = `${(cardProfitFiat >= 0 ? '+' : '')}${cardProfitFiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+    document.getElementById('csheet-val-profit-usdt').innerText = `${(cardProfitUsdt >= 0 ? '+' : '')}${cardProfitUsdt.toFixed(2)} USDT`;
+    document.getElementById('csheet-val-turn-today').innerText = `${turnToday.toLocaleString()} ${sym}`;
+    document.getElementById('csheet-val-turn-month').innerText = `${turnMonth.toLocaleString()} ${sym}`;
+    document.getElementById('csheet-val-wac').innerText = cardWac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('csheet-val-trades-cnt').innerText = `${cTrades.length} / ${cTrades.filter(x => x.type === 'buy').length} / ${cTrades.filter(x => x.type === 'sell' || x.is_cycle).length}`;
 
     switchCardSheetTab('stats');
-    document.getElementById('card-sheet-modal')?.classList.add('show');
+    document.getElementById('card-sheet-modal').classList.add('show');
 }
 
 function renderCardTradesList() {
@@ -1787,40 +1870,38 @@ async function saveCardFullSettings() {
     const status = document.getElementById('sheet-set-status').value;
     const note = document.getElementById('csheet-inp-notes').value.trim();
 
-    let cooldownUntil = null;
-    if (status === 'cooldown') {
-        const val = document.getElementById('csheet-inp-cooldown-until').value;
-        if (val) cooldownUntil = new Date(val).toISOString();
-    }
-
     if (!name) return showToast("⚠️ Название карты обязательно!");
 
-    await db(`cards?id=eq.${activeSheetCard.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-            card_name: name,
-            card_number: num,
-            holder_name: holder,
-            buy_limit: dayLimit,
-            month_limit: monthLimit,
-            status: status,
-            color_accent: activeSelectedCardColor,
-            cooldown_until: cooldownUntil,
-            note: note
-        })
-    });
+    try {
+        await db(`cards?id=eq.${activeSheetCard.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                card_name: name,
+                card_number: num,
+                holder_name: holder,
+                buy_limit: dayLimit,
+                month_limit: monthLimit,
+                status: status,
+                color_accent: activeSelectedCardColor,
+                note: note
+            })
+        });
 
-    showToast("✅ Настройки сохранены!");
-    await refreshData();
-    renderAll();
-    openCardBottomSheet(activeSheetCard.id);
+        showToast("✅ Настройки карты сохранены!");
+        await refreshData();
+        renderAll();
+        openCardBottomSheet(activeSheetCard.id);
+    } catch(e) {
+        showToast("Ошибка сохранения настроек");
+    }
 }
 
 function closeCardSheet() {
-    document.getElementById('card-sheet-modal')?.classList.remove('show');
+    document.getElementById('card-sheet-modal').classList.remove('show');
 }
 
 function selectCardColor(color, el) {
+    haptic('light');
     activeSelectedCardColor = color;
     document.querySelectorAll('#sheet-card-colors .color-swatch-dot').forEach(d => d.classList.remove('selected'));
     if (el) el.classList.add('selected');
@@ -1829,55 +1910,34 @@ function selectCardColor(color, el) {
 async function togglePinCurrentCard() {
     if (!requireSubscription()) return;
     if (!activeSheetCard) return;
+    haptic('medium');
     const newPinned = !activeSheetCard.is_pinned;
-    await db(`cards?id=eq.${activeSheetCard.id}`, { method: 'PATCH', body: JSON.stringify({ is_pinned: newPinned }) });
+    await db(`cards?id=eq.${activeSheetCard.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_pinned: newPinned })
+    });
     activeSheetCard.is_pinned = newPinned;
     closeCardSheet();
-    showToast(newPinned ? "📌 Карта закреплена" : "Откреплено");
+    showToast(newPinned ? "📌 Карта закреплена наверх" : "Откреплено");
     await refreshData();
     renderCards();
 }
 
 function copyCardNumberOnly() {
-    if (!activeSheetCard?.card_number) return showToast("⚠️ Номер не указан");
+    if (!activeSheetCard?.card_number) return showToast("⚠️ Номер карты не указан");
     navigator.clipboard.writeText(activeSheetCard.card_number.replace(/\s+/g, ''));
-    showToast("💳 Номер скопирован!");
+    haptic('success');
+    showToast("💳 16 цифр скопированы!");
 }
 
 function copyCardFullRequisites() {
     if (!activeSheetCard) return;
-    let text = globalMessageTemplate;
-    text = text.replace(/{bank}/g, activeSheetCard.card_name || 'Банк');
-    text = text.replace(/{number}/g, activeSheetCard.card_number || 'Реквизиты не заданы');
-    text = text.replace(/{holder}/g, activeSheetCard.holder_name || 'Получатель');
+    const num = activeSheetCard.card_number || 'Реквизиты не заданы';
+    const holder = activeSheetCard.holder_name ? ` (${activeSheetCard.holder_name})` : '';
+    const text = `${activeSheetCard.card_name}: ${num}${holder}\nОплата строго со своего счета! Третьих лиц не принимаю, чек обязателен.`;
     navigator.clipboard.writeText(text);
-    showToast("📋 Шаблон скопирован!");
-}
-
-function openTemplateEditorModal() {
-    document.getElementById('inp-global-template').value = globalMessageTemplate;
-    document.getElementById('modal-template-editor')?.classList.add('show');
-}
-
-function insertTagIntoTemplate(tag) {
-    const area = document.getElementById('inp-global-template');
-    if (!area) return;
-    const start = area.selectionStart;
-    const end = area.selectionEnd;
-    area.value = area.value.substring(0, start) + tag + area.value.substring(end);
-    area.focus();
-}
-
-function resetTemplateToDefault() {
-    document.getElementById('inp-global-template').value = DEFAULT_CARD_TEMPLATE;
-}
-
-function saveGlobalMessageTemplate() {
-    const val = document.getElementById('inp-global-template').value.trim();
-    globalMessageTemplate = val || DEFAULT_CARD_TEMPLATE;
-    safeStorage.set('p2p_card_msg_template', globalMessageTemplate);
-    closeModals();
-    showToast("✅ Шаблон сообщений сохранен!");
+    haptic('success');
+    showToast("📋 Шаблон ордера скопирован!");
 }
 
 function openSheetCardOp(type) {
@@ -1888,6 +1948,7 @@ function openSheetCardOp(type) {
 async function cloneCurrentCard() {
     if (!requireSubscription()) return;
     if (!activeSheetCard) return;
+    haptic('medium');
     await db(`cards`, {
         method: 'POST',
         body: JSON.stringify({
@@ -1902,14 +1963,14 @@ async function cloneCurrentCard() {
         })
     });
     closeCardSheet();
-    showToast("✅ Карта клонирована!");
+    showToast("✅ Карта успешно клонирована!");
     await refreshData();
     renderCards();
 }
 
 async function deleteCurrentCardFromSheet() {
     if (!requireSubscription()) return;
-    if (!confirm("Удалить карту?")) return;
+    if (!confirm("Удалить карту? Все сделки в истории останутся.")) return;
     await db(`cards?id=eq.${activeCardId}`, { method: 'DELETE' });
     closeCardSheet();
     showToast("🗑 Карта удалена");
@@ -1918,11 +1979,12 @@ async function deleteCurrentCardFromSheet() {
 }
 
 /* ====================================================
-   ТРАНСФЕР МЕЖДУ КАРТАМИ
+   ТРАНСФЕР МЕЖДУ СВОИМИ КАРТАМИ
 ==================================================== */
 function openTransferModal() {
     if (!requireSubscription()) return;
-    if (userCards.length < 2) return showToast("⚠️ Нужно минимум 2 карты");
+    haptic('light');
+    if (userCards.length < 2) return showToast("⚠️ Для трансфера нужно минимум 2 карты");
 
     const selFrom = document.getElementById('transfer-from-card');
     const selTo = document.getElementById('transfer-to-card');
@@ -1932,11 +1994,12 @@ function openTransferModal() {
     if (selTo) selTo.innerHTML = opts;
     if (selTo && userCards.length > 1) selTo.selectedIndex = 1;
 
-    document.getElementById('modal-card-transfer')?.classList.add('show');
+    document.getElementById('modal-card-transfer').classList.add('show');
 }
 
 async function submitCardTransfer() {
     if (!requireSubscription()) return;
+
     const fromId = parseInt(document.getElementById('transfer-from-card').value);
     const toId = parseInt(document.getElementById('transfer-to-card').value);
     const amt = parseFloat(document.getElementById('transfer-amount').value);
@@ -1944,22 +2007,48 @@ async function submitCardTransfer() {
     if (!amt || amt <= 0) return showToast("⚠️ Введите сумму трансфера");
     if (fromId === toId) return showToast("⚠️ Выберите разные карты!");
 
-    await Promise.all([
-        db('card_operations', { method: 'POST', body: JSON.stringify({ card_id: fromId, tg_id: currentUser.tg_id, type: 'withdraw', amount: amt, comment: `Трансфер на карту #${toId}`, count_in_limit: false }) }),
-        db('card_operations', { method: 'POST', body: JSON.stringify({ card_id: toId, tg_id: currentUser.tg_id, type: 'deposit', amount: amt, comment: `Трансфер с карты #${fromId}`, count_in_limit: false }) })
-    ]);
+    haptic('medium');
+    try {
+        await Promise.all([
+            db('card_operations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    card_id: fromId,
+                    tg_id: currentUser.tg_id,
+                    type: 'withdraw',
+                    amount: amt,
+                    comment: `Трансфер на карту #${toId}`,
+                    count_in_limit: false
+                })
+            }),
+            db('card_operations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    card_id: toId,
+                    tg_id: currentUser.tg_id,
+                    type: 'deposit',
+                    amount: amt,
+                    comment: `Трансфер с карты #${fromId}`,
+                    count_in_limit: false
+                })
+            })
+        ]);
 
-    closeModals();
-    playCashSound();
-    showToast("🔄 Трансфер выполнен!");
-    await refreshData();
-    renderCards();
+        closeModals();
+        playCashSound();
+        showToast("🔄 Трансфер выполнен!");
+        await refreshData();
+        renderCards();
+    } catch(e) {
+        showToast("Ошибка трансфера");
+    }
 }
 
 /* ====================================================
-   ИСТОРИЯ ОПЕРАЦИЙ (КРАСНЫЕ ТОЛЬКО ЦИФРЫ, БЕЗ +-)
+   ИСТОРИЯ ОПЕРАЦИЙ (ПАГИНАЦИЯ МАКСИМУМ 25, ДО 4 СТР)
 ==================================================== */
 function selectDealColor(color, el) {
+    haptic('light');
     activeSelectedDealColor = color;
     document.querySelectorAll('#deal-color-swatches .color-swatch-dot').forEach(d => d.classList.remove('selected'));
     if (el) el.classList.add('selected');
@@ -1980,10 +2069,20 @@ function renderHistory() {
     const sym = getCurrencySymbol();
     const tz = parseInt(currentUser?.tz_offset) || 3;
 
+    const colorBorderMap = {
+        'green': 'var(--bybit-green)',
+        'yellow': 'var(--bybit-yellow)',
+        'blue': 'var(--bybit-blue)',
+        'purple': 'var(--bybit-purple)',
+        'red': 'var(--bybit-red)',
+        'default': 'transparent'
+    };
+
     const totalPages = Math.min(MAX_PAGES, Math.max(1, Math.ceil(userTrades.length / ITEMS_PER_PAGE)));
     if (historyCurrentPage > totalPages) historyCurrentPage = totalPages;
 
-    const pageItems = userTrades.slice((historyCurrentPage - 1) * ITEMS_PER_PAGE, historyCurrentPage * ITEMS_PER_PAGE);
+    const startIndex = (historyCurrentPage - 1) * ITEMS_PER_PAGE;
+    const pageItems = userTrades.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     pageItems.forEach(t => {
         const d = new Date(t.date);
@@ -1991,14 +2090,11 @@ function renderHistory() {
         const dateStr = d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const boundCard = userCards.find(c => c.id === t.card_id);
         const cardBadge = boundCard ? `<span class="card-pill">💳 ${boundCard.card_name}</span>` : '';
+        const borderCol = colorBorderMap[t.tag_color] || 'transparent';
 
-        // Полоска слева и бейдж НЕ становятся красными при минусе (сохраняют родной цвет)
         if (t.is_cycle) {
-            const profit = parseFloat(t.cycle_profit_rub || 0);
-            const isNegative = profit < 0;
-
             container.innerHTML += `
-                <div class="history-item" style="border-left-color: var(--bybit-yellow);">
+                <div class="history-item" style="border-left-color: ${borderCol};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">КРУГ ⚡️</span>
@@ -2008,13 +2104,13 @@ function renderHistory() {
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            <!-- Красными становятся исключительно сами цифры -->
-                            <div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: ${isNegative ? 'var(--bybit-red)' : 'var(--bybit-green)'};">
-                                ${formatSignedCurrency(profit, sym, 2)}
+                            <div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: var(--bybit-green);">
+                                +${parseFloat(t.cycle_profit_rub || 0).toLocaleString()} ${sym}
                             </div>
                             <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
-                                ${t.buy_rate} → ${t.sell_rate} ${sym} / Спред: ${t.cycle_spread}%
+                                ${t.buy_rate} → ${t.sell_rate} ${sym} / Спред: +${t.cycle_spread}%
                             </div>
+                            ${t.note ? `<div style="font-size: 11px; color: var(--bybit-blue); margin-top: 3px;">📝 ${t.note}</div>` : ''}
                         </div>
                         <div style="display: flex; gap: 6px;">
                             <button class="btn-card-action" style="padding: 6px 10px;" onclick="repeatTradeInCalc(${t.id})">🔁</button>
@@ -2027,7 +2123,7 @@ function renderHistory() {
         } else {
             const isBuy = t.type === 'buy';
             container.innerHTML += `
-                <div class="history-item" style="border-left-color: ${isBuy ? 'var(--bybit-green)' : 'var(--bybit-red)'};">
+                <div class="history-item" style="border-left-color: ${borderCol};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <span style="font-size: 11px; font-weight: 800; color: ${isBuy ? 'var(--bybit-green)' : 'var(--bybit-red)'};">
@@ -2045,6 +2141,7 @@ function renderHistory() {
                             <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
                                 ${t.crypto_amount} USDT / ${t.rate} ${sym}
                             </div>
+                            ${t.note ? `<div style="font-size: 11px; color: var(--bybit-blue); margin-top: 3px;">📝 ${t.note}</div>` : ''}
                         </div>
                         <div style="display: flex; gap: 6px;">
                             <button class="btn-card-action" style="padding: 6px 10px;" onclick="repeatTradeInCalc(${t.id})">🔁</button>
@@ -2057,13 +2154,15 @@ function renderHistory() {
         }
     });
 
-    if (paginationContainer) {
-        paginationContainer.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) => `<div class="page-btn ${i + 1 === historyCurrentPage ? 'active' : ''}" onclick="historyCurrentPage=${i + 1};renderHistory();">${i + 1}</div>`).join('') : '';
-    }
+    renderPaginationBar(paginationContainer, totalPages, historyCurrentPage, (p) => {
+        historyCurrentPage = p;
+        renderHistory();
+    });
 }
 
 function repeatTradeInCalc(tradeId) {
     if (!requireSubscription()) return;
+    haptic('light');
     const tr = userTrades.find(t => t.id === tradeId);
     if (!tr) return;
 
@@ -2086,6 +2185,7 @@ function repeatTradeInCalc(tradeId) {
 
 function openEditTradeModal(tid) {
     if (!requireSubscription()) return;
+    haptic('light');
     activeEditTradeId = tid;
     const tr = userTrades.find(x => x.id === tid);
     if (!tr) return;
@@ -2095,11 +2195,18 @@ function openEditTradeModal(tid) {
     document.getElementById('modal-rate').value = tr.rate || tr.buy_rate;
     document.getElementById('modal-card-sel').value = tr.card_id || "";
     document.getElementById('modal-note').value = tr.note || "";
-    document.getElementById('edit-modal')?.classList.add('show');
+
+    activeSelectedDealColor = tr.tag_color || 'default';
+    document.querySelectorAll('#deal-color-swatches .color-swatch-dot').forEach(d => {
+        d.classList.toggle('selected', d.getAttribute('data-color') === activeSelectedDealColor);
+    });
+
+    document.getElementById('edit-modal').classList.add('show');
 }
 
 async function submitEditTrade() {
     if (!requireSubscription()) return;
+
     const amt = parseFloat(document.getElementById('modal-inp-amount').value);
     const r = parseFloat(document.getElementById('modal-rate').value);
     const cid = document.getElementById('modal-card-sel').value || null;
@@ -2114,17 +2221,19 @@ async function submitEditTrade() {
             rate: r,
             crypto_amount: parseFloat((amt / r).toFixed(2)),
             card_id: cid ? parseInt(cid) : null,
-            note: note
+            note: note,
+            tag_color: activeSelectedDealColor
         })
     });
     closeModals();
-    showToast("✏️ Сделка обновлена!");
+    showToast("✏️ Сделка успешно обновлена!");
     await refreshData();
     renderAll();
 }
 
 async function deleteTradeCloud(tid) {
     if (!requireSubscription()) return;
+    haptic('medium');
     if (!confirm("Удалить операцию из базы?")) return;
     await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
     showToast("🗑 Сделка удалена");
@@ -2133,7 +2242,121 @@ async function deleteTradeCloud(tid) {
 }
 
 /* ====================================================
-   АДМИНКА И БАЗА ПОЛЬЗОВАТЕЛЕЙ
+   ПОЛНОЭКРАННАЯ СТРАНИЦА PNL-КАРТОЧКИ (ДОБАВИТЬ В ФОТО)
+==================================================== */
+function openPnlPage() {
+    haptic('medium');
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 760;
+    const ctx = canvas.getContext('2d');
+
+    // Фон
+    const grad = ctx.createLinearGradient(0, 0, 1200, 760);
+    grad.addColorStop(0, '#0a0e17');
+    grad.addColorStop(0.5, '#05070a');
+    grad.addColorStop(1, '#0d1320');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1200, 760);
+
+    // Рамка золотого свечения
+    ctx.strokeStyle = '#f3a600';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(28, 28, 1144, 704);
+
+    // Шапка
+    ctx.fillStyle = '#f3a600';
+    ctx.font = '900 42px Inter, sans-serif';
+    ctx.fillText('P2P TERMINAL PRO', 70, 105);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 24px Inter, sans-serif';
+    ctx.fillText(new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }), 70, 150);
+
+    // Показатели
+    const totalRub = document.getElementById('val-total-profit-rub')?.innerText || "0.00 ₽";
+    const totalUsdt = document.getElementById('val-total-profit-usdt')?.innerText || "0.00 USDT";
+    const lastSpread = document.getElementById('val-last-spread')?.innerText || "0.00%";
+    const avgSpread = document.getElementById('val-avg-spread')?.innerText || "0.00%";
+    const roi = document.getElementById('val-roi')?.innerText || "0.00%";
+    const tradesCount = document.getElementById('val-trades-count')?.innerText || "0";
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '700 22px Inter, sans-serif';
+    ctx.fillText('ОБЩАЯ ПРИБЫЛЬ ЗА ПЕРИОД', 70, 240);
+
+    ctx.fillStyle = '#2ebb9a';
+    ctx.font = '900 76px Inter, sans-serif';
+    ctx.fillText(totalRub, 70, 325);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '800 32px Inter, sans-serif';
+    ctx.fillText(totalUsdt, 70, 380);
+
+    // Сетка статов
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 28px Inter, sans-serif';
+    ctx.fillText(`Спред круга: ${lastSpread}`, 70, 470);
+    ctx.fillText(`Ср. спред: ${avgSpread}`, 600, 470);
+
+    ctx.fillText(`ROI от оборота: ${roi}`, 70, 530);
+    ctx.fillText(`Сделок закрыто: ${tradesCount}`, 600, 530);
+
+    // Подвал и узнаваемый водяной знак
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(70, 600);
+    ctx.lineTo(1130, 600);
+    ctx.stroke();
+
+    ctx.fillStyle = '#f3a600';
+    ctx.font = '900 34px Inter, sans-serif';
+    ctx.fillText('@P2P_Rbot', 70, 665);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 22px Inter, sans-serif';
+    ctx.fillText('Автоматизированный учет связок и кассы', 320, 663);
+
+    const imgDataUrl = canvas.toDataURL('image/png');
+    const imgEl = document.getElementById('pnl-rendered-img');
+    if (imgEl) imgEl.src = imgDataUrl;
+
+    document.getElementById('pnl-card-modal').classList.add('show');
+}
+
+function closePnlPage() {
+    haptic('light');
+    document.getElementById('pnl-card-modal').classList.remove('show');
+}
+
+function downloadPnlImage() {
+    haptic('medium');
+    const imgEl = document.getElementById('pnl-rendered-img');
+    if (!imgEl || !imgEl.src) return;
+
+    const link = document.createElement('a');
+    link.download = `PnL_Report_${new Date().toISOString().slice(0, 10)}.png`;
+    link.href = imgEl.src;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("💾 Фото сохранено на устройство!");
+}
+
+function sharePnlCard() {
+    haptic('light');
+    const text = `Мой результат в арбитраже криптовалют!\nВеду прозрачный учет касс и спредов в @P2P_Rbot`;
+    if (tg?.openTelegramLink) {
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent('https://t.me/P2P_Rbot')}&text=${encodeURIComponent(text)}`);
+    } else {
+        navigator.clipboard.writeText(text);
+        showToast("Текст скопирован в буфер");
+    }
+}
+
+/* ====================================================
+   АДМИН-ПАНЕЛЬ И ОКНО ПРОСМОТРА БАЗЫ
 ==================================================== */
 async function loadActiveUsersForAdmin() {
     try {
@@ -2145,29 +2368,34 @@ async function loadActiveUsersForAdmin() {
         if (!usersRes) return;
         rawAdminUsersList = usersRes;
 
-        const tradeCounts = {};
-        (tradesRes || []).forEach(t => tradeCounts[t.tg_id] = (tradeCounts[t.tg_id] || 0) + 1);
+        const tradeCountsByUid = {};
+        (tradesRes || []).forEach(t => {
+            tradeCountsByUid[t.tg_id] = (tradeCountsByUid[t.tg_id] || 0) + 1;
+        });
 
         rawAdminUsersList.forEach(u => {
-            u._tradesCount = tradeCounts[u.tg_id] || 0;
+            u._tradesCount = tradeCountsByUid[u.tg_id] || 0;
             u._hasHadSubOrTrial = (u.sub_end !== null && u.sub_end !== undefined) || (u.trial_used === true);
         });
 
         const activeCount = rawAdminUsersList.filter(u => u._hasHadSubOrTrial).length;
-        document.getElementById('admin-active-count').innerText = `${rawAdminUsersList.length} всего (${activeCount} активных)`;
+        document.getElementById('admin-active-count').innerText = `${activeCount} с подпиской / триалом`;
     } catch(e) {}
 }
 
 function openUsersDatabaseModal() {
     haptic('medium');
     filterAdminDatabaseView();
-    document.getElementById('modal-admin-users-db')?.classList.add('show');
+    document.getElementById('modal-admin-users-db').classList.add('show');
 }
 
 function toggleAdminSubFilter() {
+    haptic('light');
     adminDbFilterOnlySub = !adminDbFilterOnlySub;
     const btn = document.getElementById('btn-toggle-sub-filter');
-    if (btn) btn.innerText = adminDbFilterOnlySub ? "Фильтр: Была подписка 🟢" : "Фильтр: Все юзеры ⚪️";
+    if (btn) {
+        btn.innerText = adminDbFilterOnlySub ? "Фильтр: С подпиской 🟢" : "Фильтр: Все юзеры ⚪️";
+    }
     filterAdminDatabaseView();
 }
 
@@ -2179,13 +2407,17 @@ function filterAdminDatabaseView() {
 
     let list = [...rawAdminUsersList];
 
+    // По ТЗ: показывать только тех, кто хоть раз взял пробный период или имел подписку
     if (adminDbFilterOnlySub) {
         list = list.filter(u => u._hasHadSubOrTrial);
     }
 
     if (query) {
         list = list.filter(u => {
-            return String(u.tg_id).includes(query) || (u.first_name || '').toLowerCase().includes(query) || (u.username || '').toLowerCase().includes(query);
+            const idMatch = String(u.tg_id).includes(query);
+            const nameMatch = (u.first_name || '').toLowerCase().includes(query);
+            const userMatch = (u.username || '').toLowerCase().includes(query);
+            return idMatch || nameMatch || userMatch;
         });
     }
 
@@ -2212,20 +2444,17 @@ function filterAdminDatabaseView() {
             subColor = 'var(--bybit-red)';
         }
 
-        const isAdmin = adminIds.includes(u.tg_id);
-
         container.innerHTML += `
             <div class="admin-user-row" onclick="selectAdminUserFromDb(${u.tg_id})">
                 <div style="flex: 1;">
                     <div style="font-weight: 800; font-size: 13px;">
                         ${u.first_name || 'Без имени'} ${u.username ? `(@${u.username})` : ''}
-                        ${isAdmin ? '<span style="color: var(--bybit-yellow); font-size: 10px; margin-left: 4px;">[ADMIN]</span>' : ''}
                     </div>
                     <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-top: 2px;">
                         ID: ${u.tg_id} • Сделок: ${u._tradesCount || 0}
                     </div>
                     <div style="font-size: 11px; margin-top: 3px; color: ${subColor}; font-weight: 700;">
-                        ${subLabel} ${u.trial_used ? '• [Брал триал]' : ''}
+                        ${subLabel} ${u.trial_used ? '• [Триал брал]' : ''}
                     </div>
                 </div>
                 <button class="btn-card-action" style="padding: 6px 10px; font-size: 11px;">Выбрать</button>
@@ -2235,6 +2464,7 @@ function filterAdminDatabaseView() {
 }
 
 function selectAdminUserFromDb(tgId) {
+    haptic('light');
     document.getElementById('admin-target-uid').value = tgId;
     closeModals();
     adminInspectUser();
@@ -2282,16 +2512,16 @@ async function adminUserAction(action) {
     if (action === 'grant30') {
         now.setDate(now.getDate() + 30);
         await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
-        showToast(`✅ ID ${targetId}: +30 дней`);
+        showToast(`✅ ID ${targetId}: продлен на 30 дней`);
     } else if (action === 'grantVIP') {
         await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
-        showToast(`✅ ID ${targetId}: VIP Навсегда`);
+        showToast(`✅ ID ${targetId}: выдан VIP Навсегда`);
     } else if (action === 'revoke') {
         await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
-        showToast(`❌ ID ${targetId}: подписка снята`);
+        showToast(`❌ ID ${targetId}: подписка аннулирована`);
     } else if (action === 'ban') {
         await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
-        showToast(`⛔️ ID ${targetId}: забанен`);
+        showToast(`⛔️ ID ${targetId}: заблокирован`);
     } else if (action === 'unban') {
         await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: false }) });
         showToast(`🟢 ID ${targetId}: разбанен`);
@@ -2300,23 +2530,19 @@ async function adminUserAction(action) {
     loadActiveUsersForAdmin();
 }
 
-async function adminExportDatabase(onlyWithSub = true) {
-    showToast("⏳ Формирование выгрузки...");
+async function adminExportDatabase() {
+    haptic('medium');
+    showToast("⏳ Формирование выгрузки базы...");
     try {
-        let users = await db(`users?order=reg_date.desc`);
+        const users = await db(`users?order=reg_date.desc`);
         if (!users || users.length === 0) return showToast("База пуста");
 
-        if (onlyWithSub) {
-            users = users.filter(u => (u.sub_end !== null && u.sub_end !== undefined) || (u.trial_used === true));
-        }
-
-        let csv = "TG_ID,Username,First_Name,Sub_End,Trial_Used,Is_Admin,Is_Banned,Reg_Date\n";
+        let csv = "TG_ID,Username,First_Name,Sub_End,Trial_Used,Is_Banned,Reg_Date\n";
         users.forEach(u => {
-            const isAdmin = adminIds.includes(u.tg_id);
-            csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.trial_used ? 'YES' : 'NO'}","${isAdmin ? 'YES' : 'NO'}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}"\n`;
+            csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.trial_used ? 'YES' : 'NO'}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}"\n`;
         });
 
-        const fileName = `P2P_Users_${onlyWithSub ? 'Subscribed' : 'Full'}_${new Date().toISOString().slice(0, 10)}.csv`;
+        const fileName = `P2P_Users_Full_${new Date().toISOString().slice(0, 10)}.csv`;
         const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
         const fileUrl = URL.createObjectURL(blob);
 
@@ -2326,26 +2552,36 @@ async function adminExportDatabase(onlyWithSub = true) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        showToast("📥 База скачана!");
+        showToast("📥 База успешно скачана!");
     } catch(e) {
-        showToast("❌ Ошибка экспорта");
+        showToast("❌ Ошибка экспорта базы");
     }
 }
 
 async function adminCreatePromo() {
+    haptic('medium');
     const code = document.getElementById('new-promo-code').value.trim().toUpperCase();
     const days = parseInt(document.getElementById('new-promo-days').value);
     const max = parseInt(document.getElementById('new-promo-max').value) || 1;
 
     if (!code || !days) return showToast("⚠️ Заполните код и дни!");
 
-    await db(`promocodes`, {
-        method: 'POST',
-        body: JSON.stringify({ code: code, days: days, max_activations: max, used_count: 0 })
-    });
-    showToast("✅ Промокод создан!");
-    document.getElementById('new-promo-code').value = '';
-    document.getElementById('new-promo-days').value = '';
+    try {
+        await db(`promocodes`, {
+            method: 'POST',
+            body: JSON.stringify({
+                code: code,
+                days: days,
+                max_activations: max,
+                used_count: 0
+            })
+        });
+        showToast("✅ Промокод создан!");
+        document.getElementById('new-promo-code').value = '';
+        document.getElementById('new-promo-days').value = '';
+    } catch(e) {
+        showToast("Ошибка создания промокода");
+    }
 }
 
 async function checkAdminStatus(tgId) {
@@ -2382,6 +2618,7 @@ async function loadAdminConfigValues() {
 }
 
 async function saveAdminConfig() {
+    haptic('medium');
     try {
         await Promise.all([
             db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-month').value }) }),
@@ -2398,7 +2635,7 @@ async function saveAdminConfig() {
 }
 
 /* ====================================================
-   ПРОВЕРКА ПОДПИСКИ
+   ПОДПИСКА И ПРОВЕРКА ПРАВ
 ==================================================== */
 function checkSubscription() {
     const badgeEl = document.getElementById('disp-tier-badge');
@@ -2413,7 +2650,7 @@ function checkSubscription() {
         return false;
     }
 
-    if (!currentUser.sub_end || new Date(currentUser.sub_end) < new Date()) {
+    if (!currentUser.sub_end) {
         if (badgeEl) {
             badgeEl.className = 'sub-tier-badge tier-expired';
             badgeEl.innerText = '❌ Нет подписки';
@@ -2422,10 +2659,26 @@ function checkSubscription() {
         return false;
     }
 
+    const now = new Date();
+    const end = new Date(currentUser.sub_end);
+    if (end < now) {
+        if (badgeEl) {
+            badgeEl.className = 'sub-tier-badge tier-expired';
+            badgeEl.innerText = '⏳ Подписка истекла';
+        }
+        document.getElementById('paywall').style.display = 'block';
+        return false;
+    }
+
     document.getElementById('paywall').style.display = 'none';
     if (badgeEl) {
-        badgeEl.className = new Date(currentUser.sub_end).getFullYear() > 2099 ? 'sub-tier-badge tier-vip' : 'sub-tier-badge tier-month';
-        badgeEl.innerText = new Date(currentUser.sub_end).getFullYear() > 2099 ? '💎 VIP Навсегда' : `⚡️ Премиум до ${new Date(currentUser.sub_end).toLocaleDateString()}`;
+        if (end.getFullYear() > 2099) {
+            badgeEl.className = 'sub-tier-badge tier-vip';
+            badgeEl.innerText = '💎 VIP Навсегда';
+        } else {
+            badgeEl.className = 'sub-tier-badge tier-month';
+            badgeEl.innerText = `⚡️ Премиум до ${end.toLocaleDateString()}`;
+        }
     }
     return true;
 }
@@ -2437,6 +2690,7 @@ let currentType = 'buy';
 let calcMode = 'fiat';
 
 function setTradeType(type) {
+    haptic('light');
     currentType = type;
     document.getElementById('btn-buy').className = `switch-btn ${type === 'buy' ? 'active buy' : ''}`;
     document.getElementById('btn-sell').className = `switch-btn ${type === 'sell' ? 'active sell' : ''}`;
@@ -2446,6 +2700,7 @@ function setTradeType(type) {
 }
 
 function setCalcMode(mode) {
+    haptic('light');
     calcMode = mode;
     document.getElementById('tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
     document.getElementById('tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
@@ -2517,6 +2772,7 @@ async function saveTrade() {
     document.getElementById('inp-rate').value = '';
     checkTradeInputs();
     showToast("✅ Сделка сохранена!");
+    haptic('success');
     await refreshData();
     renderAll();
     handleNavClick('dashboard', document.querySelector('.nav-btn[data-target="dashboard"]'));
@@ -2524,7 +2780,8 @@ async function saveTrade() {
 
 function openNewCardModal() {
     if (!requireSubscription()) return;
-    document.getElementById('modal-card-create')?.classList.add('show');
+    haptic('light');
+    document.getElementById('modal-card-create').classList.add('show');
 }
 
 async function submitCreateCard() {
@@ -2534,7 +2791,6 @@ async function submitCreateCard() {
     const num = document.getElementById('new-card-num').value.trim();
     const holder = document.getElementById('new-card-holder').value.trim();
     const limit = parseFloat(document.getElementById('new-card-limit').value) || null;
-    const monthLimit = parseFloat(document.getElementById('new-card-month-limit').value) || null;
 
     if (!name) return showToast("⚠️ Введите название карты!");
 
@@ -2546,25 +2802,25 @@ async function submitCreateCard() {
             card_number: num,
             holder_name: holder,
             buy_limit: limit,
-            month_limit: monthLimit,
             color_accent: '#f3a600',
             status: 'active'
         })
     });
     closeModals();
-    showToast("✅ Карта создана!");
+    showToast("✅ Карта успешно создана!");
     await refreshData();
     renderAll();
 }
 
 function openCardOpModal(cid, type) {
     if (!requireSubscription()) return;
+    haptic('light');
     activeCardId = cid;
     activeOpType = type;
     document.getElementById('modal-op-title').innerText = type === 'deposit' ? '➕ Пополнение кассы' : '➖ Снятие наличных';
     document.getElementById('modal-op-btn').innerText = type === 'deposit' ? 'Внести' : 'Списать';
     document.getElementById('withdraw-limit-toggle-wrap').style.display = type === 'withdraw' ? 'flex' : 'none';
-    document.getElementById('modal-card-op')?.classList.add('show');
+    document.getElementById('modal-card-op').classList.add('show');
 }
 
 async function submitCardOp() {
@@ -2587,30 +2843,41 @@ async function submitCardOp() {
         })
     });
     closeModals();
-    showToast("✅ Записано в кассу!");
+    showToast("✅ Операция записана в кассу!");
     await refreshData();
     renderCards();
 }
 
 function populateCardSelects() {
+    const sel1 = document.getElementById('inp-card-sel');
+    const sel2 = document.getElementById('modal-card-sel');
+    const selCalc = document.getElementById('calc-card-sel');
+
     const opts = `<option value="">Без привязки к карте</option>` + userCards.map(c => `<option value="${c.id}">${c.card_name}</option>`).join('');
-    ['inp-card-sel', 'modal-card-sel', 'calc-card-sel'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = opts;
-    });
+    if (sel1) sel1.innerHTML = opts;
+    if (sel2) sel2.innerHTML = opts;
+    if (selCalc) selCalc.innerHTML = opts;
 }
 
 function openHelpModal(key, event) {
     if (event) event.stopPropagation();
+    haptic('light');
     const item = HELP_DATA[key];
     if (!item) return;
     document.getElementById('info-modal-title').innerText = item.title;
     document.getElementById('info-modal-content').innerHTML = item.text;
-    document.getElementById('modal-info')?.classList.add('show');
+    document.getElementById('modal-info').classList.add('show');
 }
 
-function openSubModal() { document.getElementById('modal-sub-info')?.classList.add('show'); }
-function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show')); }
+function openSubModal() {
+    haptic('light');
+    document.getElementById('modal-sub-info').classList.add('show');
+}
+
+function closeModals() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+}
+
 function showToast(msg) {
     const t = document.getElementById('toast');
     if (!t) return;
@@ -2629,13 +2896,18 @@ function haptic(type) {
 }
 
 function copyRefLink() {
-    navigator.clipboard.writeText(document.getElementById('ref-link-box')?.innerText || '');
-    showToast("Ссылка скопирована!");
+    haptic('light');
+    const link = document.getElementById('ref-link-box').innerText;
+    navigator.clipboard.writeText(link);
+    showToast("Партнерская ссылка скопирована!");
 }
 
 function shareRefLink() {
-    const link = document.getElementById('ref-link-box')?.innerText || '';
-    if (tg?.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}`);
+    haptic('light');
+    const link = document.getElementById('ref-link-box').innerText;
+    if (tg?.openTelegramLink) {
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('P2P Terminal Pro — Enterprise Ledger & WAC:')}`);
+    }
 }
 
 function openSupport() {
@@ -2650,7 +2922,7 @@ function openSupport() {
 function switchLayoutMode(isChecked) {
     haptic('medium');
     layoutMode = isChecked ? 'feed' : 'pages';
-    safeStorage.set('p2p_layout_mode', layoutMode);
+    localStorage.setItem('p2p_layout_mode', layoutMode);
 
     const desc = document.getElementById('layout-mode-desc');
     if (desc) desc.innerText = isChecked ? "Сплошная лента (скролл)" : "По раздельности (вкладки)";
@@ -2670,7 +2942,7 @@ function switchLayoutMode(isChecked) {
 function switchUiMode(isChecked) {
     haptic('medium');
     uiMode = isChecked ? 'fx' : 'simple';
-    safeStorage.set('p2p_ui_mode', uiMode);
+    localStorage.setItem('p2p_ui_mode', uiMode);
     document.body.className = uiMode === 'fx' ? 'mode-fx' : 'mode-simple';
 
     const desc = document.getElementById('ui-mode-desc');
@@ -2699,12 +2971,6 @@ function handleNavClick(targetId, el) {
     }
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     if (el) el.classList.add('active');
-
-    // При возврате на экран сводки календарь сбрасывается на текущий месяц
-    if (targetId === 'dashboard') {
-        calViewDate = new Date();
-        if (isHeatmapOpen) renderHeatmap();
-    }
 }
 
 function toggleSecondaryStats() {
@@ -2825,20 +3091,8 @@ async function refreshData() {
 }
 
 /* ====================================================
-   ГАРАНТИРОВАННОЕ СКРЫТИЕ ЗАГРУЗЧИКА
+   ЗАГРУЗЧИК (FAIL-SAFE)
 ==================================================== */
-function forceHideLoader() {
-    const loader = document.getElementById('terminal-boot-loader');
-    if (loader) {
-        loader.classList.add('fade-out');
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
-    }
-    const container = document.querySelector('.container');
-    const nav = document.querySelector('.bottom-nav');
-    if (container) container.style.display = 'block';
-    if (nav) nav.style.display = 'flex';
-}
-
 function runTerminalBootSequence(onComplete) {
     const stream = document.getElementById('console-stream');
     const pBar = document.getElementById('boot-progress-bar');
@@ -2849,7 +3103,7 @@ function runTerminalBootSequence(onComplete) {
         "<span class='c-gold'>[AUTH]</span> Verifying Telegram Mini App Handshake...",
         "<span class='c-blue'>[DB]</span> Connecting to Encrypted Supabase Node...",
         "<span class='c-green'>[LEDGER]</span> Synchronizing WAC Engine & Cards...",
-        "<span class='c-gold'>[READY]</span> Terminal Pro v8.5.0 Ready."
+        "<span class='c-gold'>[READY]</span> Terminal Pro v8.2.0 Ready."
     ];
 
     let step = 0;
@@ -2874,13 +3128,25 @@ function runTerminalBootSequence(onComplete) {
             clearInterval(interval);
             setTimeout(() => {
                 if (onComplete) onComplete();
-            }, 180);
+            }, 200);
         }
-    }, 90);
+    }, 100);
+}
+
+function forceHideLoader() {
+    const loader = document.getElementById('terminal-boot-loader');
+    if (loader) {
+        loader.classList.add('fade-out');
+        setTimeout(() => { loader.style.display = 'none'; }, 350);
+    }
+    const container = document.querySelector('.container');
+    const nav = document.querySelector('.bottom-nav');
+    if (container) container.style.display = 'block';
+    if (nav) nav.style.display = 'flex';
 }
 
 /* ====================================================
-   ТОЧКА ВХОДА (INITIALIZATION)
+   ИНИЦИАЛИЗАЦИЯ
 ==================================================== */
 async function init() {
     document.body.className = uiMode === 'fx' ? 'mode-fx' : 'mode-simple';
@@ -2902,10 +3168,9 @@ async function init() {
     const failsafeTimeout = setTimeout(() => {
         forceHideLoader();
         renderAll();
-    }, 2000);
+    }, 2200);
 
     const tgUser = tg?.initDataUnsafe?.user;
-    const startParam = tg?.initDataUnsafe?.start_param || null;
 
     runTerminalBootSequence(async () => {
         if (!tgUser || !tgUser.id) {
@@ -2918,14 +3183,6 @@ async function init() {
         try {
             let users = await db(`users?tg_id=eq.${tgUser.id}`);
             if (!users || users.length === 0) {
-                let cleanRefBy = null;
-                if (startParam) {
-                    const parsedRef = parseInt(startParam.trim());
-                    if (!isNaN(parsedRef) && parsedRef !== SUPER_ADMIN_ID && parsedRef !== 1 && parsedRef !== -1) {
-                        cleanRefBy = parsedRef;
-                    }
-                }
-
                 const created = await db(`users`, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -2933,11 +3190,10 @@ async function init() {
                         username: tgUser.username,
                         first_name: tgUser.first_name,
                         currency: 'RUB',
-                        tz_offset: 3,
-                        ref_by: cleanRefBy
+                        tz_offset: 3
                     })
                 });
-                currentUser = created ? created[0] : { tg_id: tgUser.id, currency: 'RUB', tz_offset: 3 };
+                currentUser = created ? created[0] : { tg_id: tgUser.id };
             } else {
                 currentUser = users[0];
             }
@@ -2954,6 +3210,15 @@ async function init() {
 
             document.getElementById('disp-uid').innerText = currentUser.tg_id;
             document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
+
+            // Честное количество приглашенных из базы без рандомных чисел
+            try {
+                const refs = await db(`users?ref_by=eq.${currentUser.tg_id}&select=tg_id`);
+                document.getElementById('ref-count-val').innerText = refs ? refs.length : 0;
+            } catch(e) {
+                document.getElementById('ref-count-val').innerText = 0;
+            }
+
         } catch(e) {
             console.error(e);
         } finally {
