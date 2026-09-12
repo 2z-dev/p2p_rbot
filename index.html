@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
-    <title>P2P Terminal Pro</title>
+    <title>P2P Terminal Pro — Enterprise Ledger & WAC</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -27,7 +27,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.1.5</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.2.0</div>
                 <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН ОГРАНИЧЕНИЯ -->
+    <!-- ЭКРАН ОГРАНИЧЕНИЯ (ДЛЯ ЗАПУСКА ВНЕ ТЕЛЕГРАМА) -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <!-- ВСПЛЫВАЮЩЕЕ ПРЕВЬЮ ДНЯ В КАЛЕНДАРЕ -->
+    <!-- БЫСТРОЕ ПРЕВЬЮ ДНЯ ПРИ ЗАЖАТИИ В КАЛЕНДАРЕ -->
     <div id="calendar-hold-tooltip"></div>
 
     <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
@@ -73,7 +73,7 @@
                 <span class="help-icon" onclick="openHelpModal('incognito', event)">?</span>
             </div>
 
-            <!-- ЖИВОЙ БАННЕР ОТ АДМИНА (СТРОГО МЕЖДУ ПОДПИСКОЙ И СВОДКОЙ) -->
+            <!-- ВЫДЕЛЯЮЩИЙСЯ ЖИВОЙ БАННЕР (СТРОГО МЕЖДУ ПОДПИСКОЙ И СВОДКОЙ) -->
             <div id="site-live-banner">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
@@ -84,6 +84,7 @@
                 </div>
             </div>
 
+            <!-- ВЫБОР ТАЙМФРЕЙМА -->
             <div class="period-tabs">
                 <div class="p-tab active" onclick="setPeriod('today', this)" data-i18n="tabToday">За сегодня</div>
                 <div class="p-tab" onclick="setPeriod('month', this)" data-i18n="tabMonth">За месяц</div>
@@ -91,7 +92,7 @@
                 <div class="p-tab" id="tab-custom" onclick="toggleCustomDatePanel(this)" data-i18n="tabCustom">Свой период 📅</div>
             </div>
 
-            <!-- ВЫБОР ДАТ -->
+            <!-- ВЫБОР ДАТ ДЛЯ КАСТОМНОГО ПЕРИОДА -->
             <div id="custom-date-panel" style="display: none; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;">
                     <button class="btn-preset-chip" onclick="setQuickPreset(1)" data-i18n="presetYesterday">Вчера</button>
@@ -126,7 +127,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span class="badge" style="color: rgba(255,255,255,0.7); margin: 0;" data-i18n="totalProfitBadge">💰 ОБЩАЯ ПРИБЫЛЬ</span>
                     <div style="display: flex; gap: 6px; align-items: center;">
-                        <button class="btn-card-action" style="padding: 4px 9px; font-size: 11px;" onclick="generatePnlCard()" data-i18n="btnSharePnl">📸 Карточка</button>
+                        <button class="btn-card-action" style="padding: 4px 9px; font-size: 11px;" onclick="openPnlPreviewModal()" data-i18n="btnSharePnl">📸 Карточка</button>
                         <span class="help-icon" onclick="openHelpModal('total_profit', event)">?</span>
                     </div>
                 </div>
@@ -148,7 +149,7 @@
                 </div>
             </div>
 
-            <!-- СПРЕД КРУГА -->
+            <!-- СПРЕД КРУГА (ПОСЛЕДНИЙ И СРЕДНИЙ) -->
             <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
@@ -265,7 +266,7 @@
                 </div>
             </div>
 
-            <!-- КАЛЬКУЛЯТОР КРУГА -->
+            <!-- КАЛЬКУЛЯТОР КРУГА С ВЫБОРОМ КАРТЫ -->
             <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
@@ -340,7 +341,7 @@
                 </div>
             </div>
 
-            <!-- КАЛЕНДАРЬ ДОХОДНОСТИ (НИЖЕ КАЛЬКУЛЯТОРА) -->
+            <!-- КАЛЕНДАРЬ ОБЩЕЙ ДОХОДНОСТИ (НИЖЕ КАЛЬКУЛЯТОРА) -->
             <div style="margin-bottom: 16px;">
                 <button class="details-toggle-btn" style="margin: 0 0 10px 0;" onclick="toggleHeatmapPanel()">
                     <span data-i18n="calendarToggle">📅 Календарь доходности месяца</span>
@@ -461,7 +462,7 @@
                     </div>
                 </div>
 
-                <!-- ЗВУКИ КАССЫ -->
+                <!-- ЗВУК КАССЫ -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <div>
                         <div style="font-size: 13px; font-weight: 800;" data-i18n="soundTitle">Звук монет / кассы</div>
@@ -500,7 +501,7 @@
                     </label>
                 </div>
 
-                <!-- Язык -->
+                <!-- ЯЗЫК ИНТЕРФЕЙСА -->
                 <div style="margin-bottom: 14px;">
                     <span class="badge" style="margin-bottom: 4px;" data-i18n="lblLang">Язык интерфейса</span>
                     <select id="set-lang" class="styled-input" onchange="changeLanguage(this.value)">
@@ -514,7 +515,7 @@
                     </select>
                 </div>
 
-                <!-- Валюта -->
+                <!-- БАЗОВАЯ ВАЛЮТА -->
                 <div style="margin-bottom: 14px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <span class="badge" style="margin: 0;" data-i18n="lblBaseCur">Базовая валюта</span>
@@ -528,7 +529,7 @@
                     </select>
                 </div>
 
-                <!-- Часовой пояс -->
+                <!-- ЧАСОВОЙ ПОЯС -->
                 <div style="margin-bottom: 18px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <span class="badge" style="margin: 0;" data-i18n="lblTimezone">Часовой пояс (UTC)</span>
@@ -595,7 +596,7 @@
                         <input type="password" id="admin-bot-token" class="styled-input" placeholder="7123456789:AAH...">
                     </div>
                     <div class="input-wrap" style="margin-bottom: 8px;">
-                        <span style="font-size: 10px; color: var(--text-muted);">ТЕКСТ СООБЩЕНИЯ (Поддерживается HTML)</span>
+                        <span style="font-size: 10px; color: var(--text-muted);">ТЕКСТ СООБЩЕНИЯ (HTML)</span>
                         <textarea id="admin-broadcast-text" class="styled-input" style="height: 70px; resize: none; font-size: 12px;" placeholder="Привет! Важная новость..."></textarea>
                     </div>
                     <button class="action-btn" style="padding: 11px; font-size: 12px;" onclick="adminBroadcastToBot()">
@@ -615,7 +616,7 @@
                     </div>
                 </div>
 
-                <!-- СПИСОК АКТИВНЫХ ПОЛЬЗОВАТЕЛЕЙ (ФИЛЬТР СДЕЛОК/ПОДПИСОК) -->
+                <!-- СПИСОК АКТИВНЫХ ПОЛЬЗОВАТЕЛЕЙ -->
                 <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span class="badge" style="color: var(--bybit-blue);">👥 АКТИВНЫЕ ПОЛЬЗОВАТЕЛИ</span>
@@ -830,6 +831,24 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО ПРЕДПРОСМОТРА PNL КАРТОЧКИ С КНОПКАМИ ШЕРИНГА И СОХРАНЕНИЯ -->
+    <div id="modal-pnl-preview" class="modal-overlay" onclick="closePnlPreviewModal(event)">
+        <div class="glass-card modal-box" style="text-align: center;" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
+                <div style="font-size: 16px; font-weight: 800; color: var(--bybit-yellow);">📸 Готовая карточка PnL</div>
+                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closePnlPreviewModal()">✕</button>
+            </div>
+            <div style="border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-border); margin-bottom: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <img id="pnl-preview-img" src="" alt="PnL Report" style="width: 100%; height: auto; display: block;">
+            </div>
+            <div class="card-btns-grid" style="grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0;">
+                <button class="action-btn gold" style="padding: 12px;" onclick="downloadPnlImage()">💾 Сохранить фото</button>
+                <button class="action-btn" style="padding: 12px;" onclick="sharePnlImageNative()">🚀 Поделиться</button>
+            </div>
+            <button class="action-btn-secondary" style="margin-top: 10px; padding: 11px;" onclick="closePnlPreviewModal()">Назад</button>
+        </div>
+    </div>
+
     <!-- МОДАЛЬНОЕ ОКНО ДЕТАЛЕЙ ДНЯ (КАЛЕНДАРЬ) -->
     <div id="modal-day-details" class="modal-overlay" onclick="closeDayDetailsModal(event)">
         <div class="glass-card modal-box" onclick="event.stopPropagation()">
@@ -899,7 +918,7 @@
         </div>
     </div>
 
-    <!-- РЕДАКТИРОВАНИЕ ОПЕРАЦИИ -->
+    <!-- РЕДАКТИРОВАНИЕ ОПЕРАЦИИ (С ПАЛИТРОЙ ЦВЕТОВ И ЗАМЕТКАМИ) -->
     <div id="edit-modal" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 4px 0;">Редактирование сделки</h2>
@@ -922,7 +941,7 @@
                 <input type="text" id="modal-note" class="styled-input" placeholder="Чек проверен, СБП...">
             </div>
 
-            <!-- ПАЛИТРА ЦВЕТОВ -->
+            <!-- ПАЛИТРА ВЫБОРА ЦВЕТА -->
             <div style="margin-bottom: 15px;">
                 <span class="badge">Цветовая метка операции</span>
                 <div class="color-palette-wrap" id="modal-tag-palette">
@@ -950,7 +969,7 @@
                 <button class="btn-card-action" style="padding: 4px 10px; font-size: 13px;" onclick="closeModals()">✕</button>
             </div>
             <div id="info-modal-content" style="font-size: 13px; line-height: 1.6; color: #cbd5e1;"></div>
-            <button class="action-btn gold" style="margin-top: 18px; padding: 12px;" onclick="closeModals()" data-i18n="btnGotIt">Понятно</button>
+            <button class="action-btn gold" style="margin-top: 18px; padding: 12px;" onclick="closeModals()">Понятно</button>
         </div>
     </div>
 

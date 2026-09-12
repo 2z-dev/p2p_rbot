@@ -48,14 +48,14 @@ body {
     min-height: 100vh;
 }
 
-/* ИНКОГНИТО */
+/* ИНКОГНИТО БЛЮР */
 body.privacy-active .privacy-blur {
     filter: blur(9px) !important;
     user-select: none !important;
     transition: filter 0.2s ease;
 }
 
-/* РЕЖИМ МИНИМАЛИЗМА (УБИРАЕТ ТОЛЬКО ФОН И 3D, НЕ ЛОМАЕТ СЕТКУ FLEX!) */
+/* РЕЖИМ МИНИМАЛИЗМА (ОТКЛЮЧАЕТ ТОЛЬКО ФОН И 3D-ТРАНСФОРМАЦИИ, НЕ ЛОМАЯ FLEX/GRID СЕТКУ!) */
 body.mode-simple #blockchain-canvas,
 body.mode-simple .ambient-canvas-wrap,
 body.mode-simple .ambient-grid {
@@ -72,15 +72,13 @@ body.mode-simple .hero-profit-card {
     border-color: rgba(255, 255, 255, 0.11) !important;
 }
 
-/* Отключаем только трансформации и анимации, НЕ трогая display */
 body.mode-simple .page-section * {
     transform: none !important;
     transition: none !important;
-    filter: none !important;
     opacity: 1;
 }
 
-/* ХОЛСТ БЛОКЧЕЙНА */
+/* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ */
 #blockchain-canvas {
     position: fixed;
     inset: 0;
@@ -233,7 +231,7 @@ body.mode-simple .page-section * {
 
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-/* КОНТЕЙНЕР */
+/* ОСНОВНОЙ КОНТЕЙНЕР */
 .container {
     padding: var(--app-top-padding) 16px 20px 16px;
     max-width: 580px;
@@ -331,12 +329,12 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 .tier-trial { background: rgba(168, 85, 247, 0.15); color: var(--bybit-purple); border: 1px solid rgba(168, 85, 247, 0.4); }
 .tier-expired { background: rgba(242, 54, 69, 0.15); color: var(--bybit-red); border: 1px solid rgba(242, 54, 69, 0.4); }
 
-/* ЖИВОЙ БАННЕР (ЖЕЛТО-ОРАНЖЕВЫЙ, СТРОГО НАД СВОДКОЙ) */
+/* ВЫДЕЛЯЮЩИЙСЯ ЖИВОЙ БАННЕР (ЖЕЛТО-ОРАНЖЕВЫЙ, СТРОГО НАД СВОДКОЙ) */
 #site-live-banner {
     display: none;
-    background: linear-gradient(135deg, rgba(243, 166, 0, 0.18) 0%, rgba(255, 106, 0, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(243, 166, 0, 0.22) 0%, rgba(255, 106, 0, 0.18) 100%);
     border: 2px solid var(--bybit-yellow);
-    box-shadow: 0 4px 25px rgba(243, 166, 0, 0.25), inset 0 0 15px rgba(243, 166, 0, 0.08);
+    box-shadow: 0 4px 25px rgba(243, 166, 0, 0.3), inset 0 0 15px rgba(243, 166, 0, 0.12);
     border-radius: 18px;
     padding: 14px 16px;
     margin-bottom: 14px;
@@ -359,7 +357,7 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
     gap: 4px;
 }
 
-/* ТЕПЛОКАРТА */
+/* ТЕПЛОКАРТА КАЛЕНДАРЯ */
 #heatmap-panel {
     display: none;
     background: rgba(0, 0, 0, 0.45);
@@ -465,7 +463,7 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 .action-btn.gold { background: var(--bybit-yellow); color: #000; }
 .action-btn-secondary { width: 100%; padding: 13px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; }
 
-/* КАРТЫ */
+/* СТРОКИ КАРТ */
 .card-row-item {
     background: rgba(18, 22, 32, 0.94);
     border: 1px solid var(--glass-border);
@@ -492,7 +490,7 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 .card-btns-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
 .btn-card-action { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border); color: var(--text-main); padding: 9px 4px; border-radius: 11px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
 
-/* ИСТОРИЯ */
+/* ИСТОРИЯ ОПЕРАЦИЙ */
 .history-item { background: rgba(0, 0, 0, 0.28); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px 14px 14px 18px; margin-bottom: 10px; position: relative; overflow: hidden; }
 .history-tag-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
 .card-pill { font-size: 10px; background: rgba(243, 166, 0, 0.15); color: var(--bybit-yellow); padding: 3px 8px; border-radius: 7px; font-weight: 700; }
