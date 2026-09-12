@@ -964,7 +964,7 @@
         }
     </style>
 </head>
-<body class="theme-ai mode-fx">
+<body class="theme-quadro mode-simple">
     <canvas id="blockchain-canvas"></canvas>
 
     <div class="ambient-canvas-wrap">
@@ -2114,7 +2114,7 @@
                 kk: { title: "ВИЗУАЛДЫ ЭФФЕКТІЛЕР [FX]", text: "Жоғары жылдамдықты минимализм немесе 3D блокчейн FX режимін таңдаңыз." }
             },
             theme: {
-                ru: { title: "ОФОРМЛЕНИЕ ТЕРМИНАЛА", text: "<b>AI Terminal Pro:</b> неоновое стекло, золотые акценты суперкара, ретро-терминал загрузки и разделитель «/».<br><br><b>Quadro Enterprise:</b> строгий матовый графит, строгая прямоугольная геометрия, лаконичный круговой спиннер загрузки, разделитель «|» и минималистичные рисованные SVG-векторы вместо обычных эмодзи." },
+                ru: { title: "ОФОРМЛЕНИЕ ТЕРМИНАЛА", text: "<b>AI Terminal Pro:</b> неоновое стекло, золотые акценты, ретро-терминал загрузки и разделитель «/».<br><br><b>Quadro Enterprise:</b> строгий матовый графит, строгая прямоугольная геометрия, лаконичный круговой спиннер загрузки, разделитель «|» и минималистичные рисованные SVG-векторы вместо обычных эмодзи." },
                 en: { title: "TERMINAL DESIGN THEMES", text: "<b>AI Terminal Pro:</b> Neon glassmorphism, gold accents, retro boot sequence, and '/' delimiter.<br><br><b>Quadro Enterprise:</b> Matte dark theme, sharp rectangular edges, spinner loader, '|' delimiter, and pure drawn monochrome SVG vectors instead of standard emojis." },
                 es: { title: "TEMAS DE DISEÑO", text: "Personalice entre el estilo futurista AI Glass con '/' y el corporativo Quadro Mate con '|' e iconos vectoriales puros." },
                 fr: { title: "THÈMES DU TERMINAL", text: "Alternez entre le design AI Neon Cyber avec '/' et l'élégance Quadro Mate avec '|' et icônes vectorielles." },
@@ -2171,10 +2171,10 @@
             gift: '<svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.65-.5-.65C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76V14h2V8.76L15.38 12 17 10.83 14.92 8H20v6z"/></svg>'
         };
 
-        let currentTheme = localStorage.getItem('p2p_terminal_theme') || 'ai';
+        let currentTheme = localStorage.getItem('p2p_terminal_theme') || 'quadro';
         let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
-        let uiMode = localStorage.getItem('p2p_ui_mode') || 'fx';
-        let layoutMode = localStorage.getItem('p2p_layout_mode') || 'feed';
+        let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
+        let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages';
 
         let currentUser = null;
         let userCards = [];
