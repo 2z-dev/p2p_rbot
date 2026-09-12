@@ -5,332 +5,15 @@ const SUPER_ADMIN_ID = 5172556128;
 let adminIds = [SUPER_ADMIN_ID];
 
 /* ====================================================
-   ПОЛНЫЙ МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
+   БЕЗОПАСНАЯ РАБОТА С STORAGE ДЛЯ IOS
 ==================================================== */
-const I18N = {
-    ru: {
-        tabToday: "За сегодня", tabMonth: "За месяц", tabAll: "Все время", tabCustom: "Свой период 📅",
-        totalProfitBadge: "💰 ОБЩАЯ ПРИБЫЛЬ", netIn: "Чистая в", netInUsdt: "Чистая в USDT",
-        formulaFiat: "Продажа − Покупка", formulaUsdt: "Покупка − Продажа",
-        midPriceHint: "⚖️ Средняя цена (Mid Price):",
-        statRoi: "📈 ROI от оборота", statWac: "🛒 WAC Закупка", statAvgSell: "🏷 Ср. Продажа",
-        statOps: "🔢 Всего сделок / Покупок / Продаж", turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
-        spreadCardTitle: "СПРЕД СДЕЛОК", lastCycleSpread: "Последний круг", avgPeriodSpread: "Ср. за период",
-        hintAvgSpread: "По WAC за таймфрейм",
-        calcTitle: "КАЛЬКУЛЯТОР КРУГА", calcDealPrice: "Прайс сделки",
-        calcBuyHeader: "ПОКУПКА 🟢", calcBuyRate: "Курс USDT",
-        calcSellHeader: "ПРОДАЖА 🔴", calcSellRate: "Курс USDT",
-        calcSpread: "Спред:", calcProfit: "Прибыль с круга:",
-        calcSaveCycle: "Сохранить круг ✅", calcClear: "Очистить ❌",
-        showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть подробную статистику",
-        presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней",
-        dateFrom: "С даты", dateTo: "По дату", btnApplyDate: "Применить ⚡️",
-        newTradeTitle: "Новая операция", newTradeSubtitle: "Внести единичный ордер в базу",
-        buyBtn: "ПОКУПКА 🟢", sellBtn: "ПРОДАЖА 🔴", modeFiat: "Сумма фиата", modeCrypto: "Объем USDT",
-        lblRate: "Курс USDT", lblCardOpt: "Банковская карта (Опционально)", noCardOpt: "Без привязки к карте",
-        cardsTitle: "Мои карты", cardsSubtitle: "Клик по карте открывает полное управление", btnCreateCard: "➕ Создать",
-        historyTitle: "История операций", historySubtitle: "Синхронизированные сделки, круги и заметки",
-        refTitle: "Партнерская сеть", refSubtitle: "Получайте бонусные дни подписки",
-        refInvited: "Приглашено пользователей", refYourLink: "Ваша партнерская ссылка",
-        btnCopy: "📋 Скопировать", btnShare: "🚀 Отправить",
-        profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта и промокоды",
-        lblYourId: "ВАШ TELEGRAM ID", lblLang: "Язык интерфейса", lblBaseCur: "Базовая валюта",
-        lblTimezone: "Часовой пояс (UTC)", btnSubModal: "💎 Подписка",
-        btnSupport: "👨‍💻 Служба поддержки", paywallTitle: "Доступ к Терминалу 🔒",
-        paywallSubtitle: "Оформите доступ для использования функций",
-        trialBadge: "Бесплатный доступ", trialDesc: "🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.",
-        btnActivateTrial: "🎁 Активировать триал", plansBadge: "Тарифные планы",
-        plansDesc: "Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.",
-        plan1m: "1 Месяц", planForever: "Навсегда", btnBuySub: "💳 Оформить подписку",
-        btnGotIt: "Понятно"
-    },
-    en: {
-        tabToday: "Today", tabMonth: "This Month", tabAll: "All Time", tabCustom: "Custom Range 📅",
-        totalProfitBadge: "💰 TOTAL PROFIT", netIn: "Net in", netInUsdt: "Net in USDT",
-        formulaFiat: "Sell − Buy", formulaUsdt: "Buy − Sell",
-        midPriceHint: "⚖️ Mid Price:",
-        statRoi: "📈 Turnover ROI", statWac: "🛒 WAC Buy Price", statAvgSell: "🏷 Avg Sell Price",
-        statOps: "🔢 Trades: Total / Buys / Sells", turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
-        spreadCardTitle: "TRADE SPREADS", lastCycleSpread: "Last Cycle", avgPeriodSpread: "Period Avg",
-        hintAvgSpread: "By period WAC",
-        calcTitle: "CYCLE CALCULATOR", calcDealPrice: "Deal Budget",
-        calcBuyHeader: "BUY 🟢", calcBuyRate: "USDT Rate",
-        calcSellHeader: "SELL 🔴", calcSellRate: "USDT Rate",
-        calcSpread: "Spread:", calcProfit: "Cycle Profit:",
-        calcSaveCycle: "Save Cycle ✅", calcClear: "Clear ❌",
-        showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Detailed Stats",
-        presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days",
-        dateFrom: "Date from", dateTo: "Date to", btnApplyDate: "Apply ⚡️",
-        newTradeTitle: "New Operation", newTradeSubtitle: "Record single order into ledger",
-        buyBtn: "BUY 🟢", sellBtn: "SELL 🔴", modeFiat: "Fiat Amount", modeCrypto: "USDT Volume",
-        lblRate: "USDT Rate", lblCardOpt: "Bank Card (Optional)", noCardOpt: "No card bound",
-        cardsTitle: "My Cards", cardsSubtitle: "Tap card to open full controls", btnCreateCard: "➕ Add Card",
-        historyTitle: "Operations History", historySubtitle: "Synchronized cycles, trades and notes",
-        refTitle: "Partner Network", refSubtitle: "Earn bonus subscription days",
-        refInvited: "Invited Traders", refYourLink: "Your Referral Link",
-        btnCopy: "📋 Copy", btnShare: "🚀 Share",
-        profileTitle: "Settings", profileSubtitle: "Account config and promo codes",
-        lblYourId: "YOUR TELEGRAM ID", lblLang: "Interface Language", lblBaseCur: "Base Currency",
-        lblTimezone: "Timezone (UTC)", btnSubModal: "💎 Upgrade / Renew",
-        btnSupport: "👨‍💻 Support Center", paywallTitle: "Terminal Access 🔒",
-        paywallSubtitle: "Unlock full terminal features",
-        trialBadge: "Free Trial", trialDesc: "🎁 <b>24-Hour Free Trial</b> is activated in our Telegram Bot.",
-        btnActivateTrial: "🎁 Activate Trial", plansBadge: "Subscription Plans",
-        plansDesc: "Bybit payment and UID verification are processed in our Telegram Bot.",
-        plan1m: "1 Month", planForever: "Lifetime VIP", btnBuySub: "💳 Get Subscription",
-        btnGotIt: "Got It"
-    },
-    es: {
-        tabToday: "Hoy", tabMonth: "Este mes", tabAll: "Todo el tiempo", tabCustom: "Elegir fechas 📅",
-        totalProfitBadge: "💰 BENEFICIO TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
-        formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta", midPriceHint: "⚖️ Precio justo (Mid Price):",
-        statRoi: "📈 ROI de volumen", statWac: "🛒 WAC Compra", statAvgSell: "🏷 Venta Media",
-        statOps: "🔢 Órdenes: total / compras / ventas", turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
-        spreadCardTitle: "SPREAD DE ÓRDENES", lastCycleSpread: "Último ciclo", avgPeriodSpread: "Promedio del periodo",
-        hintAvgSpread: "Por WAC del periodo", calcTitle: "CALCULADORA DE CICLO", calcDealPrice: "Presupuesto",
-        calcBuyHeader: "COMPRA 🟢", calcBuyRate: "Tasa USDT", calcSellHeader: "VENTA 🔴", calcSellRate: "Tasa USDT",
-        calcSpread: "Spread:", calcProfit: "Beneficio del ciclo:", calcSaveCycle: "Guardar ciclo ✅", calcClear: "Limpiar ❌",
-        showSecondary: "📊 Mostrar estadísticas", hideSecondary: "📊 Ocultar estadísticas",
-        presetYesterday: "Ayer", preset7d: "7 días", preset30d: "30 días", dateFrom: "Desde", dateTo: "Hasta",
-        btnApplyDate: "Aplicar ⚡️", newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar orden",
-        buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴", modeFiat: "Fiat", modeCrypto: "USDT",
-        lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria", noCardOpt: "Sin tarjeta",
-        cardsTitle: "Mis tarjetas", cardsSubtitle: "Toque para abrir opciones", btnCreateCard: "➕ Agregar",
-        historyTitle: "Historial de órdenes", historySubtitle: "Transacciones y notas",
-        refTitle: "Afiliados", refSubtitle: "Días extra", refInvited: "Invitados", refYourLink: "Enlace",
-        btnCopy: "📋 Copiar", btnShare: "🚀 Compartir", profileTitle: "Ajustes", profileSubtitle: "Configuración y códigos",
-        lblYourId: "TELEGRAM ID", lblLang: "Idioma", lblBaseCur: "Moneda base", lblTimezone: "Zona horaria (UTC)",
-        btnSubModal: "💎 Suscripción", btnSupport: "👨‍💻 Soporte", paywallTitle: "Acceso restringido 🔒",
-        paywallSubtitle: "Desbloquee las funciones", trialBadge: "Prueba gratuita", trialDesc: "Prueba de 24 horas en el bot.",
-        btnActivateTrial: "🎁 Activar prueba", plansBadge: "Planes", plansDesc: "Pago seguro.",
-        plan1m: "1 Mes", planForever: "De por vida", btnBuySub: "💳 Suscripción", btnGotIt: "Entendido"
-    },
-    fr: {
-        tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps", tabCustom: "Choisir dates 📅",
-        totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
-        formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente", midPriceHint: "⚖️ Prix moyen:",
-        statRoi: "📈 ROI volume", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne",
-        statOps: "🔢 Ordres: total / achats / ventes", turnCombinedTitle: "💸 Volume (Fiat / USDT)",
-        spreadCardTitle: "SPREADS DES ORDRES", lastCycleSpread: "Dernier cycle", avgPeriodSpread: "Moyenne du cycle",
-        hintAvgSpread: "Par WAC", calcTitle: "CALCULATEUR DE CYCLE", calcDealPrice: "Budget",
-        calcBuyHeader: "ACHAT 🟢", calcBuyRate: "Taux USDT", calcSellHeader: "VENTE 🔴", calcSellRate: "Taux USDT",
-        calcSpread: "Spread:", calcProfit: "Profit du cycle:", calcSaveCycle: "Enregistrer ✅", calcClear: "Effacer ❌",
-        showSecondary: "📊 Afficher détails", hideSecondary: "📊 Masquer détails",
-        presetYesterday: "Hier", preset7d: "7 jours", preset30d: "30 jours", dateFrom: "Du", dateTo: "Au",
-        btnApplyDate: "Appliquer ⚡️", newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer ordre",
-        buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴", modeFiat: "Fiat", modeCrypto: "Volume USDT",
-        lblRate: "Taux USDT", lblCardOpt: "Carte bancaire", noCardOpt: "Aucune carte",
-        cardsTitle: "Mes cartes", cardsSubtitle: "Touchez pour gérer", btnCreateCard: "➕ Créer",
-        historyTitle: "Historique des ordres", historySubtitle: "Transactions synchronisées",
-        refTitle: "Affiliation", refSubtitle: "Gagnez des jours", refInvited: "Invités", refYourLink: "Lien",
-        btnCopy: "📋 Copier", btnShare: "🚀 Partager", profileTitle: "Paramètres", profileSubtitle: "Configuration et codes",
-        lblYourId: "TELEGRAM ID", lblLang: "Langue", lblBaseCur: "Devise", lblTimezone: "Fuseau horaire (UTC)",
-        btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support", paywallTitle: "Accès restreint 🔒",
-        paywallSubtitle: "Débloquez les fonctions", trialBadge: "Essai gratuit", trialDesc: "Essai 24h dans le bot.",
-        btnActivateTrial: "🎁 Activer essai", plansBadge: "Formules", plansDesc: "Paiement sécurisé.",
-        plan1m: "1 Mois", planForever: "À vie", btnBuySub: "💳 S'abonner", btnGotIt: "Compris"
-    },
-    de: {
-        tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit", tabCustom: "Zeitraum wählen 📅",
-        totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
-        formulaFiat: "Verkauf − Kauf", formulaUsdt: "Kauf − Verkauf", midPriceHint: "⚖️ Mid Price:",
-        statRoi: "📈 Umsatz-ROI", statWac: "🛒 WAC Kaufkurs", statAvgSell: "🏷 Durchschn. Verkauf",
-        statOps: "🔢 Trades: Gesamt / Käufe / Verkäufe", turnCombinedTitle: "💸 Umsatz (Fiat / USDT)",
-        spreadCardTitle: "TRADE-SPREADS", lastCycleSpread: "Letzter Zyklus", avgPeriodSpread: "Durchschnitt",
-        hintAvgSpread: "Nach WAC", calcTitle: "ZYKLUS-RECHNER", calcDealPrice: "Auftragssumme",
-        calcBuyHeader: "KAUF 🟢", calcBuyRate: "USDT-Kurs", calcSellHeader: "VERKAUF 🔴", calcSellRate: "USDT-Kurs",
-        calcSpread: "Spread:", calcProfit: "Zyklus-Gewinn:", calcSaveCycle: "Buchen ✅", calcClear: "Zurücksetzen ❌",
-        showSecondary: "📊 Details anzeigen", hideSecondary: "📊 Details ausblenden",
-        presetYesterday: "Gestern", preset7d: "7 Tage", preset30d: "30 Tage", dateFrom: "Von", dateTo: "Bis",
-        btnApplyDate: "Anwenden ⚡️", newTradeTitle: "Neuer Trade", newTradeSubtitle: "Zyklus buchen",
-        buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴", modeFiat: "Fiat", modeCrypto: "USDT-Volumen",
-        lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte", noCardOpt: "Keine Karte",
-        cardsTitle: "Meine Karten", cardsSubtitle: "Tippen zum Verwalten", btnCreateCard: "➕ Hinzufügen",
-        historyTitle: "Trade-Historie", historySubtitle: "Trades und Notizen",
-        refTitle: "Partner", refSubtitle: "Bonus-Tage", refInvited: "Eingeladen", refYourLink: "Link",
-        btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen", profileTitle: "Einstellungen", profileSubtitle: "Konfiguration",
-        lblYourId: "TELEGRAM ID", lblLang: "Sprache", lblBaseCur: "Basiswährung", lblTimezone: "Zeitzone (UTC)",
-        btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support", paywallTitle: "Zugriff gesperrt 🔒",
-        paywallSubtitle: "Abo freischalten", trialBadge: "Kostenloser Test", trialDesc: "24h im Bot.",
-        btnActivateTrial: "🎁 Test starten", plansBadge: "Tarife", plansDesc: "Zahlung im Bot.",
-        plan1m: "1 Monat", planForever: "Lebenslang", btnBuySub: "💳 Abo buchen", btnGotIt: "Verstanden"
-    },
-    uk: {
-        tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час", tabCustom: "Свій період 📅",
-        totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий у USDT",
-        formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж",
-        midPriceHint: "⚖️ Середня ціна (Mid Price):",
-        statRoi: "📈 ROI від обороту", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж",
-        statOps: "🔢 Всього угод / Купівель / Продажів", turnCombinedTitle: "💸 Оборот (Фіат / USDT)",
-        spreadCardTitle: "СПРЕД УГОД", lastCycleSpread: "Останнє коло", avgPeriodSpread: "Сер. за період",
-        hintAvgSpread: "По WAC за таймфрейм",
-        calcTitle: "КАЛЬКУЛЯТОР КОЛА", calcDealPrice: "Прайс угоди",
-        calcBuyHeader: "КУПІВЛЯ 🟢", calcBuyRate: "Курс USDT",
-        calcSellHeader: "ПРОДАЖ 🔴", calcSellRate: "Курс USDT",
-        calcSpread: "Спред:", calcProfit: "Прибуток з кола:",
-        calcSaveCycle: "Зберегти коло ✅", calcClear: "Очистити ❌",
-        showSecondary: "📊 Розгорнути детальну статистику", hideSecondary: "📊 Згорнути статистику",
-        presetYesterday: "Вчора", preset7d: "7 днів", preset30d: "30 днів",
-        dateFrom: "З дати", dateTo: "По дату", btnApplyDate: "Застосувати ⚡️",
-        newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло в базу",
-        buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴", modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT",
-        lblRate: "Курс USDT", lblCardOpt: "Банківська картка", noCardOpt: "Без прив'язки",
-        cardsTitle: "Мої картки", cardsSubtitle: "Клік відкриває повне керування", btnCreateCard: "➕ Створити",
-        historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди та нотатки",
-        refTitle: "Партнерська мережа", refSubtitle: "Бонусні дні", refInvited: "Запрошено", refYourLink: "Посилання",
-        btnCopy: "📋 Скопіювати", btnShare: "🚀 Поділитися", profileTitle: "Налаштування", profileSubtitle: "Конфігурація та промокоди",
-        lblYourId: "ВАШ TELEGRAM ID", lblLang: "Мова", lblBaseCur: "Базова валюта", lblTimezone: "Часовий пояс (UTC)",
-        btnSubModal: "💎 Підписка", btnSupport: "👨‍💻 Підтримка", paywallTitle: "Доступ обмежено 🔒",
-        paywallSubtitle: "Оформіть доступ", trialBadge: "Безкоштовний доступ", trialDesc: "🎁 Пробний період 24 години в боті.",
-        btnActivateTrial: "🎁 Активувати тріал", plansBadge: "Тарифи", plansDesc: "Оплата в боті.",
-        plan1m: "1 Місяць", planForever: "Назавжди", btnBuySub: "💳 Оформити підписку", btnGotIt: "Зрозуміло"
-    },
-    kk: {
-        tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт", tabCustom: "Күндерді таңдау 📅",
-        totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза табыс:", netInUsdt: "USDT таза пайда",
-        formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату",
-        midPriceHint: "⚖️ Орташа бағам (Mid Price):",
-        statRoi: "📈 Айналым ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату",
-        statOps: "🔢 Мәмілелер: барлығы / сатып алу / сату", turnCombinedTitle: "💸 Касса айналымы (Фиат / USDT)",
-        spreadCardTitle: "МӘМІЛЕ СПРЕДІ", lastCycleSpread: "Соңғы айналым", avgPeriodSpread: "Кезең орташа спреді",
-        hintAvgSpread: "WAC бойынша", calcTitle: "АЙНАЛЫМ КАЛЬКУЛЯТОРЫ", calcDealPrice: "Мәміле сомасы",
-        calcBuyHeader: "САТЫП АЛУ 🟢", calcBuyRate: "USDT бағамы", calcSellHeader: "САТУ 🔴", calcSellRate: "USDT бағамы",
-        calcSpread: "Спред:", calcProfit: "Айналым пайдасы:", calcSaveCycle: "Сақтау ✅", calcClear: "Тазалау ❌",
-        showSecondary: "📊 Толық статистика", hideSecondary: "📊 Статистиканы жасыру",
-        presetYesterday: "Кеше", preset7d: "7 күн", preset30d: "30 күн", dateFrom: "Бастап", dateTo: "Дейін",
-        btnApplyDate: "Қолдану ⚡️", newTradeTitle: "Жаңа операция", newTradeSubtitle: "Бұлттық базаға сақтау",
-        buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴", modeFiat: "Фиат сомасы", modeCrypto: "USDT көлемі",
-        lblRate: "USDT бағамы", lblCardOpt: "Банк картасы", noCardOpt: "Карта таңдалмаған",
-        cardsTitle: "Менің карталарым", cardsSubtitle: "Басқару үшін картаны басыңыз", btnCreateCard: "➕ Қосу",
-        historyTitle: "Операциялар тарихы", historySubtitle: "Синхрондалған мәмілелер мен жазбалар",
-        refTitle: "Серіктестік", refSubtitle: "Бонус күндер", refInvited: "Шақырылған", refYourLink: "Сілтеме",
-        btnCopy: "📋 Көшіру", btnShare: "🚀 Бөлісу", profileTitle: "Баптаулар", profileSubtitle: "Конфигурация және промокодтар",
-        lblYourId: "TELEGRAM ID", lblLang: "Тіл", lblBaseCur: "Негізгі валюта", lblTimezone: "Уақыт белдеуі (UTC)",
-        btnSubModal: "💎 Жазылым", btnSupport: "👨‍💻 Қолдау", paywallTitle: "Кіру шектелген 🔒",
-        paywallSubtitle: "Жазылым қажет", trialBadge: "Тегін сынақ", trialDesc: "24 сағаттық сынақ Telegram ботында.",
-        btnActivateTrial: "🎁 Сынақты қосу", plansBadge: "Тарифтер", plansDesc: "Қауіпсіз төлем.",
-        plan1m: "1 Ай", planForever: "Мәңгілік", btnBuySub: "💳 Жазылу", btnGotIt: "Түсінікті"
-    }
-};
-
-/* ПОЛНЫЙ СПИСОК ПОДРОБНЫХ ВОПРОСИКОВ (?) */
-const HELP_DATA = {
-    incognito: {
-        title: "🕶 РЕЖИМ ИНКОГНИТО",
-        text: `Скрывает ваши балансы от чужих глаз в общественных местах.<br><br>
-        При активации все заработанные рубли, балансы карт и обороты маскируются блюром. Проценты доходности (спред, ROI) остаются открытыми. Повторный клик мгновенно возвращает отображение цифр.`
-    },
-    total_profit: {
-        title: "💰 ОБЩАЯ ПРИБЫЛЬ И ЛОГИКА",
-        text: `<b>Прибыль формируется в двух валютах:</b><br><br>
-        <b>1. Чистая в USDT:</b> <code>Покупка − Продажа</code> монет.<br>
-        <b>2. Чистая в фиате (₽):</b> <code>Продажа − Покупка</code> фиата с карт.<br><br>
-        <b>3. ОБЩАЯ ПРИБЫЛЬ:</b> переводит остаток USDT в рубли по среднему курсу: <code>Чистая ₽ + (Чистая USDT × Mid Price)</code>.`
-    },
-    period_compare: {
-        title: "📈 СРАВНЕНИЕ ПЕРИОДОВ",
-        text: `Сопоставляет заработанную чистую прибыль текущего периода с предыдущим таким же отрезком (сегодня со вчерашним днем, этот месяц с прошлым). Показывает ваш темп роста в процентах.`
-    },
-    spread: {
-        title: "📊 СПРЕД СДЕЛКИ",
-        text: `<b>Последний круг:</b> разница курсов крайней продажи и покупки: <code>((Продажа − Покупка) / Покупка) × 100%</code>.<br><br>
-        <b>Средний за период:</b> средневзвешенный спред всех закрытых операций по формуле WAC.`
-    },
-    calculator: {
-        title: "⚡️ КАЛЬКУЛЯТОР КРУГА",
-        text: `Мгновенный расчет полного цикла (покупка + продажа). Вы вводите депозит и оба курса — калькулятор рассчитывает чистый спред и профит, сохраняя круг <b>единой записью</b> с привязкой к выбранной карте.`
-    },
-    calc_card: {
-        title: "💳 ПРИВЯЗКА КАРТЫ К КРУГУ",
-        text: `Если выбрать карту в калькуляторе, фиатный оборот круга и итоговый доход автоматически спишутся и начислятся на баланс именно этого счета.`
-    },
-    calendar: {
-        title: "📅 КАЛЕНДАРЬ ДОХОДНОСТИ",
-        text: `<b>Удержание (зажатие пальцем):</b> показывает быстрое превью профита и спреда без открытия окон.<br><br>
-        <b>Обычный клик (тап):</b> открывает подробную карточку со списком всех сделок и оборотом за этот день.`
-    },
-    single_trade: {
-        title: "⚡️ ЕДИНИЧНАЯ ОПЕРАЦИЯ",
-        text: `Внесение отдельного ордера покупки или продажи, если вы работаете частями или фиксируете только одну сторону сделки.`
-    },
-    cards_control: {
-        title: "💳 УПРАВЛЕНИЕ КАРТАМИ",
-        text: `Список организован компактными строками. Нажатие на любую карту открывает нижнюю шторку, где можно отредактировать все параметры, скопировать реквизиты в 1 тап, пополнить кассу или запустить отлежку.`
-    },
-    card_sheet: {
-        title: "⚙️ ПАРАМЕТРЫ КАРТЫ",
-        text: `Здесь можно изменить название, номер карты/СБП, ФИО, текст шаблона для биржи, задать лимит, цвет полоски и сменить статус на <b>Отлежка 24ч</b> или <b>115-ФЗ</b> (сгоревшие карты уходят в самый низ списка).`
-    },
-    history_features: {
-        title: "📜 ИСТОРИЯ И МЕТКИ",
-        text: `Кнопка <b>🔁</b> мгновенно подставляет параметры сделки в калькулятор для нового круга.<br><br>
-        Кнопка <b>✏️</b> позволяет отредактировать сумму, курс, добавить текстовую заметку и присвоить сделке цветной маркер из палитры.`
-    },
-    promocode: {
-        title: "🎁 ПРОМОКОДЫ",
-        text: `Введите кодовое слово для получения бонусных дней доступа к терминалу. Создаются администратором в панели управления.`
-    },
-    admin_broadcast: {
-        title: "🤖 РАССЫЛКА В ТЕЛЕГРАМ",
-        text: `Отправляет сообщение напрямую в личку каждому пользователю, зарегистрированному в базе бота. Используется токен вашего Telegram-бота.`
-    },
-    site_banner: {
-        title: "📢 ЖИВОЙ БАННЕР САЙТА",
-        text: `Отображает важную новость или акцию в самом верху терминала для всех посетителей одновременно.`
-    },
-    net_fiat: {
-        title: "💳 ЧИСТАЯ В ФИАТЕ",
-        text: `Разница между полученным и потраченным фиатом: <code>Продажи − Покупки</code>.`
-    },
-    net_usdt: {
-        title: "🪙 ЧИСТАЯ В USDT",
-        text: `Чистый остаток криптовалюты: <code>Купленный объем − Проданный объем</code>.`
-    },
-    mid_price: {
-        title: "⚖️ MID PRICE",
-        text: `Справедливая средняя цена исполнения: <code>(WAC Покупки + Ср. Продажа) / 2</code>.`
-    },
-    turnover: {
-        title: "💸 ОБОРОТ",
-        text: `Суммарный объем всех покупок и продаж за выбранный таймфрейм.`
-    },
-    wac: {
-        title: "🛒 WAC ЗАКУПКА",
-        text: `Weighted Average Cost — реальный средневзвешенный курс покупки монет.`
-    },
-    avg_sell: {
-        title: "🏷 СРЕДНЯЯ ПРОДАЖА",
-        text: `Средневзвешенный курс реализации USDT за выбранный период.`
-    },
-    roi: {
-        title: "📈 ROI",
-        text: `Процент отдачи на каждый прокрученный рубль оборота: <code>(Прибыль / Оборот) × 100%</code>.`
-    },
-    operations: {
-        title: "🔢 СЧЕТЧИК",
-        text: `Всего операций / Покупок / Продаж за таймфрейм.`
-    },
-    ui_mode: {
-        title: "🎨 РЕЖИМ FX",
-        text: `Минимализм — быстрая загрузка без движения фона. Полный FX — анимации и блокчейн-фон.`
-    },
-    referral: {
-        title: "🤝 ПАРТНЕРСКАЯ СЕТЬ",
-        text: `Приглашайте трейдеров и получайте бонусные дни подписки за каждого реферала.`
-    }
-};
-
-const tg = window.Telegram?.WebApp;
-if (tg) {
-    try {
-        tg.expand();
-        tg.ready();
-    } catch(e){}
+function safeStorageGet(key, fallback = null) {
+    try { return localStorage.getItem(key) ?? fallback; } catch(e) { return fallback; }
+}
+function safeStorageSet(key, val) {
+    try { localStorage.setItem(key, String(val)); } catch(e) {}
 }
 
-/* ====================================================
-   НАСТРОЙКИ ПО УМОЛЧАНИЮ (МИНИМАЛИЗМ И ВКЛАДКИ)
-==================================================== */
 let currentUser = null;
 let userCards = [];
 let userTrades = [];
@@ -346,15 +29,19 @@ let activeSheetCard = null;
 let selectedTradeColor = 'none';
 let isSecondaryExpanded = false;
 
-// ПО УМОЛЧАНИЮ: simple (без анимаций) и pages (по экранам)
-let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
-let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages';
-let isIncognito = localStorage.getItem('p2p_incognito') === 'true';
-let soundEnabled = localStorage.getItem('p2p_sound_enabled') !== 'false';
+// По умолчанию: МИНИМАЛИЗМ и ВКЛАДКИ
+let currentLang = safeStorageGet('p2p_terminal_lang', 'ru');
+let uiMode = safeStorageGet('p2p_ui_mode', 'simple');
+let layoutMode = safeStorageGet('p2p_layout_mode', 'pages');
+let isIncognito = safeStorageGet('p2p_incognito') === 'true';
+let soundEnabled = safeStorageGet('p2p_sound_enabled') !== 'false';
 let isHeatmapOpen = false;
 
+const tg = window.Telegram?.WebApp;
+if (tg) { try { tg.expand(); tg.ready(); } catch(e){} }
+
 /* ====================================================
-   СЕТЕВОЙ МОДУЛЬ (SUPABASE)
+   СЕТЕВОЙ МОДУЛЬ (SUPABASE REST)
 ==================================================== */
 async function db(endpoint, options = {}) {
     const headers = {
@@ -370,8 +57,56 @@ async function db(endpoint, options = {}) {
     return txt ? JSON.parse(txt) : null;
 }
 
+// Надежный UPSERT для bot_config
+async function setBotConfig(key, value) {
+    const existing = await db(`bot_config?key=eq.${key}`);
+    if (existing && existing.length > 0) {
+        return db(`bot_config?key=eq.${key}`, { method: 'PATCH', body: JSON.stringify({ value: String(value) }) });
+    } else {
+        return db(`bot_config`, { method: 'POST', body: JSON.stringify({ key, value: String(value) }) });
+    }
+}
+
 /* ====================================================
-   ЗВУК КАССЫ / МОНЕТ (WEB AUDIO API)
+   ТЕРМИНАЛ-ЗАГРУЗЧИК (АНИМАЦИЯ ВХОДА)
+==================================================== */
+const bootLogs = [
+    { text: "> SYSTEM BOOT: INIT P2P_CORE_V8.1.5", class: "c-green" },
+    { text: "[OK] SECURE ENCLAVE ACTIVE", class: "c-dim" },
+    { text: "> AUTHENTICATING TELEGRAM CREDENTIALS...", class: "c-blue" },
+    { text: "[OK] TELEGRAM HMAC SHA-256 MATCH", class: "c-green" },
+    { text: "> CONNECTING SUPABASE CLOUD CLUSTER...", class: "c-dim" },
+    { text: "[OK] LEDGER ENGINES ONLINE", class: "c-gold" }
+];
+
+async function playTerminalBootSequence() {
+    const container = document.getElementById("console-stream");
+    const bar = document.getElementById("boot-progress-bar");
+    const pct = document.getElementById("boot-pct");
+    if (!container || !bar || !pct) return;
+    container.innerHTML = "";
+
+    const total = bootLogs.length;
+    for (let i = 0; i < total; i++) {
+        const item = bootLogs[i];
+        const line = document.createElement("div");
+        line.className = `console-line visible ${item.class}`;
+        line.innerHTML = `${item.text} <span class="cursor-blink"></span>`;
+        container.appendChild(line);
+
+        const prev = container.querySelectorAll(".cursor-blink");
+        if (prev.length > 1) prev[0].remove();
+
+        const p = Math.round(((i + 1) / total) * 100);
+        bar.style.width = `${p}%`;
+        pct.innerText = `${p}%`;
+        container.scrollTop = container.scrollHeight;
+        await new Promise(r => setTimeout(r, 40));
+    }
+}
+
+/* ====================================================
+   ЗВУК МОНЕТ / КАССЫ
 ==================================================== */
 function playCashSound() {
     if (!soundEnabled) return;
@@ -407,7 +142,7 @@ function playCashSound() {
 function switchSoundMode(isChecked) {
     haptic('light');
     soundEnabled = isChecked;
-    localStorage.setItem('p2p_sound_enabled', isChecked);
+    safeStorageSet('p2p_sound_enabled', isChecked);
     showToast(isChecked ? "🔔 Звук включен" : "🔕 Звук выключен");
 }
 
@@ -428,7 +163,7 @@ function applyIncognito() {
 function toggleIncognitoMode() {
     haptic('light');
     isIncognito = !isIncognito;
-    localStorage.setItem('p2p_incognito', isIncognito);
+    safeStorageSet('p2p_incognito', isIncognito);
     applyIncognito();
     showToast(isIncognito ? "🕶 Инкогнито включен" : "👁 Цифры открыты");
 }
@@ -452,8 +187,9 @@ function syncTelegramSafeAreas() {
 }
 
 function getCurrencySymbol() {
+    const cur = currentUser?.currency || safeStorageGet('p2p_currency', 'RUB');
     const map = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"};
-    return map[currentUser?.currency || 'RUB'] || (currentUser?.currency || '₽');
+    return map[cur] || cur || '₽';
 }
 
 function updateAllCurrencySymbols() {
@@ -468,6 +204,33 @@ function animateNumber(element, target, prefix = '', suffix = '', decimals = 2, 
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
     })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+}
+
+/* ====================================================
+   ИЗМЕНЕНИЕ ВАЛЮТЫ И ЧАСОВОГО ПОЯСА
+==================================================== */
+async function updateSettings() {
+    haptic('light');
+    const cur = document.getElementById('set-currency').value;
+    const tz = parseInt(document.getElementById('set-tz').value);
+
+    if (currentUser) {
+        currentUser.currency = cur;
+        currentUser.tz_offset = tz;
+        try {
+            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ currency: cur, tz_offset: tz })
+            });
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    safeStorageSet('p2p_currency', cur);
+    safeStorageSet('p2p_tz', tz);
+    showToast("⚙️ Настройки сохранены!");
+    renderAll();
 }
 
 /* ====================================================
@@ -589,7 +352,7 @@ function clearCalculator() {
 }
 
 /* ====================================================
-   СТАТИСТИКА И ОБЩАЯ ПРИБЫЛЬ
+   СТАТИСТИКА И СРАВНЕНИЕ ПЕРИОДОВ
 ==================================================== */
 function calculateStats() {
     const tz = parseInt(currentUser?.tz_offset) || 3;
@@ -616,22 +379,15 @@ function calculateStats() {
         const c = parseFloat(t.crypto_amount || 0);
 
         if (t.is_cycle) {
-            bF += f;
-            sF += f;
-            bC += c;
+            bF += f; sF += f; bC += c;
             const soldC = t.sell_rate ? f / parseFloat(t.sell_rate) : c;
             sC += soldC;
-            buysCount++;
-            sellsCount++;
+            buysCount++; sellsCount++;
             cycleProfitFiatTotal += parseFloat(t.cycle_profit_rub || 0);
         } else if (t.type === 'buy') {
-            bF += f;
-            bC += c;
-            buysCount++;
+            bF += f; bC += c; buysCount++;
         } else {
-            sF += f;
-            sC += c;
-            sellsCount++;
+            sF += f; sC += c; sellsCount++;
         }
     });
 
@@ -798,7 +554,6 @@ function renderHeatmap() {
             return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
         });
 
-        // СТРОГИЙ РАСЧЕТ ОБЩЕЙ ПРИБЫЛИ ЗА ДЕНЬ
         let dayBf = 0, dayBc = 0, daySf = 0, daySc = 0, dayCycleProfit = 0;
         dayTrades.forEach(t => {
             const f = parseFloat(t.fiat_amount || 0);
@@ -1349,18 +1104,33 @@ async function deleteTradeCloud(tid) {
 }
 
 /* ====================================================
-   АДМИН-ПАНЕЛЬ: БАЗА ЮЗЕРОВ, ДОСЬЕ И РАССЫЛКА
+   АДМИН-ПАНЕЛЬ: БАЗА ТОЛЬКО АКТИВНЫХ ЮЗЕРОВ
 ==================================================== */
 let activeAdminInspectUser = null;
 
 async function loadAdminAllUsers() {
     const box = document.getElementById('admin-users-scroll-box');
+    const badge = document.getElementById('admin-users-count-badge');
     if (!box) return;
-    box.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">Загрузка...</div>`;
+    box.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">Фильтрация активных юзеров...</div>`;
 
     try {
-        const users = await db(`users?select=*&order=reg_date.desc`);
-        adminAllUsers = users || [];
+        const [allUsers, allTrades] = await Promise.all([
+            db(`users?select=*&order=reg_date.desc`),
+            db(`trades?select=tg_id`)
+        ]);
+
+        const activeTradeUserIds = new Set((allTrades || []).map(t => t.tg_id));
+
+        // Фильтруем: есть хотя бы 1 сделка ИЛИ была/есть подписка ИЛИ использован триал
+        adminAllUsers = (allUsers || []).filter(u => {
+            const hasTrades = activeTradeUserIds.has(u.tg_id);
+            const hasSub = Boolean(u.sub_end);
+            const hasTrial = Boolean(u.trial_used);
+            return hasTrades || hasSub || hasTrial;
+        });
+
+        if (badge) badge.innerText = `${adminAllUsers.length} активных`;
         renderAdminUsersList(adminAllUsers);
     } catch(e) {
         box.innerHTML = `<div style="color: var(--bybit-red); font-size: 12px; text-align: center;">Ошибка загрузки базы</div>`;
@@ -1372,7 +1142,7 @@ function renderAdminUsersList(users) {
     if (!box) return;
     box.innerHTML = '';
     if (users.length === 0) {
-        box.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">Пользователи не найдены</div>`;
+        box.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">Активных пользователей не найдено</div>`;
         return;
     }
 
@@ -1380,7 +1150,7 @@ function renderAdminUsersList(users) {
         const isBanned = u.is_banned;
         const hasSub = u.sub_end && new Date(u.sub_end) > new Date();
         const badgeColor = isBanned ? 'var(--bybit-red)' : (hasSub ? 'var(--bybit-green)' : 'var(--text-muted)');
-        const badgeText = isBanned ? 'БАН' : (hasSub ? (new Date(u.sub_end).getFullYear() > 2099 ? 'VIP' : 'АКТИВЕН') : 'НЕТ ПОДПИСКИ');
+        const badgeText = isBanned ? 'БАН' : (hasSub ? (new Date(u.sub_end).getFullYear() > 2099 ? 'VIP' : 'АКТИВЕН') : 'БЫЛА ПОДПИСКА');
 
         box.innerHTML += `
             <div class="admin-user-row" onclick="openAdminUserDossier(${u.tg_id})">
@@ -1433,17 +1203,17 @@ async function openAdminUserDossier(tgId) {
             banBtn.style.color = u.is_banned ? "var(--bybit-green)" : "var(--bybit-red)";
         }
 
-        const subText = u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? '♾️ VIP Навсегда' : new Date(u.sub_end).toLocaleString()) : 'Нет доступа';
+        const subText = u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? '♾️ VIP Навсегда' : new Date(u.sub_end).toLocaleString()) : (u.trial_used ? 'Использован триал' : 'Нет доступа');
 
         box.innerHTML = `
             <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); font-size: 12px; line-height: 1.6;">
                 <b>Имя:</b> ${u.first_name || 'Не указано'} ${u.last_name || ''}<br>
                 <b>Username:</b> @${u.username || 'нет'}<br>
                 <b>Telegram ID:</b> <code>${u.tg_id}</code><br>
-                <b>Подписка до:</b> <b style="color: var(--bybit-yellow);">${subText}</b><br>
+                <b>Подписка:</b> <b style="color: var(--bybit-yellow);">${subText}</b><br>
                 <b>Статус:</b> ${u.is_banned ? '<span style="color: var(--bybit-red);">🔴 ЗАБЛОКИРОВАН</span>' : '<span style="color: var(--bybit-green);">🟢 АКТИВЕН</span>'}<br>
                 <b>Регистрация:</b> ${u.reg_date ? new Date(u.reg_date).toLocaleDateString() : 'Неизвестно'}<br>
-                <b>Пригласил (Реферер):</b> <code>${u.ref_by || 'Органика'}</code><br>
+                <b>Пригласил:</b> <code>${u.ref_by || 'Органика'}</code><br>
                 <div style="margin-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px;">
                     <b>Сделок в базе:</b> ${trades.length}<br>
                     <b>Оборот фиата:</b> ${fiatTurn.toLocaleString()} ₽<br>
@@ -1494,7 +1264,7 @@ async function adminDossierAction(action) {
 }
 
 /* ====================================================
-   РАССЫЛКА В ТЕЛЕГРАМ-БОТА
+   РАССЫЛКА В БОТА И БАННЕР
 ==================================================== */
 async function adminBroadcastToBot() {
     const token = document.getElementById('admin-bot-token').value.trim();
@@ -1512,20 +1282,14 @@ async function adminBroadcastToBot() {
         const users = await db(`users?select=tg_id`);
         if (!users || users.length === 0) return showToast("Юзеры не найдены");
 
-        let success = 0;
-        let errors = 0;
-
+        let success = 0, errors = 0;
         for (let i = 0; i < users.length; i++) {
             const uid = users[i].tg_id;
             try {
                 const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: uid,
-                        text: text,
-                        parse_mode: 'HTML'
-                    })
+                    body: JSON.stringify({ chat_id: uid, text: text, parse_mode: 'HTML' })
                 });
                 if (res.ok) success++;
                 else errors++;
@@ -1562,13 +1326,13 @@ async function adminUpdateBanner(isActive) {
     const text = document.getElementById('admin-banner-text').value.trim();
     try {
         await Promise.all([
-            db(`bot_config?key=eq.SITE_BANNER_TEXT`, { method: 'PATCH', body: JSON.stringify({ value: text }) }),
-            db(`bot_config?key=eq.SITE_BANNER_ACTIVE`, { method: 'PATCH', body: JSON.stringify({ value: String(isActive) }) })
+            setBotConfig('SITE_BANNER_TEXT', text),
+            setBotConfig('SITE_BANNER_ACTIVE', String(isActive))
         ]);
         showToast(isActive ? "📢 Баннер включен!" : "Баннер скрыт");
         loadLiveSiteBanner();
     } catch(e) {
-        showToast("Ошибка баннера");
+        showToast("Ошибка сохранения баннера");
     }
 }
 
@@ -1625,7 +1389,7 @@ function generatePnlCard() {
     link.download = `PnL_Report_${new Date().toISOString().slice(0,10)}.png`;
     link.href = imgUrl;
     link.click();
-    showToast("📸 Карточка создана и скачана!");
+    showToast("📸 Карточка создана!");
 }
 
 /* ====================================================
@@ -1692,7 +1456,7 @@ async function adminCreatePromo() {
 }
 
 /* ====================================================
-   ЭКСПОРТ БАЗЫ (ФИКС ОШИБКИ ВЫГРУЗКИ)
+   ЭКСПОРТ БАЗЫ (CSV С ГАРАНТИРОВАННЫМ СКАЧИВАНИЕМ)
 ==================================================== */
 async function adminExportDatabase() {
     haptic('medium');
@@ -1709,14 +1473,6 @@ async function adminExportDatabase() {
         const fileName = `P2P_Users_${new Date().toISOString().slice(0,10)}.csv`;
         const blob = new Blob(["\uFEFF" + csv], { type: 'application/octet-stream;charset=utf-8;' });
         const fileUrl = URL.createObjectURL(blob);
-
-        if (tg && typeof tg.downloadFile === 'function') {
-            tg.downloadFile({ url: fileUrl, file_name: fileName }, (isDownloaded) => {
-                if (isDownloaded) showToast("✅ Файл сохранен!");
-                else fallbackDownload(fileUrl, fileName, csv);
-            });
-            return;
-        }
         fallbackDownload(fileUrl, fileName, csv);
     } catch (e) {
         showToast("❌ Ошибка выгрузки базы");
@@ -1756,7 +1512,7 @@ function fallbackDownload(fileUrl, fileName, rawCsv) {
 }
 
 /* ====================================================
-   ЕДИНИЧНАЯ СДЕЛКА И КАРТЫ
+   ЕДИНИЧНАЯ СДЕЛКА
 ==================================================== */
 let currentType = 'buy';
 let calcMode = 'fiat';
@@ -1996,7 +1752,7 @@ function handleNavClick(targetId, el) {
 
 function applyLayoutMode(mode) {
     layoutMode = mode;
-    localStorage.setItem('p2p_layout_mode', mode);
+    safeStorageSet('p2p_layout_mode', mode);
     const toggleEl = document.getElementById('toggle-layout-mode');
     const descEl = document.getElementById('layout-mode-desc');
 
@@ -2026,7 +1782,7 @@ function switchLayoutMode(isChecked) {
 
 function applyUiMode(mode) {
     uiMode = mode;
-    localStorage.setItem('p2p_ui_mode', mode);
+    safeStorageSet('p2p_ui_mode', mode);
     const toggleEl = document.getElementById('toggle-ui-mode');
     const descEl = document.getElementById('ui-mode-desc');
 
@@ -2050,7 +1806,7 @@ function switchUiMode(isChecked) {
 
 function applyLanguage(lang) {
     currentLang = lang;
-    localStorage.setItem('p2p_terminal_lang', lang);
+    safeStorageSet('p2p_terminal_lang', lang);
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (I18N[lang] && I18N[lang][key]) {
@@ -2125,7 +1881,7 @@ function openSupport() {
 }
 
 /* ====================================================
-   АДМИНКА И КОНФИГ
+   АДМИНКА
 ==================================================== */
 async function checkAdminStatus(tgId) {
     try {
@@ -2164,12 +1920,12 @@ async function saveAdminConfig() {
     haptic('medium');
     try {
         await Promise.all([
-            db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-month').value }) }),
-            db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-forever').value }) }),
-            db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-uid').value }) }),
-            db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-trial').value }) }),
-            db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-ref').value }) }),
-            db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-admin-ids').value }) })
+            setBotConfig('PRICE_MONTH', document.getElementById('cfg-inp-month').value),
+            setBotConfig('PRICE_FOREVER', document.getElementById('cfg-inp-forever').value),
+            setBotConfig('BYBIT_UID', document.getElementById('cfg-inp-uid').value),
+            setBotConfig('TRIAL_DAYS', document.getElementById('cfg-inp-trial').value),
+            setBotConfig('REF_BONUS_DAYS', document.getElementById('cfg-inp-ref').value),
+            setBotConfig('ADMIN_IDS', document.getElementById('cfg-inp-admin-ids').value)
         ]);
         showToast("✅ Конфиг сохранен!");
     } catch(e) {
@@ -2245,13 +2001,18 @@ function forceHideLoader() {
     document.querySelector('.bottom-nav').style.display = 'flex';
 }
 
+/* ====================================================
+   ГЛАВНАЯ ТОЧКА ВХОДА (С ЗАЩИТОЙ ОТ ЗАВИСАНИЯ НА ТЕЛЕФОНЕ)
+==================================================== */
 async function init() {
     syncTelegramSafeAreas();
+    applyLanguage(currentLang);
     applyUiMode(uiMode);
     applyLayoutMode(layoutMode);
     applyIncognito();
 
-    const failsafe = setTimeout(forceHideLoader, 2000);
+    // Защитный таймер: максимум 2.5 секунды, терминал откроется в любом случае
+    const failsafe = setTimeout(forceHideLoader, 2500);
     const tgUser = tg?.initDataUnsafe?.user;
 
     if (!tgUser || !tgUser.id) {
@@ -2262,25 +2023,46 @@ async function init() {
     }
 
     try {
-        let users = await db(`users?tg_id=eq.${tgUser.id}`);
-        if (!users || users.length === 0) {
-            const created = await db(`users`, {
-                method: 'POST',
-                body: JSON.stringify({ tg_id: tgUser.id, username: tgUser.username, first_name: tgUser.first_name, last_name: tgUser.last_name })
-            });
-            currentUser = created ? created[0] : { tg_id: tgUser.id };
-        } else {
-            currentUser = users[0];
-        }
+        // Параллельный запуск анимации терминала и загрузки данных
+        const bootPromise = playTerminalBootSequence();
 
-        await refreshData();
-        await checkAdminStatus(tgUser.id);
-        await loadLiveSiteBanner();
+        const dataPromise = (async () => {
+            let users = await db(`users?tg_id=eq.${tgUser.id}`);
+            if (!users || users.length === 0) {
+                const created = await db(`users`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tg_id: tgUser.id,
+                        username: tgUser.username,
+                        first_name: tgUser.first_name,
+                        last_name: tgUser.last_name,
+                        currency: safeStorageGet('p2p_currency', 'RUB'),
+                        tz_offset: parseInt(safeStorageGet('p2p_tz', '3'))
+                    })
+                });
+                currentUser = created ? created[0] : { tg_id: tgUser.id };
+            } else {
+                currentUser = users[0];
+            }
 
-        document.getElementById('disp-uid').innerText = currentUser.tg_id;
-        document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
+            await refreshData();
+            await checkAdminStatus(tgUser.id);
+            await loadLiveSiteBanner();
+
+            document.getElementById('disp-uid').innerText = currentUser.tg_id;
+            document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
+            document.getElementById('set-currency').value = currentUser.currency || 'RUB';
+            document.getElementById('set-tz').value = currentUser.tz_offset || 3;
+        })();
+
+        // Ждем анимацию и данные, либо отсекаем по 2.2с
+        await Promise.all([
+            bootPromise,
+            Promise.race([dataPromise, new Promise(r => setTimeout(r, 2200))])
+        ]);
+
     } catch(e) {
-        console.error(e);
+        console.error("Init error:", e);
     } finally {
         clearTimeout(failsafe);
         forceHideLoader();
