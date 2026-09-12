@@ -6,7 +6,7 @@
     <title>P2P Ledger — Учет и терминал</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
 
         :root {
             --bg-page: #080b11;
@@ -14,10 +14,10 @@
             --bg-card-sub: #161d2d;
             --bg-input: #0b0e17;
 
-            /* ЦВЕТА СУПЕРКАРА И ТРЕЙДИНГА */
+            /* ЦВЕТА СУПЕРКАРА И ТРЕЙДИНГА (ГРАФИТ + ЛАМБО) */
             --lambo-gold: #f59e0b;
             --lambo-orange: #ff9900;
-            --lambo-glow: rgba(245, 158, 11, 0.15);
+            --lambo-glow: rgba(245, 158, 11, 0.2);
 
             --trade-green: #10b981;
             --trade-green-bg: rgba(16, 185, 129, 0.12);
@@ -51,21 +51,111 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-page);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            font-family: 'Sora', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
             padding-bottom: 120px;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            position: relative;
             min-height: 100vh;
         }
 
-        /* БЫСТРЫЙ ЛОАДЕР (ЧЕЛОВЕЧЕСКИЙ, БЕЗ ФЕЙКОВОГО ТЕРМИНАЛА) */
+        /* РЕЖИМ МИНИМАЛИЗМА (ПО УМОЛЧАНИЮ) */
+        body.mode-simple #blockchain-canvas,
+        body.mode-simple .ambient-canvas-wrap,
+        body.mode-simple .ambient-grid {
+            display: none !important;
+        }
+
+        /* РЕЖИМ FX (ШРИФТ FIRA CODE, БЛОКЧЕЙН, СФЕРЫ) */
+        body.mode-fx {
+            font-family: 'Fira Code', 'Sora', monospace !important;
+        }
+
+        body.mode-fx .card,
+        body.mode-fx .stat-card,
+        body.mode-fx .sub-tier-badge,
+        body.mode-fx .bottom-nav {
+            backdrop-filter: blur(24px) !important;
+            -webkit-backdrop-filter: blur(24px) !important;
+            background: rgba(17, 22, 34, 0.85) !important;
+            border-color: rgba(245, 158, 11, 0.18) !important;
+        }
+
+        /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ */
+        #blockchain-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .ambient-canvas-wrap {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.16;
+            will-change: transform;
+        }
+
+        .orb-1 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, var(--lambo-gold) 0%, transparent 70%);
+            top: -100px;
+            left: -120px;
+            animation: floatOrb1 24s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, var(--trade-green) 0%, transparent 70%);
+            bottom: 20px;
+            right: -120px;
+            animation: floatOrb2 28s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatOrb1 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(70px, 90px, 0) scale(1.08); }
+            100% { transform: translate3d(-30px, 140px, 0) scale(0.96); }
+        }
+
+        @keyframes floatOrb2 {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(-80px, -70px, 0) scale(1.12); }
+            100% { transform: translate3d(40px, -110px, 0) scale(0.94); }
+        }
+
+        .ambient-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ЛОАДЕР ЗАГРУЗКИ */
         #app-loader {
             position: fixed;
             inset: 0;
             background: var(--bg-page);
-            z-index: 10000;
+            z-index: 100000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -97,6 +187,8 @@
             padding: 14px 16px;
             max-width: 520px;
             margin: 0 auto;
+            position: relative;
+            z-index: 3;
             display: none;
         }
 
@@ -115,14 +207,14 @@
             position: relative;
         }
 
-        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ */
+        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ НА ЧИСТОМ ФОНЕ */
         .sub-tier-badge {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             width: 100%;
-            padding: 14px 16px;
+            padding: 13px 16px;
             border-radius: 16px;
             font-size: 13px;
             font-weight: 800;
@@ -186,7 +278,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
-        /* ВЫБОР ДАТ: БЕЗ НАЛОЖЕНИЙ */
+        /* ВЫБОР ДАТ: КОМПАКТНЫЙ, БЕЗ НАЛОЖЕНИЙ */
         .date-picker-box {
             display: none;
             background: var(--bg-card);
@@ -255,6 +347,7 @@
             font-size: 34px;
             font-weight: 900;
             letter-spacing: -0.5px;
+            font-family: 'JetBrains Mono', 'Sora', monospace;
         }
 
         .sub-profit-badge {
@@ -264,6 +357,7 @@
             border-radius: 10px;
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         /* ЗНАК ВОПРОСА ? */
@@ -322,6 +416,7 @@
             font-weight: 800;
             margin-top: 6px;
             color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .txt-gold { color: var(--lambo-gold) !important; }
@@ -329,7 +424,7 @@
         .txt-red { color: var(--trade-red) !important; }
         .txt-blue { color: var(--trade-blue) !important; }
 
-        /* ЗАМЕТНАЯ КНОПКА РАЗВОРОТА */
+        /* ЗАМЕТНАЯ КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ */
         .details-toggle-btn {
             width: 100%;
             background: rgba(245, 158, 11, 0.08);
@@ -378,6 +473,7 @@
             outline: none;
             transition: border 0.15s ease;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .styled-input:focus {
@@ -396,6 +492,7 @@
             background: var(--trade-green);
             color: #061712;
             transition: transform 0.1s ease;
+            font-family: inherit;
         }
 
         .action-btn:active { transform: scale(0.97); }
@@ -420,6 +517,7 @@
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
+            font-family: inherit;
         }
 
         .action-btn-secondary:active { transform: scale(0.97); }
@@ -443,9 +541,48 @@
             font-weight: 700;
             text-align: center;
             cursor: pointer;
+            font-family: inherit;
         }
 
         .btn-card-action:active { transform: scale(0.95); }
+
+        /* ТУМБЛЕР (SWITCH) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 25px;
+            flex-shrink: 0;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: var(--bg-input);
+            transition: .25s var(--ease);
+            border-radius: 26px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #fff;
+            transition: .25s var(--ease);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--lambo-gold); border-color: var(--lambo-gold); }
+        input:checked + .slider:before {
+            transform: translateX(21px);
+            background-color: #000;
+        }
 
         /* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ */
         .bottom-nav {
@@ -545,8 +682,17 @@
     </style>
 </head>
 <body class="mode-simple">
+    <!-- ХОЛСТ БЛОКЧЕЙНА (ДЛЯ РЕЖИМА FX) -->
+    <canvas id="blockchain-canvas"></canvas>
 
-    <!-- ЛОАДЕР ЗАГРУЗКИ -->
+    <div class="ambient-canvas-wrap">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+    </div>
+
+    <div class="ambient-grid"></div>
+
+    <!-- БЫСТРЫЙ ЛОАДЕР -->
     <div id="app-loader">
         <div class="loader-spinner"></div>
         <div style="font-size: 13px; font-weight: 700; color: var(--text-muted);">Загрузка терминала...</div>
@@ -858,6 +1004,21 @@
                     <button class="btn-card-action" style="padding: 7px 12px; color: var(--lambo-gold);" onclick="openSubModal()" data-i18n="btnSubModal">💎 Подписка</button>
                 </div>
 
+                <!-- ТУМБЛЕР ВЫБОРА ИНТЕРФЕЙСА (FX / МИНИМАЛИЗМ) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: var(--bg-input); padding: 12px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 800;">
+                            <span data-i18n="uiModeLabel">Визуальные эффекты (FX)</span>
+                            <span class="help-icon" onclick="openHelpModal('ui_mode', event)">?</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="ui-mode-desc" data-i18n="uiModeSimpleDesc">Минимализм (без фона и анимаций)</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-ui-mode" onchange="switchUiMode(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <!-- Язык -->
                 <div class="input-wrap">
                     <span class="badge-label" data-i18n="lblLang">Язык приложения</span>
@@ -968,7 +1129,7 @@
         </div>
     </div>
 
-    <!-- ДРУГИЕ МОДАЛКИ (КАРТЫ, ПОДПИСКА, ПРАВКА СДЕЛКИ) -->
+    <!-- МОДАЛКА ПОДПИСКИ -->
     <div id="modal-sub-info" class="modal-overlay">
         <div class="modal-box" style="text-align: center;">
             <div style="font-size: 36px; margin-bottom: 8px;">💎</div>
@@ -980,6 +1141,7 @@
         </div>
     </div>
 
+    <!-- МОДАЛКИ КАРТ -->
     <div id="modal-card-create" class="modal-overlay">
         <div class="modal-box">
             <h3 style="font-size: 16px; margin: 0 0 12px 0;" data-i18n="cardModalTitle">Новая карта</h3>
@@ -1026,6 +1188,7 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА РЕДАКТИРОВАНИЯ СДЕЛКИ -->
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-box">
             <h3 style="font-size: 16px; margin: 0 0 4px 0;" data-i18n="editModalTitle">Правка сделки</h3>
@@ -1105,8 +1268,9 @@
                 btnCopy: "Скопировать", btnShare: "Поделиться", shareText: "Удобный P2P-терминал для учета кругов и WAC:",
                 profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта", lblYourId: "TELEGRAM ID",
                 lblLang: "Язык приложения", lblBaseCur: "Базовая валюта учета", lblTimezone: "Часовой пояс (UTC)",
-                btnSubModal: "💎 Подписка", btnSupport: "👨‍💻 Поддержка в Telegram", paywallTitle: "Доступ ограничен 🔒",
-                paywallSubtitle: "Оформите доступ к терминалу", trialBadge: "Бесплатный тест",
+                uiModeLabel: "Визуальные эффекты (FX)", uiModeSimpleDesc: "Минимализм (без фона и анимаций)",
+                uiModeFxDesc: "Полный FX (блокчейн-фон и 3D)", btnSubModal: "💎 Подписка", btnSupport: "👨‍💻 Поддержка в Telegram",
+                paywallTitle: "Доступ ограничен 🔒", paywallSubtitle: "Оформите доступ к терминалу", trialBadge: "Бесплатный тест",
                 trialDesc: "🎁 Пробный период 24 часа активируется в Telegram-боте.", btnActivateTrial: "Активировать триал",
                 plansBadge: "Тарифные планы", plansDesc: "Оплата и сверка перевода Bybit производятся в боте.",
                 plan1m: "1 Месяц", planForever: "Навсегда", btnBuySub: "Оформить подписку", subModalTitle: "Оформление подписки",
@@ -1138,10 +1302,12 @@
                 refYourLink: "Your Referral Link", btnCopy: "Copy", btnShare: "Share",
                 shareText: "Professional P2P arbitrage terminal:", profileTitle: "Preferences",
                 profileSubtitle: "Account Configuration", lblYourId: "TELEGRAM ID", lblLang: "App Language",
-                lblBaseCur: "Base Currency", lblTimezone: "Timezone (UTC)", btnSubModal: "💎 Pass",
-                btnSupport: "👨‍💻 Telegram Support", paywallTitle: "Access Locked 🔒", paywallSubtitle: "Unlock full terminal pass",
-                trialBadge: "Free Trial", trialDesc: "🎁 24-hour trial is activated inside our Telegram Bot.",
-                btnActivateTrial: "Activate Trial", plansBadge: "Pass Plans", plansDesc: "Payments are processed securely via bot.",
+                lblBaseCur: "Base Currency", lblTimezone: "Timezone (UTC)", uiModeLabel: "Visual FX",
+                uiModeSimpleDesc: "Minimalist (clean & fast)", uiModeFxDesc: "Full FX (blockchain nodes & 3D)",
+                btnSubModal: "💎 Pass", btnSupport: "👨‍💻 Telegram Support", paywallTitle: "Access Locked 🔒",
+                paywallSubtitle: "Unlock full terminal pass", trialBadge: "Free Trial",
+                trialDesc: "🎁 24-hour trial is activated inside our Telegram Bot.", btnActivateTrial: "Activate Trial",
+                plansBadge: "Pass Plans", plansDesc: "Payments are processed securely via bot.",
                 plan1m: "1 Month", planForever: "Lifetime", btnBuySub: "Get Subscription", subModalTitle: "Purchase in Bot",
                 subModalDesc: "Trial activation and payment are handled inside our bot.<br><br>Instant automatic activation!",
                 btnGotIt: "Got It", cardModalTitle: "New Card", cardNameLbl: "Card Label", btnCancel: "Cancel",
@@ -1207,6 +1373,11 @@
                 title: "🔢 СДЕЛКИ",
                 text: `Три числа через слэш:<br><b>Всего операций / Покупок USDT / Продаж USDT (кругов)</b>.`
             },
+            ui_mode: {
+                title: "🎨 РЕЖИМ ИНТЕРФЕЙСА",
+                text: `<b>Минимализм (по умолчанию):</b> максимальная скорость работы, высокая контрастность блоков без прозрачности, отключен движущийся фон с блокчейн-хешами, нет задержек при скролле.<br><br>
+                <b>Полный FX:</b> живой движущийся фон с хешами блоков, светящиеся сферы, стекломорфизм и стилизованный шрифт Fira Code.`
+            },
             referral: {
                 title: "🤝 РЕФЕРАЛЬНАЯ ПРОГРАММА",
                 text: `Делись ссылкой с коллегами-трейдерами. За каждую регистрацию и оплату на твой аккаунт автоматически начисляются бонусные дни подписки.`
@@ -1214,6 +1385,34 @@
         };
 
         let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
+        let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
+
+        function applyUiMode(mode) {
+            uiMode = mode;
+            localStorage.setItem('p2p_ui_mode', mode);
+            const toggleEl = document.getElementById('toggle-ui-mode');
+            const descEl = document.getElementById('ui-mode-desc');
+            const t = I18N[currentLang] || I18N.ru;
+
+            if (mode === 'fx') {
+                document.body.classList.remove('mode-simple');
+                document.body.classList.add('mode-fx');
+                if (toggleEl) toggleEl.checked = true;
+                if (descEl) descEl.innerText = t.uiModeFxDesc;
+            } else {
+                document.body.classList.remove('mode-fx');
+                document.body.classList.add('mode-simple');
+                if (toggleEl) toggleEl.checked = false;
+                if (descEl) descEl.innerText = t.uiModeSimpleDesc;
+            }
+        }
+
+        function switchUiMode(isChecked) {
+            haptic('medium');
+            const newMode = isChecked ? 'fx' : 'simple';
+            applyUiMode(newMode);
+            showToast(isChecked ? "🌟 Полный FX активирован!" : "⚡️ Минимализм активирован!");
+        }
 
         function applyLanguage(lang) {
             currentLang = lang;
@@ -1226,6 +1425,7 @@
             });
             const selLang = document.getElementById('set-lang');
             if (selLang) selLang.value = lang;
+            applyUiMode(uiMode);
             updateAllCurrencySymbols();
         }
 
@@ -1296,7 +1496,7 @@
             })} <span style="font-size: ${suffixSize}; color: var(--text-muted); font-weight: 700;">${suffix}</span>`;
         }
 
-        /* МГНОВЕННОЕ ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ ТАПЕ В ПУСТОТУ */
+        /* ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ КЛИКЕ В ПУСТОТУ */
         document.addEventListener('pointerdown', (e) => {
             if (!e.target.closest('input, select, textarea, button, .p-tab, .help-icon, .details-toggle-btn, .nav-btn')) {
                 if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
@@ -1374,17 +1574,17 @@
                 const profitFiat = profitUsdt * midRate;
 
                 elSpread.innerText = (spreadPct > 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
-                elSpread.className = spreadPct >= 0 ? 'txt-gold' : 'txt-red';
+                elSpread.className = `stat-card-val ${spreadPct >= 0 ? 'txt-gold' : 'txt-red'}`;
 
                 elProfitUsdt.innerText = (profitUsdt > 0 ? "+" : "") + profitUsdt.toFixed(2) + " USDT";
-                elProfitUsdt.className = profitUsdt >= 0 ? 'txt-green' : 'txt-red';
+                elProfitUsdt.className = `stat-card-val ${profitUsdt >= 0 ? 'txt-green' : 'txt-red'}`;
 
                 elProfitFiat.innerText = `≈ ${(profitFiat > 0 ? "+" : "")}${profitFiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
             } else {
                 elSpread.innerText = "0.00%";
-                elSpread.className = 'txt-gold';
+                elSpread.className = 'stat-card-val txt-gold';
                 elProfitUsdt.innerText = "0.00 USDT";
-                elProfitUsdt.className = 'txt-green';
+                elProfitUsdt.className = 'stat-card-val txt-green';
                 elProfitFiat.innerText = `≈ 0.00 ${sym}`;
             }
         }
@@ -1499,8 +1699,90 @@
             calculateStats();
         }
 
+        /* БЛОКЧЕЙН-ХОЛСТ (ДЛЯ FX-РЕЖИМА) */
+        function initBlockchainCanvas() {
+            const canvas = document.getElementById('blockchain-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const hexChars = "0123456789ABCDEF";
+            function randomHash(len=10) {
+                let s = "0x";
+                for (let i = 0; i < len; i++) s += hexChars[Math.floor(Math.random() * hexChars.length)];
+                return s;
+            }
+
+            const cryptoLabels = ["USDT/RUB", "TX 250.00", "BLOCK #", "SHA256", "WAC 96.2", "MATCHED", "PEER_OK"];
+            let nodes = [];
+            const nodeCount = 26;
+            for (let i = 0; i < nodeCount; i++) {
+                nodes.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.35,
+                    vy: (Math.random() - 0.5) * 0.35,
+                    hash: randomHash(6),
+                    tag: cryptoLabels[i % cryptoLabels.length],
+                    isBlock: Math.random() > 0.6,
+                    color: Math.random() > 0.5 ? '#f59e0b' : '#10b981'
+                });
+            }
+
+            function draw() {
+                if (uiMode === 'simple') return;
+                ctx.clearRect(0, 0, w, h);
+
+                for (let i = 0; i < nodeCount; i++) {
+                    const n = nodes[i];
+                    n.x += n.vx;
+                    n.y += n.vy;
+
+                    if (n.x < 0) n.x = w;
+                    if (n.x > w) n.x = 0;
+                    if (n.y < 0) n.y = h;
+                    if (n.y > h) n.y = 0;
+
+                    if (n.isBlock) {
+                        ctx.strokeStyle = n.color === '#f59e0b' ? 'rgba(245, 158, 11, 0.18)' : 'rgba(16, 185, 129, 0.18)';
+                        ctx.strokeRect(n.x - 16, n.y - 10, 32, 20);
+                    }
+
+                    ctx.fillStyle = n.color === '#f59e0b' ? 'rgba(245, 158, 11, 0.45)' : 'rgba(16, 185, 129, 0.45)';
+                    ctx.font = '9px monospace';
+                    ctx.fillText(n.hash, n.x + 8, n.y - 4);
+
+                    for (let j = i + 1; j < nodeCount; j++) {
+                        const n2 = nodes[j];
+                        const dx = n.x - n2.x;
+                        const dy = n.y - n2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.moveTo(n.x, n.y);
+                            ctx.lineTo(n2.x, n2.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 130)})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
         async function init() {
             applyLanguage(currentLang);
+            applyUiMode(uiMode);
+            initBlockchainCanvas();
 
             const tgUser = tg?.initDataUnsafe?.user;
             if (!tgUser || !tgUser.id) {
@@ -1779,7 +2061,7 @@
                             <b style="font-size: 15px;">💳 ${c.card_name}</b>
                             <span style="font-size: 11px; color: var(--trade-green); font-weight: 800;">АКТИВНА</span>
                         </div>
-                        <div style="font-size: 20px; font-weight: 900;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                        <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 12px;">
                             <button class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">➕ Внести</button>
                             <button class="btn-card-action" onclick="openCardOpModal(${c.id}, 'withdraw')">➖ Снять</button>
@@ -1953,7 +2235,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div>
-                                <div style="font-size: 16px; font-weight: 800;">${parseFloat(t.fiat_amount || 0).toLocaleString()} ${sym}</div>
+                                <div style="font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">${parseFloat(t.fiat_amount || 0).toLocaleString()} ${sym}</div>
                                 <div style="font-size: 12px; color: var(--text-muted);">${t.crypto_amount} USDT @ ${t.rate} ${sym}</div>
                             </div>
                             <div style="display: flex; gap: 6px;">
