@@ -27,7 +27,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.1.0</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.3.0</div>
                 <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН ОГРАНИЧЕНИЯ ДЛЯ ВНЕШНИХ БРАУЗЕРОВ -->
+    <!-- ЭКРАН ОГРАНИЧЕНИЯ ВНЕ ТЕЛЕГРАМА -->
     <div id="restricted-screen">
         <div class="glass-card" style="max-width: 400px;">
             <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
@@ -61,9 +61,9 @@
         <!-- 1. СВОДКА -->
         <section id="dashboard" class="page-section revealed">
 
-            <!-- ПЛАШКА ПОДПИСКИ (КЛИК ВЫЗЫВАЕТ ПОДПИСКУ) И ИНКОГНИТО -->
+            <!-- ПЛАШКА ПОДПИСКИ И ИНКОГНИТО -->
             <div class="tier-badge-row">
-                <div id="disp-tier-badge" class="sub-tier-badge tier-vip" style="margin-bottom: 0;" onclick="openSubModal()" title="Нажмите для управления подпиской">
+                <div id="disp-tier-badge" class="sub-tier-badge tier-vip" style="margin-bottom: 0;" onclick="openSubModal()" title="Управление доступом">
                     Загрузка статуса...
                 </div>
                 <div class="incognito-toggle-btn" id="btn-incognito" onclick="toggleIncognitoMode()" title="Режим инкогнито">
@@ -71,15 +71,9 @@
                 </div>
             </div>
 
-            <!-- ВЫДЕЛЯЮЩИЙСЯ ЖИВОЙ БАННЕР ОТ АДМИНИСТРАЦИИ (СТРОГО МЕЖДУ ПОДПИСКОЙ И СВОДКОЙ) -->
-            <div id="site-live-banner">
-                <div class="banner-top-row">
-                    <span class="banner-tag">
-                        <span>⚡️</span>
-                        <span id="site-live-banner-tag-text" data-i18n="bannerTag">ОБЪЯВЛЕНИЕ АДМИНИСТРАЦИИ</span>
-                    </span>
-                    <span class="banner-pulse-dot"></span>
-                </div>
+            <!-- УЗКАЯ ПЛАШКА БАННЕРА (ВСЕГДА В DOM: СКРЫТА ЕСЛИ ПУСТА, ЯРКАЯ И УЗКАЯ ПРИ НАЛИЧИИ ТЕКСТА) -->
+            <div id="site-live-banner" class="banner-empty">
+                <span class="banner-pulse-dot"></span>
                 <div class="banner-desc" id="site-live-banner-text"></div>
             </div>
 
@@ -121,7 +115,7 @@
                 </button>
             </div>
 
-            <!-- КАРТОЧКА ОБЩЕЙ ПРИБЫЛИ -->
+            <!-- ГЛАВНАЯ КАРТОЧКА ОБЩЕЙ ПРИБЫЛИ -->
             <div class="glass-card hero-profit-card">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span class="badge" style="color: rgba(255,255,255,0.7); margin: 0;" data-i18n="totalProfitBadge">💰 ОБЩАЯ ПРИБЫЛЬ</span>
@@ -179,7 +173,7 @@
                 </div>
             </div>
 
-            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ -->
+            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ (ПОДРОБНЫЕ ОПИСАНИЯ ЧИСТЫХ ПРИБЫЛЕЙ) -->
             <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
                 <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
                 <span id="toggle-arrow">▾</span>
@@ -196,7 +190,7 @@
                                 <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
                             </div>
                             <div id="val-profit-rub" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
-                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaFiat">Продажа − Покупка</div>
+                            <div style="font-size: 9px; color: #a1a1aa; line-height: 1.3;" data-i18n="formulaFiat">Фиатный доход: Продажи − Покупки (строго разница поступившего и отданного фиата)</div>
                         </div>
 
                         <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
@@ -205,7 +199,7 @@
                                 <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
                             </div>
                             <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
-                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaUsdt">Покупка − Продажа</div>
+                            <div style="font-size: 9px; color: #a1a1aa; line-height: 1.3;" data-i18n="formulaUsdt">Крипто-остаток: Покупки − Продажи (чистые монеты на балансе биржи)</div>
                         </div>
                     </div>
 
@@ -252,7 +246,6 @@
                         <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
                     </div>
 
-                    <!-- ВОПРОСИТЕЛЬНЫЙ ЗНАК УБРАН СОГЛАСНО ТЗ -->
                     <div class="stat-card">
                         <span class="stat-card-title">
                             <span data-i18n="statOps">🔢 Сделок / Покупок / Продаж</span>
@@ -262,7 +255,7 @@
                 </div>
             </div>
 
-            <!-- КАЛЬКУЛЯТОР КРУГА (ЕДИНАЯ СДЕЛКА) -->
+            <!-- КАЛЬКУЛЯТОР КРУГА -->
             <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.4);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;" data-i18n="calcTitle">
@@ -337,7 +330,7 @@
                 </div>
             </div>
 
-            <!-- КАЛЕНДАРЬ ДОХОДНОСТИ МЕСЯЦА (СКОЛЬЖЕНИЕ + АВТОЗАКРЫТИЕ) -->
+            <!-- КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ (ЛИСТАНИЕ НА ГОДЫ ВПЕРЕД / НАЗАД, СКОЛЬЖЕНИЕ И АВТОЗАКРЫТИЕ) -->
             <button class="details-toggle-btn" style="margin-top: 4px;" onclick="toggleHeatmapPanel()">
                 <span data-i18n="calendarMonthTitle">📅 Календарь общей прибыли</span>
                 <span class="help-icon" onclick="openHelpModal('calendar', event)">?</span>
@@ -345,22 +338,29 @@
             </button>
 
             <div id="heatmap-panel">
+                <!-- ПАНЕЛЬ НАВИГАЦИИ ПО МЕСЯЦАМ -->
+                <div class="calendar-month-nav">
+                    <button class="cal-nav-btn" onclick="navigateCalendarMonth(-1)">‹</button>
+                    <div class="cal-month-title-wrap" onclick="resetCalendarToCurrentMonth()">
+                        <div id="heatmap-month-title">Текущий месяц</div>
+                        <div class="cal-reset-today-btn">Вернуться в текущий</div>
+                    </div>
+                    <button class="cal-nav-btn" onclick="navigateCalendarMonth(1)">›</button>
+                </div>
+
+                <!-- ВСПЛЫВАЮЩАЯ СВОДКА ПРИ СКОЛЬЖЕНИИ -->
                 <div id="calendar-floating-popup">
                     <div style="font-size: 10px; color: var(--text-muted);" id="pop-date">1 число</div>
                     <div style="font-size: 14px; font-weight: 900; color: var(--bybit-green);" id="pop-profit">+0.00 ₽</div>
                     <div style="font-size: 10px; color: #cbd5e1;" id="pop-extra">0 сдел. • 0.00%</div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 800;">
-                    <span id="heatmap-month-title">Текущий месяц</span>
-                    <span style="font-size: 10px; color: var(--text-muted);" data-i18n="calDragHint">Зажмите и ведите пальцем</span>
-                </div>
                 <div class="calendar-grid" id="calendar-grid-container"></div>
             </div>
 
         </section>
 
-        <!-- 2. СДЕЛКА (ОДИНОЧНЫЙ ОРДЕР) -->
+        <!-- 2. СДЕЛКА -->
         <section id="trade" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -406,7 +406,7 @@
             </div>
         </section>
 
-        <!-- 3. КАРТЫ С ПАГИНАЦИЕЙ (МАКСИМУМ 25 НА СТР, ДО 4 СТР) -->
+        <!-- 3. КАРТЫ С ПАГИНАЦИЕЙ, ПЕРЕТЯГИВАНИЕМ И ШАБЛОНАМИ -->
         <section id="cards" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                 <div>
@@ -414,18 +414,21 @@
                         <span data-i18n="cardsTitle">Мои карты</span>
                         <span class="help-icon" onclick="openHelpModal('cards_overview', event)">?</span>
                     </h1>
-                    <p class="subtitle" style="margin: 0;" data-i18n="cardsSubtitle">Контроль кассы, лимитов и смен</p>
+                    <p class="subtitle" style="margin: 0;" data-i18n="cardsSubtitle">Две полоски расходов, лимиты и смены</p>
                 </div>
                 <div style="display: flex; gap: 6px;">
+                    <button class="btn-card-action" style="padding: 7px 10px;" onclick="openTemplateEditorModal()" title="Настройка шаблона чата ордера">💬 Шаблон</button>
                     <button class="btn-card-action" style="padding: 7px 10px;" onclick="openTransferModal()" data-i18n="btnTransfer">🔄 Трансфер</button>
                     <button class="btn-card-action" style="padding: 7px 11px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
                 </div>
             </div>
+
+            <!-- КОНТЕЙНЕР КАРТ (ПОДДЕРЖИВАЕТ DRAG & DROP) -->
             <div id="cards-container"></div>
             <div id="cards-pagination" class="pagination-bar"></div>
         </section>
 
-        <!-- 4. ИСТОРИЯ ОПЕРАЦИЙ (БЕЗ ЭКСПОРТА CSV ДЛЯ ПОЛЬЗОВАТЕЛЕЙ) -->
+        <!-- 4. ИСТОРИЯ ОПЕРАЦИЙ (ПАГИНАЦИЯ ПО 25, БЕЗ CSV ДЛЯ ЮЗЕРОВ) -->
         <section id="history" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <h1 style="margin: 0; display: flex; align-items: center; gap: 6px;">
@@ -511,7 +514,7 @@
                     </label>
                 </div>
 
-                <!-- ЯЗЫК (7 ЯЗЫКОВ) -->
+                <!-- ЯЗЫК -->
                 <div style="margin-bottom: 14px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <span class="badge" style="margin: 0;" data-i18n="langTitle">Язык интерфейса (7 языков)</span>
@@ -559,7 +562,7 @@
                 <button class="action-btn-secondary" onclick="openSupport()" data-i18n="btnSupport">👨‍💻 Служба поддержки</button>
             </div>
 
-            <!-- ПАРТНЕРСКАЯ СЕТЬ (БЕЗ РАНДОМНЫХ ЦИФР, ЧИСТАЯ ПОЛЬЗА) -->
+            <!-- ПАРТНЕРСКАЯ СЕТЬ (КОЛИЧЕСТВО УБРАНО ПО ТЗ, ЧИСТАЯ ПОЛЬЗА И ССЫЛКА) -->
             <div class="glass-card" style="margin-top: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div>
@@ -569,13 +572,8 @@
                     <span class="help-icon" onclick="openHelpModal('referral', event)">?</span>
                 </div>
 
-                <div style="text-align: center; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 16px; margin-bottom: 14px;">
-                    <div style="font-size: 32px; font-weight: 900; color: var(--bybit-yellow);" id="ref-count-val">0</div>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" data-i18n="refCountLabel">Приглашено пользователей</div>
-                </div>
-
                 <div style="background: rgba(243, 166, 0, 0.08); border: 1px dashed rgba(243, 166, 0, 0.3); border-radius: 14px; padding: 14px; margin-bottom: 14px; font-size: 12px; line-height: 1.6; color: #cbd5e1;">
-                    <b style="color: var(--bybit-yellow);" data-i18n="refWhyTitle">В чем польза звать трейдеров:</b>
+                    <b style="color: var(--bybit-yellow);" data-i18n="refWhyTitle">В чем польза приглашать трейдеров:</b>
                     <div style="margin-top: 6px;" data-i18n="refWhy1">• <b>+3 дня Premium</b> начисляются автоматически за каждого активного приглашенного.</div>
                     <div style="margin-top: 4px;" data-i18n="refWhy2">• Ваши рефералы навсегда закрепляются за вашим Telegram ID.</div>
                     <div style="margin-top: 4px;" data-i18n="refWhy3">• Неограниченная аналитика, калькулятор и облачный синхрон касс.</div>
@@ -598,16 +596,16 @@
                     <h1 style="margin: 0; color: var(--bybit-yellow); font-size: 22px;">🛠 Admin Root</h1>
                     <span class="badge" style="color: var(--bybit-yellow); border: 1px solid var(--bybit-yellow); padding: 3px 8px; border-radius: 6px;">ROOT ONLY</span>
                 </div>
-                <p class="subtitle">Управление рассылками, промокодами и активными юзерами</p>
+                <p class="subtitle">Управление рассылками, промокодами и базой пользователей</p>
 
-                <!-- УПРАВЛЕНИЕ ЖИВЫМ БАННЕРОМ -->
+                <!-- УПРАВЛЕНИЕ БАННЕРОМ -->
                 <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <span class="badge" style="color: var(--bybit-yellow);">📢 ЖИВОЙ БАННЕР НА САЙТЕ</span>
                     <div class="input-wrap" style="margin: 8px 0;">
-                        <input type="text" id="admin-banner-text" class="styled-input" placeholder="Текст объявления для сайта...">
+                        <input type="text" id="admin-banner-text" class="styled-input" placeholder="Текст объявления...">
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="action-btn gold" style="padding: 10px; font-size: 12px;" onclick="adminUpdateBanner(true)">Включить баннер</button>
+                        <button class="action-btn gold" style="padding: 10px; font-size: 12px;" onclick="adminUpdateBanner(true)">Включить</button>
                         <button class="action-btn-secondary" style="padding: 10px; font-size: 12px;" onclick="adminUpdateBanner(false)">Выключить</button>
                     </div>
                 </div>
@@ -616,14 +614,14 @@
                 <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <span class="badge" style="color: var(--bybit-purple);">🎟 ВЫПУСК ПРОМОКОДА</span>
                     <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin: 8px 0;">
-                        <input type="text" id="new-promo-code" class="styled-input" placeholder="КОД (PROFIT2026)" style="text-transform: uppercase;">
+                        <input type="text" id="new-promo-code" class="styled-input" placeholder="КОД" style="text-transform: uppercase;">
                         <input type="number" id="new-promo-days" class="styled-input" placeholder="Дней">
                         <input type="number" id="new-promo-max" class="styled-input" placeholder="Лимит">
                     </div>
                     <button class="action-btn" style="padding: 10px; font-size: 12px;" onclick="adminCreatePromo()">Создать промокод ✅</button>
                 </div>
 
-                <!-- КНОПКА ОКНА ПРОСМОТРА БАЗЫ (ТОЛЬКО С ТРИАЛОМ И ПОДПИСКОЙ) -->
+                <!-- БАЗА ПОЛЬЗОВАТЕЛЕЙ (ОКНО ПРОСМОТРА ВСЕХ ЮЗЕРОВ + ФИЛЬТР) -->
                 <div style="margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 14px; border-radius: 16px; border: 1px solid var(--glass-border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span class="badge" style="color: var(--bybit-blue); font-size: 11px;">👥 РЕЕСТР ПОЛЬЗОВАТЕЛЕЙ</span>
@@ -632,14 +630,19 @@
                     <button class="action-btn gold" style="padding: 12px; font-size: 12px; margin-bottom: 8px;" onclick="openUsersDatabaseModal()">
                         🔍 Открыть окно просмотра базы пользователей
                     </button>
-                    <button class="action-btn-secondary" style="padding: 11px; font-size: 12px;" onclick="adminExportDatabase()">
-                        📥 Выгрузить всю базу (CSV)
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="action-btn-secondary" style="padding: 10px; font-size: 12px;" onclick="adminExportDatabase(true)">
+                            📥 Выгрузить с подпиской (CSV)
+                        </button>
+                        <button class="action-btn-secondary" style="padding: 10px; font-size: 12px;" onclick="adminExportDatabase(false)">
+                            📥 Всю базу (CSV)
+                        </button>
+                    </div>
                 </div>
 
-                <!-- ДОСЬЕ И ДЕЙСТВИЯ НАД ЮЗЕРОМ -->
+                <!-- ДЕЙСТВИЯ НАД ID -->
                 <div style="margin-bottom: 20px;">
-                    <span class="badge" style="color: var(--bybit-purple); font-size: 11px;">👤 БЫСТРЫЕ ДЕЙСТВИЯ НАД ID</span>
+                    <span class="badge" style="color: var(--bybit-purple); font-size: 11px;">👤 ДЕЙСТВИЯ НАД ПОЛЬЗОВАТЕЛЕМ</span>
                     <div class="input-wrap" style="margin: 8px 0 10px 0;">
                         <input type="number" id="admin-target-uid" class="styled-input" placeholder="Telegram ID пользователя...">
                     </div>
@@ -657,7 +660,7 @@
                     <div id="admin-user-dossier" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; margin-top: 12px; font-size: 12px; line-height: 1.6;"></div>
                 </div>
 
-                <!-- ГЛОБАЛЬНЫЙ КОНФИГ -->
+                <!-- КОНФИГ СИСТЕМЫ -->
                 <div>
                     <span class="badge" style="color: var(--bybit-green); font-size: 11px;">⚙️ КОНФИГ СИСТЕМЫ</span>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
@@ -730,26 +733,26 @@
         </div>
     </div>
 
-    <!-- ВЫДВИЖНАЯ ШТОРКА КАРТЫ С 3 ВКЛАДКАМИ: СВОДКА, НАСТРОЙКИ, ИСТОРИЯ -->
+    <!-- ШТОРКА КАРТЫ (ТОЛЬКО 4 КЛЮЧЕВЫХ ПОКАЗАТЕЛЯ: ЗАКУПЛЕНО, ПРИНЯТО, ПРИБЫЛЬ В ФИАТЕ И USDT) -->
     <div id="card-sheet-modal" class="bottom-sheet-overlay" onclick="closeCardSheet(event)">
         <div class="bottom-sheet-content" onclick="event.stopPropagation()">
             <div class="sheet-grabber"></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div>
                     <h2 style="margin: 0; font-size: 18px;" id="sheet-card-title">Карта</h2>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="sheet-card-subtitle">Индивидуальный учет и аналитика</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Контроль кассы, лимитов и смен</div>
                 </div>
                 <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeCardSheet()">✕</button>
             </div>
 
-            <!-- ПЕРЕКЛЮЧАТЕЛЬ ВКЛАДОК КАРТЫ -->
+            <!-- ВКЛАДКИ КАРТЫ -->
             <div class="period-tabs" style="margin-bottom: 12px;">
-                <div class="p-tab active" id="tab-csheet-stats" onclick="switchCardSheetTab('stats')">📊 Сводка карты</div>
+                <div class="p-tab active" id="tab-csheet-stats" onclick="switchCardSheetTab('stats')">📊 Сводка</div>
                 <div class="p-tab" id="tab-csheet-settings" onclick="switchCardSheetTab('settings')">⚙️ Настройки</div>
-                <div class="p-tab" id="tab-csheet-history" onclick="switchCardSheetTab('history')">📜 История</div>
+                <div class="p-tab" id="tab-csheet-history" onclick="switchCardSheetTab('history')">📜 Сделки карты</div>
             </div>
 
-            <!-- ВКЛАДКА 1: ДЕТАЛЬНАЯ СВОДКА ЧИСТО ПО КАРТЕ -->
+            <!-- 1. СВОДКА (СТРОГО 4 ПОКАЗАТЕЛЯ ПО ТЗ) -->
             <div id="csheet-view-stats">
                 <div class="glass-card" style="padding: 14px; background: rgba(0,0,0,0.3); margin-bottom: 12px;">
                     <div style="font-size: 11px; color: var(--text-muted);">ТЕКУЩИЙ ОСТАТОК КАССЫ</div>
@@ -759,28 +762,20 @@
 
                 <div class="analytics-grid" style="margin-bottom: 14px;">
                     <div class="stat-card">
-                        <span class="stat-card-title">Прибыль в фиате</span>
-                        <div class="stat-card-val txt-green privacy-blur" id="csheet-val-profit-rub">0.00 ₽</div>
+                        <span class="stat-card-title">🛒 Закуплено фиата</span>
+                        <div class="stat-card-val privacy-blur" id="csheet-val-bought-fiat">0 ₽</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-card-title">Прибыль в USDT</span>
-                        <div class="stat-card-val txt-blue privacy-blur" id="csheet-val-profit-usdt">0.00 USDT</div>
+                        <span class="stat-card-title">🏷 Принято фиата</span>
+                        <div class="stat-card-val privacy-blur" id="csheet-val-sold-fiat">0 ₽</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-card-title">Оборот сегодня</span>
-                        <div class="stat-card-val privacy-blur" id="csheet-val-turn-today">0 ₽</div>
+                        <span class="stat-card-title">💰 Прибыль в фиате</span>
+                        <div class="stat-card-val txt-green privacy-blur" id="csheet-val-profit-rub">+0.00 ₽</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-card-title">Оборот за месяц</span>
-                        <div class="stat-card-val privacy-blur" id="csheet-val-turn-month">0 ₽</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card-title">WAC Закупка</span>
-                        <div class="stat-card-val" id="csheet-val-wac">0.00</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card-title">Сделок (Всего/Куп/Прод)</span>
-                        <div class="stat-card-val" id="csheet-val-trades-cnt">0 / 0 / 0</div>
+                        <span class="stat-card-title">🪙 Прибыль в USDT</span>
+                        <div class="stat-card-val txt-blue privacy-blur" id="csheet-val-profit-usdt">+0.00 USDT</div>
                     </div>
                 </div>
 
@@ -790,20 +785,25 @@
                 </div>
             </div>
 
-            <!-- ВКЛАДКА 2: ВСЕ НАСТРОЙКИ КАРТЫ (ИЗ ИЗНАЧАЛЬНОГО ТЗ) -->
+            <!-- 2. НАСТРОЙКИ КАРТЫ (ДВЕ ПОЛОСКИ, ОТЛЕЖКА ПО ВРЕМЕНИ, РЕКВИЗИТЫ ДЛЯ ШАБЛОНОВ) -->
             <div id="csheet-view-settings" style="display: none;">
+                <div style="background: rgba(243, 166, 0, 0.08); border: 1px dashed rgba(243, 166, 0, 0.35); border-radius: 12px; padding: 10px; margin-bottom: 12px; font-size: 11px; line-height: 1.4; color: #cbd5e1;">
+                    ℹ️ <b>Номер карты и ФИО обязательны для составления шаблонных фраз:</b> вы настраиваете текст один раз, и бот автоматически генерирует идеальные реквизиты для чата ордера Bybit.
+                </div>
+
                 <div class="input-wrap">
-                    <span class="badge">Название карты</span>
+                    <span class="badge">Название банка / карты</span>
                     <input type="text" id="csheet-inp-name" class="styled-input">
                 </div>
                 <div class="input-wrap">
-                    <span class="badge">Номер карты / СБП (Опционально)</span>
+                    <span class="badge">Номер карты / СБП (Для шаблонных сообщений)</span>
                     <input type="text" id="csheet-inp-num" class="styled-input" placeholder="2202 2000 0000 0000">
                 </div>
                 <div class="input-wrap">
-                    <span class="badge">ФИО Получателя (Опционально)</span>
+                    <span class="badge">ФИО Получателя (Для шаблонных сообщений)</span>
                     <input type="text" id="csheet-inp-holder" class="styled-input" placeholder="Иван И.">
                 </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div class="input-wrap">
                         <span class="badge">Суточный лимит (0 = ∞)</span>
@@ -817,12 +817,19 @@
 
                 <div class="input-wrap">
                     <span class="badge">Статус карты</span>
-                    <select id="sheet-set-status" class="styled-input">
+                    <select id="sheet-set-status" class="styled-input" onchange="toggleCooldownDateInput(this.value)">
                         <option value="active">🟢 В работе</option>
-                        <option value="cooldown">⏳ На отлежке (отдых)</option>
+                        <option value="cooldown">⏳ На отлежке (по таймеру)</option>
                         <option value="limit_reached">⛔️ Лимит исчерпан</option>
-                        <option value="burned">🔥 115-ФЗ (в низ списка)</option>
+                        <option value="burned">🔥 115-ФЗ (в конец списка)</option>
                     </select>
+                </div>
+
+                <!-- ОТЛЕЖКА ДО ОПРЕДЕЛЕННОГО МОМЕНТА (АВТОМАТИЧЕСКИЙ ВОЗВРАТ В РАБОТУ) -->
+                <div class="input-wrap" id="wrap-cooldown-until" style="display: none;">
+                    <span class="badge" style="color: var(--bybit-purple);">⏳ Отлежка до какого момента (Дата и время)</span>
+                    <input type="datetime-local" id="csheet-inp-cooldown-until" class="styled-input">
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 3px;">По истечении таймера карта автоматически перейдет в статус "В работе".</div>
                 </div>
 
                 <div style="margin-bottom: 14px;">
@@ -839,11 +846,11 @@
 
                 <div class="input-wrap">
                     <span class="badge">Заметка к карте</span>
-                    <input type="text" id="csheet-inp-notes" class="styled-input" placeholder="Дроп / Сим-карта / Отделение">
+                    <input type="text" id="csheet-inp-notes" class="styled-input" placeholder="Дроп, сим-карта, номер отделения...">
                 </div>
 
                 <button class="action-btn gold" style="padding: 12px; font-size: 13px; margin-bottom: 12px;" onclick="saveCardFullSettings()">
-                    💾 Сохранить все изменения карты
+                    💾 Сохранить изменения карты
                 </button>
 
                 <div class="card-btns-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 12px;">
@@ -859,9 +866,37 @@
                 </div>
             </div>
 
-            <!-- ВКЛАДКА 3: ИСТОРИЯ ОПЕРАЦИЙ ТОЛЬКО ДЛЯ ЭТОЙ КАРТЫ -->
+            <!-- 3. СДЕЛКИ ТОЛЬКО ПО ЭТОЙ КАРТЕ -->
             <div id="csheet-view-history" style="display: none;">
                 <div id="sheet-card-trades-list" style="max-height: 45vh; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ УНИВЕРСАЛЬНОГО ШАБЛОНА СООБЩЕНИЙ -->
+    <div id="modal-template-editor" class="modal-overlay" onclick="closeModals()">
+        <div class="glass-card modal-box" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 17px; color: var(--bybit-yellow);">💬 Шаблоны чата ордера</h3>
+                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeModals()">✕</button>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 10px 0;">
+                Настройте шаблон один раз. При нажатии «Шаблон чата ордера» в любой карте данные автоматически подставятся на место тегов!
+            </p>
+
+            <div class="template-chips-row">
+                <span class="template-chip" onclick="insertTagIntoTemplate('{bank}')">+ {bank}</span>
+                <span class="template-chip" onclick="insertTagIntoTemplate('{number}')">+ {number}</span>
+                <span class="template-chip" onclick="insertTagIntoTemplate('{holder}')">+ {holder}</span>
+            </div>
+
+            <div class="input-wrap">
+                <textarea id="inp-global-template" class="styled-input" style="height: 120px; font-family: inherit; font-size: 13px; resize: none;"></textarea>
+            </div>
+
+            <div class="analytics-grid">
+                <button class="action-btn-secondary" onclick="resetTemplateToDefault()">Сброс</button>
+                <button class="action-btn gold" onclick="saveGlobalMessageTemplate()">Сохранить шаблон</button>
             </div>
         </div>
     </div>
@@ -875,16 +910,22 @@
                 <input type="text" id="new-card-name" class="styled-input" placeholder="Например: Т-Банк 1">
             </div>
             <div class="input-wrap">
-                <span class="badge">Номер карты / СБП (Опционально)</span>
+                <span class="badge">Номер карты / СБП (Для шаблонных сообщений)</span>
                 <input type="text" id="new-card-num" class="styled-input" placeholder="2202 2000 0000 0000">
             </div>
             <div class="input-wrap">
-                <span class="badge">ФИО Получателя (Опционально)</span>
+                <span class="badge">ФИО Получателя (Для шаблонных сообщений)</span>
                 <input type="text" id="new-card-holder" class="styled-input" placeholder="Иван И.">
             </div>
-            <div class="input-wrap">
-                <span class="badge">Суточный лимит (0 = без лимита)</span>
-                <input type="number" id="new-card-limit" class="styled-input" placeholder="150000">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="input-wrap">
+                    <span class="badge">Дневной лимит (0 = ∞)</span>
+                    <input type="number" id="new-card-limit" class="styled-input" placeholder="150000">
+                </div>
+                <div class="input-wrap">
+                    <span class="badge">Месячный лимит (0 = ∞)</span>
+                    <input type="number" id="new-card-month-limit" class="styled-input" placeholder="1000000">
+                </div>
             </div>
             <div class="analytics-grid">
                 <button class="action-btn-secondary" onclick="closeModals()">Отмена</button>
@@ -916,7 +957,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО КАССОВОЙ ОПЕРАЦИИ -->
+    <!-- КАССОВАЯ ОПЕРАЦИЯ -->
     <div id="modal-card-op" class="modal-overlay">
         <div class="glass-card modal-box">
             <h2 style="font-size: 18px; margin: 0 0 10px 0;" id="modal-op-title">Кассовая операция</h2>
@@ -985,13 +1026,13 @@
         </div>
     </div>
 
-    <!-- ЧЕЛОВЕЧЕСКАЯ СВОДКА ДНЯ КАЛЕНДАРЯ (ТОЛЬКО ОБЩАЯ ПРИБЫЛЬ) -->
+    <!-- ЧЕЛОВЕЧЕСКАЯ СВОДКА ДНЯ КАЛЕНДАРЯ (ОБЩАЯ ПРИБЫЛЬ: РУБЛИ + ДОЛЛАРЫ) -->
     <div id="modal-day-details" class="modal-overlay" onclick="closeDayDetailsModal(event)">
         <div class="glass-card modal-box" onclick="event.stopPropagation()">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
                 <div>
                     <h3 style="margin: 0; font-size: 17px; color: var(--bybit-yellow);" id="day-modal-title">📅 Сводка за день</h3>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Точный расчет общей прибыли</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Чистая прибыль в ₽ + Чистая прибыль в USDT</div>
                 </div>
                 <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeModals()">✕</button>
             </div>
@@ -1021,13 +1062,13 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПРОСМОТРА БАЗЫ ЮЗЕРОВ В АДМИНКЕ (ФИЛЬТР: ТОЛЬКО С ПОДПИСКОЙ / ТРИАЛОМ) -->
+    <!-- МОДАЛКА БАЗЫ ЮЗЕРОВ (ПОКАЗЫВАЕТ ВСЕХ ЮЗЕРОВ + ФИЛЬТР + АДМИНЫ + МЕТКИ РЕФЕРАЛОВ) -->
     <div id="modal-admin-users-db" class="modal-overlay" onclick="closeModals()">
         <div class="glass-card modal-box" onclick="event.stopPropagation()" style="max-width: 520px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div>
                     <h3 style="margin: 0; font-size: 18px; color: var(--bybit-yellow);">👥 База пользователей</h3>
-                    <div style="font-size: 11px; color: var(--text-muted);">Полные данные и статус подписки</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Реестр пользователей, подписок и рефереров</div>
                 </div>
                 <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeModals()">✕</button>
             </div>
@@ -1035,7 +1076,7 @@
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
                 <input type="text" id="admin-db-search-inp" class="styled-input" placeholder="Поиск по имени, ID, юзернейму..." oninput="filterAdminDatabaseView()" style="padding: 10px 12px; font-size: 13px;">
                 <button class="btn-card-action" id="btn-toggle-sub-filter" style="width: auto; padding: 10px 12px; white-space: nowrap; color: var(--bybit-yellow);" onclick="toggleAdminSubFilter()">
-                    Фильтр: С подпиской 🟢
+                    Фильтр: Была подписка 🟢
                 </button>
             </div>
 
@@ -1071,12 +1112,12 @@
         </div>
     </div>
 
-    <!-- ПОЛНОЭКРАННАЯ СТРАНИЦА PNL-КАРТОЧКИ (ДЛЯ ДОБАВЛЕНИЯ В ФОТО) -->
+    <!-- ПОЛНОЭКРАННАЯ СТРАНИЦА PNL (СКАЧИВАНИЕ ФОТО, ЗАЖАТИЕ ДЛЯ СОХРАНЕНИЯ В ФОТО, ШЕРИНГ С КАРТИНКОЙ) -->
     <div id="pnl-card-modal">
         <div class="pnl-stage-header">
             <div>
                 <h2 style="margin: 0; font-size: 18px; color: var(--bybit-yellow);">📸 Ваша PnL-карточка</h2>
-                <div style="font-size: 11px; color: var(--text-muted);">Зажмите картинку для сохранения в Фото</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Зажмите фото для сохранения в галерею или поделитесь</div>
             </div>
             <button class="btn-card-action" style="padding: 6px 12px; font-size: 13px;" onclick="closePnlPage()">✕ Назад</button>
         </div>
@@ -1086,15 +1127,15 @@
         </div>
 
         <div class="pnl-actions-bar">
-            <button class="action-btn gold" onclick="downloadPnlImage()">💾 Скачать фото на устройство</button>
-            <button class="action-btn-secondary" onclick="sharePnlCard()">✈️ Отправить в Telegram</button>
-            <button class="action-btn-secondary" style="border-color: rgba(255,255,255,0.15);" onclick="closePnlPage()">✕ Вернуться на главную</button>
+            <button class="action-btn gold" onclick="downloadPnlImage()">💾 Скачать в галерею фото</button>
+            <button class="action-btn-secondary" onclick="sharePnlCardFile()">✈️ Поделиться картинкой (с фото)</button>
+            <button class="action-btn-secondary" style="border-color: rgba(255,255,255,0.15);" onclick="closePnlPage()">✕ На главную</button>
         </div>
     </div>
 
     <div id="toast">Действие выполнено!</div>
 
-    <!-- НАВИГАЦИЯ ВНИЗУ -->
+    <!-- НАВИГАЦИЯ -->
     <div class="bottom-nav">
         <div class="nav-btn active" data-target="dashboard" onclick="handleNavClick('dashboard', this)">
             <i>📊</i><span data-i18n="navDashboard">Сводка</span>

@@ -22,7 +22,6 @@
     --glow-blue: rgba(56, 189, 248, 0.25);
     --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-shatter: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -50,7 +49,7 @@ body {
     min-height: 100vh;
 }
 
-/* РЕЖИМ ИНКОГНИТО */
+/* ИНКОГНИТО */
 body.privacy-active .privacy-blur {
     filter: blur(9px) !important;
     user-select: none !important;
@@ -74,15 +73,6 @@ body.mode-simple .hero-profit-card {
     border-color: rgba(255, 255, 255, 0.11) !important;
 }
 
-body.mode-simple .analytics-grid,
-body.mode-simple .card-btns-grid,
-body.mode-simple .trade-switch,
-body.mode-simple .period-tabs,
-body.mode-simple .tier-badge-row {
-    transform: none !important;
-    transition: none !important;
-}
-
 body.mode-simple .card-btns-grid,
 body.mode-simple .analytics-grid {
     display: grid !important;
@@ -94,19 +84,7 @@ body.mode-simple .tier-badge-row {
     display: flex !important;
 }
 
-body.mode-simple .page-section .glass-card,
-body.mode-simple .page-section .stat-card,
-body.mode-simple .page-section .card-row-item,
-body.mode-simple .page-section h1,
-body.mode-simple .page-section .subtitle,
-body.mode-simple .sub-tier-badge {
-    transform: none !important;
-    transition: none !important;
-    filter: none !important;
-    opacity: 1 !important;
-}
-
-/* ФОНОВЫЕ ЭФФЕКТЫ */
+/* ФОНОВЫЕ ЭЛЕМЕНТЫ */
 #blockchain-canvas {
     position: fixed;
     inset: 0;
@@ -129,7 +107,6 @@ body.mode-simple .sub-tier-badge {
     border-radius: 50%;
     filter: blur(120px);
     opacity: 0.2;
-    will-change: transform;
 }
 
 .orb-1 {
@@ -138,7 +115,6 @@ body.mode-simple .sub-tier-badge {
     background: radial-gradient(circle, var(--bybit-yellow) 0%, transparent 70%);
     top: -120px;
     left: -140px;
-    animation: floatOrb1 24s ease-in-out infinite alternate;
 }
 
 .orb-2 {
@@ -147,7 +123,6 @@ body.mode-simple .sub-tier-badge {
     background: radial-gradient(circle, var(--bybit-green) 0%, transparent 70%);
     bottom: 20px;
     right: -130px;
-    animation: floatOrb2 28s ease-in-out infinite alternate;
 }
 
 .orb-3 {
@@ -157,25 +132,6 @@ body.mode-simple .sub-tier-badge {
     top: 45%;
     left: 20%;
     opacity: 0.12;
-    animation: floatOrb3 32s ease-in-out infinite alternate;
-}
-
-@keyframes floatOrb1 {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(80px, 120px, 0) scale(1.1); }
-    100% { transform: translate3d(-40px, 180px, 0) scale(0.95); }
-}
-
-@keyframes floatOrb2 {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(-100px, -90px, 0) scale(1.15); }
-    100% { transform: translate3d(50px, -150px, 0) scale(0.92); }
-}
-
-@keyframes floatOrb3 {
-    0% { transform: translate3d(0, 0, 0) scale(0.9); }
-    50% { transform: translate3d(-60px, 70px, 0) scale(1.2); }
-    100% { transform: translate3d(70px, -50px, 0) scale(1); }
 }
 
 .ambient-grid {
@@ -189,7 +145,7 @@ body.mode-simple .sub-tier-badge {
     z-index: 2;
 }
 
-/* БУТЛОАДЕР */
+/* ЗАГРУЗЧИК */
 #terminal-boot-loader {
     position: fixed;
     inset: 0;
@@ -377,12 +333,12 @@ h1 {
     box-shadow: 0 0 14px var(--glow-yellow);
 }
 
-/* ПЛАШКА ПОДПИСКИ С КЛИКАБЕЛЬНОСТЬЮ */
+/* ПЛАШКА ПОДПИСКИ */
 .tier-badge-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .incognito-toggle-btn {
@@ -445,42 +401,34 @@ h1 {
     border: 1px solid rgba(242, 54, 69, 0.5);
 }
 
-/* ВЫДЕЛЯЮЩИЙСЯ ЖИВОЙ БАННЕР-ОБЪЯВЛЕНИЕ МЕЖДУ ПОДПИСКОЙ И СВОДКОЙ */
+/* ПЛАШКА БАННЕРА: БОЛЕЕ УЗКАЯ, АККУРАТНАЯ, ВСЕГДА В DOM */
 #site-live-banner {
+    display: block;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    padding: 8px 12px;
+    transition: all 0.3s var(--ease-apple);
+}
+
+/* Пустое состояние: незаметная компактная подложка */
+#site-live-banner.banner-empty {
     display: none;
-    background: linear-gradient(135deg, rgba(243, 166, 0, 0.22) 0%, rgba(255, 122, 0, 0.22) 100%);
-    border: 2px solid var(--bybit-yellow);
-    box-shadow: 0 0 28px rgba(243, 166, 0, 0.4), inset 0 0 15px rgba(243, 166, 0, 0.15);
-    border-radius: 18px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    position: relative;
+}
+
+/* Активное заполненное состояние: сочная, узкая, заметная полоска */
+#site-live-banner.banner-active {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, rgba(243, 166, 0, 0.22) 0%, rgba(255, 122, 0, 0.22) 100%);
+    border: 1.5px solid var(--bybit-yellow);
+    box-shadow: 0 0 20px rgba(243, 166, 0, 0.35), inset 0 0 10px rgba(243, 166, 0, 0.15);
     animation: bannerGlowPulse 2.8s infinite alternate ease-in-out;
 }
 
 @keyframes bannerGlowPulse {
-    0% { border-color: var(--bybit-yellow); box-shadow: 0 0 16px rgba(243, 166, 0, 0.3); }
-    100% { border-color: #ff9900; box-shadow: 0 0 28px rgba(255, 153, 0, 0.5); }
-}
-
-.banner-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.banner-tag {
-    font-size: 11px;
-    font-weight: 900;
-    color: var(--bybit-yellow);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    0% { border-color: var(--bybit-yellow); box-shadow: 0 0 14px rgba(243, 166, 0, 0.3); }
+    100% { border-color: #ff9900; box-shadow: 0 0 24px rgba(255, 153, 0, 0.5); }
 }
 
 .banner-pulse-dot {
@@ -488,7 +436,8 @@ h1 {
     height: 8px;
     border-radius: 50%;
     background: var(--bybit-green);
-    box-shadow: 0 0 10px var(--bybit-green);
+    box-shadow: 0 0 8px var(--bybit-green);
+    flex-shrink: 0;
     animation: pulseDot 1.4s infinite ease-in-out;
 }
 
@@ -498,11 +447,12 @@ h1 {
 }
 
 .banner-desc {
-    font-size: 13px;
+    font-size: 12px;
     color: #ffffff;
-    line-height: 1.5;
+    line-height: 1.4;
     font-weight: 600;
     word-break: break-word;
+    flex: 1;
 }
 
 .hero-profit-card {
@@ -527,7 +477,7 @@ h1 {
     gap: 4px;
 }
 
-/* ТЕПЛОКАРТА / КАЛЕНДАРЬ ДОХОДНОСТИ */
+/* КАЛЕНДАРЬ ДОХОДНОСТИ С ПЕРЕКЛЮЧЕНИЕМ МЕСЯЦЕВ */
 #heatmap-panel {
     display: none;
     background: rgba(0, 0, 0, 0.45);
@@ -538,12 +488,60 @@ h1 {
     position: relative;
 }
 
+.calendar-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.cal-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cal-nav-btn:active {
+    transform: scale(0.9);
+    background: var(--bybit-yellow);
+    color: #000;
+}
+
+.cal-month-title-wrap {
+    text-align: center;
+    cursor: pointer;
+}
+
+#heatmap-month-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--bybit-yellow);
+}
+
+.cal-reset-today-btn {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-decoration: underline;
+    margin-top: 2px;
+}
+
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 6px;
-    margin-top: 10px;
-    touch-action: none; /* Разрешает плавное ведение пальцем без скролла экрана */
+    margin-top: 8px;
+    touch-action: none;
 }
 
 .cal-head {
@@ -582,7 +580,7 @@ h1 {
 .cal-day-cell.profit-pos-high { background: var(--bybit-green); color: #000; font-weight: 900; }
 .cal-day-cell.profit-neg { background: rgba(242, 54, 69, 0.35); border-color: var(--bybit-red); color: #fca5a5; }
 
-/* ПЛАВАЮЩАЯ КАРТОЧКА ПРИ СКОЛЬЖЕНИИ ПАЛЬЦЕМ ПО КАЛЕНДАРЮ */
+/* ПЛАВАЮЩАЯ СВОДКА ПРИ СКОЛЬЖЕНИИ ПАЛЬЦЕМ */
 #calendar-floating-popup {
     position: absolute;
     top: -55px;
@@ -818,7 +816,7 @@ h1 {
 }
 .action-btn-secondary:active { transform: scale(0.97); }
 
-/* КАРТЫ */
+/* КАРТЫ: ДВЕ ПОЛОСКИ РАСХОДОВ + ПЕРЕТЯГИВАНИЕ */
 .card-row-item {
     background: rgba(18, 22, 32, 0.94);
     border: 1px solid var(--glass-border);
@@ -841,6 +839,21 @@ h1 {
     background: rgba(10, 12, 16, 0.85);
     order: 999;
 }
+.card-row-item.dragging {
+    opacity: 0.3;
+    border: 1.5px dashed var(--bybit-yellow);
+}
+
+.card-drag-handle {
+    padding: 4px 6px;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: grab;
+    user-select: none;
+    margin-right: 4px;
+}
+.card-drag-handle:active { cursor: grabbing; }
+
 .card-stripe {
     position: absolute;
     left: 0;
@@ -848,12 +861,33 @@ h1 {
     bottom: 0;
     width: 5px;
 }
+
+/* ДВЕ ПОЛОСКИ: ДНЕВНАЯ И МЕСЯЧНАЯ */
+.card-dual-bars-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 5px;
+}
+
+.card-bar-line {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card-bar-tag {
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 12px;
+}
+
 .card-mini-bar {
-    width: 100%;
+    flex: 1;
     height: 3px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 2px;
-    margin-top: 5px;
     overflow: hidden;
 }
 .card-mini-bar-fill {
@@ -951,10 +985,6 @@ h1 {
     color: #000;
     border-color: var(--bybit-yellow);
     box-shadow: 0 0 12px var(--glow-yellow);
-}
-.page-btn.disabled {
-    opacity: 0.25;
-    pointer-events: none;
 }
 
 /* ПАЛИТРА */
@@ -1203,9 +1233,7 @@ input:checked + .slider:before {
     border-color: rgba(243, 166, 0, 0.4);
 }
 
-/* ====================================================
-   ПОЛНОЭКРАННАЯ СТРАНИЦА PNL-КАРТОЧКИ (ДЛЯ ФОТО И СОЦСЕТЕЙ)
-==================================================== */
+/* ЭКСПОРТ PNL: ПРЕМИУМ ДИЗАЙН КАРТИНКИ */
 #pnl-card-modal {
     position: fixed;
     inset: 0;
@@ -1228,14 +1256,14 @@ input:checked + .slider:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .pnl-preview-wrap {
     width: 100%;
     max-width: 500px;
-    background: rgba(14, 18, 26, 0.95);
-    border: 1px solid rgba(243, 166, 0, 0.4);
+    background: #0d121c;
+    border: 1px solid rgba(243, 166, 0, 0.45);
     border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(243, 166, 0, 0.25);
     overflow: hidden;
@@ -1252,7 +1280,7 @@ input:checked + .slider:before {
     display: block;
     user-select: auto !important;
     -webkit-user-select: auto !important;
-    -webkit-touch-callout: default !important; /* Разрешает зажать и добавить в фото на iPhone */
+    -webkit-touch-callout: default !important; /* Разрешает зажатие и добавление в Фото на iOS */
 }
 
 .pnl-actions-bar {
@@ -1261,4 +1289,27 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+/* ШАБЛОН СООБЩЕНИЙ */
+.template-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.template-chip {
+    background: rgba(243, 166, 0, 0.12);
+    border: 1px solid rgba(243, 166, 0, 0.4);
+    color: var(--bybit-yellow);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.template-chip:active {
+    background: var(--bybit-yellow);
+    color: #000;
 }
