@@ -1,3 +1,8 @@
+/* ====================================================
+   P2P TERMINAL PRO — CORE ENGINE v8.1.0
+   Enterprise Ledger, WAC Engine & Cloud Sync
+==================================================== */
+
 const API_URL = "https://slddpusuckhhvvetpgxa.supabase.co/rest/v1";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZGRwdXN1Y2toaHZ2ZXRwZ3hhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODYwNzMyMiwiZXhwIjoyMTA0MTgzMzIyfQ.obfZa6h7dKqVvzdHUAXRQ6TAZ8dSsmBZqmUCtBVO0QM";
 
@@ -5,7 +10,7 @@ const SUPER_ADMIN_ID = 5172556128;
 let adminIds = [SUPER_ADMIN_ID];
 
 /* ====================================================
-   МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
+   МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (ПОЛНЫЕ ПЕРЕВОДЫ НА 7 ЯЗЫКОВ)
 ==================================================== */
 const I18N = {
     ru: {
@@ -15,19 +20,18 @@ const I18N = {
         midPriceHint: "⚖️ Средняя цена (Mid Price):",
         statRoi: "📈 ROI от оборота", statWac: "🛒 WAC Закупка", statAvgSell: "🏷 Ср. Продажа",
         statOps: "🔢 Сделок / Покупок / Продаж", turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
-        calcTitle: "КАЛЬКУЛЯТОР КРУГА", calcDealPrice: "Прайс сделки",
+        calcTitle: "⚡️ КАЛЬКУЛЯТОР КРУГА", calcDealPrice: "Прайс сделки",
         calcBuyHeader: "ПОКУПКА 🟢", calcBuyRate: "Курс USDT",
         calcSellHeader: "ПРОДАЖА 🔴", calcSellRate: "Курс USDT",
         calcSpread: "Спред:", calcProfit: "Прибыль с круга:",
         calcSaveCycle: "Сохранить круг ✅", calcClear: "Очистить ❌",
         showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть подробную статистику",
-        presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней",
+        presetYesterday: "Вчера", preset7d: "7 дней", preset14d: "14 дней", preset30d: "30 дней",
         dateFrom: "С даты", dateTo: "По дату", btnApplyDate: "Применить ⚡️",
-        cardsTitle: "Мои карты", cardsSubtitle: "Контроль кассы и лимитов", btnCreateCard: "➕ Создать",
-        historyTitle: "История операций", historySubtitle: "Синхронизированные сделки",
-        profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта и промокоды",
-        btnSupport: "👨‍💻 Служба поддержки",
-        btnGotIt: "Понятно"
+        cardsTitle: "Мои карты", cardsSubtitle: "Контроль кассы, лимитов и смен", btnCreateCard: "➕ Создать",
+        historyTitle: "История операций", historySubtitle: "Синхронизированные сделки, круги и заметки",
+        profileTitle: "Настройки", profileSubtitle: "Конфигурация интерфейса, валюты и промокоды",
+        btnSupport: "👨‍💻 Служба поддержки", btnGotIt: "Понятно"
     },
     en: {
         tabToday: "Today", tabMonth: "This Month", tabAll: "All Time", tabCustom: "Custom Range 📅",
@@ -36,49 +40,240 @@ const I18N = {
         midPriceHint: "⚖️ Mid Price:",
         statRoi: "📈 Turnover ROI", statWac: "🛒 WAC Buy Price", statAvgSell: "🏷 Avg Sell Price",
         statOps: "🔢 Trades: Total / Buys / Sells", turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
-        calcTitle: "CYCLE CALCULATOR", calcDealPrice: "Deal Budget",
+        calcTitle: "⚡️ CYCLE CALCULATOR", calcDealPrice: "Deal Budget",
         calcBuyHeader: "BUY 🟢", calcBuyRate: "USDT Rate",
         calcSellHeader: "SELL 🔴", calcSellRate: "USDT Rate",
         calcSpread: "Spread:", calcProfit: "Cycle Profit:",
         calcSaveCycle: "Save Cycle ✅", calcClear: "Clear ❌",
         showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Detailed Stats",
-        presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days",
+        presetYesterday: "Yesterday", preset7d: "7 days", preset14d: "14 days", preset30d: "30 days",
         dateFrom: "Date from", dateTo: "Date to", btnApplyDate: "Apply ⚡️",
-        cardsTitle: "My Cards", cardsSubtitle: "Cash & limits control", btnCreateCard: "➕ Add Card",
-        historyTitle: "Operations History", historySubtitle: "Synchronized ledger trades",
-        profileTitle: "Settings", profileSubtitle: "Account & Terminal Configuration",
-        btnSupport: "👨‍💻 Support Center",
-        btnGotIt: "Got It"
+        cardsTitle: "My Cards", cardsSubtitle: "Cash, limits & work shifts", btnCreateCard: "➕ Add Card",
+        historyTitle: "Operations History", historySubtitle: "Synchronized ledger trades, cycles & notes",
+        profileTitle: "Settings", profileSubtitle: "Interface, currency & promocode setup",
+        btnSupport: "👨‍💻 Support Center", btnGotIt: "Got It"
+    },
+    es: {
+        tabToday: "Hoy", tabMonth: "Este Mes", tabAll: "Todo el tiempo", tabCustom: "Personalizado 📅",
+        totalProfitBadge: "💰 GANANCIA TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
+        formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta",
+        midPriceHint: "⚖️ Precio Medio (Mid Price):",
+        statRoi: "📈 ROI de volumen", statWac: "🛒 WAC Compra", statAvgSell: "🏷 Venta Media",
+        statOps: "🔢 Operaciones / Compras / Ventas", turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
+        calcTitle: "⚡️ CALCULADORA DE CICLO", calcDealPrice: "Presupuesto",
+        calcBuyHeader: "COMPRA 🟢", calcBuyRate: "Tasa USDT",
+        calcSellHeader: "VENTA 🔴", calcSellRate: "Tasa USDT",
+        calcSpread: "Spread:", calcProfit: "Ganancia de ciclo:",
+        calcSaveCycle: "Guardar Ciclo ✅", calcClear: "Limpiar ❌",
+        showSecondary: "📊 Ver estadísticas detalladas", hideSecondary: "📊 Ocultar estadísticas",
+        presetYesterday: "Ayer", preset7d: "7 días", preset14d: "14 días", preset30d: "30 días",
+        dateFrom: "Desde", dateTo: "Hasta", btnApplyDate: "Aplicar ⚡️",
+        cardsTitle: "Mis Tarjetas", cardsSubtitle: "Caja, límites y turnos", btnCreateCard: "➕ Crear",
+        historyTitle: "Historial de Operaciones", historySubtitle: "Transacciones y ciclos sincronizados",
+        profileTitle: "Ajustes", profileSubtitle: "Interfaz, moneda y cupones",
+        btnSupport: "👨‍💻 Soporte Técnico", btnGotIt: "Entendido"
+    },
+    fr: {
+        tabToday: "Aujourd'hui", tabMonth: "Ce Mois", tabAll: "Tout le temps", tabCustom: "Période 📅",
+        totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
+        formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente",
+        midPriceHint: "⚖️ Prix Moyen (Mid Price):",
+        statRoi: "📈 ROI sur volume", statWac: "🛒 WAC Achat", statAvgSell: "🏷 Vente Moyenne",
+        statOps: "🔢 Transactions: Total / Achats / Ventes", turnCombinedTitle: "💸 Volume (Fiat / USDT)",
+        calcTitle: "⚡️ CALCULATEUR DE CYCLE", calcDealPrice: "Montant",
+        calcBuyHeader: "ACHAT 🟢", calcBuyRate: "Taux USDT",
+        calcSellHeader: "VENTE 🔴", calcSellRate: "Taux USDT",
+        calcSpread: "Spread:", calcProfit: "Profit du cycle:",
+        calcSaveCycle: "Enregistrer le cycle ✅", calcClear: "Effacer ❌",
+        showSecondary: "📊 Voir détails avancés", hideSecondary: "📊 Masquer les détails",
+        presetYesterday: "Hier", preset7d: "7 jours", preset14d: "14 jours", preset30d: "30 jours",
+        dateFrom: "Du", dateTo: "Au", btnApplyDate: "Appliquer ⚡️",
+        cardsTitle: "Mes Cartes", cardsSubtitle: "Contrôle caisse, limites et repos", btnCreateCard: "➕ Créer",
+        historyTitle: "Historique", historySubtitle: "Ordres et cycles enregistrés",
+        profileTitle: "Paramètres", profileSubtitle: "Configuration générale et codes",
+        btnSupport: "👨‍💻 Assistance", btnGotIt: "Compris"
+    },
+    de: {
+        tabToday: "Heute", tabMonth: "Dieser Monat", tabAll: "Gesamt", tabCustom: "Zeitraum 📅",
+        totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
+        formulaFiat: "Verkauf − Einkauf", formulaUsdt: "Einkauf − Verkauf",
+        midPriceHint: "⚖️ Durchschnittskurs (Mid Price):",
+        statRoi: "📈 Umsatz-ROI", statWac: "🛒 WAC Einkauf", statAvgSell: "🏷 Ø Verkauf",
+        statOps: "🔢 Deals / Käufe / Verkäufe", turnCombinedTitle: "💸 Umsatz (Fiat / USDT)",
+        calcTitle: "⚡️ ZYKLUS-RECHNER", calcDealPrice: "Einsatzbetrag",
+        calcBuyHeader: "KAUF 🟢", calcBuyRate: "USDT Kurs",
+        calcSellHeader: "VERKAUF 🔴", calcSellRate: "USDT Kurs",
+        calcSpread: "Spread:", calcProfit: "Zyklusgewinn:",
+        calcSaveCycle: "Zyklus speichern ✅", calcClear: "Zurücksetzen ❌",
+        showSecondary: "📊 Detaillierte Statistiken anzeigen", hideSecondary: "📊 Statistiken ausblenden",
+        presetYesterday: "Gestern", preset7d: "7 Tage", preset14d: "14 Tage", preset30d: "30 Tage",
+        dateFrom: "Von", dateTo: "Bis", btnApplyDate: "Anwenden ⚡️",
+        cardsTitle: "Meine Karten", cardsSubtitle: "Kassenbestand, Limits und Schichten", btnCreateCard: "➕ Erstellen",
+        historyTitle: "Verlauf", historySubtitle: "Synchronisierte Trades und Notizen",
+        profileTitle: "Einstellungen", profileSubtitle: "Konfiguration, Währung & Gutscheine",
+        btnSupport: "👨‍💻 Kundenservice", btnGotIt: "Verstanden"
+    },
+    uk: {
+        tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час", tabCustom: "Свій період 📅",
+        totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий в USDT",
+        formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж",
+        midPriceHint: "⚖️ Середня ціна (Mid Price):",
+        statRoi: "📈 ROI від обороту", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж",
+        statOps: "🔢 Угод / Купівель / Продажів", turnCombinedTitle: "💸 Оборот (Фіат / USDT)",
+        calcTitle: "⚡️ КАЛЬКУЛЯТОР КРУГА", calcDealPrice: "Прайс угоди",
+        calcBuyHeader: "КУПІВЛЯ 🟢", calcBuyRate: "Курс USDT",
+        calcSellHeader: "ПРОДАЖ 🔴", calcSellRate: "Курс USDT",
+        calcSpread: "Спред:", calcProfit: "Прибуток з круга:",
+        calcSaveCycle: "Зберегти круг ✅", calcClear: "Очистити ❌",
+        showSecondary: "📊 Розгорнути детальну статистику", hideSecondary: "📊 Приховати детальну статистику",
+        presetYesterday: "Вчора", preset7d: "7 днів", preset14d: "14 днів", preset30d: "30 днів",
+        dateFrom: "З дати", dateTo: "По дату", btnApplyDate: "Застосувати ⚡️",
+        cardsTitle: "Мої картки", cardsSubtitle: "Контроль каси, лімітів та змін", btnCreateCard: "➕ Створити",
+        historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди, круги та нотатки",
+        profileTitle: "Налаштування", profileSubtitle: "Конфігурація інтерфейсу та промокоди",
+        btnSupport: "👨‍💻 Служба підтримки", btnGotIt: "Зрозуміло"
+    },
+    kk: {
+        tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт", tabCustom: "Өз кезеңіңіз 📅",
+        totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза пайда", netInUsdt: "Таза USDT",
+        formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату",
+        midPriceHint: "⚖️ Орташа баға (Mid Price):",
+        statRoi: "📈 Айналымнан ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату",
+        statOps: "🔢 Мәмілелер / Сатып алу / Сату", turnCombinedTitle: "💸 Айналым (Фиат / USDT)",
+        calcTitle: "⚡️ АЙНАЛЫМ КАЛЬКУЛЯТОРЫ", calcDealPrice: "Мәміле сомасы",
+        calcBuyHeader: "САТЫП АЛУ 🟢", calcBuyRate: "USDT бағамы",
+        calcSellHeader: "САТУ 🔴", calcSellRate: "USDT бағамы",
+        calcSpread: "Спред:", calcProfit: "Айналым пайдасы:",
+        calcSaveCycle: "Айналымды сақтау ✅", calcClear: "Тазарту ❌",
+        showSecondary: "📊 Толық статистиканы ашу", hideSecondary: "📊 Статистиканы жасыру",
+        presetYesterday: "Кеше", preset7d: "7 күн", preset14d: "14 күн", preset30d: "30 күн",
+        dateFrom: "Бастап", dateTo: "Дейін", btnApplyDate: "Қолдану ⚡️",
+        cardsTitle: "Менің карталарым", cardsSubtitle: "Касса, лимиттер және ауысым", btnCreateCard: "➕ Қосу",
+        historyTitle: "Мәмілелер тарихы", historySubtitle: "Синхрондалған мәмілелер мен жазбалар",
+        profileTitle: "Баптаулар", profileSubtitle: "Интерфейс пен жазылымды реттеу",
+        btnSupport: "👨‍💻 Қолдау қызметі", btnGotIt: "Түсінікті"
     }
 };
 
+/* ====================================================
+   ПОДРОБНЫЕ ПОДСКАЗКИ ДЛЯ ВСЕХ ЭЛЕМЕНТОВ (?)
+==================================================== */
 const HELP_DATA = {
     total_profit: {
-        title: "💰 ОБЩАЯ ПРИБЫЛЬ И ЛОГИКА РАСЧЕТА",
-        text: `<b>В P2P-арбитраже прибыль формируется в двух валютах:</b><br><br>
-        <b>1. Чистая в USDT (Крипто-профит):</b><br>
-        <code>Покупка − Продажа</code> монет.<br><br>
-        <b>2. Чистая в фиате (₽):</b><br>
-        <code>Продажа − Покупка</code> фиата с карт.<br><br>
-        <b>3. ОБЩАЯ ПРИБЫЛЬ:</b><br>
-        <code>Чистая в ₽ + (Чистая в USDT × Mid Price)</code>.`
+        title: "💰 ОБЩАЯ ПРИБЫЛЬ И МАТЕМАТИКА",
+        text: `<b>В арбитраже прибыль формируется в двух активах:</b><br><br>
+        <b>1. Фиатный профит (₽):</b> Разница между полученными и отданными рублями.<br>
+        <b>2. Крипто-профит (USDT):</b> Остаток монет на балансе биржи.<br><br>
+        <b>Формула итоговой прибыли:</b><br>
+        <code>Общая прибыль = Чистая в ₽ + (Чистая в USDT × Mid Price)</code>.<br><br>
+        <i>Все дни в календаре рассчитываются строго по этой же формуле, поэтому сумма дней совпадает с общей прибылью копейка к копейке.</i>`
     },
     calculator: {
         title: "⚡️ КАЛЬКУЛЯТОР КРУГА",
-        text: `Инструмент фиксации полного цикла. Вы задаете рабочий объем и оба курса, система рассчитывает спред и чистую прибыль, сохраняя круг единой записью на выбранную карту.`
+        text: `Позволяет зафиксировать полный торговый цикл (закупка + сброс) одной единой записью в базу. Терминал рассчитывает точный спред, конверсию и чистый профит, списывая и зачисляя баланс на привязанную карту.`
     },
     spread: {
         title: "📊 СПРЕД СДЕЛКИ",
-        text: `Показывает процент отдачи между курсом продажи и покупки по формуле: <code>((Продажа − Покупка) / Покупка) × 100%</code>.`
+        text: `Процент отдачи на вложенный капитал:<br>
+        <code>Спред (%) = ((Курс продажи − Курс покупки) / Курс покупки) × 100%</code>.`
+    },
+    net_fiat: {
+        title: "💵 ЧИСТАЯ В ФИАТЕ",
+        text: `Разница между всеми поступлениями на карты от продажи крипты и всеми расходами на покупку монет.`
+    },
+    net_usdt: {
+        title: "🪙 ЧИСТАЯ В USDT",
+        text: `Разница между купленным объемом USDT и проданным. Положительное значение означает, что вы заработали монеты сверх депозита.`
+    },
+    mid_price: {
+        title: "⚖️ СРЕДНЯЯ ЦЕНА (MID PRICE)",
+        text: `Справедливая средневзвешенная цена доллара за выбранный отрезок времени. Используется для точной конвертации крипто-остатка в национальную валюту.`
+    },
+    turnover: {
+        title: "💸 ТОРГОВЫЙ ОБОРОТ",
+        text: `Суммарный объем прокрученных средств через ваши банковские счета и криптокошельки за выбранный период.`
+    },
+    wac: {
+        title: "🛒 СРЕДНЕВЗВЕШЕННЫЙ ЗАКУП (WAC)",
+        text: `Weighted Average Cost — реальная себестоимость одного доллара USDT с учетом всех ваших покупок.`
+    },
+    avg_sell: {
+        title: "🏷 СРЕДНЯЯ ЦЕНА ПРОДАЖИ",
+        text: `Средний фактический курс, по которому вы сбрасывали USDT покупателям.`
+    },
+    roi: {
+        title: "📈 ROI ОТ ОБОРОТА",
+        text: `Рентабельность прокрученного капитала. Показывает, сколько копеек чистой прибыли приносит каждый прокрученный рубль оборота.`
+    },
+    operations: {
+        title: "🔢 СЧЕТЧИК СДЕЛОК",
+        text: `Отображает общее число операций, а также отдельное количество закупок и продаж.`
+    },
+    calc_card: {
+        title: "💳 ПРИВЯЗКА КАРТЫ К КРУГУ",
+        text: `Если выбрать карту, прибыль и оборот круга моментально отобразятся в кассе карты, а объем покупки зачтется в суточный расход лимита.`
+    },
+    calendar: {
+        title: "📅 КАЛЕНДАРЬ ДОХОДНОСТИ",
+        text: `<b>Интерактивное управление:</b><br>
+        • <b>Нажатие на день:</b> открывает подробную карточку с прибылью, спредом и сделками за день. Закрывается кликом вне карточки.<br>
+        • <b>Удержание пальцем:</b> показывает быструю сводку на время касания.<br>
+        • <b>Сумма всех дней месяца</b> строго совпадает с месячной прибылью копейка к копейке.`
+    },
+    single_order: {
+        title: "⚡️ ОДИНОЧНЫЙ ОРДЕР",
+        text: `Внесение частичной сделки (только покупка или только продажа). Подходит, если вы сбрасываете объем частями на разные карты.`
+    },
+    cards_overview: {
+        title: "💳 МОДУЛЬ КАРТ И ЛИМИТОВ",
+        text: `Компактный реестр банковских счетов. Показывает актуальный остаток кассы, загрузку суточного лимита и счетчик операций за день.<br>
+        Карты со статусом «115-ФЗ» автоматически опускаются в конец списка и помечаются неактивными.`
+    },
+    history_info: {
+        title: "📜 ИСТОРИЯ ОПЕРАЦИЙ",
+        text: `Полный реестр всех кругов и сделок. Поддерживает быстрый повтор круга в калькулятор (🔁), редактирование, палитру цветов и текстовые заметки.`
+    },
+    settings_info: {
+        title: "⚙️ НАСТРОЙКИ СИСТЕМЫ",
+        text: `Управление представлением интерфейса, звуковыми эффектами кассы, сменой валюты и часового пояса.`
+    },
+    promocode: {
+        title: "🎁 ПРОМОКОДЫ",
+        text: `Активация подарочных и бонусных дней подписки без обращения к администратору.`
+    },
+    layout_mode: {
+        title: "📜 РЕЖИМ ЛЕНТЫ ИЛИ ВКЛАДОК",
+        text: `• <b>По раздельности (вкладки):</b> каждый экран открывается индивидуально.<br>
+        • <b>Сплошная лента:</b> все разделы листаются на одной странице, а кнопки внизу плавно скроллят к ним.`
+    },
+    ui_mode: {
+        title: "⚡️ ВИЗУАЛЬНЫЕ ЭФФЕКТЫ (FX)",
+        text: `• <b>Минимализм (по умолчанию):</b> глубокий черный OLED фон, отсутствие нагрузки на процессор и мгновенный отклик на любом телефоне.<br>
+        • <b>Полный FX:</b> трехмерная глубина карточек и блокчейн-анимация хешей.`
+    },
+    language: {
+        title: "🌍 МУЛЬТИЯЗЫЧНОСТЬ",
+        text: `Поддерживает 7 полных локализаций интерфейса: Русский, Английский, Испанский, Французский, Немецкий, Украинский и Казахский.`
+    },
+    currency: {
+        title: "💱 БАЗОВАЯ ВАЛЮТА",
+        text: `Переключает отображение символов и пересчет во всем терминале (RUB ₽, KZT ₸, UAH ₴, BYN Br, USD $).`
+    },
+    referral: {
+        title: "🤝 ПАРТНЕРСКАЯ ПРОГРАММА",
+        text: `За каждого трейдера, запустившего терминал по вашей ссылке, вам автоматически начисляются бонусные дни к активной подписке.`
     }
 };
 
+/* ====================================================
+   ИНТЕГРАЦИЯ С TELEGRAM MINI APP
+==================================================== */
 const tg = window.Telegram?.WebApp;
 if (tg) {
     try {
         tg.expand();
         tg.ready();
-    } catch(e){}
+    } catch(e) {}
 }
 
 /* ====================================================
@@ -88,21 +283,31 @@ let currentUser = null;
 let userCards = [];
 let userTrades = [];
 let cardOps = [];
+let allActiveUsers = [];
+
 let currentPeriod = 'today';
 let customStartDate = null;
 let customEndDate = null;
+
 let activeCardId = null;
 let activeOpType = 'deposit';
 let activeEditTradeId = null;
 let activeSheetCard = null;
-let isSecondaryExpanded = false;
+let activeSelectedDealColor = 'default';
+let activeSelectedCardColor = '#f3a600';
 
+let isSecondaryExpanded = false;
+let isHeatmapOpen = false;
+
+// ПО УМОЛЧАНИЮ: БЕЗ СПЕЦЭФФЕКТОВ (МИНИМАЛИЗМ) И ПО РАЗДЕЛЬНОСТИ (ВКЛАДКИ)
 let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
-let uiMode = localStorage.getItem('p2p_ui_mode') || 'fx';
-let layoutMode = localStorage.getItem('p2p_layout_mode') || 'feed';
+let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
+let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages';
 let isIncognito = localStorage.getItem('p2p_incognito') === 'true';
 let soundEnabled = localStorage.getItem('p2p_sound_enabled') !== 'false';
-let isHeatmapOpen = false;
+
+let longPressTimer = null;
+let isLongPressTriggered = false;
 
 /* ====================================================
    СЕТЕВОЙ МОДУЛЬ (SUPABASE REST)
@@ -122,21 +327,23 @@ async function db(endpoint, options = {}) {
 }
 
 /* ====================================================
-   ЗВУК МОНЕТ И КАССЫ (WEB AUDIO API)
+   ТАКТИЛЬНЫЙ ЗВУК КАССЫ И МОНЕТ (WEB AUDIO API)
 ==================================================== */
 function playCashSound() {
     if (!soundEnabled) return;
     try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        const audioCtx = new AudioContextClass();
         const now = audioCtx.currentTime;
 
-        // Первый звон (монета)
+        // Звон монеты
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
         osc1.type = 'sine';
         osc1.frequency.setValueAtTime(987.77, now);
         osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.08);
-        gain1.gain.setValueAtTime(0.25, now);
+        gain1.gain.setValueAtTime(0.22, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
         osc1.connect(gain1);
         gain1.connect(audioCtx.destination);
@@ -149,11 +356,11 @@ function playCashSound() {
         osc2.type = 'triangle';
         osc2.frequency.setValueAtTime(1567.98, now + 0.06);
         gain2.gain.setValueAtTime(0.2, now + 0.06);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
         osc2.connect(gain2);
         gain2.connect(audioCtx.destination);
         osc2.start(now + 0.06);
-        osc2.stop(now + 0.45);
+        osc2.stop(now + 0.42);
     } catch(e) {}
 }
 
@@ -183,33 +390,15 @@ function toggleIncognitoMode() {
     isIncognito = !isIncognito;
     localStorage.setItem('p2p_incognito', isIncognito);
     applyIncognito();
-    showToast(isIncognito ? "🕶 Инкогнито включен" : "👁 Цифры открыты");
-}
-
-/* ====================================================
-   БЕЗОПАСНЫЕ ЗОНЫ TELEGRAM
-==================================================== */
-function syncTelegramSafeAreas() {
-    if (!tg) return;
-    const updateInsets = () => {
-        const topInset = tg.contentSafeAreaInset?.top || tg.safeAreaInset?.top || 0;
-        if (topInset > 0) {
-            document.documentElement.style.setProperty('--tg-content-safe-area-inset-top', `${topInset}px`);
-        }
-    };
-    try {
-        tg.onEvent?.('contentSafeAreaChanged', updateInsets);
-        tg.onEvent?.('safeAreaChanged', updateInsets);
-        updateInsets();
-    } catch (e) {}
+    showToast(isIncognito ? "🕶 Инкогнито: балансы скрыты" : "👁 Балансы открыты");
 }
 
 /* ====================================================
    ВАЛЮТЫ И СИМВОЛЫ
 ==================================================== */
 function getCurrencySymbol() {
-    const map = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"};
-    return map[currentUser?.currency || 'RUB'] || (currentUser?.currency || '₽');
+    const map = { "RUB": "₽", "KZT": "₸", "UAH": "₴", "BYN": "Br", "USD": "$" };
+    return map[currentUser?.currency || 'RUB'] || "₽";
 }
 
 function updateAllCurrencySymbols() {
@@ -217,45 +406,75 @@ function updateAllCurrencySymbols() {
     document.querySelectorAll('.sym').forEach(el => el.innerText = sym);
 }
 
-function animateNumber(element, target, prefix = '', suffix = '', decimals = 2, suffixSize = '13px') {
-    const start = parseFloat(element.dataset.curVal || 0);
-    const duration = 400;
-    const startTime = performance.now();
+async function changeCurrency(val) {
+    haptic('medium');
+    if (!currentUser) return;
+    currentUser.currency = val;
+    localStorage.setItem('p2p_currency', val);
+    updateAllCurrencySymbols();
+    try {
+        await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ currency: val })
+        });
+    } catch(e) {}
+    renderAll();
+    showToast(`Валюта изменена на ${val}`);
+}
 
-    function easeOutExpo(x) { return x === 1 ? 1 : 1 - Math.pow(2, -10 * x); }
-
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const current = start + (target - start) * easeOutExpo(progress);
-
-        const sign = current > 0 ? '+' : '';
-        element.innerHTML = `${sign}${current.toLocaleString(undefined, {
-            minimumFractionDigits: decimals,
-            maximumFractionDigits: decimals
-        })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
-
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        } else {
-            element.dataset.curVal = target;
-            const finalSign = target > 0 ? '+' : '';
-            element.innerHTML = `${finalSign}${target.toLocaleString(undefined, {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
-            })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
-        }
-    }
-    requestAnimationFrame(update);
+async function updateTimezone(tzVal) {
+    haptic('light');
+    if (!currentUser) return;
+    currentUser.tz_offset = parseInt(tzVal);
+    try {
+        await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ tz_offset: currentUser.tz_offset })
+        });
+    } catch(e) {}
+    renderAll();
+    showToast(`Часовой пояс: UTC+${tzVal}`);
 }
 
 /* ====================================================
-   КАЛЬКУЛЯТОР КРУГА
+   ЛОГИКА МУЛЬТИЯЗЫЧНОСТИ (7 ЯЗЫКОВ)
+==================================================== */
+function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('p2p_terminal_lang', lang);
+    const dict = I18N[lang] || I18N.ru;
+
+    // Вкладки периодов
+    const tabs = document.querySelectorAll('.period-tabs .p-tab');
+    if (tabs.length >= 4) {
+        tabs[0].innerText = dict.tabToday;
+        tabs[1].innerText = dict.tabMonth;
+        tabs[2].innerText = dict.tabAll;
+        tabs[3].innerText = dict.tabCustom;
+    }
+
+    const tBtn = document.getElementById('txt-toggle-details');
+    if (tBtn) {
+        tBtn.innerText = isSecondaryExpanded ? dict.hideSecondary : dict.showSecondary;
+    }
+
+    updateAllCurrencySymbols();
+}
+
+function changeLanguage(lang) {
+    haptic('light');
+    applyLanguage(lang);
+    showToast("Язык интерфейса обновлен");
+    renderAll();
+}
+
+/* ====================================================
+   КАЛЬКУЛЯТОР КРУГА (ЕДИНАЯ СДЕЛКА)
 ==================================================== */
 function runCalculator() {
-    const fiat = parseFloat(document.getElementById('calc-fiat-amt').value) || 0;
-    const buyRate = parseFloat(document.getElementById('calc-buy-rate').value) || 0;
-    const sellRate = parseFloat(document.getElementById('calc-sell-rate').value) || 0;
+    const fiat = parseFloat(document.getElementById('calc-fiat-amt')?.value) || 0;
+    const buyRate = parseFloat(document.getElementById('calc-buy-rate')?.value) || 0;
+    const sellRate = parseFloat(document.getElementById('calc-sell-rate')?.value) || 0;
 
     const elBuyCrypto = document.getElementById('calc-buy-crypto');
     const elSellCrypto = document.getElementById('calc-sell-crypto');
@@ -269,15 +488,15 @@ function runCalculator() {
 
     if (fiat > 0 && buyRate > 0) {
         boughtUsdt = fiat / buyRate;
-        elBuyCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
-    } else {
+        if (elBuyCrypto) elBuyCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
+    } else if (elBuyCrypto) {
         elBuyCrypto.innerText = `0.00 USDT`;
     }
 
     if (fiat > 0 && sellRate > 0) {
         soldUsdt = fiat / sellRate;
-        elSellCrypto.innerText = `${soldUsdt.toFixed(2)} USDT`;
-    } else {
+        if (elSellCrypto) elSellCrypto.innerText = `${soldUsdt.toFixed(2)} USDT`;
+    } else if (elSellCrypto) {
         elSellCrypto.innerText = `0.00 USDT`;
     }
 
@@ -287,19 +506,23 @@ function runCalculator() {
         const midRate = (buyRate + sellRate) / 2;
         const profitFiat = profitUsdt * midRate;
 
-        elSpread.innerText = (spreadPct > 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
-        elSpread.style.color = spreadPct >= 0 ? 'var(--bybit-yellow)' : 'var(--bybit-red)';
+        if (elSpread) {
+            elSpread.innerText = (spreadPct > 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
+            elSpread.style.color = spreadPct >= 0 ? 'var(--bybit-yellow)' : 'var(--bybit-red)';
+        }
 
-        elProfitUsdt.innerText = (profitUsdt > 0 ? "+" : "") + profitUsdt.toFixed(2) + " USDT";
-        elProfitUsdt.style.color = profitUsdt >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+        if (elProfitUsdt) {
+            elProfitUsdt.innerText = (profitUsdt > 0 ? "+" : "") + profitUsdt.toFixed(2) + " USDT";
+            elProfitUsdt.style.color = profitUsdt >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+        }
 
-        elProfitFiat.innerText = `≈ ${(profitFiat > 0 ? "+" : "")}${profitFiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
+        if (elProfitFiat) {
+            elProfitFiat.innerText = `≈ ${(profitFiat > 0 ? "+" : "")}${profitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+        }
     } else {
-        elSpread.innerText = "0.00%";
-        elSpread.style.color = 'var(--text-main)';
-        elProfitUsdt.innerText = "0.00 USDT";
-        elProfitUsdt.style.color = 'var(--text-main)';
-        elProfitFiat.innerText = `≈ 0.00 ${sym}`;
+        if (elSpread) { elSpread.innerText = "0.00%"; elSpread.style.color = 'var(--text-main)'; }
+        if (elProfitUsdt) { elProfitUsdt.innerText = "0.00 USDT"; elProfitUsdt.style.color = 'var(--text-main)'; }
+        if (elProfitFiat) { elProfitFiat.innerText = `≈ 0.00 ${sym}`; }
     }
 }
 
@@ -309,10 +532,10 @@ document.getElementById('calc-sell-rate')?.addEventListener('input', runCalculat
 
 async function saveCalculatedCycle() {
     haptic('medium');
-    const fiat = parseFloat(document.getElementById('calc-fiat-amt').value);
-    const buyRate = parseFloat(document.getElementById('calc-buy-rate').value);
-    const sellRate = parseFloat(document.getElementById('calc-sell-rate').value);
-    const cardId = document.getElementById('calc-card-sel').value || null;
+    const fiat = parseFloat(document.getElementById('calc-fiat-amt')?.value);
+    const buyRate = parseFloat(document.getElementById('calc-buy-rate')?.value);
+    const sellRate = parseFloat(document.getElementById('calc-sell-rate')?.value);
+    const cardId = document.getElementById('calc-card-sel')?.value || null;
 
     if (!fiat || !buyRate || !sellRate || fiat <= 0 || buyRate <= 0 || sellRate <= 0) {
         showToast("⚠️ Заполните сумму и оба курса!");
@@ -352,21 +575,24 @@ async function saveCalculatedCycle() {
         await refreshData();
         renderAll();
     } catch(e) {
-        showToast("❌ Ошибка сохранения");
+        showToast("❌ Ошибка сохранения круга");
     }
 }
 
 function clearCalculator() {
     haptic('light');
-    document.getElementById('calc-fiat-amt').value = '10000';
-    document.getElementById('calc-buy-rate').value = '';
-    document.getElementById('calc-sell-rate').value = '';
+    const f = document.getElementById('calc-fiat-amt');
+    const b = document.getElementById('calc-buy-rate');
+    const s = document.getElementById('calc-sell-rate');
+    if (f) f.value = '10000';
+    if (b) b.value = '';
+    if (s) s.value = '';
     runCalculator();
     showToast("Калькулятор очищен");
 }
 
 /* ====================================================
-   РАСЧЕТ СТАТИСТИКИ И СРАВНЕНИЕ ПЕРИОДОВ
+   МАТЕМАТИКА ПРИБЫЛИ — СИНХРОНИЗАЦИЯ КОПЕЙКА В КОПЕЙКУ
 ==================================================== */
 function calculateStats() {
     const tz = parseInt(currentUser?.tz_offset) || 3;
@@ -414,8 +640,8 @@ function calculateStats() {
 
     const wac = bC > 0 ? bF / bC : 0;
     const avgSell = sC > 0 ? sF / sC : 0;
+    const midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || 0);
 
-    let midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || 0);
     const profitFiat = (sF - bF) + cycleProfitFiatTotal;
     const profitUsdt = bC - sC;
 
@@ -435,57 +661,86 @@ function calculateStats() {
 
     const elTotalFiat = document.getElementById('val-total-profit-rub');
     updateMetricColor(elTotalFiat, totalProfitFiat);
-    animateNumber(elTotalFiat, totalProfitFiat, '', sym, 2, '18px');
+    if (elTotalFiat) {
+        const sign = totalProfitFiat > 0 ? '+' : '';
+        elTotalFiat.innerHTML = `${sign}${totalProfitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
+    }
 
     const elTotalUsdt = document.getElementById('val-total-profit-usdt');
     updateMetricColor(elTotalUsdt, totalProfitUsdt);
-    animateNumber(elTotalUsdt, totalProfitUsdt, '', 'USDT', 2, '12px');
+    if (elTotalUsdt) {
+        const sign = totalProfitUsdt > 0 ? '+' : '';
+        elTotalUsdt.innerText = `${sign}${totalProfitUsdt.toFixed(2)} USDT`;
+    }
 
     const elProfitFiat = document.getElementById('val-profit-rub');
     updateMetricColor(elProfitFiat, profitFiat);
-    animateNumber(elProfitFiat, profitFiat, '', sym, 2, '12px');
+    if (elProfitFiat) {
+        const sign = profitFiat > 0 ? '+' : '';
+        elProfitFiat.innerText = `${sign}${profitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+    }
 
     const elProfitUsdt = document.getElementById('val-profit-usdt');
     updateMetricColor(elProfitUsdt, profitUsdt);
-    animateNumber(elProfitUsdt, profitUsdt, '', 'USDT', 2, '12px');
+    if (elProfitUsdt) {
+        const sign = profitUsdt > 0 ? '+' : '';
+        elProfitUsdt.innerText = `${sign}${profitUsdt.toFixed(2)} USDT`;
+    }
 
-    document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const elMidPrice = document.getElementById('hint-mid-price');
+    if (elMidPrice) elMidPrice.innerText = midPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    // Спред последнего круга
+    // Спред последней сделки / круга
     const lastCycle = userTrades.find(t => t.is_cycle);
     let lastSpread = 0;
+    const hintLast = document.getElementById('hint-last-spread');
     if (lastCycle) {
         lastSpread = parseFloat(lastCycle.cycle_spread || 0);
-        document.getElementById('hint-last-spread').innerText = `${lastCycle.buy_rate} → ${lastCycle.sell_rate} ${sym}`;
+        if (hintLast) hintLast.innerText = `${lastCycle.buy_rate} → ${lastCycle.sell_rate} ${sym}`;
     } else {
         const lastSell = userTrades.find(t => t.type === 'sell');
         const lastBuy = userTrades.find(t => t.type === 'buy');
         if (lastSell && lastBuy && parseFloat(lastBuy.rate) > 0) {
             lastSpread = ((parseFloat(lastSell.rate) - parseFloat(lastBuy.rate)) / parseFloat(lastBuy.rate)) * 100;
-            document.getElementById('hint-last-spread').innerText = `${lastBuy.rate} → ${lastSell.rate} ${sym}`;
+            if (hintLast) hintLast.innerText = `${lastBuy.rate} → ${lastSell.rate} ${sym}`;
         }
     }
 
     const elLastSpread = document.getElementById('val-last-spread');
-    elLastSpread.innerText = (lastSpread > 0 ? "+" : "") + lastSpread.toFixed(2) + "%";
-    updateMetricColor(elLastSpread, lastSpread);
+    if (elLastSpread) {
+        elLastSpread.innerText = (lastSpread > 0 ? "+" : "") + lastSpread.toFixed(2) + "%";
+        updateMetricColor(elLastSpread, lastSpread);
+    }
 
     const elAvgSpread = document.getElementById('val-avg-spread');
-    elAvgSpread.innerText = (avgPeriodSpread > 0 ? "+" : "") + avgPeriodSpread.toFixed(2) + "%";
-    updateMetricColor(elAvgSpread, avgPeriodSpread);
+    if (elAvgSpread) {
+        elAvgSpread.innerText = (avgPeriodSpread > 0 ? "+" : "") + avgPeriodSpread.toFixed(2) + "%";
+        updateMetricColor(elAvgSpread, avgPeriodSpread);
+    }
 
     const roiEl = document.getElementById('val-roi');
-    roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
-    updateMetricColor(roiEl, roi);
+    if (roiEl) {
+        roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
+        updateMetricColor(roiEl, roi);
+    }
 
-    document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('val-fiat-turn').innerText = `${fiatTurn.toLocaleString(undefined, {minimumFractionDigits: 0})} ${sym}`;
-    document.getElementById('val-crypto-turn').innerText = `${cryptoTurn.toLocaleString(undefined, {minimumFractionDigits: 2})} USDT`;
-    document.getElementById('val-trades-count').innerText = `${filtered.length} / ${buysCount} / ${sellsCount}`;
+    const elWac = document.getElementById('val-wac');
+    if (elWac) elWac.innerText = wac.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    // Динамика к прошлому периоду
+    const elAvgSell = document.getElementById('val-avg-sell');
+    if (elAvgSell) elAvgSell.innerText = avgSell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const elFiatTurn = document.getElementById('val-fiat-turn');
+    if (elFiatTurn) elFiatTurn.innerText = `${fiatTurn.toLocaleString(undefined, { minimumFractionDigits: 0 })} ${sym}`;
+
+    const elCryptoTurn = document.getElementById('val-crypto-turn');
+    if (elCryptoTurn) elCryptoTurn.innerText = `${cryptoTurn.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT`;
+
+    const elTradesCount = document.getElementById('val-trades-count');
+    if (elTradesCount) elTradesCount.innerText = `${filtered.length} / ${buysCount} / ${sellsCount}`;
+
     calculatePeriodComparison(totalProfitFiat);
+    if (isHeatmapOpen) renderHeatmap(midPrice);
 }
 
 function calculatePeriodComparison(currentProfit) {
@@ -509,7 +764,7 @@ function calculatePeriodComparison(currentProfit) {
     }
 
     if (priorTrades.length === 0) {
-        compBadge.innerHTML = `🌱 Новый период`;
+        compBadge.innerHTML = `🌱 Первый запуск периода`;
         compBadge.style.color = "var(--text-muted)";
         return;
     }
@@ -536,18 +791,22 @@ function calculatePeriodComparison(currentProfit) {
 }
 
 /* ====================================================
-   КАЛЕНДАРЬ ДОХОДНОСТИ (ТЕПЛОКАРТА)
+   КАЛЕНДАРЬ ДОХОДНОСТИ: УДЕРЖАНИЕ И КЛИК
 ==================================================== */
 function toggleHeatmapPanel() {
     isHeatmapOpen = !isHeatmapOpen;
-    document.getElementById('heatmap-panel').style.display = isHeatmapOpen ? 'block' : 'none';
-    document.getElementById('heatmap-arrow').innerText = isHeatmapOpen ? '▴' : '▾';
+    const panel = document.getElementById('heatmap-panel');
+    const arrow = document.getElementById('heatmap-arrow');
+    if (panel) panel.style.display = isHeatmapOpen ? 'block' : 'none';
+    if (arrow) arrow.innerText = isHeatmapOpen ? '▴' : '▾';
     if (isHeatmapOpen) renderHeatmap();
 }
 
-function renderHeatmap() {
+function renderHeatmap(globalMidPrice = 0) {
     const container = document.getElementById('calendar-grid-container');
+    if (!container) return;
     container.innerHTML = '';
+
     const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     days.forEach(d => container.innerHTML += `<div class="cal-head">${d}</div>`);
 
@@ -556,6 +815,11 @@ function renderHeatmap() {
     const month = now.getMonth();
     const totalDays = new Date(year, month + 1, 0).getDate();
     const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+
+    const monthTitle = document.getElementById('heatmap-month-title');
+    if (monthTitle) {
+        monthTitle.innerText = now.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }).toUpperCase();
+    }
 
     for (let i = 0; i < firstDayIndex; i++) {
         container.innerHTML += `<div></div>`;
@@ -567,48 +831,111 @@ function renderHeatmap() {
             return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
         });
 
-        let profit = 0;
+        // ТОЧНЫЙ РАСЧЕТ ДНЯ КОПЕЙКА В КОПЕЙКУ С ОБЩЕЙ ПРИБЫЛЬЮ
+        let dayProfitFiat = 0;
+        let dayBoughtUsdt = 0;
+        let daySoldUsdt = 0;
+        let dayTurnover = 0;
+
         dayTrades.forEach(t => {
-            if (t.is_cycle) profit += parseFloat(t.cycle_profit_rub || 0);
-            else if (t.type === 'sell') profit += parseFloat(t.fiat_amount || 0);
-            else if (t.type === 'buy') profit -= parseFloat(t.fiat_amount || 0);
+            const f = parseFloat(t.fiat_amount || 0);
+            const c = parseFloat(t.crypto_amount || 0);
+            dayTurnover += f;
+
+            if (t.is_cycle) {
+                dayProfitFiat += parseFloat(t.cycle_profit_rub || 0);
+            } else if (t.type === 'buy') {
+                dayProfitFiat -= f;
+                dayBoughtUsdt += c;
+            } else {
+                dayProfitFiat += f;
+                daySoldUsdt += c;
+            }
         });
+
+        const dayCryptoDiff = dayBoughtUsdt - daySoldUsdt;
+        const totalDayProfit = dayProfitFiat + (dayCryptoDiff * globalMidPrice);
 
         let colorClass = '';
         if (dayTrades.length > 0) {
-            if (profit > 10000) colorClass = 'profit-pos-high';
-            else if (profit > 3000) colorClass = 'profit-pos-mid';
-            else if (profit > 0) colorClass = 'profit-pos-low';
-            else if (profit < 0) colorClass = 'profit-neg';
+            if (totalDayProfit > 10000) colorClass = 'profit-pos-high';
+            else if (totalDayProfit > 2500) colorClass = 'profit-pos-mid';
+            else if (totalDayProfit >= 0) colorClass = 'profit-pos-low';
+            else colorClass = 'profit-neg';
         }
 
-        container.innerHTML += `
-            <div class="cal-day-cell ${colorClass}" onclick="showDayDetails(${day}, ${profit}, ${dayTrades.length})">
-                ${day}
-            </div>
-        `;
+        const cell = document.createElement('div');
+        cell.className = `cal-day-cell ${colorClass}`;
+        cell.innerText = day;
+
+        // СОБЫТИЯ: УДЕРЖАНИЕ (LONG PRESS) И НАЖАТИЕ (CLICK)
+        cell.addEventListener('pointerdown', () => {
+            isLongPressTriggered = false;
+            longPressTimer = setTimeout(() => {
+                isLongPressTriggered = true;
+                haptic('medium');
+                const sym = getCurrencySymbol();
+                showToast(`📅 ${day} число: ${(totalDayProfit >= 0 ? '+' : '')}${totalDayProfit.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym} (${dayTrades.length} сдел.)`);
+            }, 350);
+        });
+
+        cell.addEventListener('pointerup', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        cell.addEventListener('pointercancel', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        cell.addEventListener('click', (e) => {
+            clearTimeout(longPressTimer);
+            if (isLongPressTriggered) return;
+            e.stopPropagation();
+            haptic('light');
+            openDayDetailsModal(day, totalDayProfit, dayTrades.length, dayTurnover);
+        });
+
+        container.appendChild(cell);
     }
 }
 
-function showDayDetails(day, profit, count) {
-    haptic('light');
-    showToast(`📅 ${day} число: ${count} сделок, профит: ${profit.toLocaleString()} ₽`);
+function openDayDetailsModal(day, profit, count, turnover) {
+    const sym = getCurrencySymbol();
+    document.getElementById('day-modal-title').innerText = `📅 Сводка за ${day} число`;
+    const profitEl = document.getElementById('day-modal-profit-val');
+    profitEl.innerText = `${(profit >= 0 ? '+' : '')}${profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+    profitEl.style.color = profit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+
+    document.getElementById('day-modal-trades-cnt').innerText = `${count} сделок`;
+    document.getElementById('day-modal-turnover-val').innerText = `${turnover.toLocaleString(undefined, { minimumFractionDigits: 2 })} ${sym}`;
+
+    const spreadAvg = count > 0 ? (turnover > 0 ? ((profit / turnover) * 100).toFixed(2) : "0.00") : "0.00";
+    document.getElementById('day-modal-spread-val').innerText = `${spreadAvg}%`;
+
+    document.getElementById('modal-day-details').classList.add('show');
+}
+
+function closeDayDetailsModal(event) {
+    if (event) event.stopPropagation();
+    document.getElementById('modal-day-details').classList.remove('show');
 }
 
 /* ====================================================
-   КОМПАКТНЫЕ КАРТЫ И BOTTOM SHEET
+   МОДУЛЬ КАРТ: СТАТУСЫ, ЛИМИТЫ, ТРАНСФЕР, КЛОН
 ==================================================== */
 function renderCards() {
     const container = document.getElementById('cards-container');
+    if (!container) return;
     container.innerHTML = '';
+
     if (userCards.length === 0) {
-        container.innerHTML = `<div class="glass-card" style="text-align: center; color: var(--text-muted);">Карт пока нет. Создайте первую!</div>`;
+        container.innerHTML = `<div class="glass-card" style="text-align: center; color: var(--text-muted); padding: 20px;">Карт пока нет. Создайте первую карту для раздельного учета кассы!</div>`;
         return;
     }
 
     const sym = getCurrencySymbol();
 
-    // Сгоревшие (115-ФЗ) всегда в самом низу
+    // Сгоревшие (115-ФЗ) автоматически идут в низ списка
     const sorted = [...userCards].sort((a, b) => {
         if (a.status === 'burned') return 1;
         if (b.status === 'burned') return -1;
@@ -635,7 +962,7 @@ function renderCards() {
 
         const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
         let miniBarHtml = '';
-        if (limit) {
+        if (limit && limit > 0) {
             const pct = Math.min(100, Math.round((totalUsedLimit / limit) * 100));
             const colorClass = pct > 90 ? 'danger' : (pct > 70 ? 'warning' : '');
             miniBarHtml = `
@@ -654,15 +981,16 @@ function renderCards() {
                 <div style="flex: 1; padding-left: 8px;">
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <span style="font-weight: 800; font-size: 14px;">${c.card_name}</span>
-                        ${isPinned ? '📌' : ''}
-                        ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 800;">115-ФЗ</span>' : ''}
+                        ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
+                        ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">115-ФЗ</span>' : ''}
+                        ${c.status === 'cooldown' ? '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>' : ''}
                     </div>
                     ${miniBarHtml}
                 </div>
                 <div style="text-align: right; margin-left: 10px;">
                     <div class="privacy-blur" style="font-size: 15px; font-weight: 900;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
                     <div style="display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 3px;">
-                        <span class="ops-bubble">${buysCount}/${sellsCount}</span>
+                        <span class="ops-bubble" title="Сделок за сегодня (Покупки/Продажи)">${buysCount}/${sellsCount}</span>
                     </div>
                 </div>
             </div>
@@ -689,7 +1017,7 @@ function openCardBottomSheet(cid) {
     document.getElementById('sheet-card-balance').innerText = `${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
 
     const limitWrap = document.getElementById('sheet-limit-progress-wrap');
-    if (activeSheetCard.buy_limit) {
+    if (activeSheetCard.buy_limit && activeSheetCard.buy_limit > 0) {
         const limit = parseFloat(activeSheetCard.buy_limit);
         const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
         limitWrap.innerHTML = `
@@ -697,12 +1025,12 @@ function openCardBottomSheet(cid) {
                 <span>Суточный лимит:</span>
                 <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
             </div>
-            <div class="progress-bar-wrap">
-                <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+            <div class="card-mini-bar" style="height: 6px;">
+                <div class="card-mini-bar-fill ${pct > 90 ? 'danger' : ''}" style="width: ${pct}%;"></div>
             </div>
         `;
     } else {
-        limitWrap.innerHTML = `<span style="font-size: 11px; color: var(--text-muted);">Лимит покупок: Не задан</span>`;
+        limitWrap.innerHTML = `<span style="font-size: 11px; color: var(--text-muted);">Суточный лимит: Без ограничений</span>`;
     }
 
     document.getElementById('card-sheet-modal').classList.add('show');
@@ -712,19 +1040,52 @@ function closeCardSheet() {
     document.getElementById('card-sheet-modal').classList.remove('show');
 }
 
+function selectCardColor(color, el) {
+    haptic('light');
+    activeSelectedCardColor = color;
+    document.querySelectorAll('#sheet-card-colors .color-swatch-dot').forEach(d => d.classList.remove('selected'));
+    if (el) el.classList.add('selected');
+    if (activeSheetCard) {
+        db(`cards?id=eq.${activeSheetCard.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ color_accent: color })
+        }).then(() => {
+            activeSheetCard.color_accent = color;
+            renderCards();
+        });
+    }
+}
+
+async function togglePinCurrentCard() {
+    if (!activeSheetCard) return;
+    haptic('medium');
+    const newPinned = !activeSheetCard.is_pinned;
+    await db(`cards?id=eq.${activeSheetCard.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_pinned: newPinned })
+    });
+    activeSheetCard.is_pinned = newPinned;
+    closeCardSheet();
+    showToast(newPinned ? "📌 Карта закреплена наверх" : "Откреплено");
+    await refreshData();
+    renderCards();
+}
+
 function copyCardNumberOnly() {
     if (!activeSheetCard?.card_number) return showToast("⚠️ Номер карты не указан");
-    navigator.clipboard.writeText(activeSheetCard.card_number);
+    navigator.clipboard.writeText(activeSheetCard.card_number.replace(/\s+/g, ''));
     haptic('success');
-    showToast("💳 Номер скопирован!");
+    showToast("💳 16 цифр скопированы!");
 }
 
 function copyCardFullRequisites() {
     if (!activeSheetCard) return;
-    const text = `${activeSheetCard.card_name}: ${activeSheetCard.card_number || 'Реквизиты не заданы'} (${activeSheetCard.holder_name || ''}). Оплата строго без копеек, третьих лиц не принимаю, чек обязателен!`;
+    const num = activeSheetCard.card_number || 'Реквизиты не заданы';
+    const holder = activeSheetCard.holder_name ? ` (${activeSheetCard.holder_name})` : '';
+    const text = `${activeSheetCard.card_name}: ${num}${holder}\nОплата строго со своего счета! Третьих лиц не принимаю, чек обязателен.`;
     navigator.clipboard.writeText(text);
     haptic('success');
-    showToast("📋 Шаблон реквизитов скопирован!");
+    showToast("📋 Шаблон ордера скопирован!");
 }
 
 async function updateCardStatusFromSheet(status) {
@@ -756,20 +1117,21 @@ async function cloneCurrentCard() {
         method: 'POST',
         body: JSON.stringify({
             tg_id: currentUser.tg_id,
-            card_name: `${activeSheetCard.card_name} (Копия)`,
+            card_name: `${activeSheetCard.card_name} (Клон)`,
             card_number: activeSheetCard.card_number,
             holder_name: activeSheetCard.holder_name,
-            buy_limit: activeSheetCard.buy_limit
+            buy_limit: activeSheetCard.buy_limit,
+            color_accent: activeSheetCard.color_accent
         })
     });
     closeCardSheet();
-    showToast("✅ Карта клонирована!");
+    showToast("✅ Карта успешно клонирована!");
     await refreshData();
     renderCards();
 }
 
 async function deleteCurrentCardFromSheet() {
-    if (!confirm("Удалить карту? Сделки сохранятся.")) return;
+    if (!confirm("Удалить карту? Все сделки в истории останутся.")) return;
     await db(`cards?id=eq.${activeCardId}`, { method: 'DELETE' });
     closeCardSheet();
     showToast("🗑 Карта удалена");
@@ -778,11 +1140,83 @@ async function deleteCurrentCardFromSheet() {
 }
 
 /* ====================================================
-   ИСТОРИЯ И ПОВТОР ОПЕРАЦИЙ
+   ТРАНСФЕР МЕЖДУ СВОИМИ КАРТАМИ
 ==================================================== */
+function openTransferModal() {
+    haptic('light');
+    if (userCards.length < 2) return showToast("⚠️ Для трансфера нужно минимум 2 карты");
+
+    const selFrom = document.getElementById('transfer-from-card');
+    const selTo = document.getElementById('transfer-to-card');
+    const opts = userCards.map(c => `<option value="${c.id}">${c.card_name}</option>`).join('');
+
+    if (selFrom) selFrom.innerHTML = opts;
+    if (selTo) selTo.innerHTML = opts;
+    if (selTo && userCards.length > 1) selTo.selectedIndex = 1;
+
+    document.getElementById('modal-card-transfer').classList.add('show');
+}
+
+async function submitCardTransfer() {
+    const fromId = parseInt(document.getElementById('transfer-from-card').value);
+    const toId = parseInt(document.getElementById('transfer-to-card').value);
+    const amt = parseFloat(document.getElementById('transfer-amount').value);
+
+    if (!amt || amt <= 0) return showToast("⚠️ Введите сумму трансфера");
+    if (fromId === toId) return showToast("⚠️ Выберите разные карты!");
+
+    haptic('medium');
+    try {
+        await Promise.all([
+            db('card_operations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    card_id: fromId,
+                    tg_id: currentUser.tg_id,
+                    type: 'withdraw',
+                    amount: amt,
+                    comment: `Трансфер на карту ID ${toId}`,
+                    count_in_limit: false
+                })
+            }),
+            db('card_operations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    card_id: toId,
+                    tg_id: currentUser.tg_id,
+                    type: 'deposit',
+                    amount: amt,
+                    comment: `Трансфер с карты ID ${fromId}`,
+                    count_in_limit: false
+                })
+            })
+        ]);
+
+        closeModals();
+        playCashSound();
+        showToast("🔄 Трансфер выполнен!");
+        await refreshData();
+        renderCards();
+    } catch(e) {
+        showToast("Ошибка трансфера");
+    }
+}
+
+/* ====================================================
+   ИСТОРИЯ ОПЕРАЦИЙ, ЗАМЕТКИ И ПАЛИТРА ЦВЕТОВ
+==================================================== */
+function selectDealColor(color, el) {
+    haptic('light');
+    activeSelectedDealColor = color;
+    document.querySelectorAll('#deal-color-swatches .color-swatch-dot').forEach(d => d.classList.remove('selected'));
+    if (el) el.classList.add('selected');
+}
+
 function renderHistory() {
     const container = document.getElementById('history-container');
+    if (!container) return;
     container.innerHTML = '';
+
     if (userTrades.length === 0) {
         container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">Сделок пока нет.</div>`;
         return;
@@ -791,16 +1225,26 @@ function renderHistory() {
     const sym = getCurrencySymbol();
     const tz = parseInt(currentUser?.tz_offset) || 3;
 
+    const colorBorderMap = {
+        'green': 'var(--bybit-green)',
+        'yellow': 'var(--bybit-yellow)',
+        'blue': 'var(--bybit-blue)',
+        'purple': 'var(--bybit-purple)',
+        'red': 'var(--bybit-red)',
+        'default': 'transparent'
+    };
+
     userTrades.forEach(t => {
         const d = new Date(t.date);
         d.setHours(d.getUTCHours() + tz);
-        const dateStr = d.toLocaleDateString('ru-RU', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const dateStr = d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const boundCard = userCards.find(c => c.id === t.card_id);
         const cardBadge = boundCard ? `<span class="card-pill">💳 ${boundCard.card_name}</span>` : '';
+        const borderCol = colorBorderMap[t.tag_color] || 'transparent';
 
         if (t.is_cycle) {
             container.innerHTML += `
-                <div class="history-item">
+                <div class="history-item" style="border-left-color: ${borderCol};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">КРУГ ⚡️</span>
@@ -813,7 +1257,6 @@ function renderHistory() {
                             <div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: var(--bybit-green);">
                                 +${parseFloat(t.cycle_profit_rub || 0).toLocaleString()} ${sym}
                             </div>
-                            <!-- Замена знака @ на слэш / -->
                             <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
                                 ${t.buy_rate} → ${t.sell_rate} ${sym} / Спред: +${t.cycle_spread}%
                             </div>
@@ -830,7 +1273,7 @@ function renderHistory() {
         } else {
             const isBuy = t.type === 'buy';
             container.innerHTML += `
-                <div class="history-item">
+                <div class="history-item" style="border-left-color: ${borderCol};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <span style="font-size: 11px; font-weight: 800; color: ${isBuy ? 'var(--bybit-green)' : 'var(--bybit-red)'};">
@@ -845,7 +1288,6 @@ function renderHistory() {
                             <div class="privacy-blur" style="font-size: 17px; font-weight: 800;">
                                 ${parseFloat(t.fiat_amount || 0).toLocaleString()} ${sym}
                             </div>
-                            <!-- Замена знака @ на слэш / -->
                             <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
                                 ${t.crypto_amount} USDT / ${t.rate} ${sym}
                             </div>
@@ -875,7 +1317,7 @@ function repeatTradeInCalc(tradeId) {
         if (tr.card_id) document.getElementById('calc-card-sel').value = tr.card_id;
         runCalculator();
         handleNavClick('dashboard', document.querySelector('.nav-btn[data-target="dashboard"]'));
-        showToast("🔁 Круг подставлен в калькулятор!");
+        showToast("🔁 Круг скопирован в калькулятор!");
     } else {
         document.getElementById('inp-amount').value = tr.fiat_amount;
         document.getElementById('inp-rate').value = tr.rate;
@@ -883,6 +1325,60 @@ function repeatTradeInCalc(tradeId) {
         handleNavClick('trade', document.querySelector('.nav-btn[data-target="trade"]'));
         showToast("🔁 Сделка подставлена!");
     }
+}
+
+function openEditTradeModal(tid) {
+    haptic('light');
+    activeEditTradeId = tid;
+    const tr = userTrades.find(x => x.id === tid);
+    if (!tr) return;
+
+    document.getElementById('modal-trade-id').innerText = `Сделка #${tid}`;
+    document.getElementById('modal-inp-amount').value = tr.fiat_amount;
+    document.getElementById('modal-rate').value = tr.rate || tr.buy_rate;
+    document.getElementById('modal-card-sel').value = tr.card_id || "";
+    document.getElementById('modal-note').value = tr.note || "";
+
+    activeSelectedDealColor = tr.tag_color || 'default';
+    document.querySelectorAll('#deal-color-swatches .color-swatch-dot').forEach(d => {
+        d.classList.toggle('selected', d.getAttribute('data-color') === activeSelectedDealColor);
+    });
+
+    document.getElementById('edit-modal').classList.add('show');
+}
+
+async function submitEditTrade() {
+    const amt = parseFloat(document.getElementById('modal-inp-amount').value);
+    const r = parseFloat(document.getElementById('modal-rate').value);
+    const cid = document.getElementById('modal-card-sel').value || null;
+    const note = document.getElementById('modal-note').value.trim();
+
+    if (!amt || !r) return showToast("⚠️ Заполните сумму и курс!");
+
+    await db(`trades?id=eq.${activeEditTradeId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            fiat_amount: amt,
+            rate: r,
+            crypto_amount: parseFloat((amt / r).toFixed(2)),
+            card_id: cid ? parseInt(cid) : null,
+            note: note,
+            tag_color: activeSelectedDealColor
+        })
+    });
+    closeModals();
+    showToast("✏️ Сделка успешно обновлена!");
+    await refreshData();
+    renderAll();
+}
+
+async function deleteTradeCloud(tid) {
+    haptic('medium');
+    if (!confirm("Удалить операцию из базы?")) return;
+    await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
+    showToast("🗑 Сделка удалена");
+    await refreshData();
+    renderAll();
 }
 
 /* ====================================================
@@ -895,19 +1391,16 @@ function generatePnlCard() {
     canvas.height = 360;
     const ctx = canvas.getContext('2d');
 
-    // Фон
     const grad = ctx.createLinearGradient(0, 0, 600, 360);
     grad.addColorStop(0, '#0d121c');
     grad.addColorStop(1, '#05070a');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 600, 360);
 
-    // Рамка
     ctx.strokeStyle = '#f3a600';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.strokeRect(12, 12, 576, 336);
 
-    // Заголовок
     ctx.fillStyle = '#f3a600';
     ctx.font = 'bold 22px Inter, sans-serif';
     ctx.fillText('⚡️ P2P TERMINAL PRO — СВОДКА', 40, 55);
@@ -916,11 +1409,10 @@ function generatePnlCard() {
     ctx.font = '14px Inter, sans-serif';
     ctx.fillText(new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }), 40, 85);
 
-    // Показатели
-    const lastSpread = document.getElementById('val-last-spread').innerText;
-    const avgSpread = document.getElementById('val-avg-spread').innerText;
-    const roi = document.getElementById('val-roi').innerText;
-    const tradesCount = document.getElementById('val-trades-count').innerText;
+    const lastSpread = document.getElementById('val-last-spread')?.innerText || "0.00%";
+    const avgSpread = document.getElementById('val-avg-spread')?.innerText || "0.00%";
+    const roi = document.getElementById('val-roi')?.innerText || "0.00%";
+    const tradesCount = document.getElementById('val-trades-count')?.innerText || "0";
 
     ctx.fillStyle = '#f8fafc';
     ctx.font = 'bold 36px Inter, sans-serif';
@@ -931,7 +1423,7 @@ function generatePnlCard() {
     ctx.fillText(`Средний спред: ${avgSpread}  |  ROI: ${roi}`, 40, 205);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText(`Всего операций за день: ${tradesCount}`, 40, 245);
+    ctx.fillText(`Сделок закрыто: ${tradesCount}`, 40, 245);
 
     ctx.fillStyle = '#f3a600';
     ctx.font = 'bold 15px monospace';
@@ -939,78 +1431,202 @@ function generatePnlCard() {
 
     const imgUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `PnL_Report_${new Date().toISOString().slice(0,10)}.png`;
+    link.download = `PnL_${new Date().toISOString().slice(0, 10)}.png`;
     link.href = imgUrl;
     link.click();
-    showToast("📸 Карточка создана и скачана!");
+    showToast("📸 Карточка сохранена!");
 }
 
 /* ====================================================
-   ПРОМОКОДЫ
+   АДМИНКА: ТОЛЬКО АКТИВНЫЕ ЮЗЕРЫ И УПРАВЛЕНИЕ
 ==================================================== */
-async function submitPromoCode() {
-    const input = document.getElementById('inp-promocode');
-    const code = input?.value?.trim()?.toUpperCase();
-    if (!code) return showToast("⚠️ Введите промокод");
-
-    haptic('medium');
+async function loadActiveUsersForAdmin() {
     try {
-        const promos = await db(`promocodes?code=eq.${code}`);
-        if (!promos || promos.length === 0) return showToast("❌ Промокод не найден");
-
-        const promo = promos[0];
-        if (promo.used_count >= promo.max_activations) return showToast("❌ Лимит активаций исчерпан");
-
-        const now = new Date();
-        let end = currentUser.sub_end ? new Date(currentUser.sub_end) : now;
-        if (end < now) end = now;
-        end.setDate(end.getDate() + promo.days);
-
-        await Promise.all([
-            db(`users?tg_id=eq.${currentUser.tg_id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ sub_end: end.toISOString() })
-            }),
-            db(`promocodes?code=eq.${code}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ used_count: promo.used_count + 1 })
-            })
+        const [usersRes, tradesRes] = await Promise.all([
+            db('users?order=reg_date.desc'),
+            db('trades?select=tg_id')
         ]);
 
-        haptic('success');
-        showToast(`🎁 Активировано +${promo.days} дн.!`);
-        input.value = '';
-        await refreshData();
-        checkSubscription();
-    } catch(e) {
-        showToast("❌ Ошибка активации");
+        if (!usersRes) return;
+        const activeUserIdsWithTrades = new Set((tradesRes || []).map(t => t.tg_id));
+
+        // ФИЛЬТР: только юзеры, у которых есть сделки, или была/есть подписка, или триал
+        allActiveUsers = usersRes.filter(u => {
+            const hasTrades = activeUserIdsWithTrades.has(u.tg_id);
+            const hasSub = u.sub_end !== null && u.sub_end !== undefined;
+            return hasTrades || hasSub;
+        });
+
+        document.getElementById('admin-active-count').innerText = `${allActiveUsers.length} активных`;
+        renderActiveUsersList(allActiveUsers);
+    } catch(e) {}
+}
+
+function renderActiveUsersList(list) {
+    const container = document.getElementById('admin-active-users-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 10px;">Активных юзеров не найдено</div>`;
+        return;
+    }
+
+    list.forEach(u => {
+        const isSubActive = u.sub_end && new Date(u.sub_end) > new Date();
+        const subBadge = isSubActive ? `<span style="color: var(--bybit-green); font-weight: 800;">ACTIVE</span>` : `<span style="color: var(--text-muted);">EXPIRED</span>`;
+
+        container.innerHTML += `
+            <div class="admin-user-row" onclick="selectAdminUser(${u.tg_id})">
+                <div>
+                    <div style="font-weight: 800; font-size: 13px;">${u.first_name || 'Трейдер'} ${u.username ? `(@${u.username})` : ''}</div>
+                    <div style="font-size: 10px; color: var(--text-muted); font-family: monospace;">ID: ${u.tg_id}</div>
+                </div>
+                <div style="text-align: right; font-size: 11px;">
+                    ${subBadge}
+                </div>
+            </div>
+        `;
+    });
+}
+
+function filterActiveUsersList(query) {
+    const q = query.toLowerCase().trim();
+    if (!q) {
+        renderActiveUsersList(allActiveUsers);
+        return;
+    }
+    const filtered = allActiveUsers.filter(u => {
+        const idMatch = String(u.tg_id).includes(q);
+        const nameMatch = (u.first_name || '').toLowerCase().includes(q);
+        const userMatch = (u.username || '').toLowerCase().includes(q);
+        return idMatch || nameMatch || userMatch;
+    });
+    renderActiveUsersList(filtered);
+}
+
+function selectAdminUser(tgId) {
+    haptic('light');
+    document.getElementById('admin-target-uid').value = tgId;
+    adminInspectUser();
+}
+
+async function adminInspectUser() {
+    const targetId = parseInt(document.getElementById('admin-target-uid').value);
+    if (!targetId) return showToast("⚠️ Введите ID!");
+
+    const [uRes, tRes] = await Promise.all([
+        db(`users?tg_id=eq.${targetId}`),
+        db(`trades?tg_id=eq.${targetId}`)
+    ]);
+
+    const box = document.getElementById('admin-user-dossier');
+    if (!uRes || uRes.length === 0) {
+        box.style.display = 'block';
+        box.innerHTML = `<span style="color: var(--bybit-red);">Пользователь не найден в базе</span>`;
+        return;
+    }
+
+    const u = uRes[0];
+    const tradesCnt = tRes ? tRes.length : 0;
+    const subStr = u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? '♾️ VIP Навсегда' : new Date(u.sub_end).toLocaleDateString()) : '❌ Нет доступа';
+
+    box.style.display = 'block';
+    box.innerHTML = `
+        <div style="font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px;">
+            👤 ${u.first_name || ''} (@${u.username || 'нет'})
+        </div>
+        <b>Telegram ID:</b> <code>${u.tg_id}</code><br>
+        <b>Статус подписки:</b> ${subStr}<br>
+        <b>Сделок в терминале:</b> ${tradesCnt}<br>
+        <b>Заблокирован:</b> ${u.is_banned ? '⛔️ ДА' : '🟢 НЕТ'}<br>
+        <b>Дата регистрации:</b> ${u.reg_date ? new Date(u.reg_date).toLocaleDateString() : '—'}
+    `;
+}
+
+async function adminUserAction(action) {
+    const targetId = parseInt(document.getElementById('admin-target-uid').value);
+    if (!targetId) return showToast("⚠️ Выберите пользователя!");
+    const now = new Date();
+
+    if (action === 'grant30') {
+        now.setDate(now.getDate() + 30);
+        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
+        showToast(`✅ ID ${targetId}: продлен на 30 дней`);
+    } else if (action === 'grantVIP') {
+        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
+        showToast(`✅ ID ${targetId}: выдан VIP Навсегда`);
+    } else if (action === 'revoke') {
+        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
+        showToast(`❌ ID ${targetId}: подписка аннулирована`);
+    } else if (action === 'ban') {
+        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
+        showToast(`⛔️ ID ${targetId}: заблокирован`);
+    } else if (action === 'unban') {
+        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: false }) });
+        showToast(`🟢 ID ${targetId}: разбанен`);
+    }
+    adminInspectUser();
+    loadActiveUsersForAdmin();
+}
+
+/* ====================================================
+   НАДЕЖНАЯ ВЫГРУЗКА БАЗЫ (БЕЗ ЗАВИСАНИЙ НА ТЕЛЕФОНАХ)
+==================================================== */
+async function adminExportDatabase() {
+    haptic('medium');
+    showToast("⏳ Формирование выгрузки...");
+    try {
+        const users = await db(`users?order=reg_date.desc`);
+        if (!users || users.length === 0) return showToast("База пуста");
+
+        let csv = "TG_ID,Username,First_Name,Sub_End,Is_Banned,Reg_Date\n";
+        users.forEach(u => {
+            csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}"\n`;
+        });
+
+        const fileName = `P2P_Users_${new Date().toISOString().slice(0, 10)}.csv`;
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const fileUrl = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = fileName;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+            if (navigator.clipboard?.writeText) {
+                navigator.clipboard.writeText(csv).then(() => {
+                    showToast("📥 База скачана и скопирована в буфер!");
+                }).catch(() => showToast("✅ Выгрузка завершена!"));
+            } else {
+                showToast("✅ Выгрузка завершена!");
+            }
+        }, 300);
+    } catch (e) {
+        showToast("❌ Ошибка выгрузки");
     }
 }
 
-async function adminCreatePromo() {
-    haptic('medium');
-    const code = document.getElementById('new-promo-code').value.trim().toUpperCase();
-    const days = parseInt(document.getElementById('new-promo-days').value);
-    const max = parseInt(document.getElementById('new-promo-max').value) || 1;
-
-    if (!code || !days) return showToast("⚠️ Заполните код и дни!");
-
-    try {
-        await db(`promocodes`, {
-            method: 'POST',
-            body: JSON.stringify({
-                code: code,
-                days: days,
-                max_activations: max,
-                used_count: 0
-            })
-        });
-        showToast("✅ Промокод выпущен!");
-        document.getElementById('new-promo-code').value = '';
-        document.getElementById('new-promo-days').value = '';
-    } catch(e) {
-        showToast("Ошибка выпуска промокода");
-    }
+function exportTradesHistoryCsv() {
+    if (userTrades.length === 0) return showToast("Сделок нет");
+    let csv = "ID,Date,Type,Fiat,Crypto,Rate,Spread,Profit_RUB,Card_ID,Note\n";
+    userTrades.forEach(t => {
+        csv += `"${t.id}","${t.date}","${t.is_cycle ? 'CYCLE' : t.type}","${t.fiat_amount}","${t.crypto_amount}","${t.rate}","${t.cycle_spread || ''}","${t.cycle_profit_rub || ''}","${t.card_id || ''}","${t.note || ''}"\n`;
+    });
+    const fileName = `P2P_Trades_${new Date().toISOString().slice(0, 10)}.csv`;
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const fileUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("📥 История сохранена");
 }
 
 /* ====================================================
@@ -1040,79 +1656,291 @@ async function adminUpdateBanner(isActive) {
             db(`bot_config?key=eq.SITE_BANNER_TEXT`, { method: 'PATCH', body: JSON.stringify({ value: text }) }),
             db(`bot_config?key=eq.SITE_BANNER_ACTIVE`, { method: 'PATCH', body: JSON.stringify({ value: String(isActive) }) })
         ]);
-        showToast(isActive ? "📢 Баннер опубликован!" : "Баннер скрыт");
+        showToast(isActive ? "📢 Баннер включен на сайте!" : "Баннер скрыт");
         loadLiveSiteBanner();
     } catch(e) {
-        showToast("Ошибка баннера");
+        showToast("Ошибка сохранения баннера");
     }
 }
 
 /* ====================================================
-   СКАЧИВАНИЕ БАЗЫ (ФИКС ЧЕРНОГО ЭКРАНА)
+   ПРОМОКОДЫ
 ==================================================== */
-async function adminExportDatabase() {
+async function submitPromoCode() {
+    const input = document.getElementById('inp-promocode');
+    const code = input?.value?.trim()?.toUpperCase();
+    if (!code) return showToast("⚠️ Введите промокод");
+
     haptic('medium');
-    showToast("⏳ Формирование базы...");
     try {
-        const users = await db(`users?order=reg_date.desc`);
-        if (!users || users.length === 0) return showToast("База пуста");
+        const promos = await db(`promocodes?code=eq.${code}`);
+        if (!promos || promos.length === 0) return showToast("❌ Промокод не найден");
 
-        let csv = "TG_ID,Username,First_Name,Sub_End,Is_Banned,Reg_Date,Ref_By\n";
-        users.forEach(u => {
-            csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}","${u.ref_by || ''}"\n`;
-        });
+        const promo = promos[0];
+        if (promo.used_count >= promo.max_activations) return showToast("❌ Лимит исчерпан");
 
-        const fileName = `P2P_Users_${new Date().toISOString().slice(0,10)}.csv`;
-        const blob = new Blob(["\uFEFF" + csv], { type: 'application/octet-stream;charset=utf-8;' });
-        const fileUrl = URL.createObjectURL(blob);
+        const now = new Date();
+        let end = currentUser.sub_end ? new Date(currentUser.sub_end) : now;
+        if (end < now) end = now;
+        end.setDate(end.getDate() + promo.days);
 
-        if (tg && typeof tg.downloadFile === 'function') {
-            tg.downloadFile({ url: fileUrl, file_name: fileName }, (isDownloaded) => {
-                if (isDownloaded) showToast("✅ Файл сохранен!");
-                else fallbackDownload(fileUrl, fileName, csv);
-            });
-            return;
-        }
-        fallbackDownload(fileUrl, fileName, csv);
-    } catch (e) {
-        showToast("❌ Ошибка выгрузки");
+        await Promise.all([
+            db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ sub_end: end.toISOString() })
+            }),
+            db(`promocodes?code=eq.${code}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ used_count: promo.used_count + 1 })
+            })
+        ]);
+
+        haptic('success');
+        showToast(`🎁 Активировано +${promo.days} дн.!`);
+        input.value = '';
+        await refreshData();
+        checkSubscription();
+    } catch(e) {
+        showToast("❌ Ошибка активации промокода");
     }
 }
 
-function exportTradesHistoryCsv() {
-    if (userTrades.length === 0) return showToast("Сделок нет");
-    let csv = "ID,Date,Type,Fiat,Crypto,Rate,Spread,Profit_RUB,Card_ID,Note\n";
-    userTrades.forEach(t => {
-        csv += `"${t.id}","${t.date}","${t.is_cycle ? 'CYCLE' : t.type}","${t.fiat_amount}","${t.crypto_amount}","${t.rate}","${t.cycle_spread || ''}","${t.cycle_profit_rub || ''}","${t.card_id || ''}","${t.note || ''}"\n`;
-    });
-    const fileName = `P2P_Trades_${new Date().toISOString().slice(0,10)}.csv`;
-    const blob = new Blob(["\uFEFF" + csv], { type: 'application/octet-stream;charset=utf-8;' });
-    const fileUrl = URL.createObjectURL(blob);
-    fallbackDownload(fileUrl, fileName, csv);
-}
+async function adminCreatePromo() {
+    haptic('medium');
+    const code = document.getElementById('new-promo-code').value.trim().toUpperCase();
+    const days = parseInt(document.getElementById('new-promo-days').value);
+    const max = parseInt(document.getElementById('new-promo-max').value) || 1;
 
-function fallbackDownload(fileUrl, fileName, rawCsv) {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.setAttribute("download", fileName);
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!code || !days) return showToast("⚠️ Заполните код и дни!");
 
-    setTimeout(() => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(rawCsv).then(() => {
-                showToast("📥 Файл сохранен (и скопирован в буфер!)");
-            }).catch(() => showToast("✅ Выгрузка завершена"));
-        } else {
-            showToast("✅ Выгрузка завершена");
-        }
-    }, 400);
+    try {
+        await db(`promocodes`, {
+            method: 'POST',
+            body: JSON.stringify({
+                code: code,
+                days: days,
+                max_activations: max,
+                used_count: 0
+            })
+        });
+        showToast("✅ Промокод создан!");
+        document.getElementById('new-promo-code').value = '';
+        document.getElementById('new-promo-days').value = '';
+    } catch(e) {
+        showToast("Ошибка создания промокода");
+    }
 }
 
 /* ====================================================
-   КЛАССИЧЕСКАЯ СДЕЛКА И КАССА КАРТ
+   РЕЖИМЫ ИНТЕРФЕЙСА И НАВИГАЦИЯ
+==================================================== */
+function switchLayoutMode(isChecked) {
+    haptic('medium');
+    layoutMode = isChecked ? 'feed' : 'pages';
+    localStorage.setItem('p2p_layout_mode', layoutMode);
+
+    const desc = document.getElementById('layout-mode-desc');
+    if (desc) desc.innerText = isChecked ? "Сплошная лента (скролл)" : "По раздельности (вкладки)";
+
+    document.querySelectorAll('.page-section').forEach(sec => {
+        if (sec.id !== 'admin-panel' && sec.id !== 'paywall') {
+            sec.style.display = layoutMode === 'feed' ? 'block' : 'none';
+        }
+    });
+
+    if (layoutMode !== 'feed') {
+        document.getElementById('dashboard').style.display = 'block';
+    }
+    showToast(isChecked ? "📜 Режим ленты включен" : "📱 Режим вкладок включен");
+}
+
+function switchUiMode(isChecked) {
+    haptic('medium');
+    uiMode = isChecked ? 'fx' : 'simple';
+    localStorage.setItem('p2p_ui_mode', uiMode);
+    document.body.className = uiMode === 'fx' ? 'mode-fx' : 'mode-simple';
+
+    const desc = document.getElementById('ui-mode-desc');
+    if (desc) desc.innerText = isChecked ? "Полный FX (3D эффекты и фон)" : "Минимализм (OLED черный, без анимаций)";
+
+    applyIncognito();
+    showToast(isChecked ? "🌟 Полный FX активирован" : "⚡️ Минимализм включен");
+}
+
+function handleNavClick(targetId, el) {
+    haptic('light');
+    if (layoutMode === 'feed') {
+        const target = document.getElementById(targetId);
+        if (target) {
+            target.classList.add('revealed');
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    } else {
+        document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
+        const target = document.getElementById(targetId);
+        if (target) {
+            target.style.display = 'block';
+            target.classList.add('revealed');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (el) el.classList.add('active');
+}
+
+function toggleSecondaryStats() {
+    haptic('light');
+    isSecondaryExpanded = !isSecondaryExpanded;
+    const wrap = document.getElementById('secondary-stats-wrap');
+    const txt = document.getElementById('txt-toggle-details');
+    const arrow = document.getElementById('toggle-arrow');
+    const dict = I18N[currentLang] || I18N.ru;
+
+    if (wrap) wrap.style.display = isSecondaryExpanded ? 'block' : 'none';
+    if (txt) txt.innerText = isSecondaryExpanded ? dict.hideSecondary : dict.showSecondary;
+    if (arrow) arrow.innerText = isSecondaryExpanded ? '▴' : '▾';
+}
+
+function setPeriod(p, el) {
+    haptic('light');
+    currentPeriod = p;
+    document.querySelectorAll('.period-tabs .p-tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    document.getElementById('custom-date-panel').style.display = 'none';
+    calculateStats();
+}
+
+function toggleCustomDatePanel(el) {
+    haptic('light');
+    const panel = document.getElementById('custom-date-panel');
+    panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
+}
+
+function setQuickPreset(days) {
+    haptic('light');
+    const now = new Date();
+    const from = new Date(now);
+    from.setDate(now.getDate() - days);
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('custom-date-from').value = `${from.getFullYear()}-${pad(from.getMonth() + 1)}-${pad(from.getDate())}`;
+    document.getElementById('custom-date-to').value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    applyCustomDateFilter();
+}
+
+function applyCustomDateFilter() {
+    const fVal = document.getElementById('custom-date-from').value;
+    const tVal = document.getElementById('custom-date-to').value;
+    if (!fVal || !tVal) return showToast("⚠️ Укажите обе даты!");
+    customStartDate = new Date(fVal + "T00:00:00");
+    customEndDate = new Date(tVal + "T23:59:59");
+    currentPeriod = 'custom';
+    document.querySelectorAll('.period-tabs .p-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-custom').classList.add('active');
+    calculateStats();
+    showToast("📅 Период успешно применен!");
+}
+
+/* ====================================================
+   ПОДПИСКА И ПРОВЕРКА ПРАВ
+==================================================== */
+function checkSubscription() {
+    const badgeEl = document.getElementById('disp-tier-badge');
+    if (!currentUser) return false;
+
+    if (currentUser.is_banned) {
+        if (badgeEl) {
+            badgeEl.className = 'sub-tier-badge tier-expired';
+            badgeEl.innerText = '⛔️ Banned';
+        }
+        document.getElementById('paywall').style.display = 'block';
+        return false;
+    }
+
+    if (!currentUser.sub_end) {
+        if (badgeEl) {
+            badgeEl.className = 'sub-tier-badge tier-expired';
+            badgeEl.innerText = '❌ Нет подписки';
+        }
+        document.getElementById('paywall').style.display = 'block';
+        return false;
+    }
+
+    const now = new Date();
+    const end = new Date(currentUser.sub_end);
+    if (end < now) {
+        if (badgeEl) {
+            badgeEl.className = 'sub-tier-badge tier-expired';
+            badgeEl.innerText = '⏳ Подписка истекла';
+        }
+        document.getElementById('paywall').style.display = 'block';
+        return false;
+    }
+
+    document.getElementById('paywall').style.display = 'none';
+    if (badgeEl) {
+        if (end.getFullYear() > 2099) {
+            badgeEl.className = 'sub-tier-badge tier-vip';
+            badgeEl.innerText = '💎 VIP Навсегда';
+        } else {
+            badgeEl.className = 'sub-tier-badge tier-month';
+            badgeEl.innerText = `⚡️ Премиум до ${end.toLocaleDateString()}`;
+        }
+    }
+    return true;
+}
+
+async function checkAdminStatus(tgId) {
+    try {
+        const cfgRes = await db(`bot_config?key=eq.ADMIN_IDS`);
+        if (cfgRes && cfgRes.length > 0) {
+            adminIds = cfgRes[0].value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+        }
+        if (!adminIds.includes(SUPER_ADMIN_ID)) adminIds.push(SUPER_ADMIN_ID);
+
+        const isAdmin = adminIds.includes(tgId);
+        document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('nav-btn-admin').style.display = isAdmin ? 'flex' : 'none';
+        if (isAdmin) {
+            loadActiveUsersForAdmin();
+            loadAdminConfigValues();
+        }
+    } catch(e) {}
+}
+
+async function loadAdminConfigValues() {
+    try {
+        const configs = await db(`bot_config`);
+        if (!configs) return;
+        configs.forEach(item => {
+            if (item.key === 'PRICE_MONTH') document.getElementById('cfg-inp-month').value = item.value;
+            if (item.key === 'PRICE_FOREVER') document.getElementById('cfg-inp-forever').value = item.value;
+            if (item.key === 'BYBIT_UID') document.getElementById('cfg-inp-uid').value = item.value;
+            if (item.key === 'TRIAL_DAYS') document.getElementById('cfg-inp-trial').value = item.value;
+            if (item.key === 'REF_BONUS_DAYS') document.getElementById('cfg-inp-ref').value = item.value;
+            if (item.key === 'ADMIN_IDS') document.getElementById('cfg-inp-admin-ids').value = item.value;
+        });
+    } catch(e) {}
+}
+
+async function saveAdminConfig() {
+    haptic('medium');
+    try {
+        await Promise.all([
+            db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-month').value }) }),
+            db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-forever').value }) }),
+            db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-uid').value }) }),
+            db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-trial').value }) }),
+            db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-ref').value }) }),
+            db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-admin-ids').value }) })
+        ]);
+        showToast("✅ Конфигурация сохранена!");
+    } catch(e) {
+        showToast("Ошибка сохранения");
+    }
+}
+
+/* ====================================================
+   ПОДДЕРЖКА КЛАССИЧЕСКИХ ОДИНОЧНЫХ СДЕЛОК
 ==================================================== */
 let currentType = 'buy';
 let calcMode = 'fiat';
@@ -1138,8 +1966,8 @@ function setCalcMode(mode) {
 }
 
 function checkTradeInputs() {
-    const amount = parseFloat(document.getElementById('inp-amount').value);
-    const rate = parseFloat(document.getElementById('inp-rate').value);
+    const amount = parseFloat(document.getElementById('inp-amount')?.value);
+    const rate = parseFloat(document.getElementById('inp-rate')?.value);
     const btn = document.getElementById('btn-save');
     const prev = document.getElementById('trade-preview');
     const prevText = document.getElementById('preview-text');
@@ -1164,8 +1992,8 @@ function checkTradeInputs() {
         btn.innerText = `СОХРАНИТЬ ${currentType === 'buy' ? 'ПОКУПКУ' : 'ПРОДАЖУ'}: ${fiat.toFixed(2)} ${sym}`;
         btn.style.display = 'block';
     } else {
-        prev.style.display = 'none';
-        btn.style.display = 'none';
+        if (prev) prev.style.display = 'none';
+        if (btn) btn.style.display = 'none';
     }
 }
 
@@ -1215,7 +2043,7 @@ async function submitCreateCard() {
     const holder = document.getElementById('new-card-holder').value.trim();
     const limit = parseFloat(document.getElementById('new-card-limit').value) || null;
 
-    if (!name) return showToast("⚠️ Введите название карты");
+    if (!name) return showToast("⚠️ Введите название карты!");
 
     await db(`cards`, {
         method: 'POST',
@@ -1224,11 +2052,13 @@ async function submitCreateCard() {
             card_name: name,
             card_number: num,
             holder_name: holder,
-            buy_limit: limit
+            buy_limit: limit,
+            color_accent: '#f3a600',
+            status: 'active'
         })
     });
     closeModals();
-    showToast("✅ Карта создана!");
+    showToast("✅ Карта успешно создана!");
     await refreshData();
     renderAll();
 }
@@ -1247,7 +2077,7 @@ async function submitCardOp() {
     const amt = parseFloat(document.getElementById('card-op-amount').value);
     const comm = document.getElementById('card-op-comment').value.trim();
     const inLimit = document.getElementById('chk-op-in-limit').checked;
-    if (!amt || amt <= 0) return;
+    if (!amt || amt <= 0) return showToast("⚠️ Введите сумму!");
 
     await db(`card_operations`, {
         method: 'POST',
@@ -1261,7 +2091,7 @@ async function submitCardOp() {
         })
     });
     closeModals();
-    showToast("✅ Операция записана!");
+    showToast("✅ Операция записана в кассу!");
     await refreshData();
     renderCards();
 }
@@ -1276,109 +2106,9 @@ async function submitCardLimit() {
     const val = parseFloat(document.getElementById('card-limit-val').value) || null;
     await db(`cards?id=eq.${activeCardId}`, { method: 'PATCH', body: JSON.stringify({ buy_limit: val }) });
     closeModals();
-    showToast("✅ Лимит обновлен!");
+    showToast("✅ Лимит карты обновлен!");
     await refreshData();
     renderCards();
-}
-
-/* ====================================================
-   РЕДАКТИРОВАНИЕ СДЕЛКИ
-==================================================== */
-function openEditTradeModal(tid) {
-    haptic('light');
-    activeEditTradeId = tid;
-    const tr = userTrades.find(x => x.id === tid);
-    if (!tr) return;
-
-    document.getElementById('modal-trade-id').innerText = `Сделка #${tid}`;
-    document.getElementById('modal-inp-amount').value = tr.fiat_amount;
-    document.getElementById('modal-rate').value = tr.rate;
-    document.getElementById('modal-card-sel').value = tr.card_id || "";
-    document.getElementById('modal-note').value = tr.note || "";
-    document.getElementById('edit-modal').classList.add('show');
-}
-
-async function submitEditTrade() {
-    const amt = parseFloat(document.getElementById('modal-inp-amount').value);
-    const r = parseFloat(document.getElementById('modal-rate').value);
-    const cid = document.getElementById('modal-card-sel').value || null;
-    const note = document.getElementById('modal-note').value.trim();
-
-    if (!amt || !r) return;
-
-    await db(`trades?id=eq.${activeEditTradeId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-            fiat_amount: amt,
-            rate: r,
-            crypto_amount: parseFloat((amt / r).toFixed(2)),
-            card_id: cid ? parseInt(cid) : null,
-            note: note
-        })
-    });
-    closeModals();
-    showToast("✏️ Сделка обновлена!");
-    await refreshData();
-    renderAll();
-}
-
-async function deleteTradeCloud(tid) {
-    haptic('medium');
-    if (!confirm("Удалить операцию?")) return;
-    await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
-    showToast("🗑 Сделка удалена");
-    await refreshData();
-    renderAll();
-}
-
-/* ====================================================
-   СЕРВИСНЫЕ И ИНТЕРФЕЙСНЫЕ ФУНКЦИИ
-==================================================== */
-function toggleSecondaryStats() {
-    haptic('light');
-    isSecondaryExpanded = !isSecondaryExpanded;
-    document.getElementById('secondary-stats-wrap').style.display = isSecondaryExpanded ? 'block' : 'none';
-    document.getElementById('txt-toggle-details').innerText = isSecondaryExpanded ? "📊 Скрыть подробную статистику" : "📊 Развернуть подробную статистику";
-    document.getElementById('toggle-arrow').innerText = isSecondaryExpanded ? '▴' : '▾';
-}
-
-function setPeriod(p, el) {
-    haptic('light');
-    currentPeriod = p;
-    document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('custom-date-panel').style.display = 'none';
-    calculateStats();
-}
-
-function toggleCustomDatePanel(el) {
-    haptic('light');
-    const panel = document.getElementById('custom-date-panel');
-    panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
-}
-
-function setQuickPreset(days) {
-    haptic('light');
-    const now = new Date();
-    const from = new Date(now);
-    from.setDate(now.getDate() - days);
-    const pad = n => String(n).padStart(2, '0');
-    document.getElementById('custom-date-from').value = `${from.getFullYear()}-${pad(from.getMonth()+1)}-${pad(from.getDate())}`;
-    document.getElementById('custom-date-to').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
-    applyCustomDateFilter();
-}
-
-function applyCustomDateFilter() {
-    const fVal = document.getElementById('custom-date-from').value;
-    const tVal = document.getElementById('custom-date-to').value;
-    if (!fVal || !tVal) return showToast("⚠️ Укажите даты");
-    customStartDate = new Date(fVal + "T00:00:00");
-    customEndDate = new Date(tVal + "T23:59:59");
-    currentPeriod = 'custom';
-    document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-custom').classList.add('active');
-    calculateStats();
-    showToast("📅 Период применен!");
 }
 
 function populateCardSelects() {
@@ -1390,61 +2120,6 @@ function populateCardSelects() {
     if (sel1) sel1.innerHTML = opts;
     if (sel2) sel2.innerHTML = opts;
     if (selCalc) selCalc.innerHTML = opts;
-}
-
-function handleNavClick(targetId, el) {
-    haptic('light');
-    if (layoutMode === 'feed') {
-        const target = document.getElementById(targetId);
-        if (target) {
-            target.classList.add('revealed');
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    } else {
-        document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
-        const target = document.getElementById(targetId);
-        if (target) {
-            target.style.display = 'block';
-            target.classList.add('revealed');
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    if (el) el.classList.add('active');
-}
-
-function switchLayoutMode(isChecked) {
-    haptic('medium');
-    layoutMode = isChecked ? 'feed' : 'pages';
-    localStorage.setItem('p2p_layout_mode', layoutMode);
-    document.querySelectorAll('.page-section').forEach(sec => {
-        if (sec.id !== 'admin-panel' && sec.id !== 'paywall') {
-            sec.style.display = layoutMode === 'feed' ? 'block' : 'none';
-        }
-    });
-    if (layoutMode !== 'feed') document.getElementById('dashboard').style.display = 'block';
-    showToast(isChecked ? "📜 Режим ленты" : "📱 Режим экранов");
-}
-
-function switchUiMode(isChecked) {
-    haptic('medium');
-    uiMode = isChecked ? 'fx' : 'simple';
-    localStorage.setItem('p2p_ui_mode', uiMode);
-    document.body.className = uiMode === 'fx' ? 'mode-fx' : 'mode-simple';
-    applyIncognito();
-    showToast(isChecked ? "🌟 Полный FX" : "⚡️ Минимализм");
-}
-
-function applyLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('p2p_terminal_lang', lang);
-    updateAllCurrencySymbols();
-}
-
-function changeLanguage(lang) {
-    applyLanguage(lang);
-    showToast("Язык обновлен");
-    renderAll();
 }
 
 function openHelpModal(key, event) {
@@ -1468,14 +2143,15 @@ function closeModals() {
 
 function showToast(msg) {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.innerText = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2300);
+    setTimeout(() => t.classList.remove('show'), 2400);
 }
 
 function haptic(type) {
     try {
-        if (tg && tg.HapticFeedback) {
+        if (tg?.HapticFeedback) {
             if (type === 'light' || type === 'medium') tg.HapticFeedback.impactOccurred(type);
             if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
         }
@@ -1486,223 +2162,25 @@ function copyRefLink() {
     haptic('light');
     const link = document.getElementById('ref-link-box').innerText;
     navigator.clipboard.writeText(link);
-    showToast("Ссылка скопирована!");
+    showToast("Партнерская ссылка скопирована!");
 }
 
 function shareRefLink() {
     haptic('light');
     const link = document.getElementById('ref-link-box').innerText;
-    if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('P2P Terminal Pro — Enterprise Ledger:')}`);
+    if (tg?.openTelegramLink) {
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('P2P Terminal Pro — Enterprise Ledger & WAC:')}`);
     }
 }
 
 function openSupport() {
     const url = "https://t.me/P2P_Rbot";
-    if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+    if (tg?.openTelegramLink) tg.openTelegramLink(url);
     else window.open(url, '_blank');
 }
 
 /* ====================================================
-   АДМИНКА
-==================================================== */
-async function checkAdminStatus(tgId) {
-    try {
-        const cfgRes = await db(`bot_config?key=eq.ADMIN_IDS`);
-        if (cfgRes && cfgRes.length > 0) {
-            adminIds = cfgRes[0].value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
-        }
-        if (!adminIds.includes(SUPER_ADMIN_ID)) adminIds.push(SUPER_ADMIN_ID);
-
-        const isAdmin = adminIds.includes(tgId);
-        document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
-        document.getElementById('nav-btn-admin').style.display = isAdmin ? 'flex' : 'none';
-        if (isAdmin) loadAdminConfigValues();
-    } catch(e) {}
-}
-
-async function loadAdminConfigValues() {
-    try {
-        const configs = await db(`bot_config`);
-        if (!configs) return;
-        configs.forEach(item => {
-            if (item.key === 'PRICE_MONTH') document.getElementById('cfg-inp-month').value = item.value;
-            if (item.key === 'PRICE_FOREVER') document.getElementById('cfg-inp-forever').value = item.value;
-            if (item.key === 'BYBIT_UID') document.getElementById('cfg-inp-uid').value = item.value;
-            if (item.key === 'TRIAL_DAYS') document.getElementById('cfg-inp-trial').value = item.value;
-            if (item.key === 'REF_BONUS_DAYS') document.getElementById('cfg-inp-ref').value = item.value;
-            if (item.key === 'ADMIN_IDS') document.getElementById('cfg-inp-admin-ids').value = item.value;
-        });
-    } catch(e) {}
-}
-
-async function saveAdminConfig() {
-    haptic('medium');
-    try {
-        await Promise.all([
-            db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-month').value }) }),
-            db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-forever').value }) }),
-            db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-uid').value }) }),
-            db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-trial').value }) }),
-            db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-ref').value }) }),
-            db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: document.getElementById('cfg-inp-admin-ids').value }) })
-        ]);
-        showToast("✅ Конфиг сохранен!");
-    } catch(e) {
-        showToast("Ошибка сохранения");
-    }
-}
-
-async function adminUserAction(action) {
-    const targetId = parseInt(document.getElementById('admin-target-uid').value);
-    if (!targetId) return showToast("⚠️ Введите ID юзера!");
-    const now = new Date();
-
-    if (action === 'grant30') {
-        now.setDate(now.getDate() + 30);
-        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
-        showToast(`✅ ID ${targetId}: +30 дней`);
-    } else if (action === 'grantVIP') {
-        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
-        showToast(`✅ ID ${targetId}: VIP Навсегда`);
-    } else if (action === 'revoke') {
-        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
-        showToast(`❌ ID ${targetId}: Подписка снята`);
-    } else if (action === 'ban') {
-        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
-        showToast(`⛔️ ID ${targetId}: Забанен`);
-    } else if (action === 'unban') {
-        await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: false }) });
-        showToast(`🟢 ID ${targetId}: Разбанен`);
-    }
-}
-
-async function adminInspectUser() {
-    const targetId = parseInt(document.getElementById('admin-target-uid').value);
-    if (!targetId) return showToast("⚠️ Введите ID!");
-    const [uRes, tRes] = await Promise.all([
-        db(`users?tg_id=eq.${targetId}`),
-        db(`trades?tg_id=eq.${targetId}`)
-    ]);
-    const box = document.getElementById('admin-user-dossier');
-    if (!uRes || uRes.length === 0) {
-        box.style.display = 'block';
-        box.innerHTML = `<span style="color: var(--bybit-red);">Пользователь не найден</span>`;
-        return;
-    }
-    const u = uRes[0];
-    box.style.display = 'block';
-    box.innerHTML = `
-        <div style="font-weight: 800; color: var(--bybit-yellow);">🔎 ДОСЬЕ: ${u.first_name || ''} (@${u.username || 'нет'})</div>
-        ID: <code>${u.tg_id}</code> | Сделок: <b>${tRes ? tRes.length : 0}</b><br>
-        Подписка: <b>${u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? 'VIP Навсегда' : new Date(u.sub_end).toLocaleDateString()) : 'Нет'}</b>
-    `;
-}
-
-/* ====================================================
-   ПОДПИСКА И СТАТУС
-==================================================== */
-function checkSubscription() {
-    const badgeEl = document.getElementById('disp-tier-badge');
-    if (currentUser.is_banned) {
-        badgeEl.className = 'sub-tier-badge tier-expired';
-        badgeEl.innerText = '⛔️ Banned';
-        document.getElementById('paywall').style.display = 'block';
-        return false;
-    }
-    if (!currentUser.sub_end) {
-        badgeEl.className = 'sub-tier-badge tier-expired';
-        badgeEl.innerText = '❌ No Pass';
-        document.getElementById('paywall').style.display = 'block';
-        return false;
-    }
-
-    const now = new Date();
-    const end = new Date(currentUser.sub_end);
-    if (end < now) {
-        badgeEl.className = 'sub-tier-badge tier-expired';
-        badgeEl.innerText = '⏳ Expired';
-        document.getElementById('paywall').style.display = 'block';
-        return false;
-    }
-
-    document.getElementById('paywall').style.display = 'none';
-    if (end.getFullYear() > 2099) {
-        badgeEl.className = 'sub-tier-badge tier-vip';
-        badgeEl.innerText = '💎 VIP Lifetime';
-    } else {
-        badgeEl.className = 'sub-tier-badge tier-month';
-        badgeEl.innerText = `⚡️ Premium (${end.toLocaleDateString()})`;
-    }
-    return true;
-}
-
-/* ====================================================
-   ХОЛСТ БЛОКЧЕЙН ХЕШЕЙ
-==================================================== */
-function initBlockchainCanvas() {
-    const canvas = document.getElementById('blockchain-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let w, h;
-
-    function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    const hexChars = "0123456789ABCDEF";
-    function randomHash(len=6) {
-        let s = "0x";
-        for (let i = 0; i < len; i++) s += hexChars[Math.floor(Math.random() * hexChars.length)];
-        return s;
-    }
-
-    let nodes = [];
-    for (let i = 0; i < 22; i++) {
-        nodes.push({
-            x: Math.random() * w, y: Math.random() * h,
-            vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-            hash: randomHash(5), color: Math.random() > 0.5 ? '#f3a600' : '#2ebb9a'
-        });
-    }
-
-    function draw() {
-        if (uiMode === 'simple') return;
-        ctx.clearRect(0, 0, w, h);
-        for (let i = 0; i < nodes.length; i++) {
-            const n = nodes[i];
-            n.x += n.vx; n.y += n.vy;
-            if (n.x < 0) n.x = w; if (n.x > w) n.x = 0;
-            if (n.y < 0) n.y = h; if (n.y > h) n.y = 0;
-
-            ctx.fillStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.4)' : 'rgba(46, 187, 154, 0.4)';
-            ctx.font = '9px monospace';
-            ctx.fillText(n.hash, n.x, n.y);
-
-            for (let j = i + 1; j < nodes.length; j++) {
-                const n2 = nodes[j];
-                const dx = n.x - n2.x, dy = n.y - n2.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
-                    ctx.beginPath();
-                    ctx.moveTo(n.x, n.y);
-                    ctx.lineTo(n2.x, n2.y);
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 * (1 - dist / 120)})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
-        requestAnimationFrame(draw);
-    }
-    draw();
-}
-
-/* ====================================================
-   ИНИЦИАЛИЗАЦИЯ И СИНХРОНИЗАЦИЯ
+   ОТРИСОВКА И ОБНОВЛЕНИЕ
 ==================================================== */
 function renderAll() {
     updateAllCurrencySymbols();
@@ -1727,58 +2205,140 @@ async function refreshData() {
     cardOps = o || [];
 }
 
+/* ====================================================
+   БЕЗОПАСНАЯ АНИМАЦИЯ И СКРЫТИЕ ЗАГРУЗЧИКА
+==================================================== */
+function runTerminalBootSequence(onComplete) {
+    const stream = document.getElementById('console-stream');
+    const pBar = document.getElementById('boot-progress-bar');
+    const pPct = document.getElementById('boot-pct');
+
+    const logs = [
+        "<span class='c-green'>[INIT]</span> Loading Cryptographic Subsystems...",
+        "<span class='c-gold'>[AUTH]</span> Verifying Telegram Mini App Handshake...",
+        "<span class='c-blue'>[DB]</span> Connecting to Encrypted Supabase Node...",
+        "<span class='c-green'>[LEDGER]</span> Synchronizing WAC Engine & Balances...",
+        "<span class='c-gold'>[READY]</span> Terminal Pro v8.1.0 Ready."
+    ];
+
+    let step = 0;
+    const interval = setInterval(() => {
+        if (!stream) {
+            clearInterval(interval);
+            if (onComplete) onComplete();
+            return;
+        }
+
+        if (step < logs.length) {
+            const line = document.createElement('div');
+            line.className = 'console-line visible';
+            line.innerHTML = logs[step];
+            stream.appendChild(line);
+
+            const pct = Math.round(((step + 1) / logs.length) * 100);
+            if (pBar) pBar.style.width = `${pct}%`;
+            if (pPct) pPct.innerText = `${pct}%`;
+            step++;
+        } else {
+            clearInterval(interval);
+            setTimeout(() => {
+                if (onComplete) onComplete();
+            }, 250);
+        }
+    }, 120);
+}
+
 function forceHideLoader() {
     const loader = document.getElementById('terminal-boot-loader');
     if (loader) {
         loader.classList.add('fade-out');
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
+        setTimeout(() => { loader.style.display = 'none'; }, 350);
     }
-    document.querySelector('.container').style.display = 'block';
-    document.querySelector('.bottom-nav').style.display = 'flex';
+    const container = document.querySelector('.container');
+    const nav = document.querySelector('.bottom-nav');
+    if (container) container.style.display = 'block';
+    if (nav) nav.style.display = 'flex';
 }
 
+/* ====================================================
+   ГЛАВНАЯ ТОЧКА ВХОДА (INITIALIZATION)
+==================================================== */
 async function init() {
-    syncTelegramSafeAreas();
+    // 1. Установка режимов по умолчанию (Минимализм + Вкладки)
+    document.body.className = uiMode === 'fx' ? 'mode-fx' : 'mode-simple';
+    const toggleUi = document.getElementById('toggle-ui-mode');
+    if (toggleUi) toggleUi.checked = (uiMode === 'fx');
+
+    const toggleLayout = document.getElementById('toggle-layout-mode');
+    if (toggleLayout) toggleLayout.checked = (layoutMode === 'feed');
+
+    const toggleSound = document.getElementById('toggle-sound-mode');
+    if (toggleSound) toggleSound.checked = soundEnabled;
+
+    const setLangSel = document.getElementById('set-lang');
+    if (setLangSel) setLangSel.value = currentLang;
+
+    applyLanguage(currentLang);
     applyIncognito();
-    initBlockchainCanvas();
 
-    const failsafe = setTimeout(forceHideLoader, 2500);
-    const tgUser = tg?.initDataUnsafe?.user;
-
-    if (!tgUser || !tgUser.id) {
-        clearTimeout(failsafe);
-        document.getElementById('terminal-boot-loader').style.display = 'none';
-        document.getElementById('restricted-screen').style.display = 'flex';
-        return;
-    }
-
-    try {
-        let users = await db(`users?tg_id=eq.${tgUser.id}`);
-        if (!users || users.length === 0) {
-            const created = await db(`users`, {
-                method: 'POST',
-                body: JSON.stringify({ tg_id: tgUser.id, username: tgUser.username, first_name: tgUser.first_name })
-            });
-            currentUser = created ? created[0] : { tg_id: tgUser.id };
-        } else {
-            currentUser = users[0];
-        }
-
-        await refreshData();
-        await checkAdminStatus(tgUser.id);
-        await loadLiveSiteBanner();
-
-        document.getElementById('disp-uid').innerText = currentUser.tg_id;
-        document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
-    } catch(e) {
-        console.error(e);
-    } finally {
-        clearTimeout(failsafe);
+    // 2. Гарантированный тайм-аут защиты от бесконечной загрузки на телефонах (2.2 сек)
+    const failsafeTimeout = setTimeout(() => {
         forceHideLoader();
         renderAll();
-        checkSubscription();
-        runCalculator();
-    }
+    }, 2200);
+
+    const tgUser = tg?.initDataUnsafe?.user;
+
+    // 3. Запуск анимации бутлоадера
+    runTerminalBootSequence(async () => {
+        if (!tgUser || !tgUser.id) {
+            clearTimeout(failsafeTimeout);
+            document.getElementById('terminal-boot-loader').style.display = 'none';
+            document.getElementById('restricted-screen').style.display = 'flex';
+            return;
+        }
+
+        try {
+            let users = await db(`users?tg_id=eq.${tgUser.id}`);
+            if (!users || users.length === 0) {
+                const created = await db(`users`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tg_id: tgUser.id,
+                        username: tgUser.username,
+                        first_name: tgUser.first_name,
+                        currency: 'RUB',
+                        tz_offset: 3
+                    })
+                });
+                currentUser = created ? created[0] : { tg_id: tgUser.id };
+            } else {
+                currentUser = users[0];
+            }
+
+            const currSel = document.getElementById('set-currency');
+            if (currSel && currentUser.currency) currSel.value = currentUser.currency;
+
+            const tzSel = document.getElementById('set-tz');
+            if (tzSel && currentUser.tz_offset) tzSel.value = String(currentUser.tz_offset);
+
+            await refreshData();
+            await checkAdminStatus(tgUser.id);
+            await loadLiveSiteBanner();
+
+            document.getElementById('disp-uid').innerText = currentUser.tg_id;
+            document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
+            document.getElementById('ref-count-val').innerText = userTrades.length > 0 ? Math.floor(userTrades.length / 2) : 0;
+        } catch(e) {
+            console.error(e);
+        } finally {
+            clearTimeout(failsafeTimeout);
+            forceHideLoader();
+            renderAll();
+            checkSubscription();
+            runCalculator();
+        }
+    });
 }
 
 if (document.readyState === 'loading') {
