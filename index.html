@@ -6,25 +6,43 @@
     <title>P2P Terminal Pro — Enterprise Ledger & WAC</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg-main: #05070a;
-            --bg-card: rgba(14, 18, 26, 0.88);
-            --bg-card-hover: rgba(22, 28, 40, 0.96);
-            --bybit-yellow: #f3a600;
-            --bybit-green: #2ebb9a;
-            --bybit-red: #f23645;
-            --bybit-purple: #a855f7;
-            --bybit-blue: #38bdf8;
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-focus: rgba(243, 166, 0, 0.65);
+            /* ЧИСТЫЙ МАТОВЫЙ ГРАФИТ БЕЗ СИНЕВЫ */
+            --bg-page: #080a0d;
+            --bg-card: #111317;
+            --bg-card-sub: #16181e;
+            --bg-input: #0c0e12;
+
+            /* ЦВЕТ СУПЕРКАРА (LAMBORGHINI GOLD / ORANGE) */
+            --lambo-gold: #f59e0b;
+            --lambo-orange: #ff9800;
+            --lambo-glow: rgba(245, 158, 11, 0.2);
+
+            /* СТРОГИЕ НЕ-НЕОНОВЫЕ ТОРГОВЫЕ ЦВЕТА */
+            --trade-green: #10b981;
+            --trade-green-dark: #064e3b;
+            --trade-green-bg: rgba(16, 185, 129, 0.12);
+
+            --trade-red: #e11d48;
+            --trade-red-dark: #4c0519;
+            --trade-red-bg: rgba(225, 29, 72, 0.12);
+
+            --trade-blue: #38bdf8;
+            --trade-purple: #a855f7;
+
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(245, 158, 11, 0.65);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --glow-yellow: rgba(243, 166, 0, 0.28);
-            --glow-green: rgba(46, 187, 154, 0.28);
-            --glow-blue: rgba(56, 189, 248, 0.25);
-            --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+            --text-dim: #555e6d;
+
+            /* СТРОГАЯ КВАДРАТНАЯ ГЕОМЕТРИЯ */
+            --radius-card: 8px;
+            --radius-btn: 6px;
+            --radius-pill: 4px;
+            --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-shatter: cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -42,11 +60,11 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-main);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-page);
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: 150px;
+            padding-bottom: 140px;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             position: relative;
@@ -60,28 +78,61 @@
             display: none !important;
         }
 
-        body.mode-simple .glass-card,
-        body.mode-simple .stat-card,
-        body.mode-simple .card-item,
-        body.mode-simple .hero-profit-card {
-            background: #0d121c !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-color: rgba(255, 255, 255, 0.11) !important;
+        /* РЕЖИМ FX (ШРИФТ FIRA CODE, БЛОКЧЕЙН, СТЕКЛО И 3D) */
+        body.mode-fx {
+            font-family: 'Fira Code', monospace !important;
         }
 
-        body.mode-simple .page-section .glass-card,
-        body.mode-simple .page-section .stat-card,
-        body.mode-simple .page-section .card-item,
-        body.mode-simple .page-section h1,
-        body.mode-simple .page-section .subtitle,
-        body.mode-simple .page-section .period-tabs,
-        body.mode-simple .page-section .trade-switch,
-        body.mode-simple .sub-tier-badge {
-            transform: none !important;
-            transition: none !important;
-            filter: none !important;
-            opacity: 1 !important;
+        body.mode-fx .card,
+        body.mode-fx .glass-card,
+        body.mode-fx .stat-card,
+        body.mode-fx .sub-tier-badge,
+        body.mode-fx .bottom-nav {
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            background: rgba(17, 19, 23, 0.84) !important;
+            border-color: rgba(245, 158, 11, 0.22) !important;
+        }
+
+        body.mode-fx .page-section .glass-card,
+        body.mode-fx .page-section .card,
+        body.mode-fx .page-section .stat-card,
+        body.mode-fx .page-section .card-item,
+        body.mode-fx .page-section h1,
+        body.mode-fx .page-section .subtitle,
+        body.mode-fx .page-section .period-tabs,
+        body.mode-fx .page-section .trade-switch,
+        body.mode-fx .sub-tier-badge {
+            will-change: transform, opacity, filter;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition:
+                transform 0.85s var(--ease-spring),
+                opacity 0.75s var(--ease-shatter),
+                filter 0.65s ease;
+        }
+
+        body.mode-fx .page-section:not(.revealed) h1 {
+            opacity: 0;
+            transform: translate3d(-50px, -60px, -300px) rotateX(65deg) rotateY(-35deg) scale(0.15);
+            filter: blur(14px);
+        }
+
+        body.mode-fx .page-section:not(.revealed) .glass-card {
+            opacity: 0;
+            transform: translate3d(-100px, 100px, -400px) rotateX(70deg) rotateY(-45deg) scale(0.1);
+            filter: blur(16px);
+        }
+
+        body.mode-fx .page-section.revealed h1,
+        body.mode-fx .page-section.revealed .glass-card,
+        body.mode-fx .page-section.revealed .stat-card,
+        body.mode-fx .page-section.revealed .period-tabs,
+        body.mode-fx .page-section.revealed .trade-switch,
+        body.mode-fx .page-section.revealed .sub-tier-badge {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) scale(1);
+            filter: blur(0px);
         }
 
         /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ */
@@ -105,55 +156,39 @@
         .ambient-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.2;
+            filter: blur(110px);
+            opacity: 0.15;
             will-change: transform;
         }
 
         .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, var(--bybit-yellow) 0%, transparent 70%);
-            top: -120px;
-            left: -140px;
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, var(--lambo-gold) 0%, transparent 70%);
+            top: -100px;
+            left: -120px;
             animation: floatOrb1 24s ease-in-out infinite alternate;
         }
 
         .orb-2 {
-            width: 550px;
-            height: 550px;
-            background: radial-gradient(circle, var(--bybit-green) 0%, transparent 70%);
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, var(--trade-green) 0%, transparent 70%);
             bottom: 20px;
-            right: -130px;
+            right: -120px;
             animation: floatOrb2 28s ease-in-out infinite alternate;
-        }
-
-        .orb-3 {
-            width: 420px;
-            height: 420px;
-            background: radial-gradient(circle, var(--bybit-blue) 0%, transparent 70%);
-            top: 45%;
-            left: 20%;
-            opacity: 0.12;
-            animation: floatOrb3 32s ease-in-out infinite alternate;
         }
 
         @keyframes floatOrb1 {
             0% { transform: translate3d(0, 0, 0) scale(1); }
-            50% { transform: translate3d(80px, 120px, 0) scale(1.1); }
-            100% { transform: translate3d(-40px, 180px, 0) scale(0.95); }
+            50% { transform: translate3d(70px, 90px, 0) scale(1.08); }
+            100% { transform: translate3d(-30px, 140px, 0) scale(0.96); }
         }
 
         @keyframes floatOrb2 {
             0% { transform: translate3d(0, 0, 0) scale(1); }
-            50% { transform: translate3d(-100px, -90px, 0) scale(1.15); }
-            100% { transform: translate3d(50px, -150px, 0) scale(0.92); }
-        }
-
-        @keyframes floatOrb3 {
-            0% { transform: translate3d(0, 0, 0) scale(0.9); }
-            50% { transform: translate3d(-60px, 70px, 0) scale(1.2); }
-            100% { transform: translate3d(70px, -50px, 0) scale(1); }
+            50% { transform: translate3d(-80px, -70px, 0) scale(1.12); }
+            100% { transform: translate3d(40px, -110px, 0) scale(0.94); }
         }
 
         .ambient-grid {
@@ -179,7 +214,7 @@
             align-items: center;
             padding: 20px;
             font-family: 'Fira Code', monospace;
-            transition: opacity 0.4s var(--ease-apple), transform 0.4s var(--ease-apple);
+            transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
         }
 
         #terminal-boot-loader.fade-out {
@@ -193,7 +228,7 @@
             max-width: 480px;
             background: rgba(12, 16, 24, 0.96);
             border: 1px solid rgba(46, 187, 154, 0.35);
-            border-radius: 22px;
+            border-radius: var(--radius-card);
             box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 30px rgba(46, 187, 154, 0.2);
             overflow: hidden;
             backdrop-filter: blur(25px);
@@ -205,7 +240,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         .window-dots { display: flex; gap: 7px; }
@@ -241,9 +276,9 @@
         }
 
         .console-line.visible { opacity: 1; transform: translateY(0); }
-        .c-green { color: var(--bybit-green); font-weight: 700; }
-        .c-gold { color: var(--bybit-yellow); font-weight: 700; }
-        .c-blue { color: var(--bybit-blue); }
+        .c-green { color: var(--trade-green); font-weight: 700; }
+        .c-gold { color: var(--lambo-gold); font-weight: 700; }
+        .c-blue { color: var(--trade-blue); }
         .c-dim { color: #64748b; }
 
         .progress-box {
@@ -263,7 +298,7 @@
         .progress-bar-inner {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--bybit-green), var(--bybit-yellow));
+            background: linear-gradient(90deg, var(--trade-green), var(--lambo-gold));
             border-radius: 3px;
             transition: width 0.12s linear;
         }
@@ -272,7 +307,7 @@
             display: inline-block;
             width: 8px;
             height: 13px;
-            background: var(--bybit-green);
+            background: var(--trade-green);
             vertical-align: middle;
             animation: blink 0.8s infinite;
             margin-left: 4px;
@@ -283,78 +318,39 @@
             50% { opacity: 0; }
         }
 
+        /* SVG ИКОНКИ */
+        .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
         .container {
             padding: 16px;
-            max-width: 580px;
+            max-width: 540px;
             margin: 0 auto;
             position: relative;
             z-index: 3;
             display: none;
             perspective: 1600px;
-            perspective-origin: 50% 30%;
         }
 
         .page-section {
-            margin-bottom: 48px;
-            scroll-margin-top: 24px;
+            margin-bottom: 44px;
+            scroll-margin-top: 18px;
             position: relative;
             transform-style: preserve-3d;
         }
 
-        body.mode-fx .page-section .glass-card,
-        body.mode-fx .page-section .stat-card,
-        body.mode-fx .page-section .card-item,
-        body.mode-fx .page-section h1,
-        body.mode-fx .page-section .subtitle,
-        body.mode-fx .page-section .period-tabs,
-        body.mode-fx .page-section .trade-switch,
-        body.mode-fx .sub-tier-badge {
-            will-change: transform, opacity, filter;
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            transition:
-                transform 0.85s var(--ease-spring),
-                opacity 0.75s var(--ease-shatter),
-                filter 0.65s ease;
-        }
-
-        body.mode-fx .page-section:not(.revealed) h1 {
-            opacity: 0;
-            transform: translate3d(-60px, -80px, -320px) rotateX(75deg) rotateY(-40deg) rotateZ(28deg) scale(0.12);
-            filter: blur(16px);
-        }
-
-        body.mode-fx .page-section:not(.revealed) .subtitle {
-            opacity: 0;
-            transform: translate3d(80px, -50px, -240px) rotateX(-55deg) rotateY(45deg) rotateZ(-20deg) scale(0.2);
-            filter: blur(12px);
-        }
-
-        body.mode-fx .page-section:not(.revealed) .glass-card {
-            opacity: 0;
-            transform: translate3d(-140px, 120px, -450px) rotateX(80deg) rotateY(-55deg) rotateZ(35deg) scale(0.08);
-            filter: blur(20px);
-        }
-
-        body.mode-fx .page-section.revealed h1,
-        body.mode-fx .page-section.revealed .subtitle,
-        body.mode-fx .page-section.revealed .glass-card,
-        body.mode-fx .page-section.revealed .stat-card,
-        body.mode-fx .page-section.revealed .card-item,
-        body.mode-fx .page-section.revealed .period-tabs,
-        body.mode-fx .page-section.revealed .trade-switch,
-        body.mode-fx .page-section.revealed .sub-tier-badge {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
-            filter: blur(0px);
-        }
-
         .glass-card {
             background: var(--bg-card);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
             padding: 20px;
             margin-bottom: 14px;
             box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
@@ -366,12 +362,12 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
             pointer-events: none;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             margin: 0 0 4px 0;
             letter-spacing: -0.5px;
@@ -394,34 +390,30 @@
             margin-bottom: 6px;
         }
 
-        /* ЗНАК ВОПРОСА ДЛЯ ПОДСКАЗОК */
+        /* ЗНАК ВОПРОСА ? */
         .help-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.22);
+            width: 19px;
+            height: 19px;
+            border-radius: var(--radius-pill);
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             font-size: 10px;
             font-weight: 800;
             cursor: pointer;
-            margin-left: 6px;
-            vertical-align: middle;
-            transition: all 0.2s var(--ease-spring);
+            transition: all 0.15s ease;
         }
 
-        .help-icon:hover, .help-icon:active {
+        .help-icon:active {
             color: #000;
-            background: var(--bybit-yellow);
-            border-color: var(--bybit-yellow);
-            transform: scale(1.15);
-            box-shadow: 0 0 10px var(--glow-yellow);
+            background: var(--lambo-gold);
+            border-color: var(--lambo-gold);
         }
 
-        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ НА ГОЛОМ ФОНЕ */
+        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ НА ЧИСТОМ ФОНЕ */
         .sub-tier-badge {
             display: flex;
             align-items: center;
@@ -429,53 +421,48 @@
             gap: 8px;
             width: 100%;
             padding: 13px 16px;
-            border-radius: 16px;
+            border-radius: var(--radius-btn);
             font-size: 13px;
             font-weight: 800;
-            letter-spacing: 0.5px;
-            transition: all 0.3s var(--ease-apple);
+            letter-spacing: 0.3px;
             box-sizing: border-box;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
         }
 
         .tier-vip {
-            background: rgba(243, 166, 0, 0.15);
-            color: var(--bybit-yellow);
-            border: 1px solid rgba(243, 166, 0, 0.4);
-            box-shadow: 0 0 20px var(--glow-yellow);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: var(--lambo-gold);
+            background: rgba(245, 158, 11, 0.1);
         }
-
         .tier-month {
-            background: rgba(46, 187, 154, 0.15);
-            color: var(--bybit-green);
-            border: 1px solid rgba(46, 187, 154, 0.4);
-            box-shadow: 0 0 20px var(--glow-green);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--trade-green);
+            background: var(--trade-green-bg);
         }
-
         .tier-trial {
-            background: rgba(168, 85, 247, 0.15);
-            color: var(--bybit-purple);
-            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-color: rgba(168, 85, 247, 0.4);
+            color: #c084fc;
+            background: rgba(168, 85, 247, 0.1);
         }
-
         .tier-expired {
-            background: rgba(242, 54, 69, 0.15);
-            color: var(--bybit-red);
-            border: 1px solid rgba(242, 54, 69, 0.4);
+            border-color: rgba(225, 29, 72, 0.4);
+            color: var(--trade-red);
+            background: var(--trade-red-bg);
         }
 
         .hero-profit-card {
-            background: linear-gradient(145deg, rgba(24, 29, 38, 0.94) 0%, rgba(13, 16, 22, 0.98) 100%);
-            border: 1px solid rgba(46, 187, 154, 0.28);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(180deg, #15181e 0%, #0f1115 100%);
+            border: 1px solid rgba(245, 158, 11, 0.32);
         }
 
         .profit-val {
             font-size: 32px;
             font-weight: 900;
             letter-spacing: -0.8px;
-            transition: color 0.3s ease, transform 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .analytics-grid {
@@ -486,22 +473,21 @@
         }
 
         .stat-card {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 13px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-pill);
+            padding: 12px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: background 0.25s ease, border-color 0.25s ease;
         }
 
         .stat-card-title {
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -512,52 +498,53 @@
             font-weight: 800;
             margin-top: 6px;
             color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .txt-gold { color: var(--bybit-yellow); }
-        .txt-green { color: var(--bybit-green); }
-        .txt-blue { color: var(--bybit-blue); }
+        .txt-gold { color: var(--lambo-gold) !important; }
+        .txt-green { color: var(--trade-green) !important; }
+        .txt-red { color: var(--trade-red) !important; }
+        .txt-blue { color: var(--trade-blue) !important; }
 
         .period-tabs {
             display: flex;
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 14px;
-            padding: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-btn);
+            padding: 3px;
             margin-bottom: 12px;
-            border: 1px solid var(--glass-border);
-            gap: 3px;
+            gap: 2px;
         }
 
         .p-tab {
             flex: 1;
             text-align: center;
             padding: 8px 4px;
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
             font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.25s var(--ease-spring);
+            transition: all 0.15s ease;
             white-space: nowrap;
         }
 
-        .p-tab:active { transform: scale(0.96); }
+        .p-tab:active { transform: scale(0.97); }
         .p-tab.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--bybit-yellow);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+            background: var(--bg-card-sub);
+            color: var(--lambo-gold);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
-        /* КОМПАКТНЫЙ ВЫБОР ДАТ (БЕЗ ПЕРЕСЕЧЕНИЙ) */
+        /* ВЫБОР ДАТ (БЕЗ ПЕРЕСЕЧЕНИЙ) */
         .date-chip-wrap {
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-pill);
             padding: 2px 6px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .compact-date-input {
@@ -572,19 +559,35 @@
             max-width: 125px !important;
             outline: none !important;
             text-align: center !important;
-            -webkit-appearance: none !important;
-            appearance: none !important;
-            display: block;
+            -webkit-appearance: none;
         }
 
-        /* ЗАМЕТНАЯ КНОПКА СТАТИСТИКИ */
+        .btn-preset-chip {
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .btn-preset-chip:active {
+            color: var(--lambo-gold);
+            border-color: var(--lambo-gold);
+        }
+
+        /* ЗАМЕТНАЯ КНОПКА СТАТИСТИКИ (ПЕРЕД КАЛЬКУЛЯТОРОМ) */
         .details-toggle-btn {
             width: 100%;
-            background: rgba(243, 166, 0, 0.08);
-            border: 1.5px solid rgba(243, 166, 0, 0.38);
-            color: var(--bybit-yellow);
-            padding: 13px 14px;
-            border-radius: 16px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--lambo-gold);
+            padding: 12px 14px;
+            border-radius: var(--radius-btn);
             font-size: 12px;
             font-weight: 800;
             cursor: pointer;
@@ -592,206 +595,177 @@
             justify-content: center;
             align-items: center;
             gap: 8px;
-            margin: 12px 0 14px 0;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
-            transition: all 0.25s ease;
+            margin: 12px 0;
+            transition: all 0.15s ease;
         }
 
         .details-toggle-btn:active {
-            background: rgba(243, 166, 0, 0.18);
             transform: scale(0.98);
+            background: rgba(245, 158, 11, 0.16);
         }
 
-        #secondary-stats-wrap {
-            display: none;
-            animation: fadeIn 0.3s ease;
-            margin-bottom: 14px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* ПЕРЕКЛЮЧАТЕЛЬ ПОКУПКА / ПРОДАЖА */
         .trade-switch {
             display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
         .switch-btn {
             flex: 1;
-            padding: 13px;
-            border-radius: 14px;
+            padding: 12px;
+            border-radius: var(--radius-btn);
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.25s var(--ease-spring);
-            background: rgba(0, 0, 0, 0.25);
+            background: var(--bg-input);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
         }
 
-        .switch-btn:active { transform: scale(0.96); }
+        .switch-btn:active { transform: scale(0.97); }
         .switch-btn.active.buy {
-            background: rgba(46, 187, 154, 0.18);
-            color: var(--bybit-green);
-            border-color: var(--bybit-green);
-            box-shadow: 0 0 25px rgba(46, 187, 154, 0.25);
+            background: var(--trade-green-dark);
+            color: #34d399;
+            border-color: var(--trade-green);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
         }
 
         .switch-btn.active.sell {
-            background: rgba(242, 54, 69, 0.18);
-            color: var(--bybit-red);
-            border-color: var(--bybit-red);
-            box-shadow: 0 0 25px rgba(242, 54, 69, 0.25);
+            background: var(--trade-red-dark);
+            color: #fb7185;
+            border-color: var(--trade-red);
+            box-shadow: 0 0 16px rgba(225, 29, 72, 0.2);
         }
 
-        .input-wrap { margin-bottom: 14px; }
+        .input-wrap { margin-bottom: 12px; }
         .styled-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
             color: var(--text-main);
-            padding: 14px 16px;
-            border-radius: 14px;
-            font-size: 15px;
+            padding: 12px 14px;
+            border-radius: var(--radius-btn);
+            font-size: 14px;
             font-weight: 600;
             outline: none;
-            transition: all 0.25s var(--ease-apple);
+            transition: border 0.15s ease;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .styled-input:focus {
-            border-color: var(--glass-border-focus);
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 20px rgba(243, 166, 0, 0.15);
-            transform: translateY(-1px);
+            border-color: var(--border-focus);
         }
 
         .action-btn {
             width: 100%;
-            padding: 15px;
-            border-radius: 16px;
+            padding: 14px;
+            border-radius: var(--radius-btn);
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             text-transform: uppercase;
             cursor: pointer;
-            background: var(--bybit-green);
-            color: #000;
-            box-shadow: 0 8px 25px var(--glow-green);
-            transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease, filter 0.2s ease;
+            background: var(--trade-green);
+            color: #061712;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s ease;
+            font-family: inherit;
         }
 
-        .action-btn:hover { filter: brightness(1.06); }
-        .action-btn:active { transform: scale(0.96); }
-        .action-btn.sell-mode {
-            background: var(--bybit-red);
-            color: #fff;
-            box-shadow: 0 8px 25px rgba(242, 54, 69, 0.35);
-        }
-        .action-btn.gold {
-            background: var(--bybit-yellow);
-            color: #000;
-            box-shadow: 0 8px 25px var(--glow-yellow);
-        }
+        .action-btn:active { transform: scale(0.97); }
+        .action-btn.gold { background: var(--lambo-gold); color: #1a1000; }
+        .action-btn.sell-mode { background: var(--trade-red); color: #fff; }
 
         .action-btn-secondary {
             width: 100%;
-            padding: 13px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: var(--radius-btn);
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border-subtle);
             color: var(--text-main);
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-family: inherit;
         }
 
         .action-btn-secondary:active { transform: scale(0.97); }
 
         .card-item {
-            background: linear-gradient(145deg, rgba(32, 36, 46, 0.95) 0%, rgba(18, 20, 26, 0.95) 100%);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 16px;
+            margin-bottom: 10px;
         }
 
         .card-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .card-title { font-size: 16px; font-weight: 800; }
-        .progress-bar-wrap {
-            background: rgba(0, 0, 0, 0.55);
-            height: 7px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 8px 0 4px 0;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--bybit-green);
-            transition: width 0.4s var(--ease-apple);
+            margin-bottom: 6px;
         }
 
         .card-btns-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
             gap: 6px;
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
         .btn-card-action {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
             color: var(--text-main);
-            padding: 9px 4px;
-            border-radius: 11px;
+            padding: 8px 6px;
+            border-radius: var(--radius-pill);
             font-size: 11px;
             font-weight: 700;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s var(--ease-spring);
+            font-family: inherit;
         }
 
-        .btn-card-action:active {
-            transform: scale(0.94);
-            background: rgba(255, 255, 255, 0.12);
-        }
+        .btn-card-action:active { transform: scale(0.95); }
 
         .history-item {
-            background: rgba(0, 0, 0, 0.28);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 10px;
-            transition: all 0.25s var(--ease-spring);
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-btn);
+            padding: 12px 14px;
+            margin-bottom: 8px;
         }
 
-        .card-pill {
-            font-size: 10px;
-            background: rgba(243, 166, 0, 0.15);
-            color: var(--bybit-yellow);
-            padding: 3px 8px;
-            border-radius: 7px;
-            font-weight: 700;
+        .progress-bar-wrap {
+            background: var(--bg-input);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 6px 0 4px 0;
         }
 
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--trade-green);
+        }
+
+        /* ТУМБЛЕР (SWITCH) */
         .switch {
             position: relative;
             display: inline-block;
-            width: 48px;
-            height: 26px;
+            width: 44px;
+            height: 24px;
             flex-shrink: 0;
         }
 
@@ -800,111 +774,52 @@
             position: absolute;
             cursor: pointer;
             inset: 0;
-            background-color: rgba(255, 255, 255, 0.16);
-            transition: .3s var(--ease-spring);
-            border-radius: 26px;
-            border: 1px solid var(--glass-border);
+            background-color: var(--bg-input);
+            transition: .2s var(--ease);
+            border-radius: 24px;
+            border: 1px solid var(--border-subtle);
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 16px;
+            width: 16px;
             left: 3px;
             bottom: 3px;
             background-color: #fff;
-            transition: .3s var(--ease-spring);
+            transition: .2s var(--ease);
             border-radius: 50%;
         }
 
-        input:checked + .slider { background-color: var(--bybit-yellow); }
+        input:checked + .slider { background-color: var(--lambo-gold); border-color: var(--lambo-gold); }
         input:checked + .slider:before {
-            transform: translateX(22px);
+            transform: translateX(20px);
             background-color: #000;
         }
 
-        .btn-preset-chip {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-
-        .btn-preset-chip:active {
-            background: rgba(243, 166, 0, 0.2);
-            color: var(--bybit-yellow);
-            transform: scale(0.95);
-        }
-
-        #restricted-screen {
-            display: none;
-            height: 100vh;
-            padding: 25px;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100dvh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            z-index: 999999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.3s var(--ease-apple);
-        }
-
-        .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-box {
-            width: 100%;
-            max-width: 420px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.35s var(--ease-spring);
-        }
-
-        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
-
+        /* НАВИГАЦИЯ ВНИЗУ */
         .bottom-nav {
             position: fixed;
             bottom: max(12px, env(safe-area-inset-bottom));
-            left: 12px;
-            right: 12px;
-            max-width: 550px;
+            left: 14px;
+            right: 14px;
+            max-width: 500px;
             margin: 0 auto;
-            background: rgba(10, 14, 22, 0.94);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 26px;
+            background: rgba(17, 19, 23, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
             display: none;
             justify-content: space-around;
-            padding: 8px 4px 10px 4px;
-            z-index: 99999;
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8);
+            padding: 7px 4px 9px 4px;
+            z-index: 999;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
         }
 
         .nav-btn {
-            color: var(--text-muted);
+            color: var(--text-dim);
             font-size: 10px;
             font-weight: 700;
             text-align: center;
@@ -914,54 +829,71 @@
             align-items: center;
             cursor: pointer;
             width: 18%;
-            transition: color 0.2s var(--ease-apple), transform 0.2s var(--ease-spring);
-            padding: 4px 2px;
-            border-radius: 12px;
+            padding: 4px 0;
+            border-radius: var(--radius-pill);
+            transition: color 0.15s ease;
         }
 
-        .nav-btn:active { transform: scale(0.88); }
         .nav-btn.active {
-            color: var(--bybit-yellow);
-            background: rgba(243, 166, 0, 0.1);
+            color: var(--lambo-gold);
         }
 
-        .nav-btn i {
-            font-size: 17px;
-            font-style: normal;
-            transition: transform 0.25s var(--ease-spring);
+        .nav-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
 
-        .nav-btn.active i { transform: scale(1.18); }
-
+        /* ТОСТ */
         #toast {
             position: fixed;
-            top: 20px;
+            top: 16px;
             left: 50%;
-            transform: translateX(-50%) translateY(-120px) scale(0.9);
-            background: rgba(18, 24, 32, 0.96);
-            border: 1px solid var(--bybit-green);
+            transform: translateX(-50%) translateY(-100px);
+            background: #181b21;
+            border: 1px solid var(--border-subtle);
             color: var(--text-main);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(46, 187, 154, 0.35);
-            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             font-weight: 700;
-            padding: 12px 24px;
+            padding: 10px 22px;
             border-radius: 30px;
-            z-index: 1000001;
-            transition: all 0.4s var(--ease-apple);
-            opacity: 0;
+            z-index: 100001;
+            transition: all 0.3s var(--ease);
             font-size: 13px;
             pointer-events: none;
+            opacity: 0;
         }
 
-        #toast.show { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        .admin-section-card {
-            border: 1.5px dashed rgba(243, 166, 0, 0.6) !important;
-            background: linear-gradient(135deg, rgba(28, 22, 14, 0.95) 0%, rgba(16, 20, 28, 0.96) 100%) !important;
+        /* МОДАЛЬНЫЕ ОКНА */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
     </style>
 </head>
-<body class="mode-simple">
+<body class="mode-fx">
     <canvas id="blockchain-canvas"></canvas>
 
     <div class="ambient-canvas-wrap">
@@ -981,7 +913,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.1.0</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.0.2</div>
                 <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
@@ -998,14 +930,16 @@
     </div>
 
     <!-- ЭКРАН ОГРАНИЧЕНИЯ -->
-    <div id="restricted-screen">
-        <div class="glass-card" style="max-width: 400px;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
-            <h2 style="margin: 0 0 10px 0; font-size: 20px;" data-i18n="restrictedTitle">Доступ ограничен</h2>
-            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;" data-i18n="restrictedDesc">
+    <div id="restricted-screen" style="display: none; height: 100vh; padding: 25px; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <div class="card" style="max-width: 380px;">
+            <div style="margin-bottom: 12px;">
+                <svg class="icon" style="width: 36px; height: 36px; fill: var(--lambo-gold);" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </div>
+            <h2 style="margin: 0 0 8px 0; font-size: 18px;" data-i18n="restrictedTitle">Доступ ограничен</h2>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px;" data-i18n="restrictedDesc">
                 Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.
             </p>
-            <button class="action-btn gold" onclick="window.location.href='https://t.me/P2P_Rbot'" data-i18n="openBotBtn">🚀 Открыть бота</button>
+            <button class="action-btn gold" onclick="window.location.href='https://t.me/P2P_Rbot'" data-i18n="openBotBtn">Открыть бота</button>
         </div>
     </div>
 
@@ -1014,21 +948,19 @@
 
         <!-- 1. СВОДКА -->
         <section id="dashboard" class="page-section revealed">
-            <!-- ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ -->
             <div id="disp-tier-badge" class="sub-tier-badge tier-vip">
-                Загрузка...
+                Сверка подписки...
             </div>
 
-            <!-- Вкладки периодов -->
             <div class="period-tabs">
-                <div class="p-tab active" onclick="setPeriod('today', this)" data-i18n="tabToday">За сегодня</div>
-                <div class="p-tab" onclick="setPeriod('month', this)" data-i18n="tabMonth">За месяц</div>
-                <div class="p-tab" onclick="setPeriod('all', this)" data-i18n="tabAll">Все время</div>
-                <div class="p-tab" id="tab-custom" onclick="toggleCustomDatePanel(this)" data-i18n="tabCustom">Свой период 📅</div>
+                <div class="p-tab active" onclick="setPeriod('today', this)" data-i18n="tabToday">Сегодня</div>
+                <div class="p-tab" onclick="setPeriod('month', this)" data-i18n="tabMonth">Месяц</div>
+                <div class="p-tab" onclick="setPeriod('all', this)" data-i18n="tabAll">Всё время</div>
+                <div class="p-tab" id="tab-custom" onclick="toggleCustomDatePanel(this)" data-i18n="tabCustom">Выбрать даты</div>
             </div>
 
-            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ (КОМПАКТНАЯ, БЕЗ ПЕРЕСЕЧЕНИЙ) -->
-            <div id="custom-date-panel" style="display: none; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
+            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ -->
+            <div id="custom-date-panel" class="date-picker-box">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;">
                     <button class="btn-preset-chip" onclick="setQuickPreset(1)" data-i18n="presetYesterday">Вчера</button>
                     <button class="btn-preset-chip" onclick="setQuickPreset(7)" data-i18n="preset7d">7 дней</button>
@@ -1038,14 +970,14 @@
 
                 <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px;">
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;" data-i18n="dateFrom">С даты</span>
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;" data-i18n="dateFrom">С ДАТЫ</span>
                         <div class="date-chip-wrap">
                             <input type="date" id="custom-date-from" class="compact-date-input">
                         </div>
                     </div>
                     <div style="color: var(--text-muted); font-size: 14px; font-weight: 800; margin-top: 14px;">—</div>
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;" data-i18n="dateTo">По дату</span>
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;" data-i18n="dateTo">ПО ДАТУ</span>
                         <div class="date-chip-wrap">
                             <input type="date" id="custom-date-to" class="compact-date-input">
                         </div>
@@ -1053,14 +985,17 @@
                 </div>
 
                 <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="applyCustomDateFilter()" data-i18n="btnApplyDate">
-                    Применить ⚡️
+                    Применить период
                 </button>
             </div>
 
-            <!-- КАРТОЧКА ОБЩЕЙ ПРИБЫЛИ -->
+            <!-- ОБЩАЯ ПРИБЫЛЬ -->
             <div class="glass-card hero-profit-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="badge" style="color: rgba(255,255,255,0.7); margin: 0;" data-i18n="totalProfitBadge">💰 ОБЩАЯ ПРИБЫЛЬ</span>
+                <div class="profit-title-row">
+                    <span style="font-size: 11px; font-weight: 800; color: var(--lambo-gold); text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px;" data-i18n="totalProfitBadge">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                        Общая прибыль
+                    </span>
                     <span class="help-icon" onclick="openHelpModal('total_profit', event)">?</span>
                 </div>
 
@@ -1068,57 +1003,59 @@
                     <div id="val-total-profit-rub" class="profit-val">
                         0.00 <span style="font-size: 18px; color: var(--text-muted);" class="sym">₽</span>
                     </div>
-                    <div id="val-total-profit-usdt" style="font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);">
+                    <div id="val-total-profit-usdt" class="sub-profit-badge">
                         0.00 USDT
                     </div>
                 </div>
             </div>
 
-            <!-- СПРЕД КРУГА (ПОСЛЕДНИЙ И СРЕДНИЙ) -->
+            <!-- СПРЕДЫ КРУГА -->
             <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
-                        📊 <span data-i18n="spreadCardTitle">СПРЕД СДЕЛОК</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                        <span data-i18n="spreadCardTitle">Спред сделок</span>
                     </span>
                     <span class="help-icon" onclick="openHelpModal('spread', event)">?</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                    <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 11px;">
                         <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="lastCycleSpread">
                             Последний круг
                         </div>
-                        <div id="val-last-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--bybit-yellow);">
+                        <div id="val-last-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--lambo-gold);">
                             0.00%
                         </div>
                         <div style="font-size: 9px; color: var(--text-muted); margin-top: 2px;" id="hint-last-spread">
-                            Крайняя продажа vs закупка
+                            Крайний закуп | продажа
                         </div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                    <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 11px;">
                         <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="avgPeriodSpread">
-                            Ср. за период
+                            Средний за период
                         </div>
-                        <div id="val-avg-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--bybit-green);">
+                        <div id="val-avg-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--trade-green);">
                             0.00%
                         </div>
                         <div style="font-size: 9px; color: var(--text-muted); margin-top: 2px;" data-i18n="hintAvgSpread">
-                            По WAC за таймфрейм
+                            По WAC за период
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ЗАМЕТНАЯ КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ (ПЕРЕД КАЛЬКУЛЯТОРОМ) -->
+            <!-- ЗАМЕТНАЯ КНОПКА РАЗВОРОТА (ДО КАЛЬКУЛЯТОРА) -->
             <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
-                <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+                <span id="txt-toggle-details" data-i18n="showSecondary">Развернуть подробную статистику</span>
                 <span id="toggle-arrow">▾</span>
             </button>
 
-            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ (СКРЫТЫ ПОД СТРЕЛОЧКУ) -->
+            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ -->
             <div id="secondary-stats-wrap">
                 <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 11px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
                                     <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
@@ -1126,22 +1063,22 @@
                                 <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
                             </div>
                             <div id="val-profit-rub" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
-                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaFiat">Продажа − Покупка</div>
+                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaFiat">[Продажа − Покупка]</div>
                         </div>
 
-                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 11px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
                                 <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
                             </div>
                             <div id="val-profit-usdt" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
-                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaUsdt">Покупка − Продажа</div>
+                            <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaUsdt">[Покупка − Продажа]</div>
                         </div>
                     </div>
 
                     <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 4px;">
-                        <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
-                        <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
+                        <span data-i18n="midPriceHint">Справедливый курс [Mid Price]:</span>
+                        <b id="hint-mid-price" style="color: var(--lambo-gold);">0.00</b> <span class="sym">₽</span>
                         <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
                     </div>
                 </div>
@@ -1149,7 +1086,7 @@
                 <div class="analytics-grid">
                     <div class="stat-card" style="grid-column: span 2;">
                         <span class="stat-card-title">
-                            <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
+                            <span data-i18n="turnCombinedTitle">Оборот кассы [Фиат / USDT]</span>
                             <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
                         </span>
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
@@ -1160,7 +1097,7 @@
 
                     <div class="stat-card">
                         <span class="stat-card-title">
-                            <span data-i18n="statWac">🛒 WAC Закупка</span>
+                            <span data-i18n="statWac">WAC Закуп</span>
                             <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
                         </span>
                         <div class="stat-card-val" id="val-wac">0.00</div>
@@ -1168,7 +1105,7 @@
 
                     <div class="stat-card">
                         <span class="stat-card-title">
-                            <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
+                            <span data-i18n="statAvgSell">Ср. Продажа</span>
                             <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
                         </span>
                         <div class="stat-card-val" id="val-avg-sell">0.00</div>
@@ -1176,84 +1113,84 @@
 
                     <div class="stat-card">
                         <span class="stat-card-title">
-                            <span data-i18n="statRoi">📈 ROI от оборота</span>
+                            <span data-i18n="statRoi">ROI оборота</span>
                             <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
                         </span>
                         <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
                     </div>
 
-                    <!-- ПЛАШКА: СДЕЛОК ВСЕГО / ПОКУПОК / ПРОДАЖ -->
                     <div class="stat-card">
                         <span class="stat-card-title">
-                            <span data-i18n="statOps">🔢 Сделок: всего / покупок / продаж</span>
+                            <span data-i18n="statOps">[Сделок: всего / покупок / продаж]</span>
                             <span class="help-icon" onclick="openHelpModal('operations', event)">?</span>
                         </span>
-                        <div class="stat-card-val" id="val-trades-count">0 / 0 / 0</div>
+                        <div class="stat-card-val" id="val-trades-count" style="font-size: 15px;">0 / 0 / 0</div>
                     </div>
                 </div>
             </div>
 
             <!-- КАЛЬКУЛЯТОР КРУГА В СВОДКЕ -->
-            <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.3);">
+            <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
-                        ⚡️ <span data-i18n="calcTitle">КАЛЬКУЛЯТОР КРУГА</span>
+                    <span style="font-size: 12px; font-weight: 800; color: var(--lambo-gold); display: inline-flex; align-items: center; gap: 6px;">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                        <span data-i18n="calcTitle">Калькулятор круга</span>
                     </span>
                     <span class="help-icon" onclick="openHelpModal('calculator', event)">?</span>
                 </div>
 
                 <div class="input-wrap" style="margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                        <span style="color: var(--text-muted);" data-i18n="calcDealPrice">Прайс сделки</span>
-                        <span class="sym" style="color: var(--bybit-yellow); font-weight: 700;">₽</span>
+                        <span style="color: var(--text-muted);" data-i18n="calcDealPrice">Прайс сделки [депозит]</span>
+                        <span class="sym" style="color: var(--lambo-gold); font-weight: 700;">₽</span>
                     </div>
                     <input type="number" inputmode="decimal" id="calc-fiat-amt" class="styled-input" style="padding: 10px 14px; font-size: 14px;" value="10000" placeholder="10000">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 14px; padding: 10px;">
-                        <div style="font-size: 11px; font-weight: 800; color: var(--bybit-green); margin-bottom: 6px;">
-                            <span data-i18n="calcBuyHeader">ПОКУПКА 🟢</span>
+                    <div style="background: var(--trade-green-dark); border: 1px solid var(--trade-green); border-radius: 14px; padding: 10px;">
+                        <div style="font-size: 11px; font-weight: 800; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                            <span style="display:inline-block; width:6px; height:6px; background:#34d399; border-radius:2px;"></span> <span data-i18n="calcBuyHeader">ПОКУПКА</span>
                         </div>
                         <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcBuyRate">Курс USDT</div>
                         <input type="number" inputmode="decimal" id="calc-buy-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="86.04">
-                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-buy-crypto">
+                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: #fff;" id="calc-buy-crypto">
                             0.00 USDT
                         </div>
                     </div>
 
-                    <div style="background: rgba(242, 54, 69, 0.08); border: 1px solid rgba(242, 54, 69, 0.25); border-radius: 14px; padding: 10px;">
-                        <div style="font-size: 11px; font-weight: 800; color: var(--bybit-red); margin-bottom: 6px;">
-                            <span data-i18n="calcSellHeader">ПРОДАЖА 🔴</span>
+                    <div style="background: var(--trade-red-dark); border: 1px solid var(--trade-red); border-radius: 14px; padding: 10px;">
+                        <div style="font-size: 11px; font-weight: 800; color: #fb7185; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                            <span style="display:inline-block; width:6px; height:6px; background:#fb7185; border-radius:2px;"></span> <span data-i18n="calcSellHeader">ПРОДАЖА</span>
                         </div>
                         <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcSellRate">Курс USDT</div>
                         <input type="number" inputmode="decimal" id="calc-sell-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="94.50">
-                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-sell-crypto">
+                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: #fff;" id="calc-sell-crypto">
                             0.00 USDT
                         </div>
                     </div>
                 </div>
 
-                <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px; margin-bottom: 12px;">
+                <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 11px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcSpread">Спред:</span>
-                        <b id="calc-spread-val" style="font-size: 14px; color: var(--bybit-yellow);">0.00%</b>
+                        <b id="calc-spread-val" style="font-size: 14px; color: var(--lambo-gold);">0.00%</b>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
                         <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcProfit">Прибыль с круга:</span>
                         <div style="text-align: right;">
-                            <b id="calc-profit-usdt-val" style="font-size: 15px; color: var(--bybit-green);">0.00 USDT</b>
+                            <b id="calc-profit-usdt-val" style="font-size: 15px; color: var(--trade-green);">0.00 USDT</b>
                             <div id="calc-profit-fiat-val" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">≈ 0.00 ₽</div>
                         </div>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
-                    <button class="action-btn" style="padding: 12px; font-size: 12px;" onclick="saveCalculatedCycle()" data-i18n="calcSaveCycle">
-                        Сохранить круг ✅
+                    <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="saveCalculatedCycle()" data-i18n="calcSaveCycle">
+                        Сохранить круг
                     </button>
                     <button class="action-btn-secondary" style="padding: 12px; font-size: 12px;" onclick="clearCalculator()" data-i18n="calcClear">
-                        Очистить ❌
+                        Очистить
                     </button>
                 </div>
             </div>
@@ -1265,21 +1202,25 @@
             <p class="subtitle" data-i18n="newTradeSubtitle">Внести круг в облачную базу</p>
             <div class="glass-card">
                 <div class="trade-switch">
-                    <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')" data-i18n="buyBtn">ПОКУПКА 🟢</div>
-                    <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')" data-i18n="sellBtn">ПРОДАЖА 🔴</div>
+                    <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')">
+                        <span style="display:inline-block; width:6px; height:6px; background:#34d399; border-radius:2px;"></span> <span data-i18n="buyBtn">ПОКУПКА</span>
+                    </div>
+                    <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')">
+                        <span style="display:inline-block; width:6px; height:6px; background:#fb7185; border-radius:2px;"></span> <span data-i18n="sellBtn">ПРОДАЖА</span>
+                    </div>
                 </div>
 
                 <div class="period-tabs" style="margin-bottom: 16px;">
                     <div class="p-tab active" id="tab-mode-fiat" onclick="setCalcMode('fiat')">
-                        <span data-i18n="modeFiat">Сумма фиата</span> (<span class="sym">₽</span>)
+                        <span data-i18n="modeFiat">Фиат</span> [<span class="sym">₽</span>]
                     </div>
                     <div class="p-tab" id="tab-mode-crypto" onclick="setCalcMode('crypto')" data-i18n="modeCrypto">
-                        Объем USDT (🪙)
+                        Объем USDT
                     </div>
                 </div>
 
                 <div class="input-wrap">
-                    <span class="badge" id="lbl-amount">Сумма в фиате (<span class="sym">₽</span>)</span>
+                    <span class="badge" id="lbl-amount">Сумма в фиате [<span class="sym">₽</span>]</span>
                     <input type="number" inputmode="decimal" id="inp-amount" class="styled-input" placeholder="0.00">
                 </div>
                 <div class="input-wrap">
@@ -1287,13 +1228,13 @@
                     <input type="number" inputmode="decimal" id="inp-rate" class="styled-input" placeholder="0.00">
                 </div>
                 <div class="input-wrap">
-                    <span class="badge" data-i18n="lblCardOpt">Банковская карта (Опционально)</span>
+                    <span class="badge" data-i18n="lblCardOpt">Банковская карта [опционально]</span>
                     <select id="inp-card-sel" class="styled-input">
                         <option value="" data-i18n="noCardOpt">Без привязки к карте</option>
                     </select>
                 </div>
-                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 13px; border-radius: 14px; margin-bottom: 16px; font-size: 13px;">
-                    <span id="preview-text">Итог:</span> <b id="preview-result" style="color: var(--bybit-yellow);">0.00</b>
+                <div id="trade-preview" style="display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); padding: 13px; border-radius: 14px; margin-bottom: 16px; font-size: 13px;">
+                    <span id="preview-text">Итог:</span> <b id="preview-result" style="color: var(--lambo-gold);">0.00</b>
                 </div>
                 <button class="action-btn" id="btn-save" onclick="saveTrade()" style="display: none;">СОХРАНИТЬ СДЕЛКУ</button>
             </div>
@@ -1306,7 +1247,7 @@
                     <h1 style="margin: 0;" data-i18n="cardsTitle">Мои карты</h1>
                     <p class="subtitle" style="margin: 0;" data-i18n="cardsSubtitle">Контроль кассы и лимитов</p>
                 </div>
-                <button class="btn-card-action" style="padding: 7px 12px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
+                <button class="btn-card-action" style="padding: 7px 12px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">+ Добавить</button>
             </div>
             <div id="cards-container"></div>
         </section>
@@ -1320,31 +1261,45 @@
             </div>
         </section>
 
-        <!-- 5. НАСТРОЙКИ (ПРОФИЛЬ + ТУМБЛЕР FX + РЕФЕРАЛКА + ОПЦИИ) -->
+        <!-- 5. НАСТРОЙКИ (ПРОФИЛЬ + ТУМБЛЕР РЕЖИМА ЛЕНТЫ + ТУМБЛЕР FX + РЕФЕРАЛКА) -->
         <section id="profile" class="page-section">
             <h1 data-i18n="profileTitle">Настройки</h1>
             <p class="subtitle" data-i18n="profileSubtitle">Конфигурация аккаунта и терминала</p>
 
             <div class="glass-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
                     <div>
-                        <div style="font-size: 11px; color: var(--text-muted);" data-i18n="lblYourId">ВАШ TELEGRAM ID</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" data-i18n="lblYourId">TELEGRAM ID</div>
                         <div style="font-size: 16px; font-weight: 800; margin-top: 2px;" id="disp-uid">...</div>
                     </div>
-                    <button class="btn-card-action" style="padding: 7px 12px; color: var(--bybit-yellow);" onclick="openSubModal()" data-i18n="btnSubModal">💎 Подписка</button>
+                    <button class="btn-card-action" style="padding: 7px 12px; color: var(--lambo-gold); display: inline-flex; align-items: center; gap: 4px;" onclick="openSubModal()" data-i18n="btnSubModal">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 9l10 13 10-13-10-7zm0 2.8L18.6 9 12 17.6 5.4 9 12 4.8z"/></svg> Подписка
+                    </button>
                 </div>
 
-                <!-- ТУМБЛЕР ВЫБОРА ИНТЕРФЕЙСА -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
+                <!-- ТУМБЛЕР РЕЖИМА ОТОБРАЖЕНИЯ: ОБЩАЯ ЛЕНТА ИЛИ ВКЛАДКИ -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--border-subtle);">
                     <div>
-                        <div style="font-size: 13px; font-weight: 700;">
-                            <span data-i18n="uiModeLabel">Визуальные эффекты (FX)</span>
-                            <span class="help-icon" onclick="openHelpModal('ui_mode', event)">?</span>
-                        </div>
-                        <div style="font-size: 11px; color: var(--text-muted);" id="ui-mode-desc" data-i18n="uiModeSimpleDesc">Минимализм (без фона и анимаций)</div>
+                        <div style="font-size: 13px; font-weight: 800;">Режим общей ленты</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="layout-mode-desc">Сплошная лента [плавный скролл]</div>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" id="toggle-ui-mode" onchange="switchUiMode(this.checked)">
+                        <input type="checkbox" id="toggle-layout-mode" onchange="switchLayoutMode(this.checked)" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- ТУМБЛЕР ВЫБОРА ИНТЕРФЕЙСА (FX / МИНИМАЛИЗМ) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 700;">
+                            <span data-i18n="uiModeLabel">Визуальные эффекты [FX]</span>
+                            <span class="help-icon" onclick="openHelpModal('ui_mode', event)">?</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="ui-mode-desc">Полный FX [блокчейн-фон и 3D]</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-ui-mode" onchange="switchUiMode(this.checked)" checked>
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -1355,13 +1310,13 @@
                         <span class="badge" style="margin: 0;" data-i18n="lblLang">Язык интерфейса</span>
                     </div>
                     <select id="set-lang" class="styled-input" onchange="changeLanguage(this.value)">
-                        <option value="ru">🇷🇺 Русский (Russian)</option>
-                        <option value="en">🇬🇧 English (English)</option>
-                        <option value="es">🇪🇸 Español (Spanish)</option>
-                        <option value="fr">🇫🇷 Français (French)</option>
-                        <option value="de">🇩🇪 Deutsch (German)</option>
-                        <option value="uk">🇺🇦 Українська (Ukrainian)</option>
-                        <option value="kk">🇰🇿 Қазақша (Kazakh)</option>
+                        <option value="ru">Русский [RU]</option>
+                        <option value="en">English [EN]</option>
+                        <option value="es">Español [ES]</option>
+                        <option value="fr">Français [FR]</option>
+                        <option value="de">Deutsch [DE]</option>
+                        <option value="uk">Українська [UK]</option>
+                        <option value="kk">Қазақша [KK]</option>
                     </select>
                 </div>
 
@@ -1372,80 +1327,80 @@
                         <span class="help-icon" onclick="openHelpModal('currency', event)">?</span>
                     </div>
                     <select id="set-currency" class="styled-input" onchange="updateSettings()">
-                        <option value="RUB">RUB ₽</option>
-                        <option value="KZT">KZT ₸</option>
-                        <option value="UAH">UAH ₴</option>
-                        <option value="BYN">BYN Br</option>
-                        <option value="USD">USD $</option>
+                        <option value="RUB">RUB [₽]</option>
+                        <option value="KZT">KZT [₸]</option>
+                        <option value="UAH">UAH [₴]</option>
+                        <option value="BYN">BYN [Br]</option>
+                        <option value="USD">USD [$]</option>
                     </select>
                 </div>
 
                 <!-- Часовой пояс -->
                 <div style="margin-bottom: 18px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <span class="badge" style="margin: 0;" data-i18n="lblTimezone">Часовой пояс (UTC)</span>
+                        <span class="badge" style="margin: 0;" data-i18n="lblTimezone">Часовой пояс [UTC]</span>
                         <span class="help-icon" onclick="openHelpModal('tz', event)">?</span>
                     </div>
                     <select id="set-tz" class="styled-input" onchange="updateSettings()">
                         <option value="2">UTC+2</option>
-                        <option value="3">UTC+3 (Москва / Kyiv)</option>
+                        <option value="3">UTC+3 [Москва / Киев]</option>
                         <option value="4">UTC+4</option>
-                        <option value="5">UTC+5 (Astana)</option>
+                        <option value="5">UTC+5 [Астана]</option>
                         <option value="6">UTC+6</option>
                         <option value="7">UTC+7</option>
                     </select>
                 </div>
 
-                <button class="action-btn-secondary" onclick="openSupport()" data-i18n="btnSupport">👨‍💻 Служба поддержки</button>
+                <button class="action-btn-secondary" onclick="openSupport()" data-i18n="btnSupport">Поддержка в Telegram</button>
             </div>
 
-            <!-- ПАРТНЕРСКАЯ СЕТЬ (БЕЗ 1000, С ПРИВЯЗКОЙ К ПЕРЕМЕННОЙ REF_COUNT) -->
+            <!-- ПАРТНЕРСКАЯ СЕТЬ -->
             <div class="glass-card" style="margin-top: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div>
-                        <h2 style="font-size: 16px; margin: 0;" data-i18n="refTitle">Партнерская сеть</h2>
-                        <p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0 0;" data-i18n="refSubtitle">Получайте бонусные дни подписки</p>
+                        <h2 style="font-size: 16px; margin: 0;" data-i18n="refTitle">Партнерская программа</h2>
+                        <p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0 0;" data-i18n="refSubtitle">Приглашайте трейдеров и получайте дни</p>
                     </div>
                     <span class="help-icon" onclick="openHelpModal('referral', event)">?</span>
                 </div>
 
                 <div style="text-align: center; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 16px; margin-bottom: 14px;">
-                    <div style="font-size: 32px; font-weight: 900; color: var(--bybit-yellow);" id="ref-count-val">0</div>
+                    <div style="font-size: 32px; font-weight: 900; color: var(--lambo-gold);" id="ref-count-val">0</div>
                     <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" data-i18n="refInvited">Приглашено пользователей</div>
                 </div>
 
-                <div style="background: rgba(243, 166, 0, 0.08); border: 1px dashed rgba(243, 166, 0, 0.3); border-radius: 14px; padding: 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.5; color: #cbd5e1;" id="ref-bonus-desc">
-                    🎁 За каждого приглашенного трейдера вам начисляется <b>+3 дня</b> бесплатной подписки к текущему тарифу. Если подписки нет — доступ активируется сразу!
+                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 14px; padding: 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.5; color: #cbd5e1;" id="ref-bonus-desc">
+                    За каждого приглашенного трейдера начисляется <b>+3 дня</b> к подписке.
                 </div>
 
-                <span class="badge" data-i18n="refYourLink">Ваша партнерская ссылка</span>
+                <span class="badge" data-i18n="refYourLink">Ваша реферальная ссылка</span>
                 <div class="styled-input" style="word-break: break-all; font-family: monospace; font-size: 11px; padding: 10px;" id="ref-link-box">...</div>
 
                 <div class="analytics-grid" style="margin-top: 12px;">
-                    <button class="action-btn" style="padding: 12px;" onclick="copyRefLink()" data-i18n="btnCopy">📋 Скопировать</button>
-                    <button class="action-btn gold" style="padding: 12px;" onclick="shareRefLink()" data-i18n="btnShare">🚀 Отправить</button>
+                    <button class="action-btn-secondary" onclick="copyRefLink()" data-i18n="btnCopy">Скопировать</button>
+                    <button class="action-btn gold" onclick="shareRefLink()" data-i18n="btnShare">Поделиться</button>
                 </div>
             </div>
         </section>
 
-        <!-- 6. АДМИН-ПАНЕЛЬ -->
+        <!-- 6. АДМИН-ПАНЕЛЬ (/CONFIG + /ADMIN) -->
         <section id="admin-panel" class="page-section" style="display: none;">
             <div class="glass-card admin-section-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h1 style="margin: 0; color: var(--bybit-yellow); font-size: 22px;">🛠 Admin & Config</h1>
-                    <span class="badge" style="color: var(--bybit-yellow); border: 1px solid var(--bybit-yellow); padding: 3px 8px; border-radius: 6px;">ROOT ONLY</span>
+                    <h1 style="margin: 0; color: var(--lambo-gold); font-size: 22px;">Admin & Config</h1>
+                    <span class="badge" style="color: var(--lambo-gold); border: 1px solid var(--lambo-gold); padding: 3px 8px; border-radius: 6px;">ROOT</span>
                 </div>
-                <p class="subtitle">Управление глобальным конфигом (/config) и пользователями (/admin)</p>
+                <p class="subtitle">Управление глобальным конфигом [/config] и пользователями [/admin]</p>
 
                 <div style="margin-bottom: 20px;">
-                    <span class="badge" style="color: var(--bybit-green); font-size: 11px;">⚙️ ГЛОБАЛЬНЫЙ КОНФИГ</span>
+                    <span class="badge" style="color: var(--trade-green); font-size: 11px;">ГЛОБАЛЬНЫЙ КОНФИГ [/config]</span>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
                         <div class="input-wrap" style="margin-bottom: 8px;">
-                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_MONTH ($)</span>
+                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_MONTH [$]</span>
                             <input type="number" id="cfg-inp-month" class="styled-input" style="padding: 10px;">
                         </div>
                         <div class="input-wrap" style="margin-bottom: 8px;">
-                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_FOREVER ($)</span>
+                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_FOREVER [$]</span>
                             <input type="number" id="cfg-inp-forever" class="styled-input" style="padding: 10px;">
                         </div>
                     </div>
@@ -1464,50 +1419,50 @@
                         </div>
                     </div>
                     <div class="input-wrap" style="margin-bottom: 12px;">
-                        <span style="font-size: 10px; color: var(--text-muted);">ADMIN_IDS (через запятую)</span>
+                        <span style="font-size: 10px; color: var(--text-muted);">ADMIN_IDS [через запятую]</span>
                         <input type="text" id="cfg-inp-admin-ids" class="styled-input" style="padding: 10px;" placeholder="5172556128, 5847661785">
                     </div>
-                    <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="saveAdminConfig()">💾 СОХРАНИТЬ КОНФИГУРАЦИЮ</button>
+                    <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="saveAdminConfig()">СОХРАНИТЬ КОНФИГУРАЦИЮ В БАЗУ</button>
                 </div>
 
                 <div style="height: 1px; background: var(--glass-border); margin: 20px 0;"></div>
 
                 <div>
-                    <span class="badge" style="color: var(--bybit-purple); font-size: 11px;">👤 УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ</span>
+                    <span class="badge" style="color: var(--trade-purple); font-size: 11px;">УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ [/admin]</span>
                     <div class="input-wrap" style="margin: 8px 0 10px 0;">
                         <input type="number" id="admin-target-uid" class="styled-input" placeholder="Введите Telegram ID пользователя...">
                     </div>
                     <div class="card-btns-grid" style="margin-top: 0; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <div class="btn-card-action" style="color: var(--bybit-green); padding: 11px;" onclick="adminUserAction('grant30')">📅 +30 дней</div>
-                        <div class="btn-card-action" style="color: var(--bybit-yellow); padding: 11px;" onclick="adminUserAction('grantVIP')">♾️ VIP Навсегда</div>
-                        <div class="btn-card-action" style="color: #ff9900; padding: 11px;" onclick="adminUserAction('revoke')">❌ Снять подписку</div>
-                        <div class="btn-card-action" style="color: var(--bybit-red); padding: 11px;" onclick="adminUserAction('ban')">⛔️ Забанить</div>
+                        <div class="btn-card-action" style="color: var(--trade-green); padding: 11px;" onclick="adminUserAction('grant30')">+30 дней</div>
+                        <div class="btn-card-action" style="color: var(--lambo-gold); padding: 11px;" onclick="adminUserAction('grantVIP')">VIP Навсегда</div>
+                        <div class="btn-card-action" style="color: #ff9900; padding: 11px;" onclick="adminUserAction('revoke')">Снять подписку</div>
+                        <div class="btn-card-action" style="color: var(--trade-red); padding: 11px;" onclick="adminUserAction('ban')">Забанить</div>
                     </div>
                     <div class="analytics-grid" style="margin-top: 10px;">
-                        <button class="btn-card-action" style="color: var(--bybit-blue); padding: 11px;" onclick="adminInspectUser()">🔎 Досье юзера</button>
-                        <button class="btn-card-action" style="color: var(--bybit-green); padding: 11px;" onclick="adminUserAction('unban')">🟢 Разбанить</button>
+                        <button class="btn-card-action" style="color: var(--trade-blue); padding: 11px;" onclick="adminInspectUser()">Досье юзера</button>
+                        <button class="btn-card-action" style="color: var(--trade-green); padding: 11px;" onclick="adminUserAction('unban')">Разбанить</button>
                     </div>
 
                     <div id="admin-user-dossier" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; margin-top: 12px; font-size: 12px; line-height: 1.6;"></div>
 
-                    <button class="action-btn-secondary" style="margin-top: 15px; background: rgba(46, 187, 154, 0.15); border-color: var(--bybit-green); color: var(--bybit-green); font-weight: 800;" onclick="adminExportDatabase()">
-                        📥 ВЫГРУЗИТЬ БАЗУ (CSV)
+                    <button class="action-btn-secondary" style="margin-top: 15px; background: rgba(46, 187, 154, 0.15); border-color: var(--trade-green); color: var(--trade-green); font-weight: 800;" onclick="adminExportDatabase()">
+                        ВЫГРУЗИТЬ БАЗУ ПОЛЬЗОВАТЕЛЕЙ [CSV]
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- 7. PAYWALL (ЕСЛИ НЕТ ПОДПИСКИ) -->
+        <!-- 7. PAYWALL -->
         <div id="paywall" class="page-section" style="display: none;">
-            <h1 data-i18n="paywallTitle">Доступ к Терминалу 🔒</h1>
+            <h1 data-i18n="paywallTitle">Доступ к Терминалу</h1>
             <p class="subtitle" id="paywall-reason" data-i18n="paywallSubtitle">Оформите доступ для использования функций</p>
 
             <div class="glass-card" id="trial-card">
                 <span class="badge" data-i18n="trialBadge">Бесплатный доступ</span>
                 <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;" data-i18n="trialDesc">
-                    🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.
+                    <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.
                 </p>
-                <button class="action-btn" onclick="openSubModal()" data-i18n="btnActivateTrial">🎁 Активировать триал</button>
+                <button class="action-btn" onclick="openSubModal()" data-i18n="btnActivateTrial">Активировать триал</button>
             </div>
 
             <div class="glass-card" style="margin-top: 15px;">
@@ -1528,17 +1483,17 @@
                 </div>
 
                 <button class="action-btn gold" style="margin-top: 15px;" onclick="openSubModal()" data-i18n="btnBuySub">
-                    💳 Оформить подписку
+                    Оформить подписку
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПОДРОБНЫХ ПОЯСНЕНИЙ (ЗНАК ВОПРОСА) -->
+    <!-- МОДАЛЬНОЕ ОКНО ПОДРОБНЫХ ПОЯСНЕНИЙ -->
     <div id="modal-info" class="modal-overlay">
         <div class="glass-card modal-box" style="text-align: left; max-height: 85vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
-                <div id="info-modal-title" style="font-size: 16px; font-weight: 800; color: var(--bybit-yellow);"></div>
+                <div id="info-modal-title" style="font-size: 16px; font-weight: 800; color: var(--lambo-gold);"></div>
                 <button class="btn-card-action" style="padding: 4px 10px; font-size: 13px;" onclick="closeModals()">✕</button>
             </div>
             <div id="info-modal-content" style="font-size: 13px; line-height: 1.6; color: #cbd5e1;"></div>
@@ -1561,7 +1516,7 @@
 
     <div id="modal-card-create" class="modal-overlay">
         <div class="glass-card modal-box">
-            <h2 style="font-size: 18px; margin: 0 0 10px 0;" data-i18n="cardModalTitle">➕ Добавить карту</h2>
+            <h2 style="font-size: 18px; margin: 0 0 10px 0;" data-i18n="cardModalTitle">Добавить карту</h2>
             <div class="input-wrap">
                 <span class="badge" data-i18n="cardNameLbl">Название карты</span>
                 <input type="text" id="new-card-name" class="styled-input" placeholder="Например: Т-Банк Дроп 1">
@@ -1575,9 +1530,9 @@
 
     <div id="modal-card-limit" class="modal-overlay">
         <div class="glass-card modal-box">
-            <h2 style="font-size: 18px; margin: 0 0 10px 0;" data-i18n="limitModalTitle">⚙️ Лимит покупок</h2>
+            <h2 style="font-size: 18px; margin: 0 0 10px 0;" data-i18n="limitModalTitle">Лимит покупок</h2>
             <div class="input-wrap">
-                <span class="badge" data-i18n="limitModalLbl">Лимит в фиате (0 = без лимита)</span>
+                <span class="badge" data-i18n="limitModalLbl">Лимит в фиате [0 = без лимита]</span>
                 <input type="number" id="card-limit-val" class="styled-input" placeholder="150000">
             </div>
             <div class="analytics-grid">
@@ -1645,23 +1600,29 @@
 
     <!-- НАВИГАЦИЯ ВНИЗУ -->
     <div class="bottom-nav">
-        <div class="nav-btn active" data-target="dashboard" onclick="scrollToSection('dashboard', this)">
-            <i>📊</i><span data-i18n="navSummary">Сводка</span>
+        <div class="nav-btn active" data-target="dashboard" onclick="handleNavClick('dashboard', this)">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            <span data-i18n="navSummary">Сводка</span>
         </div>
-        <div class="nav-btn" data-target="trade" onclick="scrollToSection('trade', this)">
-            <i>⚡️</i><span data-i18n="navTrade">Сделка</span>
+        <div class="nav-btn" data-target="trade" onclick="handleNavClick('trade', this)">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            <span data-i18n="navTrade">Сделка</span>
         </div>
-        <div class="nav-btn" data-target="cards" onclick="scrollToSection('cards', this)">
-            <i>💳</i><span data-i18n="navCards">Карты</span>
+        <div class="nav-btn" data-target="cards" onclick="handleNavClick('cards', this)">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+            <span data-i18n="navCards">Карты</span>
         </div>
-        <div class="nav-btn" data-target="history" onclick="scrollToSection('history', this)">
-            <i>📜</i><span data-i18n="navHistory">История</span>
+        <div class="nav-btn" data-target="history" onclick="handleNavClick('history', this)">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            <span data-i18n="navHistory">История</span>
         </div>
-        <div class="nav-btn" data-target="profile" onclick="scrollToSection('profile', this)">
-            <i>⚙️</i><span data-i18n="navSettings">Настройки</span>
+        <div class="nav-btn" data-target="profile" onclick="handleNavClick('profile', this)">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <span data-i18n="navSettings">Настройки</span>
         </div>
-        <div class="nav-btn" id="nav-btn-admin" data-target="admin-panel" style="display: none;" onclick="scrollToSection('admin-panel', this)">
-            <i>🛠</i><span>Админ</span>
+        <div class="nav-btn" id="nav-btn-admin" data-target="admin-panel" style="display: none;" onclick="handleNavClick('admin-panel', this)">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+            <span>Админ</span>
         </div>
     </div>
 
@@ -2020,7 +1981,8 @@
         };
 
         let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
-        let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
+        let uiMode = localStorage.getItem('p2p_ui_mode') || 'fx';
+        let layoutMode = localStorage.getItem('p2p_layout_mode') || 'feed';
 
         function applyUiMode(mode) {
             uiMode = mode;
@@ -2047,6 +2009,38 @@
             const newMode = isChecked ? 'fx' : 'simple';
             applyUiMode(newMode);
             showToast(isChecked ? "🌟 Полный FX активирован!" : "⚡️ Минимализм активирован!");
+        }
+
+        function applyLayoutMode(mode) {
+            layoutMode = mode;
+            localStorage.setItem('p2p_layout_mode', mode);
+            const toggleEl = document.getElementById('toggle-layout-mode');
+            const descEl = document.getElementById('layout-mode-desc');
+
+            if (mode === 'feed') {
+                if (toggleEl) toggleEl.checked = true;
+                if (descEl) descEl.innerText = "Сплошная лента (скролл со сборкой блоков)";
+                document.querySelectorAll('.page-section').forEach(sec => {
+                    if (sec.id !== 'admin-panel' && sec.id !== 'paywall') {
+                        sec.style.display = 'block';
+                    }
+                });
+            } else {
+                if (toggleEl) toggleEl.checked = false;
+                if (descEl) descEl.innerText = "По отдельным вкладкам (быстрее)";
+                document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
+                document.getElementById('dashboard').style.display = 'block';
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                const activeNav = document.querySelector('.nav-btn[data-target="dashboard"]');
+                if (activeNav) activeNav.classList.add('active');
+            }
+        }
+
+        function switchLayoutMode(isChecked) {
+            haptic('medium');
+            const newMode = isChecked ? 'feed' : 'pages';
+            applyLayoutMode(newMode);
+            showToast(isChecked ? "📜 Режим общей ленты включен!" : "📱 Режим отдельных вкладок включен!");
         }
 
         function applyLanguage(lang) {
@@ -2384,183 +2378,6 @@
             calculateStats();
         }
 
-        function initBlockchainCanvas() {
-            const canvas = document.getElementById('blockchain-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let w, h;
-
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            const hexChars = "0123456789ABCDEF";
-            function randomHash(len=10) {
-                let s = "0x";
-                for (let i = 0; i < len; i++) s += hexChars[Math.floor(Math.random() * hexChars.length)];
-                return s;
-            }
-
-            const cryptoLabels = ["USDT/RUB", "TX 250.00", "BLOCK #", "SHA256", "WAC 96.2", "MATCHED", "PEER_OK"];
-            let nodes = [];
-            const nodeCount = 26;
-            for (let i = 0; i < nodeCount; i++) {
-                nodes.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.35,
-                    vy: (Math.random() - 0.5) * 0.35,
-                    hash: randomHash(6),
-                    tag: cryptoLabels[i % cryptoLabels.length],
-                    isBlock: Math.random() > 0.6,
-                    color: Math.random() > 0.5 ? '#f3a600' : '#2ebb9a'
-                });
-            }
-
-            function draw() {
-                if (uiMode === 'simple') return;
-                ctx.clearRect(0, 0, w, h);
-
-                for (let i = 0; i < nodeCount; i++) {
-                    const n = nodes[i];
-                    n.x += n.vx;
-                    n.y += n.vy;
-
-                    if (n.x < 0) n.x = w;
-                    if (n.x > w) n.x = 0;
-                    if (n.y < 0) n.y = h;
-                    if (n.y > h) n.y = 0;
-
-                    if (n.isBlock) {
-                        ctx.strokeStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.18)' : 'rgba(46, 187, 154, 0.18)';
-                        ctx.strokeRect(n.x - 16, n.y - 10, 32, 20);
-                    }
-
-                    ctx.fillStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.45)' : 'rgba(46, 187, 154, 0.45)';
-                    ctx.font = '9px Fira Code, monospace';
-                    ctx.fillText(n.hash, n.x + 8, n.y - 4);
-
-                    for (let j = i + 1; j < nodeCount; j++) {
-                        const n2 = nodes[j];
-                        const dx = n.x - n2.x;
-                        const dy = n.y - n2.y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 130) {
-                            ctx.beginPath();
-                            ctx.moveTo(n.x, n.y);
-                            ctx.lineTo(n2.x, n2.y);
-                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 130)})`;
-                            ctx.lineWidth = 0.6;
-                            ctx.stroke();
-                        }
-                    }
-                }
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-
-        const bootLogs = [
-            { text: "> SYSTEM BOOT: INIT P2P_CORE_V8.1.0", class: "c-green" },
-            { text: "[OK] SECURE ENCLAVE ACTIVE", class: "c-dim" },
-            { text: "> AUTHENTICATING TELEGRAM CREDENTIALS...", class: "c-blue" },
-            { text: "[OK] TELEGRAM HMAC SHA-256 MATCH", class: "c-green" },
-            { text: "> CONNECTING SUPABASE CLOUD CLUSTER...", class: "c-dim" },
-            { text: "[OK] LEDGER ENGINES ONLINE", class: "c-gold" }
-        ];
-
-        async function playTerminalBootSequence() {
-            const container = document.getElementById("console-stream");
-            const bar = document.getElementById("boot-progress-bar");
-            const pct = document.getElementById("boot-pct");
-            container.innerHTML = "";
-
-            const total = bootLogs.length;
-            for (let i = 0; i < total; i++) {
-                const item = bootLogs[i];
-                const line = document.createElement("div");
-                line.className = `console-line ${item.class}`;
-                line.innerHTML = `${item.text} <span class="cursor-blink"></span>`;
-                container.appendChild(line);
-
-                requestAnimationFrame(() => line.classList.add("visible"));
-
-                const prevCursors = container.querySelectorAll(".cursor-blink");
-                if (prevCursors.length > 1) prevCursors[0].remove();
-
-                const p = Math.round(((i + 1) / total) * 100);
-                bar.style.width = `${p}%`;
-                pct.innerText = `${p}%`;
-                container.scrollTop = container.scrollHeight;
-
-                await new Promise(r => setTimeout(r, 60));
-            }
-        }
-
-        function initScrollAnimations() {
-            if (uiMode === 'simple') return;
-            const sections = document.querySelectorAll('.page-section');
-            const navBtns = document.querySelectorAll('.nav-btn');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('revealed');
-                    } else {
-                        if (entry.target.id !== 'dashboard' || window.pageYOffset > 180) {
-                            entry.target.classList.remove('revealed');
-                        }
-                    }
-                });
-            }, { threshold: 0.08, rootMargin: "0px 0px -30px 0px" });
-
-            sections.forEach(s => observer.observe(s));
-
-            window.addEventListener('scroll', () => {
-                let currentId = 'dashboard';
-                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-
-                sections.forEach(section => {
-                    const top = section.offsetTop - 140;
-                    if (scrollY >= top) currentId = section.getAttribute('id');
-                });
-
-                navBtns.forEach(btn => {
-                    if (btn.getAttribute('data-target') === currentId) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            }, { passive: true });
-        }
-
-        function scrollToSection(id, el) {
-            haptic('light');
-            const target = document.getElementById(id);
-            if (target) {
-                target.classList.add('revealed');
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            if (el) el.classList.add('active');
-        }
-
-        function forceHideLoader() {
-            const loader = document.getElementById('terminal-boot-loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.classList.add('fade-out');
-                setTimeout(() => { loader.style.display = 'none'; }, 350);
-            }
-            const container = document.querySelector('.container');
-            const nav = document.querySelector('.bottom-nav');
-            if (container) container.style.display = 'block';
-            if (nav) nav.style.display = 'flex';
-        }
-
         async function init() {
             applyLanguage(currentLang);
             applyUiMode(uiMode);
@@ -2589,6 +2406,7 @@
                 clearTimeout(failsafeTimer);
                 forceHideLoader();
                 initScrollAnimations();
+                applyLayoutMode(layoutMode);
             }
         }
 
@@ -2625,7 +2443,6 @@
             runCalculator();
         }
 
-        /* ПОЛУЧЕНИЕ ДАННЫХ ИЗ SUPABASE: ЗАЩИТА ОТ 1000 И ПРИВЯЗКА К ПЕРЕМЕННОЙ REF_COUNT */
         async function refreshData() {
             if (!currentUser) return;
             const [u, c, t, o, refs] = await Promise.all([
@@ -2640,14 +2457,12 @@
             userTrades = t || [];
             cardOps = o || [];
 
-            // Приоритет: колонка ref_count из таблицы users в Supabase
             let refCount = 0;
             if (currentUser.ref_count !== undefined && currentUser.ref_count !== null) {
                 refCount = parseInt(currentUser.ref_count) || 0;
             } else if (currentUser.referrals_count !== undefined && currentUser.referrals_count !== null) {
                 refCount = parseInt(currentUser.referrals_count) || 0;
             } else if (Array.isArray(refs)) {
-                // Защита: если вернулся дефолтный лимит дампы 1000 строк - не показывать ложные 1000
                 refCount = (refs.length === 1000) ? 0 : refs.length;
             }
 
@@ -2728,7 +2543,7 @@
                     db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: ref }) }),
                     db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: adminsRaw }) })
                 ]);
-                showToast("✅ Конфигурация сохранена!");
+                showToast("✅ Конфигурация сохранена в базу!");
                 loadAdminConfigValues();
             } catch (e) {
                 showToast("❌ Ошибка сохранения");
@@ -2831,22 +2646,22 @@
         }
 
         function getSubStatusInfo() {
-            if (currentUser.is_banned) return { text: "⛔️ Доступ заблокирован", class: "tier-expired", active: false };
-            if (!currentUser.sub_end) return { text: "❌ Подписка не активна", class: "tier-expired", active: false };
+            if (currentUser.is_banned) return { text: "⛔️ Banned", class: "tier-expired", active: false };
+            if (!currentUser.sub_end) return { text: "❌ No Pass", class: "tier-expired", active: false };
 
             const now = new Date();
             const end = new Date(currentUser.sub_end);
-            if (end < now) return { text: "⏳ Срок подписки истек", class: "tier-expired", active: false };
-            if (end.getFullYear() > 2099) return { text: "💎 VIP Доступ: Навсегда", class: "tier-vip", active: true };
+            if (end < now) return { text: "⏳ Expired", class: "tier-expired", active: false };
+            if (end.getFullYear() > 2099) return { text: "💎 VIP Lifetime", class: "tier-vip", active: true };
 
             const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
             const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
             const dateStr = end.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { day: '2-digit', month: '2-digit' });
 
             if (currentUser.trial_used && diffDays <= 2) {
-                return { text: `🎁 Пробный период 24ч (до ${dateStr})`, class: "tier-trial", active: true };
+                return { text: `🎁 Trial 24h (${dateStr})`, class: "tier-trial", active: true };
             }
-            return { text: `⚡️ Подписка (до ${dateStr})`, class: "tier-month", active: true };
+            return { text: `⚡️ Premium 1mo (${dateStr})`, class: "tier-month", active: true };
         }
 
         function checkSubscription() {
