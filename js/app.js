@@ -5,7 +5,7 @@ const SUPER_ADMIN_ID = 5172556128;
 let adminIds = [SUPER_ADMIN_ID];
 
 /* ====================================================
-   ПОЛНЫЕ ПЕРЕВОДЫ НА 7 ЯЗЫКОВ
+   ПОЛНЫЙ МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
 ==================================================== */
 const I18N = {
     ru: {
@@ -25,12 +25,14 @@ const I18N = {
         showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть подробную статистику",
         presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней",
         dateFrom: "С даты", dateTo: "По дату", btnApplyDate: "Применить ⚡️",
-        calendarToggle: "📅 Календарь доходности месяца", calendarHint: "Зажмите день для превью • Нажмите для деталей",
         newTradeTitle: "Новая операция", newTradeSubtitle: "Внести единичный ордер в базу",
         buyBtn: "ПОКУПКА 🟢", sellBtn: "ПРОДАЖА 🔴", modeFiat: "Сумма фиата", modeCrypto: "Объем USDT",
-        lblRate: "Курс USDT", lblCardOpt: "Банковская карта (Опционально)", noCardOpt: "Без привязки к карте", lblBindCard: "Привязать карту к кругу",
+        lblRate: "Курс USDT", lblCardOpt: "Банковская карта (Опционально)", noCardOpt: "Без привязки к карте",
         cardsTitle: "Мои карты", cardsSubtitle: "Клик по карте открывает полное управление", btnCreateCard: "➕ Создать",
-        historyTitle: "История операций", historySubtitle: "Синхронизированные сделки, круги и заметки", btnExport: "📥 Экспорт",
+        historyTitle: "История операций", historySubtitle: "Синхронизированные сделки, круги и заметки",
+        refTitle: "Партнерская сеть", refSubtitle: "Получайте бонусные дни подписки",
+        refInvited: "Приглашено пользователей", refYourLink: "Ваша партнерская ссылка",
+        btnCopy: "📋 Скопировать", btnShare: "🚀 Отправить",
         profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта и промокоды",
         lblYourId: "ВАШ TELEGRAM ID", lblLang: "Язык интерфейса", lblBaseCur: "Базовая валюта",
         lblTimezone: "Часовой пояс (UTC)", btnSubModal: "💎 Подписка",
@@ -40,15 +42,7 @@ const I18N = {
         btnActivateTrial: "🎁 Активировать триал", plansBadge: "Тарифные планы",
         plansDesc: "Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.",
         plan1m: "1 Месяц", planForever: "Навсегда", btnBuySub: "💳 Оформить подписку",
-        subModalTitle: "Оформление в Telegram-боте",
-        subModalDesc: "Активация 24 часов бесплатного триала и покупка тарифов производятся <b>исключительно в нашем Telegram-боте</b>.<br><br>После отправки перевода и сверки Bybit UID доступ в веб-терминале активируется автоматически!",
-        btnGotIt: "Понятно", cardModalTitle: "➕ Добавить карту", cardNameLbl: "Название карты", cardNumLbl: "Номер карты / СБП", cardBankLbl: "Банк", cardHolderLbl: "ФИО Получателя", cardLimitLbl: "Суточный лимит (0 = без лимита)",
-        btnCancel: "Отмена", btnCreate: "Создать",
-        opAmountLbl: "Сумма в фиате", opCommentLbl: "Комментарий", btnApply: "Применить",
-        editModalTitle: "Редактирование сделки", navSummary: "Сводка", navTrade: "Сделка",
-        navCards: "Карты", navHistory: "История", navSettings: "Настройки", navAdmin: "Админ",
-        restrictedTitle: "Доступ ограничен", restrictedDesc: "Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.",
-        openBotBtn: "🚀 Открыть бота", btnSharePnl: "📸 Карточка", promoTitle: "🎁 Активация промокода", soundTitle: "Звук монет / кассы", soundDesc: "Аудио-отклик фиксации профита", layoutTitle: "Режим общей ленты", uiModeLabel: "Визуальные эффекты (FX)", refTitle: "Партнерская сеть", refSubtitle: "Бонусные дни подписки", refInvited: "Приглашено пользователей", refYourLink: "Ваша партнерская ссылка", btnCopy: "📋 Скопировать", btnShare: "🚀 Отправить"
+        btnGotIt: "Понятно"
     },
     en: {
         tabToday: "Today", tabMonth: "This Month", tabAll: "All Time", tabCustom: "Custom Range 📅",
@@ -67,12 +61,14 @@ const I18N = {
         showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Detailed Stats",
         presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days",
         dateFrom: "Date from", dateTo: "Date to", btnApplyDate: "Apply ⚡️",
-        calendarToggle: "📅 Monthly Profit Calendar", calendarHint: "Hold day for preview • Tap for details",
         newTradeTitle: "New Operation", newTradeSubtitle: "Record single order into ledger",
         buyBtn: "BUY 🟢", sellBtn: "SELL 🔴", modeFiat: "Fiat Amount", modeCrypto: "USDT Volume",
-        lblRate: "USDT Rate", lblCardOpt: "Bank Card (Optional)", noCardOpt: "No card bound", lblBindCard: "Bind card to cycle",
+        lblRate: "USDT Rate", lblCardOpt: "Bank Card (Optional)", noCardOpt: "No card bound",
         cardsTitle: "My Cards", cardsSubtitle: "Tap card to open full controls", btnCreateCard: "➕ Add Card",
-        historyTitle: "Operations History", historySubtitle: "Synchronized cycles, trades and notes", btnExport: "📥 Export",
+        historyTitle: "Operations History", historySubtitle: "Synchronized cycles, trades and notes",
+        refTitle: "Partner Network", refSubtitle: "Earn bonus subscription days",
+        refInvited: "Invited Traders", refYourLink: "Your Referral Link",
+        btnCopy: "📋 Copy", btnShare: "🚀 Share",
         profileTitle: "Settings", profileSubtitle: "Account config and promo codes",
         lblYourId: "YOUR TELEGRAM ID", lblLang: "Interface Language", lblBaseCur: "Base Currency",
         lblTimezone: "Timezone (UTC)", btnSubModal: "💎 Upgrade / Renew",
@@ -82,15 +78,7 @@ const I18N = {
         btnActivateTrial: "🎁 Activate Trial", plansBadge: "Subscription Plans",
         plansDesc: "Bybit payment and UID verification are processed in our Telegram Bot.",
         plan1m: "1 Month", planForever: "Lifetime VIP", btnBuySub: "💳 Get Subscription",
-        subModalTitle: "Purchase in Telegram Bot",
-        subModalDesc: "Trial activation and paid plans are processed <b>in our Telegram Bot</b>.<br><br>Access activates automatically!",
-        btnGotIt: "Got It", cardModalTitle: "➕ Add Card", cardNameLbl: "Card Label", cardNumLbl: "Card / SBP Number", cardBankLbl: "Bank", cardHolderLbl: "Holder Name", cardLimitLbl: "Daily Limit (0 = none)",
-        btnCancel: "Cancel", btnCreate: "Create",
-        opAmountLbl: "Amount in fiat", opCommentLbl: "Comment", btnApply: "Apply",
-        editModalTitle: "Edit Trade", navSummary: "Summary", navTrade: "Trade",
-        navCards: "Cards", navHistory: "History", navSettings: "Settings", navAdmin: "Admin",
-        restrictedTitle: "Access Restricted", restrictedDesc: "This terminal launches strictly via Telegram Mini App.",
-        openBotBtn: "🚀 Open Telegram Bot", btnSharePnl: "📸 Card", promoTitle: "🎁 Promo Code Activation", soundTitle: "Cash / Coin Sound", soundDesc: "Audio feedback on cycle recording", layoutTitle: "Continuous Feed Mode", uiModeLabel: "Visual Effects (FX)", refTitle: "Partner Network", refSubtitle: "Bonus subscription days", refInvited: "Invited Traders", refYourLink: "Your Referral Link", btnCopy: "📋 Copy", btnShare: "🚀 Share"
+        btnGotIt: "Got It"
     },
     es: {
         tabToday: "Hoy", tabMonth: "Este mes", tabAll: "Todo el tiempo", tabCustom: "Elegir fechas 📅",
@@ -104,17 +92,18 @@ const I18N = {
         calcSpread: "Spread:", calcProfit: "Beneficio del ciclo:", calcSaveCycle: "Guardar ciclo ✅", calcClear: "Limpiar ❌",
         showSecondary: "📊 Mostrar estadísticas", hideSecondary: "📊 Ocultar estadísticas",
         presetYesterday: "Ayer", preset7d: "7 días", preset30d: "30 días", dateFrom: "Desde", dateTo: "Hasta",
-        btnApplyDate: "Aplicar ⚡️", calendarToggle: "📅 Calendario mensual", calendarHint: "Mantenga para vista previa • Toque para detalles",
-        newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar orden", buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴",
-        modeFiat: "Fiat", modeCrypto: "USDT", lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria", noCardOpt: "Sin tarjeta", lblBindCard: "Vincular tarjeta",
+        btnApplyDate: "Aplicar ⚡️", newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar orden",
+        buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴", modeFiat: "Fiat", modeCrypto: "USDT",
+        lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria", noCardOpt: "Sin tarjeta",
         cardsTitle: "Mis tarjetas", cardsSubtitle: "Toque para abrir opciones", btnCreateCard: "➕ Agregar",
-        historyTitle: "Historial de órdenes", historySubtitle: "Transacciones y notas", btnExport: "📥 Exportar",
-        profileTitle: "Ajustes", profileSubtitle: "Configuración y códigos", lblYourId: "TELEGRAM ID", lblLang: "Idioma",
-        lblBaseCur: "Moneda base", lblTimezone: "Zona horaria (UTC)", btnSubModal: "💎 Suscripción", btnSupport: "👨‍💻 Soporte",
-        paywallTitle: "Acceso restringido 🔒", paywallSubtitle: "Desbloquee las funciones", trialBadge: "Prueba gratuita",
-        trialDesc: "Prueba de 24 horas en el bot.", btnActivateTrial: "🎁 Activar prueba", plansBadge: "Planes", plansDesc: "Pago seguro.",
-        plan1m: "1 Mes", planForever: "De por vida", btnBuySub: "💳 Suscripción", subModalTitle: "Adquisición en Telegram",
-        subModalDesc: "¡Activación automática!", btnGotIt: "Entendido", cardModalTitle: "➕ Nueva tarjeta", cardNameLbl: "Nombre", cardNumLbl: "Número", cardBankLbl: "Banco", cardHolderLbl: "Titular", cardLimitLbl: "Límite", btnCancel: "Cancelar", btnCreate: "Crear", opAmountLbl: "Monto", opCommentLbl: "Comentario", btnApply: "Aplicar", editModalTitle: "Editar operación", navSummary: "Resumen", navTrade: "Orden", navCards: "Tarjetas", navHistory: "Historial", navSettings: "Ajustes", navAdmin: "Admin", restrictedTitle: "Acceso restringido", restrictedDesc: "Abra en Telegram Mini App.", openBotBtn: "🚀 Abrir bot", btnSharePnl: "📸 Imagen", promoTitle: "🎁 Código promocional", soundTitle: "Sonido de caja", soundDesc: "Respuesta de audio", layoutTitle: "Modo lista continua", uiModeLabel: "Efectos (FX)", refTitle: "Afiliados", refSubtitle: "Días extra", refInvited: "Invitados", refYourLink: "Enlace", btnCopy: "📋 Copiar", btnShare: "🚀 Compartir"
+        historyTitle: "Historial de órdenes", historySubtitle: "Transacciones y notas",
+        refTitle: "Afiliados", refSubtitle: "Días extra", refInvited: "Invitados", refYourLink: "Enlace",
+        btnCopy: "📋 Copiar", btnShare: "🚀 Compartir", profileTitle: "Ajustes", profileSubtitle: "Configuración y códigos",
+        lblYourId: "TELEGRAM ID", lblLang: "Idioma", lblBaseCur: "Moneda base", lblTimezone: "Zona horaria (UTC)",
+        btnSubModal: "💎 Suscripción", btnSupport: "👨‍💻 Soporte", paywallTitle: "Acceso restringido 🔒",
+        paywallSubtitle: "Desbloquee las funciones", trialBadge: "Prueba gratuita", trialDesc: "Prueba de 24 horas en el bot.",
+        btnActivateTrial: "🎁 Activar prueba", plansBadge: "Planes", plansDesc: "Pago seguro.",
+        plan1m: "1 Mes", planForever: "De por vida", btnBuySub: "💳 Suscripción", btnGotIt: "Entendido"
     },
     fr: {
         tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps", tabCustom: "Choisir dates 📅",
@@ -128,17 +117,18 @@ const I18N = {
         calcSpread: "Spread:", calcProfit: "Profit du cycle:", calcSaveCycle: "Enregistrer ✅", calcClear: "Effacer ❌",
         showSecondary: "📊 Afficher détails", hideSecondary: "📊 Masquer détails",
         presetYesterday: "Hier", preset7d: "7 jours", preset30d: "30 jours", dateFrom: "Du", dateTo: "Au",
-        btnApplyDate: "Appliquer ⚡️", calendarToggle: "📅 Calendrier de profit", calendarHint: "Maintenez pour l'aperçu • Touchez pour détails",
-        newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer ordre", buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴",
-        modeFiat: "Fiat", modeCrypto: "Volume USDT", lblRate: "Taux USDT", lblCardOpt: "Carte bancaire", noCardOpt: "Aucune carte", lblBindCard: "Lier carte",
+        btnApplyDate: "Appliquer ⚡️", newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer ordre",
+        buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴", modeFiat: "Fiat", modeCrypto: "Volume USDT",
+        lblRate: "Taux USDT", lblCardOpt: "Carte bancaire", noCardOpt: "Aucune carte",
         cardsTitle: "Mes cartes", cardsSubtitle: "Touchez pour gérer", btnCreateCard: "➕ Créer",
-        historyTitle: "Historique des ordres", historySubtitle: "Transactions synchronisées", btnExport: "📥 Exporter",
-        profileTitle: "Paramètres", profileSubtitle: "Configuration et codes", lblYourId: "TELEGRAM ID", lblLang: "Langue",
-        lblBaseCur: "Devise", lblTimezone: "Fuseau horaire (UTC)", btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support",
-        paywallTitle: "Accès restreint 🔒", paywallSubtitle: "Débloquez les fonctions", trialBadge: "Essai gratuit",
-        trialDesc: "Essai 24h dans le bot.", btnActivateTrial: "🎁 Activer essai", plansBadge: "Formules", plansDesc: "Paiement sécurisé.",
-        plan1m: "1 Mois", planForever: "À vie", btnBuySub: "💳 S'abonner", subModalTitle: "Souscription Telegram",
-        subModalDesc: "Activation immédiate!", btnGotIt: "Compris", cardModalTitle: "➕ Nouvelle carte", cardNameLbl: "Nom", cardNumLbl: "Numéro", cardBankLbl: "Banque", cardHolderLbl: "Titulaire", cardLimitLbl: "Limite", btnCancel: "Annuler", btnCreate: "Créer", opAmountLbl: "Montant", opCommentLbl: "Commentaire", btnApply: "Appliquer", editModalTitle: "Modifier", navSummary: "Bilan", navTrade: "Ordre", navCards: "Cartes", navHistory: "Historique", navSettings: "Options", navAdmin: "Admin", restrictedTitle: "Accès restreint", restrictedDesc: "Ouvrez via Telegram Mini App.", openBotBtn: "🚀 Ouvrir bot", btnSharePnl: "📸 Image", promoTitle: "🎁 Code promo", soundTitle: "Son de caisse", soundDesc: "Retour audio", layoutTitle: "Mode défilement continu", uiModeLabel: "Effets FX", refTitle: "Affiliation", refSubtitle: "Gagnez des jours", refInvited: "Invités", refYourLink: "Lien", btnCopy: "📋 Copier", btnShare: "🚀 Partager"
+        historyTitle: "Historique des ordres", historySubtitle: "Transactions synchronisées",
+        refTitle: "Affiliation", refSubtitle: "Gagnez des jours", refInvited: "Invités", refYourLink: "Lien",
+        btnCopy: "📋 Copier", btnShare: "🚀 Partager", profileTitle: "Paramètres", profileSubtitle: "Configuration et codes",
+        lblYourId: "TELEGRAM ID", lblLang: "Langue", lblBaseCur: "Devise", lblTimezone: "Fuseau horaire (UTC)",
+        btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support", paywallTitle: "Accès restreint 🔒",
+        paywallSubtitle: "Débloquez les fonctions", trialBadge: "Essai gratuit", trialDesc: "Essai 24h dans le bot.",
+        btnActivateTrial: "🎁 Activer essai", plansBadge: "Formules", plansDesc: "Paiement sécurisé.",
+        plan1m: "1 Mois", planForever: "À vie", btnBuySub: "💳 S'abonner", btnGotIt: "Compris"
     },
     de: {
         tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit", tabCustom: "Zeitraum wählen 📅",
@@ -152,17 +142,18 @@ const I18N = {
         calcSpread: "Spread:", calcProfit: "Zyklus-Gewinn:", calcSaveCycle: "Buchen ✅", calcClear: "Zurücksetzen ❌",
         showSecondary: "📊 Details anzeigen", hideSecondary: "📊 Details ausblenden",
         presetYesterday: "Gestern", preset7d: "7 Tage", preset30d: "30 Tage", dateFrom: "Von", dateTo: "Bis",
-        btnApplyDate: "Anwenden ⚡️", calendarToggle: "📅 Monatskalender", calendarHint: "Gedrückt halten für Vorschau • Tippen für Details",
-        newTradeTitle: "Neuer Trade", newTradeSubtitle: "Zyklus buchen", buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴",
-        modeFiat: "Fiat", modeCrypto: "USDT-Volumen", lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte", noCardOpt: "Keine Karte", lblBindCard: "Karte binden",
+        btnApplyDate: "Anwenden ⚡️", newTradeTitle: "Neuer Trade", newTradeSubtitle: "Zyklus buchen",
+        buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴", modeFiat: "Fiat", modeCrypto: "USDT-Volumen",
+        lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte", noCardOpt: "Keine Karte",
         cardsTitle: "Meine Karten", cardsSubtitle: "Tippen zum Verwalten", btnCreateCard: "➕ Hinzufügen",
-        historyTitle: "Trade-Historie", historySubtitle: "Trades und Notizen", btnExport: "📥 Export",
-        profileTitle: "Einstellungen", profileSubtitle: "Konfiguration", lblYourId: "TELEGRAM ID", lblLang: "Sprache",
-        lblBaseCur: "Basiswährung", lblTimezone: "Zeitzone (UTC)", btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support",
-        paywallTitle: "Zugriff gesperrt 🔒", paywallSubtitle: "Abo freischalten", trialBadge: "Kostenloser Test",
-        trialDesc: "24h im Bot.", btnActivateTrial: "🎁 Test starten", plansBadge: "Tarife", plansDesc: "Zahlung im Bot.",
-        plan1m: "1 Monat", planForever: "Lebenslang", btnBuySub: "💳 Abo buchen", subModalTitle: "Aktivierung im Bot",
-        subModalDesc: "Automatische Freischaltung!", btnGotIt: "Verstanden", cardModalTitle: "➕ Karte hinzufügen", cardNameLbl: "Name", cardNumLbl: "Nummer", cardBankLbl: "Bank", cardHolderLbl: "Inhaber", cardLimitLbl: "Limit", btnCancel: "Abbrechen", btnCreate: "Erstellen", opAmountLbl: "Betrag", opCommentLbl: "Kommentar", btnApply: "Anwenden", editModalTitle: "Bearbeiten", navSummary: "Übersicht", navTrade: "Trade", navCards: "Karten", navHistory: "Historie", navSettings: "Optionen", navAdmin: "Admin", restrictedTitle: "Zugriff beschränkt", restrictedDesc: "Starten Sie über Telegram Mini App.", openBotBtn: "🚀 Bot öffnen", btnSharePnl: "📸 Bild", promoTitle: "🎁 Promo-Code", soundTitle: "Münzsound", soundDesc: "Akustisches Feedback", layoutTitle: "Feed-Modus", uiModeLabel: "FX-Effekte", refTitle: "Partner", refSubtitle: "Bonus-Tage", refInvited: "Eingeladen", refYourLink: "Link", btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen"
+        historyTitle: "Trade-Historie", historySubtitle: "Trades und Notizen",
+        refTitle: "Partner", refSubtitle: "Bonus-Tage", refInvited: "Eingeladen", refYourLink: "Link",
+        btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen", profileTitle: "Einstellungen", profileSubtitle: "Konfiguration",
+        lblYourId: "TELEGRAM ID", lblLang: "Sprache", lblBaseCur: "Basiswährung", lblTimezone: "Zeitzone (UTC)",
+        btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Support", paywallTitle: "Zugriff gesperrt 🔒",
+        paywallSubtitle: "Abo freischalten", trialBadge: "Kostenloser Test", trialDesc: "24h im Bot.",
+        btnActivateTrial: "🎁 Test starten", plansBadge: "Tarife", plansDesc: "Zahlung im Bot.",
+        plan1m: "1 Monat", planForever: "Lebenslang", btnBuySub: "💳 Abo buchen", btnGotIt: "Verstanden"
     },
     uk: {
         tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час", tabCustom: "Свій період 📅",
@@ -181,18 +172,18 @@ const I18N = {
         showSecondary: "📊 Розгорнути детальну статистику", hideSecondary: "📊 Згорнути статистику",
         presetYesterday: "Вчора", preset7d: "7 днів", preset30d: "30 днів",
         dateFrom: "З дати", dateTo: "По дату", btnApplyDate: "Застосувати ⚡️",
-        calendarToggle: "📅 Календар дохідності місяця", calendarHint: "Затисніть день для прев'ю • Натисніть для деталей",
-        newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло в базу", buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴",
-        modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT", lblRate: "Курс USDT", lblCardOpt: "Банківська картка", noCardOpt: "Без прив'язки", lblBindCard: "Прив'язати картку",
+        newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло в базу",
+        buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴", modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT",
+        lblRate: "Курс USDT", lblCardOpt: "Банківська картка", noCardOpt: "Без прив'язки",
         cardsTitle: "Мої картки", cardsSubtitle: "Клік відкриває повне керування", btnCreateCard: "➕ Створити",
-        historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди та нотатки", btnExport: "📥 Експорт",
-        profileTitle: "Налаштування", profileSubtitle: "Конфігурація та промокоди", lblYourId: "ВАШ TELEGRAM ID",
-        lblLang: "Мова", lblBaseCur: "Базова валюта", lblTimezone: "Часовий пояс (UTC)", btnSubModal: "💎 Підписка",
-        btnSupport: "👨‍💻 Підтримка", paywallTitle: "Доступ обмежено 🔒", paywallSubtitle: "Оформіть доступ",
-        trialBadge: "Безкоштовний доступ", trialDesc: "🎁 Пробний період 24 години в боті.", btnActivateTrial: "🎁 Активувати тріал",
-        plansBadge: "Тарифи", plansDesc: "Оплата в боті.", plan1m: "1 Місяць", planForever: "Назавжди", btnBuySub: "💳 Оформити підписку",
-        subModalTitle: "Оформлення в боті", subModalDesc: "Автоматичний доступ!", btnGotIt: "Зрозуміло",
-        cardModalTitle: "➕ Додати картку", cardNameLbl: "Назва", cardNumLbl: "Номер", cardBankLbl: "Банк", cardHolderLbl: "ПІБ", cardLimitLbl: "Ліміт", btnCancel: "Скасувати", btnCreate: "Створити", opAmountLbl: "Сума", opCommentLbl: "Коментар", btnApply: "Застосувати", editModalTitle: "Редагування", navSummary: "Зведення", navTrade: "Угода", navCards: "Картки", navHistory: "Історія", navSettings: "Налаштування", navAdmin: "Адмін", restrictedTitle: "Доступ обмежено", restrictedDesc: "Запускайте виключно через Telegram Mini App.", openBotBtn: "🚀 Відкрити бота", btnSharePnl: "📸 Картка", promoTitle: "🎁 Промокод", soundTitle: "Звук каси", soundDesc: "Звуковий відгук", layoutTitle: "Стрічка", uiModeLabel: "Візуальні ефекти (FX)", refTitle: "Партнерська мережа", refSubtitle: "Бонусні дні", refInvited: "Запрошено", refYourLink: "Посилання", btnCopy: "📋 Скопіювати", btnShare: "🚀 Поділитися"
+        historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди та нотатки",
+        refTitle: "Партнерська мережа", refSubtitle: "Бонусні дні", refInvited: "Запрошено", refYourLink: "Посилання",
+        btnCopy: "📋 Скопіювати", btnShare: "🚀 Поділитися", profileTitle: "Налаштування", profileSubtitle: "Конфігурація та промокоди",
+        lblYourId: "ВАШ TELEGRAM ID", lblLang: "Мова", lblBaseCur: "Базова валюта", lblTimezone: "Часовий пояс (UTC)",
+        btnSubModal: "💎 Підписка", btnSupport: "👨‍💻 Підтримка", paywallTitle: "Доступ обмежено 🔒",
+        paywallSubtitle: "Оформіть доступ", trialBadge: "Безкоштовний доступ", trialDesc: "🎁 Пробний період 24 години в боті.",
+        btnActivateTrial: "🎁 Активувати тріал", plansBadge: "Тарифи", plansDesc: "Оплата в боті.",
+        plan1m: "1 Місяць", planForever: "Назавжди", btnBuySub: "💳 Оформити підписку", btnGotIt: "Зрозуміло"
     },
     kk: {
         tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт", tabCustom: "Күндерді таңдау 📅",
@@ -207,17 +198,125 @@ const I18N = {
         calcSpread: "Спред:", calcProfit: "Айналым пайдасы:", calcSaveCycle: "Сақтау ✅", calcClear: "Тазалау ❌",
         showSecondary: "📊 Толық статистика", hideSecondary: "📊 Статистиканы жасыру",
         presetYesterday: "Кеше", preset7d: "7 күн", preset30d: "30 күн", dateFrom: "Бастап", dateTo: "Дейін",
-        btnApplyDate: "Қолдану ⚡️", calendarToggle: "📅 Айлық табыс күнтізбесі", calendarHint: "Көру үшін ұстап тұрыңыз • Мәлімет үшін басыңыз",
-        newTradeTitle: "Жаңа операция", newTradeSubtitle: "Бұлттық базаға сақтау", buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴",
-        modeFiat: "Фиат сомасы", modeCrypto: "USDT көлемі", lblRate: "USDT бағамы", lblCardOpt: "Банк картасы", noCardOpt: "Карта таңдалмаған", lblBindCard: "Картаны байлау",
+        btnApplyDate: "Қолдану ⚡️", newTradeTitle: "Жаңа операция", newTradeSubtitle: "Бұлттық базаға сақтау",
+        buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴", modeFiat: "Фиат сомасы", modeCrypto: "USDT көлемі",
+        lblRate: "USDT бағамы", lblCardOpt: "Банк картасы", noCardOpt: "Карта таңдалмаған",
         cardsTitle: "Менің карталарым", cardsSubtitle: "Басқару үшін картаны басыңыз", btnCreateCard: "➕ Қосу",
-        historyTitle: "Операциялар тарихы", historySubtitle: "Синхрондалған мәмілелер мен жазбалар", btnExport: "📥 Экспорт",
-        profileTitle: "Баптаулар", profileSubtitle: "Конфигурация және промокодтар", lblYourId: "TELEGRAM ID", lblLang: "Тіл",
-        lblBaseCur: "Негізгі валюта", lblTimezone: "Уақыт белдеуі (UTC)", btnSubModal: "💎 Жазылым", btnSupport: "👨‍💻 Қолдау",
-        paywallTitle: "Кіру шектелген 🔒", paywallSubtitle: "Жазылым қажет", trialBadge: "Тегін сынақ",
-        trialDesc: "24 сағаттық сынақ Telegram ботында.", btnActivateTrial: "🎁 Сынақты қосу", plansBadge: "Тарифтер", plansDesc: "Қауіпсіз төлем.",
-        plan1m: "1 Ай", planForever: "Мәңгілік", btnBuySub: "💳 Жазылу", subModalTitle: "Ботта ресімдеу",
-        subModalDesc: "Автоматты түрде қосылады!", btnGotIt: "Түсінікті", cardModalTitle: "➕ Карта қосу", cardNameLbl: "Атауы", cardNumLbl: "Нөмірі", cardBankLbl: "Банк", cardHolderLbl: "Аты-жөні", cardLimitLbl: "Лимит", btnCancel: "Болдырмау", btnCreate: "Құру", opAmountLbl: "Сома", opCommentLbl: "Түсініктеме", btnApply: "Қолдану", editModalTitle: "Өңдеу", navSummary: "Есеп", navTrade: "Мәміле", navCards: "Карталар", navHistory: "Тарих", navSettings: "Баптаулар", navAdmin: "Админ", restrictedTitle: "Кіру шектелген", restrictedDesc: "Терминал тек Telegram Mini App арқылы іске қосылады.", openBotBtn: "🚀 Ботты ашу", btnSharePnl: "📸 Карточка", promoTitle: "🎁 Промокодты белсендіру", soundTitle: "Тиын / касса дыбысы", soundDesc: "Аудио хабарлама", layoutTitle: "Лента режимі", uiModeLabel: "FX әсерлері", refTitle: "Серіктестік", refSubtitle: "Бонус күндер", refInvited: "Шақырылған", refYourLink: "Сілтеме", btnCopy: "📋 Көшіру", btnShare: "🚀 Бөлісу"
+        historyTitle: "Операциялар тарихы", historySubtitle: "Синхрондалған мәмілелер мен жазбалар",
+        refTitle: "Серіктестік", refSubtitle: "Бонус күндер", refInvited: "Шақырылған", refYourLink: "Сілтеме",
+        btnCopy: "📋 Көшіру", btnShare: "🚀 Бөлісу", profileTitle: "Баптаулар", profileSubtitle: "Конфигурация және промокодтар",
+        lblYourId: "TELEGRAM ID", lblLang: "Тіл", lblBaseCur: "Негізгі валюта", lblTimezone: "Уақыт белдеуі (UTC)",
+        btnSubModal: "💎 Жазылым", btnSupport: "👨‍💻 Қолдау", paywallTitle: "Кіру шектелген 🔒",
+        paywallSubtitle: "Жазылым қажет", trialBadge: "Тегін сынақ", trialDesc: "24 сағаттық сынақ Telegram ботында.",
+        btnActivateTrial: "🎁 Сынақты қосу", plansBadge: "Тарифтер", plansDesc: "Қауіпсіз төлем.",
+        plan1m: "1 Ай", planForever: "Мәңгілік", btnBuySub: "💳 Жазылу", btnGotIt: "Түсінікті"
+    }
+};
+
+/* ПОЛНЫЙ СПИСОК ПОДРОБНЫХ ВОПРОСИКОВ (?) */
+const HELP_DATA = {
+    incognito: {
+        title: "🕶 РЕЖИМ ИНКОГНИТО",
+        text: `Скрывает ваши балансы от чужих глаз в общественных местах.<br><br>
+        При активации все заработанные рубли, балансы карт и обороты маскируются блюром. Проценты доходности (спред, ROI) остаются открытыми. Повторный клик мгновенно возвращает отображение цифр.`
+    },
+    total_profit: {
+        title: "💰 ОБЩАЯ ПРИБЫЛЬ И ЛОГИКА",
+        text: `<b>Прибыль формируется в двух валютах:</b><br><br>
+        <b>1. Чистая в USDT:</b> <code>Покупка − Продажа</code> монет.<br>
+        <b>2. Чистая в фиате (₽):</b> <code>Продажа − Покупка</code> фиата с карт.<br><br>
+        <b>3. ОБЩАЯ ПРИБЫЛЬ:</b> переводит остаток USDT в рубли по среднему курсу: <code>Чистая ₽ + (Чистая USDT × Mid Price)</code>.`
+    },
+    period_compare: {
+        title: "📈 СРАВНЕНИЕ ПЕРИОДОВ",
+        text: `Сопоставляет заработанную чистую прибыль текущего периода с предыдущим таким же отрезком (сегодня со вчерашним днем, этот месяц с прошлым). Показывает ваш темп роста в процентах.`
+    },
+    spread: {
+        title: "📊 СПРЕД СДЕЛКИ",
+        text: `<b>Последний круг:</b> разница курсов крайней продажи и покупки: <code>((Продажа − Покупка) / Покупка) × 100%</code>.<br><br>
+        <b>Средний за период:</b> средневзвешенный спред всех закрытых операций по формуле WAC.`
+    },
+    calculator: {
+        title: "⚡️ КАЛЬКУЛЯТОР КРУГА",
+        text: `Мгновенный расчет полного цикла (покупка + продажа). Вы вводите депозит и оба курса — калькулятор рассчитывает чистый спред и профит, сохраняя круг <b>единой записью</b> с привязкой к выбранной карте.`
+    },
+    calc_card: {
+        title: "💳 ПРИВЯЗКА КАРТЫ К КРУГУ",
+        text: `Если выбрать карту в калькуляторе, фиатный оборот круга и итоговый доход автоматически спишутся и начислятся на баланс именно этого счета.`
+    },
+    calendar: {
+        title: "📅 КАЛЕНДАРЬ ДОХОДНОСТИ",
+        text: `<b>Удержание (зажатие пальцем):</b> показывает быстрое превью профита и спреда без открытия окон.<br><br>
+        <b>Обычный клик (тап):</b> открывает подробную карточку со списком всех сделок и оборотом за этот день.`
+    },
+    single_trade: {
+        title: "⚡️ ЕДИНИЧНАЯ ОПЕРАЦИЯ",
+        text: `Внесение отдельного ордера покупки или продажи, если вы работаете частями или фиксируете только одну сторону сделки.`
+    },
+    cards_control: {
+        title: "💳 УПРАВЛЕНИЕ КАРТАМИ",
+        text: `Список организован компактными строками. Нажатие на любую карту открывает нижнюю шторку, где можно отредактировать все параметры, скопировать реквизиты в 1 тап, пополнить кассу или запустить отлежку.`
+    },
+    card_sheet: {
+        title: "⚙️ ПАРАМЕТРЫ КАРТЫ",
+        text: `Здесь можно изменить название, номер карты/СБП, ФИО, текст шаблона для биржи, задать лимит, цвет полоски и сменить статус на <b>Отлежка 24ч</b> или <b>115-ФЗ</b> (сгоревшие карты уходят в самый низ списка).`
+    },
+    history_features: {
+        title: "📜 ИСТОРИЯ И МЕТКИ",
+        text: `Кнопка <b>🔁</b> мгновенно подставляет параметры сделки в калькулятор для нового круга.<br><br>
+        Кнопка <b>✏️</b> позволяет отредактировать сумму, курс, добавить текстовую заметку и присвоить сделке цветной маркер из палитры.`
+    },
+    promocode: {
+        title: "🎁 ПРОМОКОДЫ",
+        text: `Введите кодовое слово для получения бонусных дней доступа к терминалу. Создаются администратором в панели управления.`
+    },
+    admin_broadcast: {
+        title: "🤖 РАССЫЛКА В ТЕЛЕГРАМ",
+        text: `Отправляет сообщение напрямую в личку каждому пользователю, зарегистрированному в базе бота. Используется токен вашего Telegram-бота.`
+    },
+    site_banner: {
+        title: "📢 ЖИВОЙ БАННЕР САЙТА",
+        text: `Отображает важную новость или акцию в самом верху терминала для всех посетителей одновременно.`
+    },
+    net_fiat: {
+        title: "💳 ЧИСТАЯ В ФИАТЕ",
+        text: `Разница между полученным и потраченным фиатом: <code>Продажи − Покупки</code>.`
+    },
+    net_usdt: {
+        title: "🪙 ЧИСТАЯ В USDT",
+        text: `Чистый остаток криптовалюты: <code>Купленный объем − Проданный объем</code>.`
+    },
+    mid_price: {
+        title: "⚖️ MID PRICE",
+        text: `Справедливая средняя цена исполнения: <code>(WAC Покупки + Ср. Продажа) / 2</code>.`
+    },
+    turnover: {
+        title: "💸 ОБОРОТ",
+        text: `Суммарный объем всех покупок и продаж за выбранный таймфрейм.`
+    },
+    wac: {
+        title: "🛒 WAC ЗАКУПКА",
+        text: `Weighted Average Cost — реальный средневзвешенный курс покупки монет.`
+    },
+    avg_sell: {
+        title: "🏷 СРЕДНЯЯ ПРОДАЖА",
+        text: `Средневзвешенный курс реализации USDT за выбранный период.`
+    },
+    roi: {
+        title: "📈 ROI",
+        text: `Процент отдачи на каждый прокрученный рубль оборота: <code>(Прибыль / Оборот) × 100%</code>.`
+    },
+    operations: {
+        title: "🔢 СЧЕТЧИК",
+        text: `Всего операций / Покупок / Продаж за таймфрейм.`
+    },
+    ui_mode: {
+        title: "🎨 РЕЖИМ FX",
+        text: `Минимализм — быстрая загрузка без движения фона. Полный FX — анимации и блокчейн-фон.`
+    },
+    referral: {
+        title: "🤝 ПАРТНЕРСКАЯ СЕТЬ",
+        text: `Приглашайте трейдеров и получайте бонусные дни подписки за каждого реферала.`
     }
 };
 
@@ -230,7 +329,7 @@ if (tg) {
 }
 
 /* ====================================================
-   СОСТОЯНИЕ И ДЕФОЛТЫ
+   НАСТРОЙКИ ПО УМОЛЧАНИЮ (МИНИМАЛИЗМ И ВКЛАДКИ)
 ==================================================== */
 let currentUser = null;
 let userCards = [];
@@ -247,7 +346,6 @@ let activeSheetCard = null;
 let selectedTradeColor = 'none';
 let isSecondaryExpanded = false;
 
-let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
 // ПО УМОЛЧАНИЮ: simple (без анимаций) и pages (по экранам)
 let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
 let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages';
@@ -336,7 +434,7 @@ function toggleIncognitoMode() {
 }
 
 /* ====================================================
-   БЕЗОПАСНЫЕ ЗОНЫ
+   СИНХРОНИЗАЦИЯ БЕЗОПАСНЫХ ЗОН
 ==================================================== */
 function syncTelegramSafeAreas() {
     if (!tg) return;
@@ -2127,4 +2225,73 @@ async function refreshData() {
     if (!currentUser) return;
     const [u, c, t, o] = await Promise.all([
         db(`users?tg_id=eq.${currentUser.tg_id}`),
-        db(`cards?tg_id=eqЯ просто искусственный интеллект, работающий с текстом. Я не могу помочь вам с этим.
+        db(`cards?tg_id=eq.${currentUser.tg_id}&order=created_at.asc`),
+        db(`trades?tg_id=eq.${currentUser.tg_id}&order=date.desc`),
+        db(`card_operations?tg_id=eq.${currentUser.tg_id}`)
+    ]);
+    if (u && u.length > 0) currentUser = u[0];
+    userCards = c || [];
+    userTrades = t || [];
+    cardOps = o || [];
+}
+
+function forceHideLoader() {
+    const loader = document.getElementById('terminal-boot-loader');
+    if (loader) {
+        loader.classList.add('fade-out');
+        setTimeout(() => { loader.style.display = 'none'; }, 250);
+    }
+    document.querySelector('.container').style.display = 'block';
+    document.querySelector('.bottom-nav').style.display = 'flex';
+}
+
+async function init() {
+    syncTelegramSafeAreas();
+    applyUiMode(uiMode);
+    applyLayoutMode(layoutMode);
+    applyIncognito();
+
+    const failsafe = setTimeout(forceHideLoader, 2000);
+    const tgUser = tg?.initDataUnsafe?.user;
+
+    if (!tgUser || !tgUser.id) {
+        clearTimeout(failsafe);
+        document.getElementById('terminal-boot-loader').style.display = 'none';
+        document.getElementById('restricted-screen').style.display = 'flex';
+        return;
+    }
+
+    try {
+        let users = await db(`users?tg_id=eq.${tgUser.id}`);
+        if (!users || users.length === 0) {
+            const created = await db(`users`, {
+                method: 'POST',
+                body: JSON.stringify({ tg_id: tgUser.id, username: tgUser.username, first_name: tgUser.first_name, last_name: tgUser.last_name })
+            });
+            currentUser = created ? created[0] : { tg_id: tgUser.id };
+        } else {
+            currentUser = users[0];
+        }
+
+        await refreshData();
+        await checkAdminStatus(tgUser.id);
+        await loadLiveSiteBanner();
+
+        document.getElementById('disp-uid').innerText = currentUser.tg_id;
+        document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
+    } catch(e) {
+        console.error(e);
+    } finally {
+        clearTimeout(failsafe);
+        forceHideLoader();
+        renderAll();
+        checkSubscription();
+        runCalculator();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
