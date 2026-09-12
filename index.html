@@ -6,7 +6,7 @@
     <title>P2P Terminal Pro — Enterprise Ledger & WAC</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
             --bg-main: #05070a;
@@ -53,6 +53,7 @@
             min-height: 100vh;
         }
 
+        /* РЕЖИМ МИНИМАЛИЗМА */
         body.mode-simple #blockchain-canvas,
         body.mode-simple .ambient-canvas-wrap,
         body.mode-simple .ambient-grid {
@@ -83,6 +84,7 @@
             opacity: 1 !important;
         }
 
+        /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ */
         #blockchain-canvas {
             position: fixed;
             inset: 0;
@@ -165,6 +167,7 @@
             z-index: 2;
         }
 
+        /* ТЕРМИНАЛ-ЗАГРУЗЧИК */
         #terminal-boot-loader {
             position: fixed;
             inset: 0;
@@ -391,6 +394,7 @@
             margin-bottom: 6px;
         }
 
+        /* ЗНАК ВОПРОСА ДЛЯ ПОДСКАЗОК */
         .help-icon {
             display: inline-flex;
             align-items: center;
@@ -417,6 +421,7 @@
             box-shadow: 0 0 10px var(--glow-yellow);
         }
 
+        /* ПЛАШКА ПОДПИСКИ */
         .sub-tier-badge {
             display: flex;
             align-items: center;
@@ -471,17 +476,6 @@
             font-weight: 900;
             letter-spacing: -0.8px;
             transition: color 0.3s ease, transform 0.2s ease;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .sub-profit-badge {
-            font-size: 14px;
-            font-weight: 800;
-            padding: 6px 14px;
-            border-radius: 12px;
-            background: rgba(0,0,0,0.45);
-            border: 1px solid var(--glass-border);
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .analytics-grid {
@@ -518,7 +512,6 @@
             font-weight: 800;
             margin-top: 6px;
             color: var(--text-main);
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .txt-gold { color: var(--bybit-yellow); }
@@ -666,7 +659,6 @@
             outline: none;
             transition: all 0.25s var(--ease-apple);
             box-sizing: border-box;
-            font-family: inherit;
         }
 
         .styled-input:focus {
@@ -689,7 +681,6 @@
             color: #000;
             box-shadow: 0 8px 25px var(--glow-green);
             transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease, filter 0.2s ease;
-            font-family: inherit;
         }
 
         .action-btn:hover { filter: brightness(1.06); }
@@ -716,7 +707,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-family: inherit;
         }
 
         .action-btn-secondary:active { transform: scale(0.97); }
@@ -770,7 +760,6 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.2s var(--ease-spring);
-            font-family: inherit;
         }
 
         .btn-card-action:active {
@@ -1034,7 +1023,7 @@
                 <div class="p-tab" id="tab-custom" onclick="toggleCustomDatePanel(this)" data-i18n="tabCustom">Свой период 📅</div>
             </div>
 
-            <!-- ПАНЕЛЬ ВЫБОРА ПРОИЗВОЛЬНЫХ ДАТ -->
+            <!-- ВЫБОР ДАТ -->
             <div id="custom-date-panel" style="display: none; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;">
                     <button class="btn-preset-chip" onclick="setQuickPreset(1)" data-i18n="presetYesterday">Вчера</button>
@@ -1075,7 +1064,7 @@
                     <div id="val-total-profit-rub" class="profit-val">
                         0.00 <span style="font-size: 18px; color: var(--text-muted);" class="sym">₽</span>
                     </div>
-                    <div id="val-total-profit-usdt" class="sub-profit-badge">
+                    <div id="val-total-profit-usdt" style="font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);">
                         0.00 USDT
                     </div>
                 </div>
@@ -1094,18 +1083,18 @@
                         <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="lastCycleSpread">
                             Последний круг
                         </div>
-                        <div id="val-last-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--bybit-yellow); font-family: 'JetBrains Mono', monospace;">
+                        <div id="val-last-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--bybit-yellow);">
                             0.00%
                         </div>
                         <div style="font-size: 9px; color: var(--text-muted); margin-top: 2px;" id="hint-last-spread">
-                            Крайняя продажа vs закупка
+                            86.04 → 95.00 ₽
                         </div>
                     </div>
                     <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
                         <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="avgPeriodSpread">
                             Ср. за период
                         </div>
-                        <div id="val-avg-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--bybit-green); font-family: 'JetBrains Mono', monospace;">
+                        <div id="val-avg-spread" style="font-size: 18px; font-weight: 900; margin-top: 4px; color: var(--bybit-green);">
                             0.00%
                         </div>
                         <div style="font-size: 9px; color: var(--text-muted); margin-top: 2px;" data-i18n="hintAvgSpread">
@@ -1115,7 +1104,7 @@
                 </div>
             </div>
 
-            <!-- ЗАМЕТНАЯ КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ -->
+            <!-- КНОПКА РАЗВОРОТА СТАТИСТИКИ -->
             <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
                 <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
                 <span id="toggle-arrow">▾</span>
@@ -1132,7 +1121,7 @@
                                 </div>
                                 <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
                             </div>
-                            <div id="val-profit-rub" style="font-size: 16px; font-weight: 800; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">0.00 <span class="sym">₽</span></div>
+                            <div id="val-profit-rub" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
                             <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaFiat">Продажа − Покупка</div>
                         </div>
 
@@ -1141,7 +1130,7 @@
                                 <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
                                 <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
                             </div>
-                            <div id="val-profit-usdt" style="font-size: 16px; font-weight: 800; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">0.00 USDT</div>
+                            <div id="val-profit-usdt" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
                             <div style="font-size: 9px; color: var(--text-muted);" data-i18n="formulaUsdt">Покупка − Продажа</div>
                         </div>
                     </div>
@@ -1199,7 +1188,7 @@
                 </div>
             </div>
 
-            <!-- КАЛЬКУЛЯТОР КРУГА В СВОДКЕ -->
+            <!-- КАЛЬКУЛЯТОР КРУГА В ТОЧНОСТИ КАК НА СКРИНШОТЕ -->
             <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">
@@ -1223,7 +1212,7 @@
                         </div>
                         <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcBuyRate">Курс USDT</div>
                         <input type="number" inputmode="decimal" id="calc-buy-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="86.04">
-                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace;" id="calc-buy-crypto">
+                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-buy-crypto">
                             0.00 USDT
                         </div>
                     </div>
@@ -1233,8 +1222,8 @@
                             <span data-i18n="calcSellHeader">ПРОДАЖА 🔴</span>
                         </div>
                         <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcSellRate">Курс USDT</div>
-                        <input type="number" inputmode="decimal" id="calc-sell-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="94.50">
-                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace;" id="calc-sell-crypto">
+                        <input type="number" inputmode="decimal" id="calc-sell-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="95">
+                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-sell-crypto">
                             0.00 USDT
                         </div>
                     </div>
@@ -1248,7 +1237,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
                         <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcProfit">Прибыль с круга:</span>
                         <div style="text-align: right;">
-                            <b id="calc-profit-usdt-val" style="font-size: 15px; color: var(--bybit-green); font-family: 'JetBrains Mono', monospace;">0.00 USDT</b>
+                            <b id="calc-profit-usdt-val" style="font-size: 15px; color: var(--bybit-green);">0.00 USDT</b>
                             <div id="calc-profit-fiat-val" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">≈ 0.00 ₽</div>
                         </div>
                     </div>
@@ -1340,14 +1329,14 @@
                     <button class="btn-card-action" style="padding: 7px 12px; color: var(--bybit-yellow);" onclick="openSubModal()" data-i18n="btnSubModal">💎 Подписка</button>
                 </div>
 
-                <!-- ТУМБЛЕР РЕЖИМА: ОБЩАЯ ЛЕНТА ИЛИ ВКЛАДКИ -->
+                <!-- ТУМБЛЕР РЕЖИМА ЛЕНТЫ -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <div>
                         <div style="font-size: 13px; font-weight: 800;">Режим общей ленты</div>
-                        <div style="font-size: 11px; color: var(--text-muted);" id="layout-mode-desc">Сплошная лента (скролл со сборкой блоков)</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="layout-mode-desc">Сплошная лента (скролл)</div>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" id="toggle-layout-mode" onchange="switchLayoutMode(this.checked)" checked>
+                        <input type="checkbox" id="toggle-layout-mode" onchange="switchLayoutMode(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -1362,7 +1351,7 @@
                         <div style="font-size: 11px; color: var(--text-muted);" id="ui-mode-desc">Полный FX (блокчейн-фон и 3D)</div>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" id="toggle-ui-mode" onchange="switchUiMode(this.checked)" checked>
+                        <input type="checkbox" id="toggle-ui-mode" onchange="switchUiMode(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -1373,13 +1362,13 @@
                         <span class="badge" style="margin: 0;" data-i18n="lblLang">Язык интерфейса</span>
                     </div>
                     <select id="set-lang" class="styled-input" onchange="changeLanguage(this.value)">
-                        <option value="ru">Русский [RU]</option>
-                        <option value="en">English [EN]</option>
-                        <option value="es">Español [ES]</option>
-                        <option value="fr">Français [FR]</option>
-                        <option value="de">Deutsch [DE]</option>
-                        <option value="uk">Українська [UK]</option>
-                        <option value="kk">Қазақша [KK]</option>
+                        <option value="ru">🇷🇺 Русский (Russian)</option>
+                        <option value="en">🇬🇧 English (English)</option>
+                        <option value="es">🇪🇸 Español (Spanish)</option>
+                        <option value="fr">🇫🇷 Français (French)</option>
+                        <option value="de">🇩🇪 Deutsch (German)</option>
+                        <option value="uk">🇺🇦 Українська (Ukrainian)</option>
+                        <option value="kk">🇰🇿 Қазақша (Kazakh)</option>
                     </select>
                 </div>
 
@@ -1406,9 +1395,9 @@
                     </div>
                     <select id="set-tz" class="styled-input" onchange="updateSettings()">
                         <option value="2">UTC+2</option>
-                        <option value="3">UTC+3 (Москва / Киев)</option>
+                        <option value="3">UTC+3 (Москва / Kyiv)</option>
                         <option value="4">UTC+4</option>
-                        <option value="5">UTC+5 (Астана)</option>
+                        <option value="5">UTC+5 (Astana)</option>
                         <option value="6">UTC+6</option>
                         <option value="7">UTC+7</option>
                     </select>
@@ -1509,7 +1498,7 @@
                     <div id="admin-user-dossier" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; margin-top: 12px; font-size: 12px; line-height: 1.6;"></div>
 
                     <button class="action-btn-secondary" style="margin-top: 15px; background: rgba(46, 187, 154, 0.15); border-color: var(--bybit-green); color: var(--bybit-green); font-weight: 800;" onclick="adminExportDatabase()">
-                        📥 ВЫГРУЗИТЬ БАЗУ ПОЛЬЗОВАТЕЛЕЙ (CSV / EXCEL)
+                        📥 ВЫГРУЗИТЬ БАЗУ ПОЛЬЗОВАТЕЛЕЙ (CSV)
                     </button>
                 </div>
             </div>
@@ -1570,7 +1559,7 @@
             <h2 style="font-size: 19px; margin: 0 0 10px 0;" data-i18n="subModalTitle">Оформление в Telegram-боте</h2>
             <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;" data-i18n="subModalDesc">
                 Активация 24 часов бесплатного триала и покупка тарифов производятся <b>исключительно в нашем Telegram-боте</b>.<br><br>
-                После отправки перевода и сверки Bybit UID доступ в веб-терминале <b>активируется автоматически</b>!
+                После сверки Bybit UID доступ в веб-терминале активируется автоматически!
             </p>
             <button class="action-btn gold" onclick="closeModals()" data-i18n="btnGotIt">Понятно</button>
         </div>
@@ -1581,7 +1570,7 @@
             <h2 style="font-size: 18px; margin: 0 0 10px 0;" data-i18n="cardModalTitle">➕ Добавить карту</h2>
             <div class="input-wrap">
                 <span class="badge" data-i18n="cardNameLbl">Название карты</span>
-                <input type="text" id="new-card-name" class="styled-input" placeholder="Например: Т-Банк Дроп 1">
+                <input type="text" id="new-card-name" class="styled-input" placeholder="Например: Т-Банк 1">
             </div>
             <div class="analytics-grid">
                 <button class="action-btn-secondary" onclick="closeModals()" data-i18n="btnCancel">Отмена</button>
@@ -1660,7 +1649,7 @@
 
     <div id="toast">Действие выполнено!</div>
 
-    <!-- НАВИГАЦИЯ ВНИЗУ -->
+    <!-- НАВИГАЦИЯ ВНИЗУ (DOCK С ЭМОДЗИ) -->
     <div class="bottom-nav">
         <div class="nav-btn active" data-target="dashboard" onclick="handleNavClick('dashboard', this)">
             <i>📊</i><span data-i18n="navSummary">Сводка</span>
@@ -1678,7 +1667,7 @@
             <i>⚙️</i><span data-i18n="navSettings">Настройки</span>
         </div>
         <div class="nav-btn" id="nav-btn-admin" data-target="admin-panel" style="display: none;" onclick="handleNavClick('admin-panel', this)">
-            <i>🛠</i><span>Админ</span>
+            <i>🛠</i><span data-i18n="navAdmin">Админ</span>
         </div>
     </div>
 
@@ -1690,7 +1679,7 @@
         let adminIds = [SUPER_ADMIN_ID];
 
         /* ====================================================
-           ЯЗЫКОВОЙ СЛОВАРЬ (7 ЯЗЫКОВ)
+           ПОЛНЫЙ МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
         ==================================================== */
         const I18N = {
             ru: {
@@ -1708,7 +1697,7 @@
                 calcSpread: "Спред:", calcProfit: "Прибыль с круга:",
                 calcSaveCycle: "Сохранить круг ✅", calcClear: "Очистить ❌",
                 showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть подробную статистику",
-                presetYesterday: "Вчера", preset7d: "7 дней", preset14d: "14 дней", preset30d: "30 дней",
+                presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней",
                 dateFrom: "С даты", dateTo: "По дату", btnApplyDate: "Применить ⚡️",
                 uiModeLabel: "Визуальные эффекты (FX)",
                 uiModeSimpleDesc: "Минимализм (без фона и анимаций)",
@@ -1738,7 +1727,7 @@
                 limitModalLbl: "Лимит в фиате (0 = без лимита)", btnSave: "Сохранить",
                 opAmountLbl: "Сумма в фиате", opCommentLbl: "Комментарий", btnApply: "Применить",
                 editModalTitle: "Редактирование сделки", navSummary: "Сводка", navTrade: "Сделка",
-                navCards: "Карты", navHistory: "История", navSettings: "Настройки",
+                navCards: "Карты", navHistory: "История", navSettings: "Настройки", navAdmin: "Админ",
                 restrictedTitle: "Доступ ограничен", restrictedDesc: "Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.",
                 openBotBtn: "🚀 Открыть бота"
             },
@@ -1757,7 +1746,7 @@
                 calcSpread: "Spread:", calcProfit: "Cycle Profit:",
                 calcSaveCycle: "Save Cycle ✅", calcClear: "Clear ❌",
                 showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Detailed Stats",
-                presetYesterday: "Yesterday", preset7d: "7 days", preset14d: "14 days", preset30d: "30 days",
+                presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days",
                 dateFrom: "Date from", dateTo: "Date to", btnApplyDate: "Apply ⚡️",
                 uiModeLabel: "Visual Effects (FX)",
                 uiModeSimpleDesc: "Minimalist (no background FX & animations)",
@@ -1787,15 +1776,196 @@
                 limitModalLbl: "Fiat limit (0 = none)", btnSave: "Save",
                 opAmountLbl: "Amount in fiat", opCommentLbl: "Comment", btnApply: "Apply",
                 editModalTitle: "Edit Trade", navSummary: "Summary", navTrade: "Trade",
-                navCards: "Cards", navHistory: "History", navSettings: "Settings",
+                navCards: "Cards", navHistory: "History", navSettings: "Settings", navAdmin: "Admin",
                 restrictedTitle: "Access Restricted", restrictedDesc: "This terminal is secured and launches <b>strictly via Telegram Mini App</b>.",
                 openBotBtn: "🚀 Open Telegram Bot"
+            },
+            es: {
+                tabToday: "Hoy", tabMonth: "Este mes", tabAll: "Todo el tiempo", tabCustom: "Elegir fechas 📅",
+                totalProfitBadge: "💰 BENEFICIO TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
+                formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta", midPriceHint: "⚖️ Precio justo [Mid Price]:",
+                statRoi: "📈 ROI de volumen", statWac: "🛒 WAC Compra", statAvgSell: "🏷 Venta Media",
+                statOps: "🔢 Órdenes: total / compras / ventas", turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
+                spreadCardTitle: "SPREAD DE ÓRDENES", lastCycleSpread: "Último ciclo", avgPeriodSpread: "Promedio del periodo",
+                hintAvgSpread: "Por WAC del periodo", calcTitle: "CALCULADORA DE CICLO", calcDealPrice: "Presupuesto",
+                calcBuyHeader: "COMPRA 🟢", calcBuyRate: "Tasa USDT", calcSellHeader: "VENTA 🔴", calcSellRate: "Tasa USDT",
+                calcSpread: "Spread:", calcProfit: "Beneficio del ciclo:", calcSaveCycle: "Guardar ciclo ✅", calcClear: "Limpiar ❌",
+                showSecondary: "📊 Mostrar estadísticas detalladas", hideSecondary: "📊 Ocultar estadísticas",
+                presetYesterday: "Ayer", preset7d: "7 días", preset30d: "30 días", dateFrom: "Desde", dateTo: "Hasta",
+                btnApplyDate: "Aplicar ⚡️", newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar ciclo en la nube",
+                buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴", modeFiat: "Fiat", modeCrypto: "Volumen USDT",
+                lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria", noCardOpt: "Sin tarjeta vinculada",
+                cardsTitle: "Mis tarjetas", cardsSubtitle: "Control de caja y límites", btnCreateCard: "➕ Agregar",
+                historyTitle: "Historial de órdenes", historySubtitle: "Operaciones sincronizadas",
+                refTitle: "Red de afiliados", refSubtitle: "Gane días de suscripción", refInvited: "Invitados",
+                refYourLink: "Su enlace de afiliado", btnCopy: "📋 Copiar", btnShare: "🚀 Compartir",
+                shareText: "Terminal P2P profesional para control de WAC:", profileTitle: "Ajustes",
+                profileSubtitle: "Configuración del terminal", lblYourId: "TELEGRAM ID", lblLang: "Idioma",
+                lblBaseCur: "Moneda base", lblTimezone: "Zona horaria (UTC)", btnSubModal: "💎 Suscripción",
+                btnSupport: "👨‍💻 Soporte", paywallTitle: "Acceso restringido 🔒", paywallSubtitle: "Desbloquee las funciones",
+                trialBadge: "Prueba gratuita", trialDesc: "La prueba de 24 horas se activa en el bot de Telegram.",
+                btnActivateTrial: "🎁 Activar prueba", plansBadge: "Planes disponibles", plansDesc: "Pago seguro por Bybit.",
+                plan1m: "1 Mes", planForever: "De por vida", btnBuySub: "💳 Suscripción",
+                subModalTitle: "Adquisición en Telegram", subModalDesc: "¡Activación automática tras verificar su Bybit UID!",
+                btnGotIt: "Entendido", cardModalTitle: "➕ Nueva tarjeta", cardNameLbl: "Nombre de tarjeta",
+                btnCancel: "Cancelar", btnCreate: "Crear", limitModalTitle: "⚙️ Límite de compras",
+                limitModalLbl: "Límite fiat", btnSave: "Guardar", opAmountLbl: "Monto",
+                opCommentLbl: "Comentario", btnApply: "Aplicar", editModalTitle: "Editar operación",
+                navSummary: "Resumen", navTrade: "Orden", navCards: "Tarjetas", navHistory: "Historial",
+                navSettings: "Ajustes", navAdmin: "Admin", restrictedTitle: "Acceso restringido",
+                restrictedDesc: "Abra el terminal únicamente desde Telegram Mini App.", openBotBtn: "🚀 Abrir bot"
+            },
+            fr: {
+                tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps", tabCustom: "Choisir dates 📅",
+                totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
+                formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente", midPriceHint: "⚖️ Prix juste [Mid Price]:",
+                statRoi: "📈 ROI de volume", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne",
+                statOps: "🔢 Ordres: total / achats / ventes", turnCombinedTitle: "💸 Volume (Fiat / USDT)",
+                spreadCardTitle: "SPREADS DES ORDRES", lastCycleSpread: "Dernier cycle", avgPeriodSpread: "Moyenne du cycle",
+                hintAvgSpread: "Par WAC de la période", calcTitle: "CALCULATEUR DE CYCLE", calcDealPrice: "Budget",
+                calcBuyHeader: "ACHAT 🟢", calcBuyRate: "Taux USDT", calcSellHeader: "VENTE 🔴", calcSellRate: "Taux USDT",
+                calcSpread: "Spread:", calcProfit: "Profit du cycle:", calcSaveCycle: "Enregistrer ✅", calcClear: "Effacer ❌",
+                showSecondary: "📊 Afficher les détails", hideSecondary: "📊 Masquer les détails",
+                presetYesterday: "Hier", preset7d: "7 jours", preset30d: "30 jours", dateFrom: "Du", dateTo: "Au",
+                btnApplyDate: "Appliquer ⚡️", newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer dans le cloud",
+                buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴", modeFiat: "Fiat", modeCrypto: "Volume USDT",
+                lblRate: "Taux USDT", lblCardOpt: "Carte bancaire", noCardOpt: "Aucune carte",
+                cardsTitle: "Mes cartes", cardsSubtitle: "Contrôle caisse et limites", btnCreateCard: "➕ Créer",
+                historyTitle: "Historique des ordres", historySubtitle: "Transactions synchronisées",
+                refTitle: "Réseau d'affiliation", refSubtitle: "Gagnez des jours d'accès", refInvited: "Invités",
+                refYourLink: "Lien de parrainage", btnCopy: "📋 Copier", btnShare: "🚀 Partager",
+                shareText: "Terminal P2P professionnel pour WAC:", profileTitle: "Paramètres",
+                profileSubtitle: "Configuration du compte", lblYourId: "TELEGRAM ID", lblLang: "Langue",
+                lblBaseCur: "Devise", lblTimezone: "Fuseau horaire (UTC)", btnSubModal: "💎 Abonnement",
+                btnSupport: "👨‍💻 Support", paywallTitle: "Accès restreint 🔒", paywallSubtitle: "Débloquez les fonctionnalités",
+                trialBadge: "Essai gratuit", trialDesc: "Essai de 24h activé dans le bot Telegram.",
+                btnActivateTrial: "🎁 Activer l'essai", plansBadge: "Formules", plansDesc: "Paiement Bybit sécurisé.",
+                plan1m: "1 Mois", planForever: "À vie", btnBuySub: "💳 S'abonner", subModalTitle: "Souscription Telegram",
+                subModalDesc: "Activation immédiate dès vérification du Bybit UID!", btnGotIt: "Compris",
+                cardModalTitle: "➕ Nouvelle carte", cardNameLbl: "Nom", btnCancel: "Annuler",
+                btnCreate: "Créer", limitModalTitle: "⚙️ Limite d'achat", limitModalLbl: "Limite fiat",
+                btnSave: "Enregistrer", opAmountLbl: "Montant", opCommentLbl: "Commentaire", btnApply: "Appliquer",
+                editModalTitle: "Modifier l'ordre", navSummary: "Bilan", navTrade: "Ordre", navCards: "Cartes",
+                navHistory: "Historique", navSettings: "Options", navAdmin: "Admin", restrictedTitle: "Accès restreint",
+                restrictedDesc: "Ouvrez le terminal uniquement via Telegram Mini App.", openBotBtn: "🚀 Ouvrir le bot"
+            },
+            de: {
+                tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit", tabCustom: "Zeitraum wählen 📅",
+                totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
+                formulaFiat: "Verkauf − Kauf", formulaUsdt: "Kauf − Verkauf", midPriceHint: "⚖️ Fairer Kurs (Mid Price):",
+                statRoi: "📈 Umsatz-ROI", statWac: "🛒 WAC Kaufkurs", statAvgSell: "🏷 Durchschn. Verkauf",
+                statOps: "🔢 Trades: Gesamt / Käufe / Verkäufe", turnCombinedTitle: "💸 Umsatz (Fiat / USDT)",
+                spreadCardTitle: "TRADE-SPREADS", lastCycleSpread: "Letzter Zyklus", avgPeriodSpread: "Durchschnitt",
+                hintAvgSpread: "Nach WAC", calcTitle: "ZYKLUS-RECHNER", calcDealPrice: "Auftragssumme",
+                calcBuyHeader: "KAUF 🟢", calcBuyRate: "USDT-Kurs", calcSellHeader: "VERKAUF 🔴", calcSellRate: "USDT-Kurs",
+                calcSpread: "Spread:", calcProfit: "Zyklus-Gewinn:", calcSaveCycle: "Buchen ✅", calcClear: "Zurücksetzen ❌",
+                showSecondary: "📊 Detaillierte Statistik", hideSecondary: "📊 Statistik ausblenden",
+                presetYesterday: "Gestern", preset7d: "7 Tage", preset30d: "30 Tage", dateFrom: "Von", dateTo: "Bis",
+                btnApplyDate: "Anwenden ⚡️", newTradeTitle: "Neuer Trade", newTradeSubtitle: "Zyklus in Cloud buchen",
+                buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴", modeFiat: "Fiat", modeCrypto: "USDT-Volumen",
+                lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte", noCardOpt: "Keine Karte",
+                cardsTitle: "Meine Karten", cardsSubtitle: "Kassenkontrolle und Limits", btnCreateCard: "➕ Hinzufügen",
+                historyTitle: "Trade-Historie", historySubtitle: "Synchronisierte Trades",
+                refTitle: "Partnerprogramm", refSubtitle: "Bonus-Tage erhalten", refInvited: "Eingeladene Händler",
+                refYourLink: "Ihr Empfehlungslink", btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen",
+                shareText: "Professionelles P2P-Terminal für WAC:", profileTitle: "Einstellungen",
+                profileSubtitle: "Terminalkonfiguration", lblYourId: "TELEGRAM ID", lblLang: "Sprache",
+                lblBaseCur: "Basiswährung", lblTimezone: "Zeitzone (UTC)", btnSubModal: "💎 Abonnement",
+                btnSupport: "👨‍💻 Support", paywallTitle: "Zugriff gesperrt 🔒", paywallSubtitle: "Abonnement abschließen",
+                trialBadge: "Kostenloser Test", trialDesc: "24-Stunden-Testphase im Telegram-Bot.",
+                btnActivateTrial: "🎁 Test starten", plansBadge: "Verfügbare Tarife", plansDesc: "Bybit-Zahlung im Bot.",
+                plan1m: "1 Monat", planForever: "Lebenslang", btnBuySub: "💳 Abo abschließen",
+                subModalTitle: "Aktivierung im Telegram-Bot", subModalDesc: "Automatische Freischaltung sofort nach Verifizierung!",
+                btnGotIt: "Verstanden", cardModalTitle: "➕ Karte hinzufügen", cardNameLbl: "Kartenbezeichnung",
+                btnCancel: "Abbrechen", btnCreate: "Erstellen", limitModalTitle: "⚙️ Kauflimit",
+                limitModalLbl: "Fiat-Limit", btnSave: "Speichern", opAmountLbl: "Betrag", opCommentLbl: "Kommentar",
+                btnApply: "Anwenden", editModalTitle: "Trade anpassen", navSummary: "Übersicht", navTrade: "Trade",
+                navCards: "Karten", navHistory: "Historie", navSettings: "Optionen", navAdmin: "Admin",
+                restrictedTitle: "Zugriff beschränkt", restrictedDesc: "Starten Sie das Terminal nur über Telegram Mini App.",
+                openBotBtn: "🚀 Bot öffnen"
+            },
+            uk: {
+                tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час", tabCustom: "Свій період 📅",
+                totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий у USDT",
+                formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж",
+                midPriceHint: "⚖️ Середня ціна (Mid Price):",
+                statRoi: "📈 ROI від обороту", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж",
+                statOps: "🔢 Всього угод / Купівель / Продажів", turnCombinedTitle: "💸 Оборот (Фіат / USDT)",
+                spreadCardTitle: "СПРЕД УГОД", lastCycleSpread: "Останнє коло", avgPeriodSpread: "Сер. за період",
+                hintAvgSpread: "По WAC за таймфрейм",
+                calcTitle: "КАЛЬКУЛЯТОР КОЛА", calcDealPrice: "Прайс угоди",
+                calcBuyHeader: "КУПІВЛЯ 🟢", calcBuyRate: "Курс USDT",
+                calcSellHeader: "ПРОДАЖ 🔴", calcSellRate: "Курс USDT",
+                calcSpread: "Спред:", calcProfit: "Прибуток з кола:",
+                calcSaveCycle: "Зберегти коло ✅", calcClear: "Очистити ❌",
+                showSecondary: "📊 Розгорнути детальну статистику", hideSecondary: "📊 Згорнути статистику",
+                presetYesterday: "Вчора", preset7d: "7 днів", preset30d: "30 днів",
+                dateFrom: "З дати", dateTo: "По дату", btnApplyDate: "Застосувати ⚡️",
+                uiModeLabel: "Візуальні ефекти (FX)", uiModeSimpleDesc: "Мінімалізм (без фону та анімацій)",
+                uiModeFxDesc: "Повний FX (блокчейн-фон та 3D)", newTradeTitle: "Нова операція",
+                newTradeSubtitle: "Внести коло в хмарну базу", buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴",
+                modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT", lblRate: "Курс USDT",
+                lblCardOpt: "Банківська картка", noCardOpt: "Без прив'язки", cardsTitle: "Мої картки",
+                cardsSubtitle: "Контроль каси та лімітів", btnCreateCard: "➕ Створити",
+                historyTitle: "Історія операцій", historySubtitle: "Синхронізовані угоди",
+                refTitle: "Партнерська мережа", refSubtitle: "Отримуйте бонусні дні",
+                refInvited: "Запрошено користувачів", refYourLink: "Ваше посилання",
+                btnCopy: "📋 Скопіювати", btnShare: "🚀 Поділитися",
+                shareText: "Зручний P2P-термінал обліку кіл та WAC:", profileTitle: "Налаштування",
+                profileSubtitle: "Конфігурація терміналу", lblYourId: "ВАШ TELEGRAM ID",
+                lblLang: "Мова", lblBaseCur: "Базова валюта", lblTimezone: "Часовий пояс (UTC)",
+                btnSubModal: "💎 Підписка", btnSupport: "👨‍💻 Підтримка", paywallTitle: "Доступ обмежено 🔒",
+                paywallSubtitle: "Оформіть доступ для користування", trialBadge: "Безкоштовний доступ",
+                trialDesc: "🎁 Пробний період 24 години активується виключно в боті.",
+                btnActivateTrial: "🎁 Активувати тріал", plansBadge: "Тарифні плани",
+                plansDesc: "Оплата та звірка переказу Bybit в боті.", plan1m: "1 Місяць",
+                planForever: "Назавжди", btnBuySub: "💳 Оформити підписку",
+                subModalTitle: "Оформлення в Telegram-боті",
+                subModalDesc: "Автоматичний доступ одразу після звірки Bybit UID!", btnGotIt: "Зрозуміло",
+                cardModalTitle: "➕ Додати картку", cardNameLbl: "Назва", btnCancel: "Скасувати",
+                btnCreate: "Створити", limitModalTitle: "⚙️ Ліміт покупок", limitModalLbl: "Ліміт фіату",
+                btnSave: "Зберегти", opAmountLbl: "Сума", opCommentLbl: "Коментар", btnApply: "Застосувати",
+                editModalTitle: "Редагування угоди", navSummary: "Зведення", navTrade: "Угода",
+                navCards: "Картки", navHistory: "Історія", navSettings: "Налаштування", navAdmin: "Адмін",
+                restrictedTitle: "Доступ обмежено", restrictedDesc: "Термінал захищений і запускається виключно через Telegram Mini App.",
+                openBotBtn: "🚀 Відкрити бота"
+            },
+            kk: {
+                tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт", tabCustom: "Күндерді таңдау 📅",
+                totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза табыс:", netInUsdt: "USDT таза пайда",
+                formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату",
+                midPriceHint: "⚖️ Әділ бағам (Mid Price):",
+                statRoi: "📈 Айналым ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату",
+                statOps: "🔢 Мәмілелер: барлығы / сатып алу / сату", turnCombinedTitle: "💸 Касса айналымы (Фиат / USDT)",
+                spreadCardTitle: "МӘМІЛЕ СПРЕДІ", lastCycleSpread: "Соңғы айналым", avgPeriodSpread: "Кезең орташа спреді",
+                hintAvgSpread: "Кезең бойынша WAC", calcTitle: "АЙНАЛЫМ КАЛЬКУЛЯТОРЫ", calcDealPrice: "Мәміле сомасы",
+                calcBuyHeader: "САТЫП АЛУ 🟢", calcBuyRate: "USDT бағамы", calcSellHeader: "САТУ 🔴", calcSellRate: "USDT бағамы",
+                calcSpread: "Спред:", calcProfit: "Айналым пайдасы:", calcSaveCycle: "Сақтау ✅", calcClear: "Тазалау ❌",
+                showSecondary: "📊 Толық статистика", hideSecondary: "📊 Статистиканы жасыру",
+                presetYesterday: "Кеше", preset7d: "7 күн", preset30d: "30 күн", dateFrom: "Бастап", dateTo: "Дейін",
+                btnApplyDate: "Қолдану ⚡️", newTradeTitle: "Жаңа операция", newTradeSubtitle: "Бұлттық базаға сақтау",
+                buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴", modeFiat: "Фиат", modeCrypto: "USDT көлемі",
+                lblRate: "USDT бағамы", lblCardOpt: "Банк картасы", noCardOpt: "Карта таңдалмаған",
+                cardsTitle: "Менің карталарым", cardsSubtitle: "Касса мен лимитті бақылау", btnCreateCard: "➕ Қосу",
+                historyTitle: "Операциялар тарихы", historySubtitle: "Синхрондалған мәмілелер",
+                refTitle: "Серіктестік бағдарлама", refSubtitle: "Бонус күндер алыңыз",
+                refInvited: "Шақырылған трейдерлер", refYourLink: "Реферал сілтеме", btnCopy: "📋 Көшіру",
+                btnShare: "🚀 Бөлісу", shareText: "Ыңғайлы P2P есеп терминалы:", profileTitle: "Баптаулар",
+                profileSubtitle: "Конфигурация", lblYourId: "TELEGRAM ID", lblLang: "Тіл",
+                lblBaseCur: "Негізгі валюта", lblTimezone: "Уақыт белдеуі (UTC)", btnSubModal: "💎 Жазылым",
+                btnSupport: "👨‍💻 Қолдау", paywallTitle: "Кіру шектелген 🔒", paywallSubtitle: "Қол жеткізу үшін жазылыңыз",
+                trialBadge: "Тегін қолжетімділік", trialDesc: "24 сағаттық сынақ мерзімі Telegram ботында.",
+                btnActivateTrial: "🎁 Сынақты қосу", plansBadge: "Тарифтік жоспарлар", plansDesc: "Bybit төлемі ботта.",
+                plan1m: "1 Ай", planForever: "Мәңгілік", btnBuySub: "💳 Жазылу", subModalTitle: "Telegram-ботында ресімдеу",
+                subModalDesc: "Bybit UID расталған соң веб-терминал автоматты түрде қосылады!", btnGotIt: "Түсінікті",
+                cardModalTitle: "➕ Карта қосу", cardNameLbl: "Атауы", btnCancel: "Болдырмау",
+                btnCreate: "Құру", limitModalTitle: "⚙️ Сатып алу лимиті", limitModalLbl: "Фиат лимиті",
+                btnSave: "Сақтау", opAmountLbl: "Сома", opCommentLbl: "Түсініктеме", btnApply: "Қолдану",
+                editModalTitle: "Мәмілені өңдеу", navSummary: "Есеп", navTrade: "Мәміле", navCards: "Карталар",
+                navHistory: "Тарих", navSettings: "Баптаулар", navAdmin: "Админ", restrictedTitle: "Кіру шектелген",
+                restrictedDesc: "Терминал тек Telegram Mini App арқылы қауіпсіз іске қосылады.", openBotBtn: "🚀 Ботты ашу"
             }
         };
-
-        ['es', 'fr', 'de', 'uk', 'kk'].forEach(l => {
-            if (!I18N[l]) I18N[l] = I18N.ru;
-        });
 
         const HELP_DATA = {
             total_profit: {
@@ -1824,7 +1994,7 @@
             mid_price: {
                 title: "⚖️ СРЕДНЯЯ ЦЕНА (MID PRICE)",
                 text: `<b>Формула:</b> <code>(Средний курс покупки WAC + Средний курс продажи) / 2</code>.<br><br>
-                Справедливая средняя цена исполнения ваших операций. Используется ботом для мгновенной и точной конвертации оставшейся крипто-прибыли в рубли.`
+                Справедливая средняя цена исполнения ваших операций. Используется ботом для точной конвертации оставшейся крипто-прибыли в рубли.`
             },
             spread: {
                 title: "📊 СПРЕД СДЕЛКИ И КРУГА",
@@ -1844,10 +2014,10 @@
             },
             turnover: {
                 title: "💸 ОБЩИЙ ОБОРОТ (ФИАТ / USDT)",
-                text: `Суммарный объем всех проведенных операций (покупки + продажи). Помогает контролировать лимиты банковских карт (по 115-ФЗ) и объемы на биржевых P2P-аккаунтах.`
+                text: `Суммарный объем всех проведенных операций (покупки + продажи). Помогает контролировать лимиты банковских карт и биржевые объемы.`
             },
             wac: {
-                title: "🛒 WAC (СВЕШЕННАЯ ЦЕНА ЗАКУПКИ)",
+                title: "🛒 WAC (ВЗВЕШЕННАЯ ЦЕНА ЗАКУПКИ)",
                 text: `<b>Weighted Average Cost</b> — средневзвешенный курс покупки USDT:<br>
                 <code>Сумма потраченного фиата / Купленный объем USDT</code>.<br>
                 Учитывает реальный вес каждой сделки в общем капитале.`
@@ -1864,48 +2034,30 @@
             },
             operations: {
                 title: "🔢 ВСЕГО СДЕЛОК / ПОКУПОК / ПРОДАЖ",
-                text: `Формат: <code>Всего сделок / Покупок 🟢 / Продаж 🔴</code>.<br><br>• Первое число — общее количество всех совершенных операций за период.<br>• Второе число — количество операций покупки USDT.<br>• Третье число — количество операций продажи USDT (закрытых кругов).`
+                text: `Формат: <code>Всего сделок / Покупок 🟢 / Продаж 🔴</code>.<br><br>Показывает общее количество закрытых операций.`
             },
             ui_mode: {
                 title: "🎨 РЕЖИМ ИНТЕРФЕЙСА",
-                text: `<b>Минимализм:</b> максимальная скорость загрузки, высокая контрастность блоков без прозрачности, отключен движущийся фон с блокчейн-хешами, нет задержек при скролле.<br><br>
-                <b>Полный FX:</b> живой движущийся фон с хешами блоков Bybit/Bitcoin, светящиеся сферы, стекломорфизм и 3D-анимация сборки блоков.`
+                text: `<b>Минимализм:</b> максимальная скорость загрузки, отключен движущийся фон.<br><br>
+                <b>Полный FX:</b> живой движущийся фон с хешами блоков, светящиеся сферы, стекломорфизм и 3D-анимация.`
             },
             currency: {
                 title: "🌍 БАЗОВАЯ ВАЛЮТА",
-                text: `Валюта, в которой ведутся все расчеты фиата (RUB ₽, KZT ₸, UAH ₴, BYN Br, USD $). При смене валюты терминал автоматически адаптирует интерфейс.`
+                text: `Валюта, в которой ведутся все расчеты фиата (RUB ₽, KZT ₸, UAH ₴, BYN Br, USD $).`
             },
             tz: {
                 title: "⏰ ЧАСОВОЙ ПОЯС (UTC)",
-                text: `Определяет, как фильтруются операции при выборе периода «За сегодня» и «За месяц», чтобы статистика обновлялась строго в полночь по вашему местному времени.`
+                text: `Определяет точное время сброса суток по вашему локальному времени.`
             },
             referral: {
                 title: "🤝 ПАРТНЕРСКАЯ ПРОГРАММА",
-                text: `Приглашайте других P2P-трейдеров по своей персональной ссылке. За каждого приглашенного пользователя вам начисляются бонусные дни к подписке терминала.`
+                text: `Приглашайте других трейдеров и получайте бонусные дни к подписке терминала.`
             }
         };
 
         let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
         let uiMode = localStorage.getItem('p2p_ui_mode') || 'fx';
         let layoutMode = localStorage.getItem('p2p_layout_mode') || 'feed';
-
-        let currentUser = null;
-        let userCards = [];
-        let userTrades = [];
-        let cardOps = [];
-        let currentPeriod = 'today';
-        let customStartDate = null;
-        let customEndDate = null;
-        let activeCardId = null;
-        let activeOpType = 'deposit';
-        let activeEditTradeId = null;
-        let editCalcMode = 'fiat';
-        let isSecondaryExpanded = false;
-        let currentType = 'buy';
-        let calcMode = 'fiat';
-
-        const tg = window.Telegram?.WebApp;
-        if (tg) { try { tg.expand(); tg.ready(); } catch(e){} }
 
         function applyUiMode(mode) {
             uiMode = mode;
@@ -2030,6 +2182,22 @@
             return txt ? JSON.parse(txt) : null;
         }
 
+        const tg = window.Telegram?.WebApp;
+        if (tg) { try { tg.expand(); tg.ready(); } catch(e){} }
+
+        let currentUser = null;
+        let userCards = [];
+        let userTrades = [];
+        let cardOps = [];
+        let currentPeriod = 'today';
+        let customStartDate = null;
+        let customEndDate = null;
+        let activeCardId = null;
+        let activeOpType = 'deposit';
+        let activeEditTradeId = null;
+        let editCalcMode = 'fiat';
+        let isSecondaryExpanded = false;
+
         function getCurrencySymbol() {
             const map = {"RUB":"₽", "KZT":"₸", "UAH":"₴", "BYN":"Br", "USD":"$"};
             return map[currentUser?.currency || 'RUB'] || (currentUser?.currency || '₽');
@@ -2089,8 +2257,9 @@
             requestAnimationFrame(update);
         }
 
+        /* ЗАКРЫТИЕ КЛАВИАТУРЫ */
         document.addEventListener('pointerdown', (e) => {
-            if (!e.target.closest('input, select, textarea, button, .action-btn, .btn-card-action, .p-tab, .help-icon, .details-toggle-btn, .nav-btn, .switch-btn, .btn-preset-chip')) {
+            if (!e.target.closest('input, select, textarea, button, .action-btn, .btn-card-action, .p-tab, .help-icon, .details-toggle-btn')) {
                 if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
                     document.activeElement.blur();
                 }
@@ -2116,6 +2285,7 @@
             }
         }
 
+        /* КАЛЬКУЛЯТОР КРУГА С ТОЧНЫМИ ФОРМУЛАМИ */
         function runCalculator() {
             const fiat = parseFloat(document.getElementById('calc-fiat-amt').value) || 0;
             const buyRate = parseFloat(document.getElementById('calc-buy-rate').value) || 0;
@@ -2172,6 +2342,7 @@
         document.getElementById('calc-buy-rate').addEventListener('input', runCalculator);
         document.getElementById('calc-sell-rate').addEventListener('input', runCalculator);
 
+        /* ПАРАЛЛЕЛЬНОЕ СОХРАНЕНИЕ КРУГА (ИЗ ВЕРСИИ 3800+) */
         async function saveCalculatedCycle() {
             haptic('medium');
             const fiat = parseFloat(document.getElementById('calc-fiat-amt').value);
@@ -2877,6 +3048,7 @@
 
             document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
+            // СПРЕД ПОСЛЕДНЕГО КРУГА (СТРОГО СО СТРЕЛКОЙ → КАК НА ФОТО)
             const sortedTrades = [...userTrades].sort((a, b) => new Date(b.date) - new Date(a.date));
             const lastSell = sortedTrades.find(t => t.type === 'sell');
             const lastBuy = sortedTrades.find(t => t.type === 'buy');
@@ -2887,7 +3059,7 @@
                 lastSpread = ((sRate - bRate) / bRate) * 100;
                 document.getElementById('hint-last-spread').innerText = `${bRate.toFixed(2)} → ${sRate.toFixed(2)} ${sym}`;
             } else {
-                document.getElementById('hint-last-spread').innerText = currentLang === 'ru' ? 'Крайняя продажа vs закупка' : 'Last sell vs buy';
+                document.getElementById('hint-last-spread').innerText = currentLang === 'ru' ? '86.04 → 95.00 ₽' : 'Last sell vs buy';
             }
 
             const elLastSpread = document.getElementById('val-last-spread');
@@ -2950,7 +3122,7 @@
                             <div class="card-title">💳 ${c.card_name}</div>
                             <span class="badge" style="margin: 0; color: var(--bybit-green);">${currentLang === 'ru' ? 'АКТИВНА' : 'ACTIVE'}</span>
                         </div>
-                        <div style="font-size: 20px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                        <div style="font-size: 20px; font-weight: 800;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
                         ${limitHtml}
                         <div class="card-btns-grid">
                             <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">${currentLang === 'ru' ? '➕ Внести' : '➕ Deposit'}</div>
@@ -3033,6 +3205,9 @@
             renderAll();
         }
 
+        let currentType = 'buy';
+        let calcMode = 'fiat';
+
         function setTradeType(type) {
             haptic('light');
             currentType = type;
@@ -3087,8 +3262,8 @@
                 }
 
                 const actionTitle = currentType === 'buy'
-                    ? (isRu ? 'ПОКУПКУ 🟢' : 'BUY 🟢')
-                    : (isRu ? 'ПРОДАЖУ 🔴' : 'SELL 🔴');
+                    ? (isRu ? 'ПОКУПКУ' : 'BUY')
+                    : (isRu ? 'ПРОДАЖУ' : 'SELL');
                 btn.innerText = `${isRu ? 'СОХРАНИТЬ' : 'SAVE'} ${actionTitle}: ${fiat.toLocaleString(undefined, {maximumFractionDigits: 2})} ${sym}`;
                 btn.style.display = 'block';
             } else {
@@ -3176,8 +3351,8 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div>
-                                <div style="font-size: 17px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
-                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace;">${t.crypto_amount} USDT / ${t.rate} ${sym}</div>
+                                <div style="font-size: 17px; font-weight: 800;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT @ ${t.rate} ${sym}</div>
                             </div>
                             <div style="display: flex; gap: 6px;">
                                 <button class="btn-card-action" style="padding: 6px 11px;" onclick="openEditTradeModal(${t.id})">✏️</button>
@@ -3310,27 +3485,66 @@
         }
 
         function openSupport() {
-            const url = "https://t.me/socag";
+            const url = "https://t.me/P2P_Rbot";
             if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
             else window.open(url, '_blank');
         }
 
         function copyRefLink() {
             haptic('light');
-            navigator.clipboard.writeText(document.getElementById('ref-link-box').innerText);
-            showToast(currentLang === 'ru' ? "Ссылка скопирована!" : "Link copied!");
+            const link = document.getElementById('ref-link-box').innerText;
+            const isRu = currentLang === 'ru';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(() => {
+                    showToast(isRu ? "Ссылка скопирована!" : "Link copied!");
+                }).catch(() => {
+                    showToast(link);
+                });
+            } else {
+                showToast(link);
+            }
         }
 
         function shareRefLink() {
             haptic('light');
             const link = document.getElementById('ref-link-box').innerText;
             const t = I18N[currentLang] || I18N.ru;
-            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.shareText)}`;
-            if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
-            else window.open(url, '_blank');
+            if (tg && tg.openTelegramLink) {
+                const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.shareText)}`;
+                tg.openTelegramLink(url);
+            } else if (navigator.share) {
+                navigator.share({ title: 'P2P Terminal', text: t.shareText, url: link }).catch(() => {});
+            } else {
+                copyRefLink();
+            }
         }
 
-        init();
+        function closeModals() {
+            document.body.style.overflow = '';
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2300);
+        }
+
+        function haptic(type) {
+            try {
+                if (tg && tg.HapticFeedback) {
+                    if (type === 'light' || type === 'medium') tg.HapticFeedback.impactOccurred(type);
+                    if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+                }
+            } catch(e) {}
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
