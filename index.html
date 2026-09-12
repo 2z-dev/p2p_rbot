@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>P2P Ledger — Учет и терминал</title>
+    <title>P2P Ledger — Enterprise Terminal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg-page: #080b11;
-            --bg-card: #111622;
-            --bg-card-sub: #161d2d;
-            --bg-input: #0b0e17;
+            /* ЧИСТЫЙ МАТОВЫЙ ГРАФИТ БЕЗ СИНЕВЫ */
+            --bg-page: #080a0d;
+            --bg-card: #111317;
+            --bg-card-sub: #16181e;
+            --bg-input: #0c0e12;
 
-            /* ЦВЕТА СУПЕРКАРА И ТРЕЙДИНГА (ГРАФИТ + ЛАМБО) */
+            /* ЦВЕТ СУПЕРКАРА (LAMBORGHINI GOLD / ORANGE) */
             --lambo-gold: #f59e0b;
-            --lambo-orange: #ff9900;
+            --lambo-orange: #ff9800;
             --lambo-glow: rgba(245, 158, 11, 0.2);
 
+            /* СТРОГИЕ НЕ-НЕОНОВЫЕ ТОРГОВЫЕ ЦВЕТА */
             --trade-green: #10b981;
+            --trade-green-dark: #064e3b;
             --trade-green-bg: rgba(16, 185, 129, 0.12);
-            --trade-red: #f43f5e;
-            --trade-red-bg: rgba(244, 63, 94, 0.12);
+
+            --trade-red: #e11d48;
+            --trade-red-dark: #4c0519;
+            --trade-red-bg: rgba(225, 29, 72, 0.12);
+
             --trade-blue: #38bdf8;
             --trade-purple: #a855f7;
 
             --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-focus: rgba(245, 158, 11, 0.6);
+            --border-focus: rgba(245, 158, 11, 0.65);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --text-dim: #64748b;
+            --text-dim: #555e6d;
 
-            --radius-card: 18px;
-            --radius-btn: 14px;
+            /* КВАДРАТНАЯ СТРОГАЯ ГЕОМЕТРИЯ */
+            --radius-card: 8px;
+            --radius-btn: 6px;
+            --radius-pill: 4px;
             --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-shatter: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         * {
@@ -51,10 +61,10 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-page);
-            font-family: 'Sora', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: 120px;
+            padding-bottom: 140px;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             position: relative;
@@ -68,19 +78,73 @@
             display: none !important;
         }
 
-        /* РЕЖИМ FX (ШРИФТ FIRA CODE, БЛОКЧЕЙН, СФЕРЫ) */
+        body.mode-simple .page-section .card,
+        body.mode-simple .page-section .stat-card,
+        body.mode-simple .page-section .card-item,
+        body.mode-simple .page-section h1,
+        body.mode-simple .page-section .subtitle,
+        body.mode-simple .page-section .period-tabs,
+        body.mode-simple .page-section .trade-switch,
+        body.mode-simple .sub-tier-badge {
+            transform: none !important;
+            transition: none !important;
+            filter: none !important;
+            opacity: 1 !important;
+        }
+
+        /* РЕЖИМ FX (ШРИФТ FIRA CODE, БЛОКЧЕЙН, СТЕКЛО, 3D РАЗЛЕТЫ) */
         body.mode-fx {
-            font-family: 'Fira Code', 'Sora', monospace !important;
+            font-family: 'Fira Code', monospace !important;
         }
 
         body.mode-fx .card,
         body.mode-fx .stat-card,
         body.mode-fx .sub-tier-badge,
         body.mode-fx .bottom-nav {
-            backdrop-filter: blur(24px) !important;
-            -webkit-backdrop-filter: blur(24px) !important;
-            background: rgba(17, 22, 34, 0.85) !important;
-            border-color: rgba(245, 158, 11, 0.18) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            background: rgba(17, 19, 23, 0.84) !important;
+            border-color: rgba(245, 158, 11, 0.22) !important;
+        }
+
+        body.mode-fx .page-section .card,
+        body.mode-fx .page-section .stat-card,
+        body.mode-fx .page-section .card-item,
+        body.mode-fx .page-section h1,
+        body.mode-fx .page-section .subtitle,
+        body.mode-fx .page-section .period-tabs,
+        body.mode-fx .page-section .trade-switch,
+        body.mode-fx .sub-tier-badge {
+            will-change: transform, opacity, filter;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition:
+                transform 0.85s var(--ease-spring),
+                opacity 0.75s var(--ease-shatter),
+                filter 0.65s ease;
+        }
+
+        body.mode-fx .page-section:not(.revealed) h1 {
+            opacity: 0;
+            transform: translate3d(-50px, -60px, -300px) rotateX(65deg) rotateY(-35deg) scale(0.15);
+            filter: blur(14px);
+        }
+
+        body.mode-fx .page-section:not(.revealed) .card {
+            opacity: 0;
+            transform: translate3d(-100px, 100px, -400px) rotateX(70deg) rotateY(-45deg) scale(0.1);
+            filter: blur(16px);
+        }
+
+        body.mode-fx .page-section.revealed h1,
+        body.mode-fx .page-section.revealed .card,
+        body.mode-fx .page-section.revealed .stat-card,
+        body.mode-fx .page-section.revealed .period-tabs,
+        body.mode-fx .page-section.revealed .trade-switch,
+        body.mode-fx .page-section.revealed .sub-tier-badge {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) scale(1);
+            filter: blur(0px);
         }
 
         /* БЛОКЧЕЙН ХОЛСТ ХЕШЕЙ */
@@ -104,8 +168,8 @@
         .ambient-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.16;
+            filter: blur(110px);
+            opacity: 0.15;
             will-change: transform;
         }
 
@@ -182,32 +246,36 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
+        /* ОСНОВНОЙ КОНТЕЙНЕР (ОБЩАЯ ЛЕНТА) */
         .container {
             padding: 14px 16px;
-            max-width: 520px;
+            max-width: 540px;
             margin: 0 auto;
             position: relative;
             z-index: 3;
             display: none;
+            perspective: 1600px;
         }
 
         .page-section {
-            margin-bottom: 32px;
+            margin-bottom: 44px;
+            scroll-margin-top: 18px;
+            position: relative;
+            transform-style: preserve-3d;
         }
 
-        /* ПРЕМИАЛЬНЫЕ ГРАФИТОВЫЕ КАРТОЧКИ */
+        /* ПРЕМИАЛЬНЫЕ КВАДРАТНЫЕ КАРТОЧКИ */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-card);
             padding: 18px;
             margin-bottom: 12px;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             position: relative;
         }
 
-        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ НА ЧИСТОМ ФОНЕ */
+        /* ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ */
         .sub-tier-badge {
             display: flex;
             align-items: center;
@@ -215,7 +283,7 @@
             gap: 8px;
             width: 100%;
             padding: 13px 16px;
-            border-radius: 16px;
+            border-radius: var(--radius-btn);
             font-size: 13px;
             font-weight: 800;
             letter-spacing: 0.3px;
@@ -242,7 +310,7 @@
             background: rgba(168, 85, 247, 0.1);
         }
         .tier-expired {
-            border-color: rgba(244, 63, 94, 0.4);
+            border-color: rgba(225, 29, 72, 0.4);
             color: var(--trade-red);
             background: var(--trade-red-bg);
         }
@@ -252,7 +320,7 @@
             display: flex;
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-radius: 14px;
+            border-radius: var(--radius-btn);
             padding: 3px;
             margin-bottom: 12px;
             gap: 2px;
@@ -261,9 +329,9 @@
         .p-tab {
             flex: 1;
             text-align: center;
-            padding: 9px 4px;
-            border-radius: 11px;
-            font-size: 12px;
+            padding: 8px 4px;
+            border-radius: var(--radius-pill);
+            font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
             cursor: pointer;
@@ -278,12 +346,12 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
-        /* ВЫБОР ДАТ: КОМПАКТНЫЙ, БЕЗ НАЛОЖЕНИЙ */
+        /* ВЫБОР ДАТ */
         .date-picker-box {
             display: none;
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-radius: 16px;
+            border-radius: var(--radius-card);
             padding: 14px;
             margin-bottom: 12px;
         }
@@ -291,8 +359,8 @@
         .date-chip-wrap {
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            padding: 2px 6px;
             display: inline-flex;
             align-items: center;
         }
@@ -304,7 +372,7 @@
             font-size: 12px !important;
             font-weight: 700 !important;
             font-family: inherit !important;
-            padding: 8px 4px !important;
+            padding: 7px 4px !important;
             width: auto !important;
             max-width: 125px !important;
             outline: none !important;
@@ -319,7 +387,7 @@
             font-size: 11px;
             font-weight: 700;
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 4px;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.15s ease;
@@ -332,8 +400,8 @@
 
         /* КАРТОЧКА ОБЩЕЙ ПРИБЫЛИ */
         .hero-profit-card {
-            background: linear-gradient(180deg, #151c2a 0%, #101520 100%);
-            border: 1px solid rgba(245, 158, 11, 0.28);
+            background: linear-gradient(180deg, #15181e 0%, #0f1115 100%);
+            border: 1px solid rgba(245, 158, 11, 0.32);
         }
 
         .profit-title-row {
@@ -344,17 +412,17 @@
         }
 
         .profit-val-huge {
-            font-size: 34px;
+            font-size: 32px;
             font-weight: 900;
             letter-spacing: -0.5px;
-            font-family: 'JetBrains Mono', 'Sora', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .sub-profit-badge {
             font-size: 13px;
             font-weight: 800;
             padding: 4px 10px;
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
             font-family: 'JetBrains Mono', monospace;
@@ -365,9 +433,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            width: 19px;
+            height: 19px;
+            border-radius: var(--radius-pill);
             background: var(--bg-card-sub);
             border: 1px solid var(--border-subtle);
             color: var(--text-muted);
@@ -393,8 +461,8 @@
         .stat-card {
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
-            border-radius: 15px;
-            padding: 13px;
+            border-radius: var(--radius-pill);
+            padding: 12px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -412,7 +480,7 @@
         }
 
         .stat-card-val {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 800;
             margin-top: 6px;
             color: var(--text-main);
@@ -424,14 +492,14 @@
         .txt-red { color: var(--trade-red) !important; }
         .txt-blue { color: var(--trade-blue) !important; }
 
-        /* ЗАМЕТНАЯ КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ */
+        /* КНОПКА РАЗВОРОТА ДОП ПОКАЗАТЕЛЕЙ */
         .details-toggle-btn {
             width: 100%;
             background: rgba(245, 158, 11, 0.08);
-            border: 1.5px solid rgba(245, 158, 11, 0.35);
+            border: 1px solid rgba(245, 158, 11, 0.35);
             color: var(--lambo-gold);
             padding: 12px 14px;
-            border-radius: 15px;
+            border-radius: var(--radius-btn);
             font-size: 12px;
             font-weight: 800;
             cursor: pointer;
@@ -446,6 +514,42 @@
         .details-toggle-btn:active {
             transform: scale(0.98);
             background: rgba(245, 158, 11, 0.16);
+        }
+
+        /* ПЕРЕКЛЮЧАТЕЛЬ ПОКУПКА / ПРОДАЖА (НАСЫЩЕННЫЙ БОРДОВЫЙ И ИЗУМРУДНЫЙ) */
+        .trade-switch {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .switch-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-btn);
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            cursor: pointer;
+            background: var(--bg-input);
+            transition: all 0.2s ease;
+        }
+
+        .switch-btn:active { transform: scale(0.97); }
+        .switch-btn.active.buy {
+            background: var(--trade-green-dark);
+            color: #34d399;
+            border-color: var(--trade-green);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+        }
+
+        .switch-btn.active.sell {
+            background: var(--trade-red-dark);
+            color: #fb7185;
+            border-color: var(--trade-red);
+            box-shadow: 0 0 16px rgba(225, 29, 72, 0.2);
         }
 
         /* ПОЛЯ ВВОДА И КНОПКИ */
@@ -467,7 +571,7 @@
             border: 1px solid var(--border-subtle);
             color: var(--text-main);
             padding: 12px 14px;
-            border-radius: 13px;
+            border-radius: var(--radius-btn);
             font-size: 14px;
             font-weight: 600;
             outline: none;
@@ -496,16 +600,8 @@
         }
 
         .action-btn:active { transform: scale(0.97); }
-
-        .action-btn.gold {
-            background: var(--lambo-gold);
-            color: #1a1000;
-        }
-
-        .action-btn.sell-mode {
-            background: var(--trade-red);
-            color: #fff;
-        }
+        .action-btn.gold { background: var(--lambo-gold); color: #1a1000; }
+        .action-btn.sell-mode { background: var(--trade-red); color: #fff; }
 
         .action-btn-secondary {
             width: 100%;
@@ -526,17 +622,39 @@
         .history-item {
             background: var(--bg-input);
             border: 1px solid var(--border-subtle);
-            border-radius: 14px;
+            border-radius: var(--radius-btn);
             padding: 12px 14px;
             margin-bottom: 8px;
         }
 
-        .btn-card-action {
+        .card-item {
             background: var(--bg-card-sub);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .card-btns-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .btn-card-action {
+            background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             color: var(--text-main);
             padding: 8px 6px;
-            border-radius: 11px;
+            border-radius: var(--radius-pill);
             font-size: 11px;
             font-weight: 700;
             text-align: center;
@@ -545,6 +663,19 @@
         }
 
         .btn-card-action:active { transform: scale(0.95); }
+
+        .progress-bar-wrap {
+            background: var(--bg-input);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 6px 0 4px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--trade-green);
+        }
 
         /* ТУМБЛЕР (SWITCH) */
         .switch {
@@ -584,19 +715,19 @@
             background-color: #000;
         }
 
-        /* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ */
+        /* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (СКРОЛЛ ПО ЛЕНТЕ) */
         .bottom-nav {
             position: fixed;
             bottom: max(12px, env(safe-area-inset-bottom));
             left: 14px;
             right: 14px;
-            max-width: 480px;
+            max-width: 500px;
             margin: 0 auto;
-            background: rgba(17, 22, 34, 0.95);
+            background: rgba(17, 19, 23, 0.96);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-subtle);
-            border-radius: 22px;
+            border-radius: var(--radius-card);
             display: none;
             justify-content: space-around;
             padding: 7px 4px 9px 4px;
@@ -616,7 +747,7 @@
             cursor: pointer;
             width: 18%;
             padding: 4px 0;
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
             transition: color 0.15s ease;
         }
 
@@ -635,7 +766,7 @@
             top: 16px;
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
-            background: #182030;
+            background: #181b21;
             border: 1px solid var(--border-subtle);
             color: var(--text-main);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
@@ -658,7 +789,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.78);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             z-index: 9999;
@@ -675,14 +806,14 @@
             max-width: 400px;
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-radius: 22px;
+            border-radius: var(--radius-card);
             padding: 20px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
     </style>
 </head>
 <body class="mode-simple">
-    <!-- ХОЛСТ БЛОКЧЕЙНА (ДЛЯ РЕЖИМА FX) -->
+    <!-- ХОЛСТ БЛОКЧЕЙНА (ДЛЯ FX-РЕЖИМА) -->
     <canvas id="blockchain-canvas"></canvas>
 
     <div class="ambient-canvas-wrap">
@@ -710,12 +841,12 @@
         </div>
     </div>
 
-    <!-- ОСНОВНОЙ ЭКРАН -->
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР (ОБЩАЯ ЕДИНАЯ ЛЕНТА) -->
     <div class="container">
 
         <!-- 1. СВОДКА -->
-        <section id="dashboard" class="page-section">
-            <!-- ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ -->
+        <section id="dashboard" class="page-section revealed">
+            <!-- ПЛАШКА ПОДПИСКИ НА ВСЮ ШИРИНУ НА ЧИСТОМ ФОНЕ -->
             <div id="disp-tier-badge" class="sub-tier-badge tier-vip">
                 Сверка подписки...
             </div>
@@ -893,23 +1024,23 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-                    <div style="background: var(--bg-input); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; padding: 10px;">
+                    <div style="background: var(--bg-input); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-pill); padding: 10px;">
                         <div style="font-size: 11px; font-weight: 800; color: var(--trade-green); margin-bottom: 4px;" data-i18n="calcBuyHeader">ПОКУПКА 🟢</div>
                         <span class="badge-label" data-i18n="calcBuyRate">Курс закупа</span>
                         <input type="number" inputmode="decimal" id="calc-buy-rate" class="styled-input" style="padding: 8px 10px;" placeholder="86.04">
-                        <div style="margin-top: 6px; font-size: 12px; font-weight: 800;" id="calc-buy-crypto">0.00 USDT</div>
+                        <div style="margin-top: 6px; font-size: 12px; font-weight: 800; font-family: 'JetBrains Mono', monospace;" id="calc-buy-crypto">0.00 USDT</div>
                     </div>
 
-                    <div style="background: var(--bg-input); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 14px; padding: 10px;">
+                    <div style="background: var(--bg-input); border: 1px solid rgba(225, 29, 72, 0.25); border-radius: var(--radius-pill); padding: 10px;">
                         <div style="font-size: 11px; font-weight: 800; color: var(--trade-red); margin-bottom: 4px;" data-i18n="calcSellHeader">ПРОДАЖА 🔴</div>
                         <span class="badge-label" data-i18n="calcSellRate">Курс слива</span>
                         <input type="number" inputmode="decimal" id="calc-sell-rate" class="styled-input" style="padding: 8px 10px;" placeholder="94.50">
-                        <div style="margin-top: 6px; font-size: 12px; font-weight: 800;" id="calc-sell-crypto">0.00 USDT</div>
+                        <div style="margin-top: 6px; font-size: 12px; font-weight: 800; font-family: 'JetBrains Mono', monospace;" id="calc-sell-crypto">0.00 USDT</div>
                     </div>
                 </div>
 
                 <!-- Результат расчета -->
-                <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+                <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); padding: 12px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-size: 12px; color: var(--text-muted);" data-i18n="calcSpread">Спред:</span>
                         <b id="calc-spread-val" class="txt-gold" style="font-size: 14px;">0.00%</b>
@@ -931,14 +1062,14 @@
         </section>
 
         <!-- 2. СДЕЛКА -->
-        <section id="trade" class="page-section" style="display: none;">
+        <section id="trade" class="page-section">
             <h1 style="font-size: 20px; font-weight: 800; margin-bottom: 2px;" data-i18n="newTradeTitle">Новая операция</h1>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="newTradeSubtitle">Запись сделки в базу</p>
+            <p class="subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="newTradeSubtitle">Запись сделки в базу</p>
 
             <div class="card">
-                <div class="period-tabs" style="margin-bottom: 14px;">
-                    <div class="p-tab active" id="btn-buy" onclick="setTradeType('buy')" data-i18n="buyBtn">ПОКУПКА 🟢</div>
-                    <div class="p-tab" id="btn-sell" onclick="setTradeType('sell')" data-i18n="sellBtn">ПРОДАЖА 🔴</div>
+                <div class="trade-switch">
+                    <div class="switch-btn active buy" id="btn-buy" onclick="setTradeType('buy')" data-i18n="buyBtn">ПОКУПКА 🟢</div>
+                    <div class="switch-btn" id="btn-sell" onclick="setTradeType('sell')" data-i18n="sellBtn">ПРОДАЖА 🔴</div>
                 </div>
 
                 <div class="period-tabs" style="margin-bottom: 14px;">
@@ -961,7 +1092,7 @@
                     </select>
                 </div>
 
-                <div id="trade-preview" style="display: none; background: var(--bg-input); padding: 12px; border-radius: 12px; margin-bottom: 14px; font-size: 13px;">
+                <div id="trade-preview" style="display: none; background: var(--bg-input); padding: 12px; border-radius: var(--radius-pill); margin-bottom: 14px; font-size: 13px;">
                     <span id="preview-text">Итог:</span> <b id="preview-result" style="color: var(--lambo-gold);">0.00</b>
                 </div>
 
@@ -970,11 +1101,11 @@
         </section>
 
         <!-- 3. КАРТЫ -->
-        <section id="cards" class="page-section" style="display: none;">
+        <section id="cards" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                 <div>
                     <h1 style="font-size: 20px; font-weight: 800; margin: 0;" data-i18n="cardsTitle">Мои карты</h1>
-                    <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;" data-i18n="cardsSubtitle">Контроль кассы и лимитов</p>
+                    <p class="subtitle" style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;" data-i18n="cardsSubtitle">Контроль кассы и лимитов</p>
                 </div>
                 <button class="action-btn-secondary" style="padding: 7px 12px; font-size: 12px; width: auto;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Добавить</button>
             </div>
@@ -982,18 +1113,18 @@
         </section>
 
         <!-- 4. ИСТОРИЯ -->
-        <section id="history" class="page-section" style="display: none;">
+        <section id="history" class="page-section">
             <h1 style="font-size: 20px; font-weight: 800; margin-bottom: 2px;" data-i18n="historyTitle">История операций</h1>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="historySubtitle">Все синхронизированные сделки</p>
+            <p class="subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="historySubtitle">Все синхронизированные сделки</p>
             <div class="card">
                 <div id="history-container"></div>
             </div>
         </section>
 
-        <!-- 5. НАСТРОЙКИ И ПРОФИЛЬ -->
-        <section id="profile" class="page-section" style="display: none;">
+        <!-- 5. НАСТРОЙКИ И ПРОФИЛЬ (ВКЛЮЧАЯ ТУМБЛЕР РЕЖИМА И РЕФЕРАЛКУ) -->
+        <section id="profile" class="page-section">
             <h1 style="font-size: 20px; font-weight: 800; margin-bottom: 2px;" data-i18n="profileTitle">Настройки</h1>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="profileSubtitle">Конфигурация аккаунта</p>
+            <p class="subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="profileSubtitle">Конфигурация аккаунта</p>
 
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
@@ -1005,7 +1136,7 @@
                 </div>
 
                 <!-- ТУМБЛЕР ВЫБОРА ИНТЕРФЕЙСА (FX / МИНИМАЛИЗМ) -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: var(--bg-input); padding: 12px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: var(--bg-input); padding: 12px; border-radius: var(--radius-btn); border: 1px solid var(--border-subtle);">
                     <div>
                         <div style="font-size: 13px; font-weight: 800;">
                             <span data-i18n="uiModeLabel">Визуальные эффекты (FX)</span>
@@ -1071,12 +1202,12 @@
                     <span class="help-icon" onclick="openHelpModal('referral', event)">?</span>
                 </div>
 
-                <div style="text-align: center; padding: 14px; background: var(--bg-input); border-radius: 14px; margin-bottom: 12px;">
+                <div style="text-align: center; padding: 14px; background: var(--bg-input); border-radius: var(--radius-btn); margin-bottom: 12px;">
                     <div style="font-size: 32px; font-weight: 900; color: var(--lambo-gold);" id="ref-count-val">0</div>
                     <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" data-i18n="refInvited">Приглашено пользователей</div>
                 </div>
 
-                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 10px; margin-bottom: 12px; font-size: 12px; line-height: 1.4; color: #cbd5e1;" id="ref-bonus-desc">
+                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: var(--radius-pill); padding: 10px; margin-bottom: 12px; font-size: 12px; line-height: 1.4; color: #cbd5e1;" id="ref-bonus-desc">
                     🎁 За каждого приглашенного трейдера начисляется <b>+3 дня</b> к подписке.
                 </div>
 
@@ -1090,31 +1221,112 @@
             </div>
         </section>
 
-        <!-- 6. АДМИН-ПАНЕЛЬ -->
+        <!-- 6. АДМИН-ПАНЕЛЬ (ВКЛЮЧАЯ /CONFIG И УПРАВЛЕНИЕ ЮЗЕРАМИ) -->
         <section id="admin-panel" class="page-section" style="display: none;">
             <div class="card" style="border: 1.5px dashed var(--lambo-gold);">
                 <div class="profit-title-row" style="margin-bottom: 10px;">
                     <h2 style="font-size: 16px; margin: 0; color: var(--lambo-gold);">Панель администратора</h2>
-                    <span style="font-size: 10px; font-weight: 800; color: var(--lambo-gold); border: 1px solid var(--lambo-gold); padding: 2px 6px; border-radius: 6px;">ROOT</span>
+                    <span style="font-size: 10px; font-weight: 800; color: var(--lambo-gold); border: 1px solid var(--lambo-gold); padding: 2px 6px; border-radius: var(--radius-pill);">ROOT</span>
+                </div>
+                <p class="subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Управление глобальным конфигом (/config) и пользователями (/admin)</p>
+
+                <!-- ГЛОБАЛЬНЫЙ КОНФИГ (/config) -->
+                <div style="margin-bottom: 20px;">
+                    <span style="color: var(--trade-green); font-size: 11px; font-weight: 800; display: block; margin-bottom: 6px;">⚙️ ГЛОБАЛЬНЫЙ КОНФИГ (/config)</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
+                        <div class="input-wrap" style="margin-bottom: 6px;">
+                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_MONTH ($)</span>
+                            <input type="number" id="cfg-inp-month" class="styled-input" style="padding: 10px;">
+                        </div>
+                        <div class="input-wrap" style="margin-bottom: 6px;">
+                            <span style="font-size: 10px; color: var(--text-muted);">PRICE_FOREVER ($)</span>
+                            <input type="number" id="cfg-inp-forever" class="styled-input" style="padding: 10px;">
+                        </div>
+                    </div>
+                    <div class="input-wrap" style="margin-bottom: 6px;">
+                        <span style="font-size: 10px; color: var(--text-muted);">BYBIT_UID ДЛЯ ОПЛАТ</span>
+                        <input type="text" id="cfg-inp-uid" class="styled-input" style="padding: 10px;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
+                        <div class="input-wrap" style="margin-bottom: 0;">
+                            <span style="font-size: 10px; color: var(--text-muted);">TRIAL_DAYS</span>
+                            <input type="number" id="cfg-inp-trial" class="styled-input" style="padding: 10px;">
+                        </div>
+                        <div class="input-wrap" style="margin-bottom: 0;">
+                            <span style="font-size: 10px; color: var(--text-muted);">REF_BONUS_DAYS</span>
+                            <input type="number" id="cfg-inp-ref" class="styled-input" style="padding: 10px;">
+                        </div>
+                    </div>
+                    <div class="input-wrap" style="margin-bottom: 10px;">
+                        <span style="font-size: 10px; color: var(--text-muted);">ADMIN_IDS (через запятую)</span>
+                        <input type="text" id="cfg-inp-admin-ids" class="styled-input" style="padding: 10px;" placeholder="5172556128, 5847661785">
+                    </div>
+                    <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="saveAdminConfig()">💾 СОХРАНИТЬ КОНФИГУРАЦИЮ В БАЗУ</button>
                 </div>
 
-                <div class="input-wrap">
-                    <span class="badge-label">ID пользователя</span>
-                    <input type="number" id="admin-target-uid" class="styled-input" placeholder="Telegram ID">
-                </div>
+                <div style="height: 1px; background: var(--border-subtle); margin: 16px 0;"></div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
-                    <button class="action-btn-secondary" style="color: var(--trade-green);" onclick="adminUserAction('grant30')">+30 дней</button>
-                    <button class="action-btn-secondary" style="color: var(--lambo-gold);" onclick="adminUserAction('grantVIP')">VIP Навсегда</button>
-                    <button class="action-btn-secondary" style="color: #ff9900;" onclick="adminUserAction('revoke')">Снять подписку</button>
-                    <button class="action-btn-secondary" style="color: var(--trade-red);" onclick="adminUserAction('ban')">Забанить</button>
-                </div>
+                <!-- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ (/admin) -->
+                <div>
+                    <span style="color: var(--trade-purple); font-size: 11px; font-weight: 800; display: block; margin-bottom: 6px;">👤 УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ (/admin)</span>
+                    <div class="input-wrap">
+                        <span class="badge-label">ID пользователя</span>
+                        <input type="number" id="admin-target-uid" class="styled-input" placeholder="Введите Telegram ID пользователя...">
+                    </div>
 
-                <button class="action-btn-secondary" style="margin-bottom: 8px;" onclick="adminInspectUser()">Досье пользователя</button>
-                <div id="admin-user-dossier" style="display: none; background: var(--bg-input); border-radius: 12px; padding: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.5;"></div>
-                <button class="action-btn-secondary" onclick="adminExportDatabase()">Выгрузить базу (CSV)</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+                        <button class="action-btn-secondary" style="color: var(--trade-green);" onclick="adminUserAction('grant30')">📅 +30 дней</button>
+                        <button class="action-btn-secondary" style="color: var(--lambo-gold);" onclick="adminUserAction('grantVIP')">♾️ VIP Навсегда</button>
+                        <button class="action-btn-secondary" style="color: #ff9900;" onclick="adminUserAction('revoke')">❌ Снять подписку</button>
+                        <button class="action-btn-secondary" style="color: var(--trade-red);" onclick="adminUserAction('ban')">⛔️ Забанить</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+                        <button class="action-btn-secondary" style="color: var(--trade-blue);" onclick="adminInspectUser()">🔎 Досье юзера</button>
+                        <button class="action-btn-secondary" style="color: var(--trade-green);" onclick="adminUserAction('unban')">🟢 Разбанить</button>
+                    </div>
+
+                    <div id="admin-user-dossier" style="display: none; background: var(--bg-input); border-radius: var(--radius-pill); padding: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.5;"></div>
+                    <button class="action-btn-secondary" onclick="adminExportDatabase()">📥 ВЫГРУЗИТЬ БАЗУ ПОЛЬЗОВАТЕЛЕЙ (CSV)</button>
+                </div>
             </div>
         </section>
+
+        <!-- 7. PAYWALL (ЕСЛИ НЕТ ПОДПИСКИ) -->
+        <div id="paywall" class="page-section" style="display: none;">
+            <h1 data-i18n="paywallTitle">Доступ к Терминалу 🔒</h1>
+            <p class="subtitle" id="paywall-reason" data-i18n="paywallSubtitle">Оформите доступ для использования функций</p>
+
+            <div class="card" id="trial-card">
+                <span class="badge-label" data-i18n="trialBadge">Бесплатный доступ</span>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;" data-i18n="trialDesc">
+                    🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.
+                </p>
+                <button class="action-btn" onclick="openSubModal()" data-i18n="btnActivateTrial">🎁 Активировать триал</button>
+            </div>
+
+            <div class="card" style="margin-top: 15px;">
+                <span class="badge-label" data-i18n="plansBadge">Тарифные планы</span>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px;" data-i18n="plansDesc">
+                    Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.
+                </p>
+
+                <div class="analytics-grid">
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="openSubModal()">
+                        <span class="stat-card-title" data-i18n="plan1m">1 Месяц</span>
+                        <div class="stat-card-val txt-green" id="disp-price-month">5$</div>
+                    </div>
+                    <div class="stat-card" style="text-align: center; cursor: pointer;" onclick="openSubModal()">
+                        <span class="stat-card-title" data-i18n="planForever">Навсегда</span>
+                        <div class="stat-card-val txt-gold" id="disp-price-forever">49$</div>
+                    </div>
+                </div>
+
+                <button class="action-btn gold" style="margin-top: 15px;" onclick="openSubModal()" data-i18n="btnBuySub">
+                    💳 Оформить подписку
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- МОДАЛКА ЗНАКА ВОПРОСА ? -->
@@ -1214,24 +1426,24 @@
 
     <div id="toast">Действие выполнено!</div>
 
-    <!-- НАВИГАЦИЯ ВНИЗУ -->
+    <!-- НАВИГАЦИЯ ВНИЗУ (ПЛАВНЫЙ СКРОЛЛ ПО ЛЕНТЕ) -->
     <div class="bottom-nav">
-        <div class="nav-btn active" data-target="dashboard" onclick="switchSection('dashboard', this)">
+        <div class="nav-btn active" data-target="dashboard" onclick="scrollToSection('dashboard', this)">
             <i>📊</i><span data-i18n="navSummary">Сводка</span>
         </div>
-        <div class="nav-btn" data-target="trade" onclick="switchSection('trade', this)">
+        <div class="nav-btn" data-target="trade" onclick="scrollToSection('trade', this)">
             <i>⚡️</i><span data-i18n="navTrade">Сделка</span>
         </div>
-        <div class="nav-btn" data-target="cards" onclick="switchSection('cards', this)">
+        <div class="nav-btn" data-target="cards" onclick="scrollToSection('cards', this)">
             <i>💳</i><span data-i18n="navCards">Карты</span>
         </div>
-        <div class="nav-btn" data-target="history" onclick="switchSection('history', this)">
+        <div class="nav-btn" data-target="history" onclick="scrollToSection('history', this)">
             <i>📜</i><span data-i18n="navHistory">История</span>
         </div>
-        <div class="nav-btn" data-target="profile" onclick="switchSection('profile', this)">
+        <div class="nav-btn" data-target="profile" onclick="scrollToSection('profile', this)">
             <i>⚙️</i><span data-i18n="navSettings">Настройки</span>
         </div>
-        <div class="nav-btn" id="nav-btn-admin" data-target="admin-panel" style="display: none;" onclick="switchSection('admin-panel', this)">
+        <div class="nav-btn" id="nav-btn-admin" data-target="admin-panel" style="display: none;" onclick="scrollToSection('admin-panel', this)">
             <i>🛠</i><span>Админ</span>
         </div>
     </div>
@@ -1243,144 +1455,350 @@
         const SUPER_ADMIN_ID = 5172556128;
         let adminIds = [SUPER_ADMIN_ID];
 
-        /* ЯЗЫКОВОЙ СЛОВАРЬ (7 ЯЗЫКОВ) */
+        /* ====================================================
+           ЯЗЫКОВОЙ СЛОВАРЬ (7 ЯЗЫКОВ)
+        ==================================================== */
         const I18N = {
             ru: {
-                tabToday: "Сегодня", tabMonth: "Месяц", tabAll: "Всё время", tabCustom: "Выбрать даты 📅",
-                totalProfitBadge: "💰 Общая прибыль", netIn: "Чистая в", netInUsdt: "Чистая в USDT",
-                formulaFiat: "Продажи − Покупки (₽)", formulaUsdt: "Куплено − Продано (🪙)",
-                midPriceHint: "Справедливый курс (Mid Price):",
-                statRoi: "ROI оборота", statWac: "WAC Закуп", statAvgSell: "Ср. Продажа",
-                statOps: "Всего / Покупок / Продаж", turnCombinedTitle: "Оборот кассы (Фиат / USDT)",
-                spreadCardTitle: "Спред сделок", lastCycleSpread: "Последний круг", avgPeriodSpread: "Средний за период",
-                hintAvgSpread: "По средневзвешенному WAC", calcTitle: "Калькулятор круга", calcDealPrice: "Прайс сделки (депозит)",
-                calcBuyHeader: "ПОКУПКА 🟢", calcBuyRate: "Курс закупа", calcSellHeader: "ПРОДАЖА 🔴", calcSellRate: "Курс слива",
-                calcSpread: "Спред:", calcProfit: "Прибыль с круга:", calcSaveCycle: "Сохранить круг ✅", calcClear: "Очистить",
-                showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть статистику",
-                presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней", dateFrom: "С даты", dateTo: "По дату",
-                btnApplyDate: "Применить период", newTradeTitle: "Новая операция", newTradeSubtitle: "Запись сделки в базу",
-                buyBtn: "ПОКУПКА 🟢", sellBtn: "ПРОДАЖА 🔴", modeFiat: "Фиат", modeCrypto: "Объем USDT",
-                lblRate: "Курс USDT", lblCardOpt: "Банковская карта", noCardOpt: "Без привязки к карте",
-                cardsTitle: "Мои карты", cardsSubtitle: "Контроль кассы и лимитов", btnCreateCard: "➕ Добавить",
-                historyTitle: "История операций", historySubtitle: "Все синхронизированные сделки",
-                refTitle: "Партнерская программа", refSubtitle: "Приглашайте трейдеров и получайте дни",
-                refInvited: "Приглашено пользователей", refYourLink: "Ваша реферальная ссылка",
-                btnCopy: "Скопировать", btnShare: "Поделиться", shareText: "Удобный P2P-терминал для учета кругов и WAC:",
-                profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта", lblYourId: "TELEGRAM ID",
-                lblLang: "Язык приложения", lblBaseCur: "Базовая валюта учета", lblTimezone: "Часовой пояс (UTC)",
-                uiModeLabel: "Визуальные эффекты (FX)", uiModeSimpleDesc: "Минимализм (без фона и анимаций)",
-                uiModeFxDesc: "Полный FX (блокчейн-фон и 3D)", btnSubModal: "💎 Подписка", btnSupport: "👨‍💻 Поддержка в Telegram",
-                paywallTitle: "Доступ ограничен 🔒", paywallSubtitle: "Оформите доступ к терминалу", trialBadge: "Бесплатный тест",
-                trialDesc: "🎁 Пробный период 24 часа активируется в Telegram-боте.", btnActivateTrial: "Активировать триал",
-                plansBadge: "Тарифные планы", plansDesc: "Оплата и сверка перевода Bybit производятся в боте.",
-                plan1m: "1 Месяц", planForever: "Навсегда", btnBuySub: "Оформить подписку", subModalTitle: "Оформление подписки",
-                subModalDesc: "Активация 24 часов триала и покупка тарифов производятся в боте.<br><br>После проверки доступ активируется сразу!",
-                btnGotIt: "Понятно", cardModalTitle: "Новая карта", cardNameLbl: "Название карты", btnCancel: "Отмена",
-                btnCreate: "Создать", limitModalTitle: "Лимит покупок", limitModalLbl: "Лимит в фиате (0 = без лимита)",
-                btnSave: "Сохранить", opAmountLbl: "Сумма в фиате", opCommentLbl: "Комментарий", btnApply: "Применить",
-                editModalTitle: "Правка сделки", navSummary: "Сводка", navTrade: "Сделка", navCards: "Карты",
-                navHistory: "История", navSettings: "Настройки", restrictedTitle: "Доступ ограничен",
-                restrictedDesc: "Терминал открывается <b>исключительно через Telegram Mini App</b>.", openBotBtn: "Открыть бота"
+                tabToday: "За сегодня", tabMonth: "За месяц", tabAll: "Все время", tabCustom: "Свой период 📅",
+                totalProfitBadge: "💰 ОБЩАЯ ПРИБЫЛЬ", netIn: "Чистая в", netInUsdt: "Чистая в USDT",
+                formulaFiat: "Продажа − Покупка", formulaUsdt: "Покупка − Продажа",
+                midPriceHint: "⚖️ Средняя цена (Mid Price):",
+                statRoi: "📈 ROI от оборота", statWac: "🛒 WAC Закупка", statAvgSell: "🏷 Ср. Продажа",
+                statOps: "🔢 Сделок: всего / покупок / продаж", turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
+                spreadCardTitle: "СПРЕД СДЕЛОК", lastCycleSpread: "Последний круг", avgPeriodSpread: "Ср. за период",
+                hintAvgSpread: "По WAC за таймфрейм",
+                calcTitle: "КАЛЬКУЛЯТОР КРУГА", calcDealPrice: "Прайс сделки",
+                calcBuyHeader: "ПОКУПКА 🟢", calcBuyRate: "Курс USDT",
+                calcSellHeader: "ПРОДАЖА 🔴", calcSellRate: "Курс USDT",
+                calcSpread: "Спред:", calcProfit: "Прибыль с круга:",
+                calcSaveCycle: "Сохранить круг ✅", calcClear: "Очистить ❌",
+                showSecondary: "📊 Развернуть подробную статистику", hideSecondary: "📊 Скрыть подробную статистику",
+                presetYesterday: "Вчера", preset7d: "7 дней", preset30d: "30 дней",
+                dateFrom: "С даты", dateTo: "По дату", btnApplyDate: "Применить ⚡️",
+                uiModeLabel: "Визуальные эффекты (FX)",
+                uiModeSimpleDesc: "Минимализм (без фона и анимаций)",
+                uiModeFxDesc: "Максимальный FX (блокчейн-фон и 3D)",
+                newTradeTitle: "Новая операция", newTradeSubtitle: "Внести круг в облачную базу",
+                buyBtn: "ПОКУПКА 🟢", sellBtn: "ПРОДАЖА 🔴", modeFiat: "Сумма фиата", modeCrypto: "Объем USDT",
+                lblRate: "Курс USDT", lblCardOpt: "Банковская карта (Опционально)", noCardOpt: "Без привязки к карте",
+                cardsTitle: "Мои карты", cardsSubtitle: "Контроль кассы и лимитов", btnCreateCard: "➕ Создать",
+                historyTitle: "История операций", historySubtitle: "Синхронизированные сделки",
+                refTitle: "Партнерская сеть", refSubtitle: "Получайте бонусные дни подписки",
+                refInvited: "Приглашено пользователей", refYourLink: "Ваша партнерская ссылка",
+                btnCopy: "📋 Скопировать", btnShare: "🚀 Отправить",
+                shareText: "Удобный P2P-терминал учета кругов и WAC:",
+                profileTitle: "Настройки", profileSubtitle: "Конфигурация аккаунта и терминала",
+                lblYourId: "ВАШ TELEGRAM ID", lblLang: "Язык интерфейса", lblBaseCur: "Базовая валюта",
+                lblTimezone: "Часовой пояс (UTC)", btnSubModal: "💎 Оформить / Продлить",
+                btnSupport: "👨‍💻 Служба поддержки", paywallTitle: "Доступ к Терминалу 🔒",
+                paywallSubtitle: "Оформите доступ для использования функций",
+                trialBadge: "Бесплатный доступ", trialDesc: "🎁 <b>Пробный период 24 часа</b> активируется исключительно внутри Telegram-бота.",
+                btnActivateTrial: "🎁 Активировать триал", plansBadge: "Тарифные планы",
+                plansDesc: "Оплата и сверка перевода Bybit производятся безопасно внутри Telegram-бота.",
+                plan1m: "1 Месяц", planForever: "Навсегда", btnBuySub: "💳 Оформить подписку",
+                subModalTitle: "Оформление в Telegram-боте",
+                subModalDesc: "Активация 24 часов бесплатного триала и покупка тарифов производятся <b>исключительно в нашем Telegram-боте</b>.<br><br>После отправки перевода и сверки Bybit UID доступ в веб-терминале <b>активируется автоматически</b>!",
+                btnGotIt: "Понятно", cardModalTitle: "➕ Добавить карту", cardNameLbl: "Название карты",
+                btnCancel: "Отмена", btnCreate: "Создать", limitModalTitle: "⚙️ Лимит покупок",
+                limitModalLbl: "Лимит в фиате (0 = без лимита)", btnSave: "Сохранить",
+                opAmountLbl: "Сумма в фиате", opCommentLbl: "Комментарий", btnApply: "Применить",
+                editModalTitle: "Редактирование сделки", navSummary: "Сводка", navTrade: "Сделка",
+                navCards: "Карты", navHistory: "История", navSettings: "Настройки",
+                restrictedTitle: "Доступ ограничен", restrictedDesc: "Терминал защищен и запускается <b>исключительно через Telegram Mini App</b>.",
+                openBotBtn: "🚀 Открыть бота"
             },
             en: {
-                tabToday: "Today", tabMonth: "Month", tabAll: "All Time", tabCustom: "Custom Dates 📅",
-                totalProfitBadge: "💰 Total Profit", netIn: "Net in", netInUsdt: "Net in USDT",
-                formulaFiat: "Sells − Buys (Fiat)", formulaUsdt: "Bought − Sold (🪙)", midPriceHint: "Fair Rate (Mid Price):",
-                statRoi: "Turnover ROI", statWac: "WAC Buy", statAvgSell: "Avg Sell", statOps: "Total / Buys / Sells",
-                turnCombinedTitle: "Turnover (Fiat / USDT)", spreadCardTitle: "Trade Spreads", lastCycleSpread: "Last Cycle",
-                avgPeriodSpread: "Period Average", hintAvgSpread: "By weighted average WAC", calcTitle: "Cycle Calculator",
-                calcDealPrice: "Budget (deposit)", calcBuyHeader: "BUY 🟢", calcBuyRate: "Buy rate", calcSellHeader: "SELL 🔴",
-                calcSellRate: "Sell rate", calcSpread: "Spread:", calcProfit: "Cycle profit:", calcSaveCycle: "Save Cycle ✅",
-                calcClear: "Clear", showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Stats",
-                presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days", dateFrom: "From", dateTo: "To",
-                btnApplyDate: "Apply Period", newTradeTitle: "New Trade", newTradeSubtitle: "Record trade into cloud",
-                buyBtn: "BUY 🟢", sellBtn: "SELL 🔴", modeFiat: "Fiat", modeCrypto: "USDT Volume",
-                lblRate: "USDT Rate", lblCardOpt: "Bank Card", noCardOpt: "No card attached",
-                cardsTitle: "My Cards", cardsSubtitle: "Cash & limits control", btnCreateCard: "➕ Add",
-                historyTitle: "Trade History", historySubtitle: "Synchronized orders", refTitle: "Partner Network",
-                refSubtitle: "Invite traders and earn bonus days", refInvited: "Invited users",
-                refYourLink: "Your Referral Link", btnCopy: "Copy", btnShare: "Share",
-                shareText: "Professional P2P arbitrage terminal:", profileTitle: "Preferences",
-                profileSubtitle: "Account Configuration", lblYourId: "TELEGRAM ID", lblLang: "App Language",
-                lblBaseCur: "Base Currency", lblTimezone: "Timezone (UTC)", uiModeLabel: "Visual FX",
-                uiModeSimpleDesc: "Minimalist (clean & fast)", uiModeFxDesc: "Full FX (blockchain nodes & 3D)",
-                btnSubModal: "💎 Pass", btnSupport: "👨‍💻 Telegram Support", paywallTitle: "Access Locked 🔒",
-                paywallSubtitle: "Unlock full terminal pass", trialBadge: "Free Trial",
-                trialDesc: "🎁 24-hour trial is activated inside our Telegram Bot.", btnActivateTrial: "Activate Trial",
-                plansBadge: "Pass Plans", plansDesc: "Payments are processed securely via bot.",
-                plan1m: "1 Month", planForever: "Lifetime", btnBuySub: "Get Subscription", subModalTitle: "Purchase in Bot",
-                subModalDesc: "Trial activation and payment are handled inside our bot.<br><br>Instant automatic activation!",
-                btnGotIt: "Got It", cardModalTitle: "New Card", cardNameLbl: "Card Label", btnCancel: "Cancel",
-                btnCreate: "Create", limitModalTitle: "Buy Limit", limitModalLbl: "Fiat limit (0 = none)", btnSave: "Save",
-                opAmountLbl: "Fiat Amount", opCommentLbl: "Comment", btnApply: "Apply", editModalTitle: "Edit Trade",
-                navSummary: "Summary", navTrade: "Trade", navCards: "Cards", navHistory: "History", navSettings: "Settings",
-                restrictedTitle: "Access Restricted", restrictedDesc: "Terminal opens <b>strictly via Telegram Mini App</b>.",
-                openBotBtn: "Open Telegram Bot"
+                tabToday: "Today", tabMonth: "This Month", tabAll: "All Time", tabCustom: "Custom Range 📅",
+                totalProfitBadge: "💰 TOTAL PROFIT", netIn: "Net in", netInUsdt: "Net in USDT",
+                formulaFiat: "Sell − Buy", formulaUsdt: "Buy − Sell",
+                midPriceHint: "⚖️ Mid Price:",
+                statRoi: "📈 Turnover ROI", statWac: "🛒 WAC Buy Price", statAvgSell: "🏷 Avg Sell Price",
+                statOps: "🔢 Trades: Total / Buys / Sells", turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
+                spreadCardTitle: "TRADE SPREADS", lastCycleSpread: "Last Cycle", avgPeriodSpread: "Period Avg",
+                hintAvgSpread: "By period WAC",
+                calcTitle: "CYCLE CALCULATOR", calcDealPrice: "Deal Budget",
+                calcBuyHeader: "BUY 🟢", calcBuyRate: "USDT Rate",
+                calcSellHeader: "SELL 🔴", calcSellRate: "USDT Rate",
+                calcSpread: "Spread:", calcProfit: "Cycle Profit:",
+                calcSaveCycle: "Save Cycle ✅", calcClear: "Clear ❌",
+                showSecondary: "📊 Show Detailed Stats", hideSecondary: "📊 Hide Detailed Stats",
+                presetYesterday: "Yesterday", preset7d: "7 days", preset30d: "30 days",
+                dateFrom: "Date from", dateTo: "Date to", btnApplyDate: "Apply ⚡️",
+                uiModeLabel: "Visual Effects (FX)",
+                uiModeSimpleDesc: "Minimalist (no background FX & animations)",
+                uiModeFxDesc: "Full FX (blockchain nodes & 3D)",
+                newTradeTitle: "New Operation", newTradeSubtitle: "Record cycle into cloud ledger",
+                buyBtn: "BUY 🟢", sellBtn: "SELL 🔴", modeFiat: "Fiat Amount", modeCrypto: "USDT Volume",
+                lblRate: "USDT Rate", lblCardOpt: "Bank Card (Optional)", noCardOpt: "No card bound",
+                cardsTitle: "My Cards", cardsSubtitle: "Cash & limits control", btnCreateCard: "➕ Add Card",
+                historyTitle: "Operations History", historySubtitle: "Synchronized ledger trades",
+                refTitle: "Partner Network", refSubtitle: "Earn bonus subscription days",
+                refInvited: "Invited Traders", refYourLink: "Your Referral Link",
+                btnCopy: "📋 Copy", btnShare: "🚀 Share",
+                shareText: "Professional P2P terminal for WAC & cycle accounting:",
+                profileTitle: "Settings", profileSubtitle: "Account & Terminal Configuration",
+                lblYourId: "YOUR TELEGRAM ID", lblLang: "Interface Language", lblBaseCur: "Base Currency",
+                lblTimezone: "Timezone (UTC)", btnSubModal: "💎 Upgrade / Renew",
+                btnSupport: "👨‍💻 Support Center", paywallTitle: "Terminal Access 🔒",
+                paywallSubtitle: "Unlock full terminal features",
+                trialBadge: "Free Trial", trialDesc: "🎁 <b>24-Hour Free Trial</b> is activated exclusively inside our Telegram Bot.",
+                btnActivateTrial: "🎁 Activate Trial", plansBadge: "Subscription Plans",
+                plansDesc: "Bybit payment and UID verification are processed securely in our Telegram Bot.",
+                plan1m: "1 Month", planForever: "Lifetime VIP", btnBuySub: "💳 Get Subscription",
+                subModalTitle: "Purchase in Telegram Bot",
+                subModalDesc: "Trial activation and paid plans are processed <b>exclusively inside our Telegram Bot</b>.<br><br>After transfer and Bybit UID verification, terminal access is <b>activated automatically</b>!",
+                btnGotIt: "Got It", cardModalTitle: "➕ Add Card", cardNameLbl: "Card Label",
+                btnCancel: "Cancel", btnCreate: "Create", limitModalTitle: "⚙️ Buy Limit",
+                limitModalLbl: "Fiat limit (0 = none)", btnSave: "Save",
+                opAmountLbl: "Amount in fiat", opCommentLbl: "Comment", btnApply: "Apply",
+                editModalTitle: "Edit Trade", navSummary: "Summary", navTrade: "Trade",
+                navCards: "Cards", navHistory: "History", navSettings: "Settings",
+                restrictedTitle: "Access Restricted", restrictedDesc: "This terminal is secured and launches <b>strictly via Telegram Mini App</b>.",
+                openBotBtn: "🚀 Open Telegram Bot"
+            },
+            es: {
+                tabToday: "Hoy", tabMonth: "Este mes", tabAll: "Todo el tiempo", tabCustom: "Personalizado 📅",
+                totalProfitBadge: "💰 BENEFICIO TOTAL", netIn: "Neto en", netInUsdt: "Neto en USDT",
+                formulaFiat: "Venta − Compra", formulaUsdt: "Compra − Venta",
+                midPriceHint: "⚖️ Precio medio:", statRoi: "📈 ROI volumen", statWac: "🛒 Compra WAC",
+                statAvgSell: "🏷 Venta media", statOps: "🔢 Órdenes: Total / Compras / Ventas", turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
+                spreadCardTitle: "SPREADS DE ÓRDENES", lastCycleSpread: "Último ciclo", avgPeriodSpread: "Promedio",
+                hintAvgSpread: "Por WAC del periodo", calcTitle: "CALCULADORA DE CICLO", calcDealPrice: "Presupuesto",
+                calcBuyHeader: "COMPRA 🟢", calcBuyRate: "Tasa USDT", calcSellHeader: "VENTA 🔴", calcSellRate: "Tasa USDT",
+                calcSpread: "Spread:", calcProfit: "Beneficio:", calcSaveCycle: "Guardar ciclo ✅", calcClear: "Limpiar ❌",
+                showSecondary: "📊 Mostrar estadísticas", hideSecondary: "📊 Ocultar estadísticas",
+                presetYesterday: "Ayer", preset7d: "7 días", preset30d: "30 días", dateFrom: "Desde", dateTo: "Hasta",
+                btnApplyDate: "Aplicar ⚡️", uiModeLabel: "Efectos visuales (FX)", uiModeSimpleDesc: "Minimalismo (rápido)",
+                uiModeFxDesc: "FX completo (blockchain y 3D)", newTradeTitle: "Nueva operación", newTradeSubtitle: "Registrar ciclo",
+                buyBtn: "COMPRA 🟢", sellBtn: "VENTA 🔴", modeFiat: "Monto Fiat", modeCrypto: "Volumen USDT",
+                lblRate: "Tasa USDT", lblCardOpt: "Tarjeta bancaria", noCardOpt: "Sin tarjeta vinculada",
+                cardsTitle: "Mis tarjetas", cardsSubtitle: "Control de caja y límites", btnCreateCard: "➕ Crear",
+                historyTitle: "Historial de operaciones", historySubtitle: "Operaciones sincronizadas",
+                refTitle: "Red de afiliados", refSubtitle: "Gane días de suscripción", refInvited: "Invitados",
+                refYourLink: "Su enlace de afiliado", btnCopy: "📋 Copiar", btnShare: "🚀 Enviar",
+                shareText: "Terminal P2P profesional:", profileTitle: "Ajustes", profileSubtitle: "Configuración",
+                lblYourId: "SU TELEGRAM ID", lblLang: "Idioma del sistema", lblBaseCur: "Moneda base",
+                lblTimezone: "Zona horaria", btnSubModal: "💎 Suscripción", btnSupport: "👨‍💻 Soporte técnico",
+                paywallTitle: "Acceso bloqueado 🔒", paywallSubtitle: "Adquiera acceso", trialBadge: "Prueba gratuita",
+                trialDesc: "🎁 Prueba de 24 horas en el bot.", btnActivateTrial: "🎁 Activar prueba",
+                plansBadge: "Planes", plansDesc: "Pago seguro en Telegram.", plan1m: "1 Mes", planForever: "Para siempre",
+                btnBuySub: "💳 Suscribirse", subModalTitle: "Compra en Telegram", subModalDesc: "Activación automática en bot.",
+                btnGotIt: "Entendido", cardModalTitle: "➕ Agregar tarjeta", cardNameLbl: "Nombre", btnCancel: "Cancelar",
+                btnCreate: "Crear", limitModalTitle: "⚙️ Límite", limitModalLbl: "Límite fiat", btnSave: "Guardar",
+                opAmountLbl: "Monto", opCommentLbl: "Comentario", btnApply: "Aplicar", editModalTitle: "Editar orden",
+                navSummary: "Resumen", navTrade: "Orden", navCards: "Tarjetas", navHistory: "Historial", navSettings: "Ajustes",
+                restrictedTitle: "Acceso restringido", restrictedDesc: "Abra en Telegram Mini App.", openBotBtn: "🚀 Abrir bot"
+            },
+            fr: {
+                tabToday: "Aujourd'hui", tabMonth: "Ce mois", tabAll: "Tout temps", tabCustom: "Période 📅",
+                totalProfitBadge: "💰 PROFIT TOTAL", netIn: "Net en", netInUsdt: "Net en USDT",
+                formulaFiat: "Vente − Achat", formulaUsdt: "Achat − Vente", midPriceHint: "⚖️ Prix moyen:",
+                statRoi: "📈 ROI", statWac: "🛒 Achat WAC", statAvgSell: "🏷 Vente moyenne", statOps: "🔢 Ordres: Total / Achats / Ventes",
+                turnCombinedTitle: "💸 Volume (Fiat / USDT)", spreadCardTitle: "SPREADS D'ORDRES", lastCycleSpread: "Dernier cycle",
+                avgPeriodSpread: "Moyenne", hintAvgSpread: "WAC période", calcTitle: "CALCULATEUR DE CYCLE",
+                calcDealPrice: "Budget", calcBuyHeader: "ACHAT 🟢", calcBuyRate: "Taux USDT", calcSellHeader: "VENTE 🔴",
+                calcSellRate: "Taux USDT", calcSpread: "Spread:", calcProfit: "Profit:", calcSaveCycle: "Enregistrer cycle ✅",
+                calcClear: "Effacer ❌", showSecondary: "📊 Afficher les détails", hideSecondary: "📊 Masquer les détails",
+                presetYesterday: "Hier", preset7d: "7 jours", preset30d: "30 jours", dateFrom: "Du", dateTo: "Au",
+                btnApplyDate: "Appliquer ⚡️", uiModeLabel: "Effets visuels (FX)", uiModeSimpleDesc: "Minimaliste (rapide)",
+                uiModeFxDesc: "FX complet (blockchain & 3D)", newTradeTitle: "Nouvelle opération", newTradeSubtitle: "Enregistrer l'ordre",
+                buyBtn: "ACHAT 🟢", sellBtn: "VENTE 🔴", modeFiat: "Montant Fiat", modeCrypto: "Volume USDT",
+                lblRate: "Taux USDT", lblCardOpt: "Carte bancaire", noCardOpt: "Aucune carte", cardsTitle: "Mes cartes",
+                cardsSubtitle: "Contrôle caisse", btnCreateCard: "➕ Créer", historyTitle: "Historique",
+                historySubtitle: "Transactions", refTitle: "Parrainage", refSubtitle: "Gagnez des jours",
+                refInvited: "Invités", refYourLink: "Lien de parrainage", btnCopy: "📋 Copier", btnShare: "🚀 Partager",
+                shareText: "Terminal P2P professionnel:", profileTitle: "Paramètres", profileSubtitle: "Configuration",
+                lblYourId: "VOTRE TELEGRAM ID", lblLang: "Langue", lblBaseCur: "Devise", lblTimezone: "Fuseau horaire",
+                btnSubModal: "💎 Abonnement", btnSupport: "👨‍💻 Service client", paywallTitle: "Accès restreint 🔒",
+                paywallSubtitle: "Débloquez l'accès", trialBadge: "Essai gratuit", trialDesc: "🎁 Essai 24h dans le bot.",
+                btnActivateTrial: "🎁 Activer essai", plansBadge: "Formules", plansDesc: "Paiement Bybit dans le bot.",
+                plan1m: "1 Mois", planForever: "À vie (VIP)", btnBuySub: "💳 S'abonner", subModalTitle: "Souscription bot",
+                subModalDesc: "Activation immédiate!", btnGotIt: "Compris", cardModalTitle: "➕ Carte", cardNameLbl: "Nom",
+                btnCancel: "Annuler", btnCreate: "Créer", limitModalTitle: "⚙️ Limite", limitModalLbl: "Limite fiat",
+                btnSave: "Enregistrer", opAmountLbl: "Montant", opCommentLbl: "Commentaire", btnApply: "Appliquer",
+                editModalTitle: "Modifier ordre", navSummary: "Bilan", navTrade: "Ordre", navCards: "Cartes",
+                navHistory: "Historique", navSettings: "Paramètres", restrictedTitle: "Accès restreint",
+                restrictedDesc: "Ouvrir dans Telegram Mini App.", openBotBtn: "🚀 Ouvrir le bot"
+            },
+            de: {
+                tabToday: "Heute", tabMonth: "Diesen Monat", tabAll: "Gesamtzeit", tabCustom: "Zeitraum 📅",
+                totalProfitBadge: "💰 GESAMTGEWINN", netIn: "Netto in", netInUsdt: "Netto in USDT",
+                formulaFiat: "Verkauf − Kauf", formulaUsdt: "Kauf − Verkauf", midPriceHint: "⚖️ Durchschnitt:",
+                statRoi: "📈 ROI", statWac: "🛒 WAC Kauf", statAvgSell: "🏷 Durchschn. Verkauf", statOps: "🔢 Trades: Gesamt / Käufe / Verkäufe",
+                turnCombinedTitle: "💸 Umsatz (Fiat / USDT)", spreadCardTitle: "TRADE-SPREADS", lastCycleSpread: "Letzter Zyklus",
+                avgPeriodSpread: "Durchschnitt", hintAvgSpread: "WAC Zeitraum", calcTitle: "ZYKLUS-RECHNER",
+                calcDealPrice: "Auftragssumme", calcBuyHeader: "KAUF 🟢", calcBuyRate: "USDT-Kurs", calcSellHeader: "VERKAUF 🔴",
+                calcSellRate: "USDT-Kurs", calcSpread: "Spread:", calcProfit: "Gewinn:", calcSaveCycle: "Zyklus buchen ✅",
+                calcClear: "Zurücksetzen ❌", showSecondary: "📊 Details einblenden", hideSecondary: "📊 Details ausblenden",
+                presetYesterday: "Gestern", preset7d: "7 Tage", preset30d: "30 Tage", dateFrom: "Von", dateTo: "Bis",
+                btnApplyDate: "Anwenden ⚡️", uiModeLabel: "Visuelle Effekte (FX)", uiModeSimpleDesc: "Minimalismus (schnell)",
+                uiModeFxDesc: "Volle FX (Blockchain & 3D)", newTradeTitle: "Neuer Trade", newTradeSubtitle: "Zyklus buchen",
+                buyBtn: "KAUF 🟢", sellBtn: "VERKAUF 🔴", modeFiat: "Fiat-Betrag", modeCrypto: "USDT-Volumen",
+                lblRate: "USDT-Kurs", lblCardOpt: "Bankkarte", noCardOpt: "Keine Karte", cardsTitle: "Meine Karten",
+                cardsSubtitle: "Kassenkontrolle", btnCreateCard: "➕ Erstellen", historyTitle: "Historie",
+                historySubtitle: "Trades", refTitle: "Partnerprogramm", refSubtitle: "Bonus-Tage sichern",
+                refInvited: "Eingeladen", refYourLink: "Partner-Link", btnCopy: "📋 Kopieren", btnShare: "🚀 Teilen",
+                shareText: "Professionelles P2P-Terminal:", profileTitle: "Einstellungen", profileSubtitle: "Konfiguration",
+                lblYourId: "IHRE TELEGRAM-ID", lblLang: "Sprache", lblBaseCur: "Währung", lblTimezone: "Zeitzone",
+                btnSubModal: "💎 Abo", btnSupport: "👨‍💻 Kundenservice", paywallTitle: "Zugriff gesperrt 🔒",
+                paywallSubtitle: "Abo buchen", trialBadge: "Gratis-Test", trialDesc: "🎁 24h Test im Bot.",
+                btnActivateTrial: "🎁 Test starten", plansBadge: "Tarife", plansDesc: "Zahlung im Bot.", plan1m: "1 Monat",
+                planForever: "Lebenslang", btnBuySub: "💳 Abonnieren", subModalTitle: "Aktivierung",
+                subModalDesc: "Automatische Freischaltung!", btnGotIt: "Verstanden", cardModalTitle: "➕ Karte",
+                cardNameLbl: "Bezeichnung", btnCancel: "Abbrechen", btnCreate: "Erstellen", limitModalTitle: "⚙️ Limit",
+                limitModalLbl: "Fiat-Limit", btnSave: "Speichern", opAmountLbl: "Betrag", opCommentLbl: "Kommentar",
+                btnApply: "Anwenden", editModalTitle: "Trade anpassen", navSummary: "Übersicht", navTrade: "Trade",
+                navCards: "Karten", navHistory: "Historie", navSettings: "Optionen", restrictedTitle: "Zugriff beschränkt",
+                restrictedDesc: "Start nur in Telegram Mini App.", openBotBtn: "🚀 Bot öffnen"
+            },
+            uk: {
+                tabToday: "За сьогодні", tabMonth: "За місяць", tabAll: "Весь час", tabCustom: "Свій період 📅",
+                totalProfitBadge: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", netIn: "Чистий у", netInUsdt: "Чистий у USDT",
+                formulaFiat: "Продаж − Купівля", formulaUsdt: "Купівля − Продаж", midPriceHint: "⚖️ Середня ціна:",
+                statRoi: "📈 ROI", statWac: "🛒 WAC Закупівля", statAvgSell: "🏷 Сер. Продаж", statOps: "🔢 Угод: всього / купівель / продажів",
+                turnCombinedTitle: "💸 Оборот (Фіат / USDT)", spreadCardTitle: "СПРЕД УГОД", lastCycleSpread: "Останнє коло",
+                avgPeriodSpread: "Сер. за період", hintAvgSpread: "По WAC за період", calcTitle: "КАЛЬКУЛЯТОР КОЛА",
+                calcDealPrice: "Сума угоди", calcBuyHeader: "КУПІВЛЯ 🟢", calcBuyRate: "Курс USDT", calcSellHeader: "ПРОДАЖ 🔴",
+                calcSellRate: "Курс USDT", calcSpread: "Спред:", calcProfit: "Прибуток з кола:", calcSaveCycle: "Зберегти коло ✅",
+                calcClear: "Очистити ❌", showSecondary: "📊 Розгорнути статистику", hideSecondary: "📊 Згорнути статистику",
+                presetYesterday: "Вчора", preset7d: "7 днів", preset30d: "30 днів", dateFrom: "З дати", dateTo: "По дату",
+                btnApplyDate: "Застосувати ⚡️", uiModeLabel: "Візуальні ефекти (FX)", uiModeSimpleDesc: "Мінімалізм (швидкий)",
+                uiModeFxDesc: "Повний FX (блокчейн та 3D)", newTradeTitle: "Нова операція", newTradeSubtitle: "Внести коло",
+                buyBtn: "КУПІВЛЯ 🟢", sellBtn: "ПРОДАЖ 🔴", modeFiat: "Сума фіату", modeCrypto: "Об'єм USDT",
+                lblRate: "Курс USDT", lblCardOpt: "Банківська картка", noCardOpt: "Без прив'язки", cardsTitle: "Мої картки",
+                cardsSubtitle: "Контроль лімітів", btnCreateCard: "➕ Створити", historyTitle: "Історія операцій",
+                historySubtitle: "Угоди", refTitle: "Партнерська мережа", refSubtitle: "Бонусні дні",
+                refInvited: "Запрошено", refYourLink: "Партнерське посилання", btnCopy: "📋 Скопіювати", btnShare: "🚀 Надіслати",
+                shareText: "P2P термінал обліку кіл:", profileTitle: "Налаштування", profileSubtitle: "Конфігурація",
+                lblYourId: "ВАШ TELEGRAM ID", lblLang: "Мова", lblBaseCur: "Валюта", lblTimezone: "Часовий пояс",
+                btnSubModal: "💎 Підписка", btnSupport: "👨‍💻 Підтримка", paywallTitle: "Доступ обмежено 🔒",
+                paywallSubtitle: "Оформіть підписку", trialBadge: "Пробний період", trialDesc: "🎁 24 години у боті.",
+                btnActivateTrial: "🎁 Активувати", plansBadge: "Тарифи", plansDesc: "Оплата у боті.", plan1m: "1 Місяць",
+                planForever: "Назавжди", btnBuySub: "💳 Оформити", subModalTitle: "Оформлення", subModalDesc: "Автоматичний доступ!",
+                btnGotIt: "Зрозуміло", cardModalTitle: "➕ Картка", cardNameLbl: "Назва", btnCancel: "Скасувати",
+                btnCreate: "Створити", limitModalTitle: "⚙️ Ліміт", limitModalLbl: "Ліміт фіату", btnSave: "Зберегти",
+                opAmountLbl: "Сума", opCommentLbl: "Коментар", btnApply: "Застосувати", editModalTitle: "Редагування угоди",
+                navSummary: "Зведення", navTrade: "Угода", navCards: "Картки", navHistory: "Історія", navSettings: "Налаштування",
+                restrictedTitle: "Доступ обмежено", restrictedDesc: "Запускайте у Telegram Mini App.", openBotBtn: "🚀 Відкрити бота"
+            },
+            kk: {
+                tabToday: "Бүгін", tabMonth: "Осы айда", tabAll: "Барлық уақыт", tabCustom: "Кезең 📅",
+                totalProfitBadge: "💰 ЖАЛПЫ ПАЙДА", netIn: "Таза табыс:", netInUsdt: "USDT таза пайда",
+                formulaFiat: "Сату − Сатып алу", formulaUsdt: "Сатып алу − Сату", midPriceHint: "⚖️ Орташа баға:",
+                statRoi: "📈 ROI", statWac: "🛒 WAC Сатып алу", statAvgSell: "🏷 Орташа сату", statOps: "🔢 Мәмілелер: барлығы / сатып алу / сату",
+                turnCombinedTitle: "💸 Айналым (Фиат / USDT)", spreadCardTitle: "МӘМІЛЕ СПРЕДІ", lastCycleSpread: "Соңғы айналым",
+                avgPeriodSpread: "Орташа", hintAvgSpread: "Кезең бойынша WAC", calcTitle: "АЙНАЛЫМ КАЛЬКУЛЯТОРЫ",
+                calcDealPrice: "Мәміле бағасы", calcBuyHeader: "САТЫП АЛУ 🟢", calcBuyRate: "USDT бағамы", calcSellHeader: "САТУ 🔴",
+                calcSellRate: "USDT бағамы", calcSpread: "Спред:", calcProfit: "Айналым пайдасы:", calcSaveCycle: "Айналымды сақтау ✅",
+                calcClear: "Тазалау ❌", showSecondary: "📊 Толық статистиканы ашу", hideSecondary: "📊 Статистиканы жасыру",
+                presetYesterday: "Кеше", preset7d: "7 күн", preset30d: "30 күн", dateFrom: "Бастап", dateTo: "Дейін",
+                btnApplyDate: "Қолдану ⚡️", uiModeLabel: "Визуалды эффектілер (FX)", uiModeSimpleDesc: "Минимализм (жылдам)",
+                uiModeFxDesc: "Толық FX (блокчейн және 3D)", newTradeTitle: "Жаңа операция", newTradeSubtitle: "Айналымды сақтау",
+                buyBtn: "САТЫП АЛУ 🟢", sellBtn: "САТУ 🔴", modeFiat: "Фиат сомасы", modeCrypto: "USDT көлемі",
+                lblRate: "USDT бағамы", lblCardOpt: "Банк картасы", noCardOpt: "Карта таңдалмаған", cardsTitle: "Менің карталарым",
+                cardsSubtitle: "Касса мен лимит", btnCreateCard: "➕ Қосу", historyTitle: "Тарих",
+                historySubtitle: "Мәмілелер", refTitle: "Серіктестік желі", refSubtitle: "Бонустық күндер",
+                refInvited: "Шақырылғандар", refYourLink: "Реферал сілтеме", btnCopy: "📋 Көшіру", btnShare: "🚀 Бөлісу",
+                shareText: "P2P есеп терминалы:", profileTitle: "Баптаулар", profileSubtitle: "Конфигурация",
+                lblYourId: "СІЗДІҢ ID", lblLang: "Тіл", lblBaseCur: "Валюта", lblTimezone: "Уақыт белдеуі",
+                btnSubModal: "💎 Жазылым", btnSupport: "👨‍💻 Қолдау қызметі", paywallTitle: "Кіру шектелген 🔒",
+                paywallSubtitle: "Жазылым алыңыз", trialBadge: "Тегін сынақ", trialDesc: "🎁 Ботта 24 сағат сынақ.",
+                btnActivateTrial: "🎁 Қосу", plansBadge: "Тарифтер", plansDesc: "Бот арқылы төлеу.", plan1m: "1 Ай",
+                planForever: "Мәңгілік", btnBuySub: "💳 Сатып алу", subModalTitle: "Жазылым", subModalDesc: "Автоматты түрде қосылады!",
+                btnGotIt: "Түсінікті", cardModalTitle: "➕ Карта қосу", cardNameLbl: "Атауы", btnCancel: "Болдырмау",
+                btnCreate: "Құру", limitModalTitle: "⚙️ Лимит", limitModalLbl: "Фиат лимиті", btnSave: "Сақтау",
+                opAmountLbl: "Сомасы", opCommentLbl: "Түсініктеме", btnApply: "Қолдану", editModalTitle: "Мәмілені өңдеу",
+                navSummary: "Есеп", navTrade: "Мәміле", navCards: "Карталар", navHistory: "Тарих", navSettings: "Баптау",
+                restrictedTitle: "Кіру шектелген", restrictedDesc: "Тек Telegram Mini App арқылы.", openBotBtn: "🚀 Ботты ашу"
             }
         };
 
-        ['es', 'fr', 'de', 'uk', 'kk'].forEach(l => {
-            if (!I18N[l]) I18N[l] = I18N.ru;
-        });
-
-        /* ПОЯСНЕНИЯ ДЛЯ ЗНАКА ВОПРОСА */
         const HELP_DATA = {
             total_profit: {
-                title: "💰 КАК СЧИТАЕТСЯ ОБЩАЯ ПРИБЫЛЬ",
-                text: `В арбитраже профит почти никогда не лежит только в рублях или только в крипте. Он делится на две части:<br><br>
-                <b>1. Профит в USDT:</b> если ты купил 70 USDT на 5 000 ₽, а продал только 50 USDT за те же 5 000 ₽ — в рублях у тебя ноль, но <b>+20 USDT чистыми</b> осталось на кошельке.<br><br>
-                <b>2. Профит в фиате (₽):</b> если ты продал крипту дороже, чем купил, и весь фиат вернулся на карту с плюсом.<br><br>
-                <b>Общая прибыль</b> просто переводит оставшийся хвост USDT в рубли по честному среднему курсу твоих сделок и складывает обе части в одну понятную цифру.`
+                title: "💰 ОБЩАЯ ПРИБЫЛЬ И ЛОГИКА РАСЧЕТА",
+                text: `<b>В P2P-арбитраже прибыль формируется в двух валютах одновременно:</b><br><br>
+                <b>1. Чистая в USDT (Крипто-профит):</b><br>
+                Разница между купленным и проданным объемом монет: <code>Покупка − Продажа</code>.<br>
+                <i>Пример:</i> вы завели 5 000 ₽ и купили <b>70 USDT</b>. Затем продали <b>50 USDT</b> за те же 5 000 ₽. В фиате прибыль 0 ₽, но у вас на кошельке осталось <b>+20 USDT чистой прибыли</b>!<br><br>
+                <b>2. Чистая в фиате (₽):</b><br>
+                Разница между полученными и потраченными деньгами с карт: <code>Продажа − Покупка</code>.<br>
+                <i>Пример:</i> вы купили USDT на 10 000 ₽, а затем продали весь объем за 10 800 ₽. В крипте остаток 0, а на карте <b>+800 ₽ чистой прибыли</b>.<br><br>
+                <b>3. ОБЩАЯ ПРИБЫЛЬ:</b><br>
+                Складывает чистый доход в фиате и крипто-профит, переводя остаток USDT в рубли по средневзвешенному курсу сделок (Mid Price):<br>
+                <code>Общая прибыль = Чистая в ₽ + (Чистая в USDT × Mid Price)</code>.`
             },
             net_fiat: {
-                title: "💳 ЧИСТАЯ В РУБЛЯХ",
-                text: `Разница между тем, сколько рублей зашло на карты с продаж и сколько ушло на закупку крипты.<br><br>Если число с минусом — не пугайся, значит часть денег прямо сейчас зависла в купленном USDT на бирже.`
+                title: "💳 ЧИСТАЯ ПРИБЫЛЬ В ФИАТЕ",
+                text: `<b>Формула:</b> <code>Сумма продаж фиата − Сумма покупок фиата</code>.<br><br>
+                Показывает реальный прирост или отток денежных средств на ваших банковских картах. Если показатель отрицательный — это означает, что часть фиата в данный момент находится в закупленном объеме USDT.`
             },
             net_usdt: {
-                title: "🪙 ЧИСТАЯ В USDT",
-                text: `Чистый остаток монет: <code>Купленный объем USDT − Проданный объем USDT</code>.<br><br>Показывает, сколько крипты ты вытащил себе на карман за выбранный период.`
+                title: "🪙 ЧИСТАЯ ПРИБЫЛЬ В USDT",
+                text: `<b>Формула:</b> <code>Купленный объем USDT − Проданный объем USDT</code>.<br><br>
+                Показывает чистый остаток криптовалюты. Если вы фиксируете прибыль в монетах (например, оставляете спред себе на кошелек Bybit, а тело депозита возвращаете на карту), именно здесь отображается ваш крипто-доход.`
             },
             mid_price: {
-                title: "⚖️ СПРАВЕДЛИВЫЙ КУРС (MID PRICE)",
-                text: `Средняя цена между твоим средневзвешенным закупом и продажей. Именно по ней бот переводит оставшийся крипто-профит в рубли, чтобы не завышать и не занижать прибыль.`
+                title: "⚖️ СРЕДНЯЯ ЦЕНА (MID PRICE)",
+                text: `<b>Формула:</b> <code>(Средний курс покупки WAC + Средний курс продажи) / 2</code>.<br><br>
+                Справедливая средняя цена исполнения ваших операций. Используется ботом для мгновенной и точной конвертации оставшейся крипто-прибыли в рубли.`
             },
             spread: {
-                title: "📊 СПРЕД КРУГА",
-                text: `<b>Последний круг:</b> чистая разница между твоей крайней продажей и крайней покупкой.<br><br>
-                <b>Средний за период:</b> средневзвешенный процент спреда по абсолютно всем закрытым сделкам за выбранный таймфрейм.`
+                title: "📊 СПРЕД СДЕЛКИ И КРУГА",
+                text: `<b>1. Последний круг:</b> разница курсов между вашей крайней продажей и крайней покупкой:<br>
+                <code>((Курс продажи − Курс покупки) / Курс покупки) × 100%</code>.<br><br>
+                <b>2. Средний за период:</b> средневзвешенный спред всех завершенных операций за выбранный интервал времени:<br>
+                <code>((Средняя продажа / WAC закупки) − 1) × 100%</code>.`
             },
             calculator: {
                 title: "⚡️ КАЛЬКУЛЯТОР КРУГА",
-                text: `Быстрый подсчет круга перед сделкой. Вбиваешь сумму закупа и курсы — калькулятор сразу показывает, сколько USDT выйдет, сколько надо слить для возврата депозита и какой чистый профит останется.<br><br>По кнопке <b>«Сохранить круг ✅»</b> сразу создаются 2 записи (покупка и продажа).`
+                text: `Инструмент быстрого моделирования и фиксации круга.<br><br>
+                Вы указываете прайс сделки (депозит) и курсы входа/выхода. Бот моментально считает:<br>
+                • Сколько USDT вы получите при закупке.<br>
+                • Сколько USDT нужно продать, чтобы вернуть 100% фиатного депозита обратно на карту.<br>
+                • Итоговый чистый спред и прибыль в USDT и рублях.<br><br>
+                По кнопке <b>«Сохранить круг ✅»</b> обе операции (покупка и продажа) синхронно вносятся в базу данных.`
             },
             turnover: {
-                title: "💸 ОБОРОТ КАССЫ",
-                text: `Общая сумма всех операций (покупки + продажи). Помогает контролировать лимиты по 115-ФЗ на картах и лимиты оборота мейкера на P2P.`
+                title: "💸 ОБЩИЙ ОБОРОТ (ФИАТ / USDT)",
+                text: `Суммарный объем всех проведенных операций (покупки + продажи). Помогает контролировать лимиты банковских карт (по 115-ФЗ) и объемы на биржевых P2P-аккаунтах.`
             },
             wac: {
-                title: "🛒 СРЕДНИЙ ЗАКУП (WAC)",
-                text: `Средневзвешенный курс покупки с учетом объема каждой сделки. Показывает твою реальную себестоимость 1 USDT.`
+                title: "🛒 WAC (СВЕШЕННАЯ ЦЕНА ЗАКУПКИ)",
+                text: `<b>Weighted Average Cost</b> — средневзвешенный курс покупки USDT:<br>
+                <code>Сумма потраченного фиата / Купленный объем USDT</code>.<br>
+                Учитывает реальный вес каждой сделки в общем капитале.`
             },
             avg_sell: {
-                title: "🏷 СРЕДНЯЯ ПРОДАЖА",
-                text: `Средний курс, по которому ты отдавал USDT за выбранное время.`
+                title: "🏷 СРЕДНЯЯ ЦЕНА ПРОДАЖИ",
+                text: `Средневзвешенный курс реализации USDT за выбранный таймфрейм:<br>
+                <code>Сумма полученного фиата / Проданный объем USDT</code>.`
             },
             roi: {
                 title: "📈 ROI ОТ ОБОРОТА",
-                text: `Процент чистой прибыли от общей суммы прокрученного фиата.`
+                text: `<b>Return on Investment:</b> процент отдачи на каждый прокрученный рубль оборота:<br>
+                <code>(Общая прибыль / Суммарный оборот фиата) × 100%</code>.`
             },
             operations: {
-                title: "🔢 СДЕЛКИ",
-                text: `Три числа через слэш:<br><b>Всего операций / Покупок USDT / Продаж USDT (кругов)</b>.`
+                title: "🔢 ВСЕГО СДЕЛОК / ПОКУПОК / ПРОДАЖ",
+                text: `Формат: <code>Всего сделок / Покупок 🟢 / Продаж 🔴</code>.<br><br>• Первое число — общее количество всех совершенных операций за период.<br>• Второе число — количество операций покупки USDT.<br>• Третье число — количество операций продажи USDT (закрытых кругов).`
             },
             ui_mode: {
                 title: "🎨 РЕЖИМ ИНТЕРФЕЙСА",
-                text: `<b>Минимализм (по умолчанию):</b> максимальная скорость работы, высокая контрастность блоков без прозрачности, отключен движущийся фон с блокчейн-хешами, нет задержек при скролле.<br><br>
-                <b>Полный FX:</b> живой движущийся фон с хешами блоков, светящиеся сферы, стекломорфизм и стилизованный шрифт Fira Code.`
+                text: `<b>Минимализм (по умолчанию):</b> максимальная скорость загрузки, высокая контрастность блоков без прозрачности, отключен движущийся фон с блокчейн-хешами, нет задержек при скролле.<br><br>
+                <b>Полный FX:</b> живой движущийся фон с хешами блоков Bybit/Bitcoin, светящиеся сферы, стекломорфизм и 3D-анимация сборки блоков.`
+            },
+            currency: {
+                title: "🌍 БАЗОВАЯ ВАЛЮТА",
+                text: `Валюта, в которой ведутся все расчеты фиата (RUB ₽, KZT ₸, UAH ₴, BYN Br, USD $). При смене валюты терминал автоматически адаптирует интерфейс.`
+            },
+            tz: {
+                title: "⏰ ЧАСОВОЙ ПОЯС (UTC)",
+                text: `Определяет, как фильтруются операции при выборе периода «За сегодня» и «За месяц», чтобы статистика обновлялась строго в полночь по вашему местному времени.`
             },
             referral: {
-                title: "🤝 РЕФЕРАЛЬНАЯ ПРОГРАММА",
-                text: `Делись ссылкой с коллегами-трейдерами. За каждую регистрацию и оплату на твой аккаунт автоматически начисляются бонусные дни подписки.`
+                title: "🤝 ПАРТНЕРСКАЯ ПРОГРАММА",
+                text: `Приглашайте других P2P-трейдеров по своей персональной ссылке. За каждого приглашенного пользователя вам начисляются бонусные дни к подписке терминала.`
             }
         };
 
@@ -1429,7 +1847,7 @@
             updateAllCurrencySymbols();
         }
 
-        function changeLanguage(lang) {
+        async function changeLanguage(lang) {
             haptic('light');
             applyLanguage(lang);
             showToast("Язык обновлен");
@@ -1444,6 +1862,7 @@
 
             document.getElementById('info-modal-title').innerText = item.title;
             document.getElementById('info-modal-content').innerHTML = item.text;
+            document.body.style.overflow = 'hidden';
             document.getElementById('modal-info').classList.add('show');
         }
 
@@ -1485,36 +1904,76 @@
         function updateAllCurrencySymbols() {
             const sym = getCurrencySymbol();
             document.querySelectorAll('.sym').forEach(el => el.innerText = sym);
+
+            const t = I18N[currentLang] || I18N.ru;
+            const tabFiat = document.getElementById('tab-mode-fiat');
+            if (tabFiat) tabFiat.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+
+            const lblAmt = document.getElementById('lbl-amount');
+            if (lblAmt && calcMode === 'fiat') {
+                lblAmt.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+            }
+
+            const modTabFiat = document.getElementById('modal-tab-mode-fiat');
+            if (modTabFiat) modTabFiat.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+
+            const modLblAmt = document.getElementById('modal-lbl-amount');
+            if (modLblAmt && editCalcMode === 'fiat') {
+                modLblAmt.innerHTML = `${t.modeFiat} (<span class="sym">${sym}</span>)`;
+            }
         }
 
-        function animateNumber(element, target, prefix = '', suffix = '', decimals = 2, suffixSize = '14px') {
-            if (!element) return;
-            const sign = target > 0 ? '+' : '';
-            element.innerHTML = `${sign}${target.toLocaleString(undefined, {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
-            })} <span style="font-size: ${suffixSize}; color: var(--text-muted); font-weight: 700;">${suffix}</span>`;
+        function animateNumber(element, target, prefix = '', suffix = '', decimals = 2, suffixSize = '13px') {
+            const start = parseFloat(element.dataset.curVal || 0);
+            const duration = 500;
+            const startTime = performance.now();
+
+            function easeOutExpo(x) { return x === 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = start + (target - start) * easeOutExpo(progress);
+
+                const sign = current > 0 ? '+' : '';
+                element.innerHTML = `${sign}${current.toLocaleString(undefined, {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals
+                })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.dataset.curVal = target;
+                    const finalSign = target > 0 ? '+' : '';
+                    element.innerHTML = `${finalSign}${target.toLocaleString(undefined, {
+                        minimumFractionDigits: decimals,
+                        maximumFractionDigits: decimals
+                    })} <span style="font-size: ${suffixSize}; color: var(--text-muted);">${suffix}</span>`;
+                }
+            }
+            requestAnimationFrame(update);
         }
 
-        /* ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ КЛИКЕ В ПУСТОТУ */
+        /* МГНОВЕННОЕ ЗАКРЫТИЕ КЛАВИАТУРЫ ПРИ ТАПЕ МИМО ИНПУТОВ */
         document.addEventListener('pointerdown', (e) => {
-            if (!e.target.closest('input, select, textarea, button, .p-tab, .help-icon, .details-toggle-btn, .nav-btn')) {
+            if (!e.target.closest('input, select, textarea, button, .action-btn, .btn-card-action, .p-tab, .help-icon, .details-toggle-btn, .nav-btn, .switch-btn, .btn-preset-chip')) {
                 if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
                     document.activeElement.blur();
                 }
             }
         });
 
-        /* ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ */
-        function switchSection(targetId, el) {
+        /* СКРОЛЛ К РАЗДЕЛУ В ОБЩЕЙ ЛЕНТЕ */
+        function scrollToSection(id, el) {
             haptic('light');
-            document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
-            const target = document.getElementById(targetId);
-            if (target) target.style.display = 'block';
-
-            document.querySelectorAll('.nav-btn').forEach(item => item.classList.remove('active'));
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.add('revealed');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             if (el) el.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         /* СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ ВТОРОСТЕПЕННЫХ ПОКАЗАТЕЛЕЙ */
@@ -1548,6 +2007,7 @@
             const elSpread = document.getElementById('calc-spread-val');
             const elProfitUsdt = document.getElementById('calc-profit-usdt-val');
             const elProfitFiat = document.getElementById('calc-profit-fiat-val');
+
             const sym = getCurrencySymbol();
 
             let boughtUsdt = 0;
@@ -1574,17 +2034,17 @@
                 const profitFiat = profitUsdt * midRate;
 
                 elSpread.innerText = (spreadPct > 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
-                elSpread.className = `stat-card-val ${spreadPct >= 0 ? 'txt-gold' : 'txt-red'}`;
+                elSpread.style.color = spreadPct >= 0 ? 'var(--bybit-yellow)' : 'var(--bybit-red)';
 
                 elProfitUsdt.innerText = (profitUsdt > 0 ? "+" : "") + profitUsdt.toFixed(2) + " USDT";
-                elProfitUsdt.className = `stat-card-val ${profitUsdt >= 0 ? 'txt-green' : 'txt-red'}`;
+                elProfitUsdt.style.color = profitUsdt >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
 
                 elProfitFiat.innerText = `≈ ${(profitFiat > 0 ? "+" : "")}${profitFiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
             } else {
                 elSpread.innerText = "0.00%";
-                elSpread.className = 'stat-card-val txt-gold';
+                elSpread.style.color = 'var(--text-main)';
                 elProfitUsdt.innerText = "0.00 USDT";
-                elProfitUsdt.className = 'stat-card-val txt-green';
+                elProfitUsdt.style.color = 'var(--text-main)';
                 elProfitFiat.innerText = `≈ 0.00 ${sym}`;
             }
         }
@@ -1600,7 +2060,7 @@
             const sellRate = parseFloat(document.getElementById('calc-sell-rate').value);
 
             if (!fiat || !buyRate || !sellRate || fiat <= 0 || buyRate <= 0 || sellRate <= 0) {
-                showToast("Заполните бюджет и оба курса");
+                showToast(currentLang === 'ru' ? "⚠️ Заполните сумму и оба курса!" : "⚠️ Fill in budget and rates!");
                 return;
             }
 
@@ -1608,16 +2068,36 @@
             const soldUsdt = parseFloat((fiat / sellRate).toFixed(2));
 
             try {
-                await Promise.all([
-                    db('trades', { method: 'POST', body: JSON.stringify({ tg_id: currentUser.tg_id, type: 'buy', crypto_amount: boughtUsdt, rate: buyRate, fiat_amount: fiat, card_id: null }) }),
-                    db('trades', { method: 'POST', body: JSON.stringify({ tg_id: currentUser.tg_id, type: 'sell', crypto_amount: soldUsdt, rate: sellRate, fiat_amount: fiat, card_id: null }) })
-                ]);
+                await db('trades', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tg_id: currentUser.tg_id,
+                        type: 'buy',
+                        crypto_amount: boughtUsdt,
+                        rate: buyRate,
+                        fiat_amount: fiat,
+                        card_id: null
+                    })
+                });
+
+                await db('trades', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tg_id: currentUser.tg_id,
+                        type: 'sell',
+                        crypto_amount: soldUsdt,
+                        rate: sellRate,
+                        fiat_amount: fiat,
+                        card_id: null
+                    })
+                });
+
                 haptic('success');
-                showToast("Круг сохранен в базу ✅");
+                showToast(currentLang === 'ru' ? "✅ Круг сохранен в базу!" : "✅ Cycle recorded!");
                 await refreshData();
                 renderAll();
             } catch (e) {
-                showToast("Ошибка сохранения");
+                showToast(currentLang === 'ru' ? "❌ Ошибка сохранения" : "❌ Save error");
             }
         }
 
@@ -1671,14 +2151,14 @@
             const fVal = document.getElementById('custom-date-from').value;
             const tVal = document.getElementById('custom-date-to').value;
             if (!fVal || !tVal) {
-                showToast("Укажите обе даты");
+                showToast("⚠️ Укажите обе даты");
                 return;
             }
 
             customStartDate = new Date(fVal + "T00:00:00");
             customEndDate = new Date(tVal + "T23:59:59");
             if (customStartDate > customEndDate) {
-                showToast("Неверный интервал дат");
+                showToast("⚠️ Неверный диапазон дат");
                 return;
             }
 
@@ -1686,7 +2166,7 @@
             document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-custom').classList.add('active');
             calculateStats();
-            showToast("Период применен 📅");
+            showToast("📅 Период применен!");
         }
 
         function setPeriod(p, el) {
@@ -1699,7 +2179,6 @@
             calculateStats();
         }
 
-        /* БЛОКЧЕЙН-ХОЛСТ (ДЛЯ FX-РЕЖИМА) */
         function initBlockchainCanvas() {
             const canvas = document.getElementById('blockchain-canvas');
             if (!canvas) return;
@@ -1732,7 +2211,7 @@
                     hash: randomHash(6),
                     tag: cryptoLabels[i % cryptoLabels.length],
                     isBlock: Math.random() > 0.6,
-                    color: Math.random() > 0.5 ? '#f59e0b' : '#10b981'
+                    color: Math.random() > 0.5 ? '#f3a600' : '#2ebb9a'
                 });
             }
 
@@ -1751,12 +2230,12 @@
                     if (n.y > h) n.y = 0;
 
                     if (n.isBlock) {
-                        ctx.strokeStyle = n.color === '#f59e0b' ? 'rgba(245, 158, 11, 0.18)' : 'rgba(16, 185, 129, 0.18)';
+                        ctx.strokeStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.18)' : 'rgba(46, 187, 154, 0.18)';
                         ctx.strokeRect(n.x - 16, n.y - 10, 32, 20);
                     }
 
-                    ctx.fillStyle = n.color === '#f59e0b' ? 'rgba(245, 158, 11, 0.45)' : 'rgba(16, 185, 129, 0.45)';
-                    ctx.font = '9px monospace';
+                    ctx.fillStyle = n.color === '#f3a600' ? 'rgba(243, 166, 0, 0.45)' : 'rgba(46, 187, 154, 0.45)';
+                    ctx.font = '9px Fira Code, monospace';
                     ctx.fillText(n.hash, n.x + 8, n.y - 4);
 
                     for (let j = i + 1; j < nodeCount; j++) {
@@ -1779,10 +2258,48 @@
             draw();
         }
 
+        function initScrollAnimations() {
+            const sections = document.querySelectorAll('.page-section');
+            const navBtns = document.querySelectorAll('.nav-btn');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    } else {
+                        if (uiMode === 'fx' && (entry.target.id !== 'dashboard' || window.pageYOffset > 180)) {
+                            entry.target.classList.remove('revealed');
+                        }
+                    }
+                });
+            }, { threshold: 0.08, rootMargin: "0px 0px -30px 0px" });
+
+            sections.forEach(s => observer.observe(s));
+
+            window.addEventListener('scroll', () => {
+                let currentId = 'dashboard';
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+                sections.forEach(section => {
+                    const top = section.offsetTop - 140;
+                    if (scrollY >= top) currentId = section.getAttribute('id');
+                });
+
+                navBtns.forEach(btn => {
+                    if (btn.getAttribute('data-target') === currentId) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }, { passive: true });
+        }
+
         async function init() {
             applyLanguage(currentLang);
             applyUiMode(uiMode);
             initBlockchainCanvas();
+            initScrollAnimations();
 
             const tgUser = tg?.initDataUnsafe?.user;
             if (!tgUser || !tgUser.id) {
@@ -1855,6 +2372,8 @@
             let refCount = 0;
             if (currentUser.ref_count !== undefined && currentUser.ref_count !== null) {
                 refCount = parseInt(currentUser.ref_count) || 0;
+            } else if (currentUser.referrals_count !== undefined && currentUser.referrals_count !== null) {
+                refCount = parseInt(currentUser.referrals_count) || 0;
             } else if (Array.isArray(refs)) {
                 refCount = (refs.length === 1000) ? 0 : refs.length;
             }
@@ -1872,32 +2391,189 @@
                 }
                 if (!adminIds.includes(SUPER_ADMIN_ID)) adminIds.push(SUPER_ADMIN_ID);
 
+                const adminSec = document.getElementById('admin-panel');
                 const adminNav = document.getElementById('nav-btn-admin');
                 if (adminIds.includes(tgId)) {
+                    if (adminSec) adminSec.style.display = 'block';
                     if (adminNav) adminNav.style.display = 'flex';
+                    loadAdminConfigValues();
                 } else {
+                    if (adminSec) adminSec.style.display = 'none';
                     if (adminNav) adminNav.style.display = 'none';
                 }
             } catch (e) {}
         }
 
+        async function loadAdminConfigValues() {
+            try {
+                const configs = await db(`bot_config`);
+                if (!configs) return;
+                configs.forEach(item => {
+                    if (item.key === 'PRICE_MONTH') {
+                        document.getElementById('cfg-inp-month').value = item.value;
+                        const el = document.getElementById('disp-price-month');
+                        if (el) el.innerText = `${item.value}$`;
+                    }
+                    if (item.key === 'PRICE_FOREVER') {
+                        document.getElementById('cfg-inp-forever').value = item.value;
+                        const el = document.getElementById('disp-price-forever');
+                        if (el) el.innerText = `${item.value}$`;
+                    }
+                    if (item.key === 'BYBIT_UID') document.getElementById('cfg-inp-uid').value = item.value;
+                    if (item.key === 'TRIAL_DAYS') document.getElementById('cfg-inp-trial').value = item.value;
+                    if (item.key === 'REF_BONUS_DAYS') {
+                        document.getElementById('cfg-inp-ref').value = item.value;
+                        const desc = document.getElementById('ref-bonus-desc');
+                        if (desc) {
+                            desc.innerHTML = `🎁 За каждого приглашенного трейдера вам начисляется <b>+${item.value} дня(-ей)</b> бесплатной подписки к текущему тарифу. Если подписки нет — доступ активируется сразу!`;
+                        }
+                    }
+                    if (item.key === 'ADMIN_IDS') document.getElementById('cfg-inp-admin-ids').value = item.value;
+                });
+            } catch(e) {}
+        }
+
+        async function saveAdminConfig() {
+            haptic('medium');
+            const m = document.getElementById('cfg-inp-month').value;
+            const f = document.getElementById('cfg-inp-forever').value;
+            const uid = document.getElementById('cfg-inp-uid').value;
+            const tr = document.getElementById('cfg-inp-trial').value;
+            const ref = document.getElementById('cfg-inp-ref').value;
+            let adminsRaw = document.getElementById('cfg-inp-admin-ids').value;
+
+            const rawList = adminsRaw.split(',').map(x => x.trim()).filter(x => x);
+            if (!rawList.includes(String(SUPER_ADMIN_ID))) rawList.unshift(String(SUPER_ADMIN_ID));
+            adminsRaw = rawList.join(', ');
+
+            try {
+                await Promise.all([
+                    db(`bot_config?key=eq.PRICE_MONTH`, { method: 'PATCH', body: JSON.stringify({ value: m }) }),
+                    db(`bot_config?key=eq.PRICE_FOREVER`, { method: 'PATCH', body: JSON.stringify({ value: f }) }),
+                    db(`bot_config?key=eq.BYBIT_UID`, { method: 'PATCH', body: JSON.stringify({ value: uid }) }),
+                    db(`bot_config?key=eq.TRIAL_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: tr }) }),
+                    db(`bot_config?key=eq.REF_BONUS_DAYS`, { method: 'PATCH', body: JSON.stringify({ value: ref }) }),
+                    db(`bot_config?key=eq.ADMIN_IDS`, { method: 'PATCH', body: JSON.stringify({ value: adminsRaw }) })
+                ]);
+                showToast("✅ Конфигурация сохранена!");
+                loadAdminConfigValues();
+            } catch (e) {
+                showToast("❌ Ошибка сохранения");
+            }
+        }
+
+        async function adminUserAction(action) {
+            haptic('medium');
+            const targetId = parseInt(document.getElementById('admin-target-uid').value);
+            if (!targetId) return showToast("⚠️ Введите ID пользователя!");
+
+            if (targetId === SUPER_ADMIN_ID && (action === 'ban' || action === 'revoke')) {
+                return alert("⚠️ Главного администратора нельзя ограничить!");
+            }
+
+            try {
+                const now = new Date();
+                if (action === 'grant30') {
+                    now.setDate(now.getDate() + 30);
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: now.toISOString(), is_banned: false }) });
+                    showToast(`✅ ID ${targetId}: +30 дней!`);
+                } else if (action === 'grantVIP') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: "2100-01-01T00:00:00Z", is_banned: false }) });
+                    showToast(`✅ ID ${targetId}: выдан VIP!`);
+                } else if (action === 'revoke') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ sub_end: null }) });
+                    showToast(`❌ ID ${targetId}: снята подписка!`);
+                } else if (action === 'ban') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: true }) });
+                    showToast(`⛔️ ID ${targetId}: забанен!`);
+                } else if (action === 'unban') {
+                    await db(`users?tg_id=eq.${targetId}`, { method: 'PATCH', body: JSON.stringify({ is_banned: false }) });
+                    showToast(`🟢 ID ${targetId}: разбанен!`);
+                }
+                await refreshData();
+            } catch (e) {
+                showToast("❌ Ошибка действия");
+            }
+        }
+
+        async function adminInspectUser() {
+            haptic('light');
+            const targetId = parseInt(document.getElementById('admin-target-uid').value);
+            if (!targetId) return showToast("⚠️ Введите ID!");
+
+            try {
+                const [uRes, tRes] = await Promise.all([
+                    db(`users?tg_id=eq.${targetId}`),
+                    db(`trades?tg_id=eq.${targetId}`)
+                ]);
+                const box = document.getElementById('admin-user-dossier');
+                if (!uRes || uRes.length === 0) {
+                    box.style.display = 'block';
+                    box.innerHTML = `<span style="color: var(--trade-red);">Пользователь не найден в базе данных.</span>`;
+                    return;
+                }
+                const u = uRes[0];
+                const trades = tRes || [];
+                const fiatTurn = trades.reduce((acc, x) => acc + parseFloat(x.fiat_amount || 0), 0);
+                const cryptoTurn = trades.reduce((acc, x) => acc + parseFloat(x.crypto_amount || 0), 0);
+
+                box.style.display = 'block';
+                box.innerHTML = `
+                    <div style="font-weight: 800; color: var(--lambo-gold); margin-bottom: 6px;">🔎 ДОСЬЕ: ${u.first_name || ''} (@${u.username || 'нет'})</div>
+                    ID: <code>${u.tg_id}</code><br>
+                    Подписка: <b>${u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? 'VIP Навсегда' : new Date(u.sub_end).toLocaleString()) : 'Нет'}</b><br>
+                    Статус: <b>${u.is_banned ? '🔴 ЗАБАНЕН' : '🟢 АКТИВЕН'}</b><br>
+                    Сделок: <b>${trades.length}</b><br>
+                    Оборот: <b>${fiatTurn.toLocaleString()} ₽</b> / <b>${cryptoTurn.toLocaleString()} USDT</b>
+                `;
+            } catch (e) {
+                showToast("Ошибка загрузки досье");
+            }
+        }
+
+        async function adminExportDatabase() {
+            haptic('medium');
+            showToast("⏳ Формирование CSV...");
+            try {
+                const users = await db(`users?order=reg_date.desc`);
+                if (!users || users.length === 0) return showToast("База пуста");
+
+                let csv = "TG_ID,Username,First_Name,Sub_End,Is_Banned,Reg_Date,Ref_By\n";
+                users.forEach(u => {
+                    csv += `"${u.tg_id}","${u.username || ''}","${(u.first_name || '').replace(/"/g, '""')}","${u.sub_end || ''}","${u.is_banned ? 'YES' : 'NO'}","${u.reg_date || ''}","${u.ref_by || ''}"\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `P2P_Users_Export_${new Date().toISOString().slice(0,10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("✅ Выгрузка завершена!");
+            } catch (e) {
+                showToast("Ошибка выгрузки базы");
+            }
+        }
+
         function getSubStatusInfo() {
-            if (currentUser.is_banned) return { text: "⛔️ Доступ ограничен", class: "tier-expired", active: false };
+            if (currentUser.is_banned) return { text: "⛔️ Доступ заблокирован", class: "tier-expired", active: false };
             if (!currentUser.sub_end) return { text: "❌ Подписка не активна", class: "tier-expired", active: false };
 
             const now = new Date();
             const end = new Date(currentUser.sub_end);
             if (end < now) return { text: "⏳ Срок подписки истек", class: "tier-expired", active: false };
-            if (end.getFullYear() > 2099) return { text: "💎 VIP Навсегда", class: "tier-vip", active: true };
+            if (end.getFullYear() > 2099) return { text: "💎 VIP Доступ: Навсегда", class: "tier-vip", active: true };
 
             const regDate = currentUser.reg_date ? new Date(currentUser.reg_date) : now;
             const diffDays = (end - regDate) / (1000 * 60 * 60 * 24);
             const dateStr = end.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { day: '2-digit', month: '2-digit' });
 
             if (currentUser.trial_used && diffDays <= 2) {
-                return { text: `🎁 Пробный период (до ${dateStr})`, class: "tier-trial", active: true };
+                return { text: `🎁 Пробный период 24ч (до ${dateStr})`, class: "tier-trial", active: true };
             }
-            return { text: `⚡️ Подписка активна (до ${dateStr})`, class: "tier-month", active: true };
+            return { text: `⚡️ Подписка (до ${dateStr})`, class: "tier-month", active: true };
         }
 
         function checkSubscription() {
@@ -1905,11 +2581,19 @@
             const badgeEl = document.getElementById('disp-tier-badge');
             badgeEl.className = `sub-tier-badge ${statusInfo.class}`;
             badgeEl.innerText = statusInfo.text;
-            return statusInfo.active;
+
+            if (!statusInfo.active) {
+                if (currentUser.trial_used) document.getElementById('trial-card').style.display = 'none';
+                document.getElementById('paywall').style.display = 'block';
+                return false;
+            }
+            document.getElementById('paywall').style.display = 'none';
+            return true;
         }
 
         function openSubModal() {
             haptic('light');
+            document.body.style.overflow = 'hidden';
             document.getElementById('modal-sub-info').classList.add('show');
         }
 
@@ -1955,9 +2639,13 @@
                 const f = parseFloat(t.fiat_amount || 0);
                 const c = parseFloat(t.crypto_amount || 0);
                 if (t.type === 'buy') {
-                    bF += f; bC += c; buysCount++;
+                    bF += f;
+                    bC += c;
+                    buysCount++;
                 } else {
-                    sF += f; sC += c; sellsCount++;
+                    sF += f;
+                    sC += c;
+                    sellsCount++;
                 }
             });
 
@@ -1979,6 +2667,7 @@
             const fiatTurn = bF + sF;
             const cryptoTurn = bC + sC;
             const roi = fiatTurn > 0 ? (totalProfitFiat / fiatTurn) * 100 : 0;
+
             const sym = getCurrencySymbol();
 
             function updateMetricColor(el, val) {
@@ -1988,7 +2677,7 @@
 
             const elTotalFiat = document.getElementById('val-total-profit-rub');
             updateMetricColor(elTotalFiat, totalProfitFiat);
-            animateNumber(elTotalFiat, totalProfitFiat, '', sym, 2, '20px');
+            animateNumber(elTotalFiat, totalProfitFiat, '', sym, 2, '18px');
 
             const elTotalUsdt = document.getElementById('val-total-profit-usdt');
             updateMetricColor(elTotalUsdt, totalProfitUsdt);
@@ -2004,7 +2693,7 @@
 
             document.getElementById('hint-mid-price').innerText = midPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-            // СПРЕД ПОСЛЕДНЕГО КРУГА
+            // СПРЕД ПОСЛЕДНЕГО КРУГА И СРЕДНИЙ
             const sortedTrades = [...userTrades].sort((a, b) => new Date(b.date) - new Date(a.date));
             const lastSell = sortedTrades.find(t => t.type === 'sell');
             const lastBuy = sortedTrades.find(t => t.type === 'buy');
@@ -2015,20 +2704,20 @@
                 lastSpread = ((sRate - bRate) / bRate) * 100;
                 document.getElementById('hint-last-spread').innerText = `${bRate.toFixed(2)} → ${sRate.toFixed(2)} ${sym}`;
             } else {
-                document.getElementById('hint-last-spread').innerText = 'Крайний закуп vs продажа';
+                document.getElementById('hint-last-spread').innerText = currentLang === 'ru' ? 'Крайняя продажа vs закупка' : 'Last sell vs buy';
             }
 
             const elLastSpread = document.getElementById('val-last-spread');
             elLastSpread.innerText = (lastSpread > 0 ? "+" : "") + lastSpread.toFixed(2) + "%";
-            elLastSpread.className = `stat-card-val ${lastSpread >= 0 ? 'txt-gold' : 'txt-red'}`;
+            updateMetricColor(elLastSpread, lastSpread);
 
             const elAvgSpread = document.getElementById('val-avg-spread');
             elAvgSpread.innerText = (avgPeriodSpread > 0 ? "+" : "") + avgPeriodSpread.toFixed(2) + "%";
-            elAvgSpread.className = `stat-card-val ${avgPeriodSpread >= 0 ? 'txt-green' : 'txt-red'}`;
+            updateMetricColor(elAvgSpread, avgPeriodSpread);
 
             const roiEl = document.getElementById('val-roi');
             roiEl.innerText = (roi > 0 ? "+" : "") + roi.toFixed(2) + "%";
-            roiEl.className = `stat-card-val ${roi >= 0 ? 'txt-green' : 'txt-red'}`;
+            updateMetricColor(roiEl, roi);
 
             document.getElementById('val-wac').innerText = wac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('val-avg-sell').innerText = avgSell.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -2036,18 +2725,20 @@
             document.getElementById('val-crypto-turn').innerText = `${cryptoTurn.toLocaleString(undefined, {minimumFractionDigits: 2})} USDT`;
 
             // ТРИ ЧИСЛА: ВСЕГО / ПОКУПОК / ПРОДАЖ
-            document.getElementById('val-trades-count').innerText = `${filtered.length} / ${buysCount} / ${sellsCount}`;
+            const totalCount = filtered.length;
+            document.getElementById('val-trades-count').innerText = `${totalCount} / ${buysCount} / ${sellsCount}`;
         }
 
         function renderCards() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
             if (userCards.length === 0) {
-                container.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted); padding: 24px;">Карт пока нет. Добавьте первую!</div>`;
+                container.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted);">${currentLang === 'ru' ? 'Карт пока нет. Добавьте первую!' : 'No cards added yet. Create your first card!'}</div>`;
                 return;
             }
 
             const sym = getCurrencySymbol();
+
             userCards.forEach(c => {
                 const spentBuy = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
                 const gainSell = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
@@ -2055,48 +2746,78 @@
                 const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
 
                 const balance = deps - wdrs + gainSell - spentBuy;
+                const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
+
+                let limitHtml = `<div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">${currentLang === 'ru' ? 'Лимит покупок: Не установлен' : 'Purchase Limit: None'}</div>`;
+                if (limit) {
+                    const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
+                    limitHtml = `
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 6px;">
+                            <span>${currentLang === 'ru' ? 'Лимит покупок:' : 'Limit:'}</span>
+                            <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
+                        </div>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += `
-                    <div class="card" style="margin-bottom: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <b style="font-size: 15px;">💳 ${c.card_name}</b>
-                            <span style="font-size: 11px; color: var(--trade-green); font-weight: 800;">АКТИВНА</span>
+                    <div class="card-item">
+                        <div class="card-top">
+                            <div style="font-size: 15px; font-weight: 800;">💳 ${c.card_name}</div>
+                            <span style="font-size: 11px; color: var(--trade-green); font-weight: 800;">${currentLang === 'ru' ? 'АКТИВНА' : 'ACTIVE'}</span>
                         </div>
                         <div style="font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 12px;">
-                            <button class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">➕ Внести</button>
-                            <button class="btn-card-action" onclick="openCardOpModal(${c.id}, 'withdraw')">➖ Снять</button>
-                            <button class="btn-card-action" onclick="openCardLimitModal(${c.id})">Лимит</button>
-                            <button class="btn-card-action" style="color: var(--trade-red);" onclick="deleteCard(${c.id})">Удалить</button>
+                        ${limitHtml}
+                        <div class="card-btns-grid">
+                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'deposit')">${currentLang === 'ru' ? '➕ Внести' : '➕ Deposit'}</div>
+                            <div class="btn-card-action" onclick="openCardOpModal(${c.id}, 'withdraw')">${currentLang === 'ru' ? '➖ Снять' : '➖ Withdraw'}</div>
+                            <div class="btn-card-action" onclick="openCardLimitModal(${c.id})">${currentLang === 'ru' ? '⚙️ Лимит' : '⚙️ Limit'}</div>
+                            <div class="btn-card-action" style="color: var(--trade-red);" onclick="deleteCard(${c.id})">${currentLang === 'ru' ? '🗑 Удалить' : '🗑 Delete'}</div>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function openNewCardModal() { haptic('light'); document.getElementById('modal-card-create').classList.add('show'); }
+        function openNewCardModal() { haptic('light'); document.body.style.overflow = 'hidden'; document.getElementById('modal-card-create').classList.add('show'); }
         async function submitCreateCard() {
             const name = document.getElementById('new-card-name').value.trim();
             if (!name) return;
             await db(`cards`, { method: 'POST', body: JSON.stringify({ tg_id: currentUser.tg_id, card_name: name }) });
             closeModals();
-            showToast("Карта добавлена ✅");
+            showToast(currentLang === 'ru' ? "✅ Карта создана!" : "✅ Card created!");
+            haptic('success');
             await refreshData();
             renderAll();
         }
 
-        function openCardLimitModal(cid) { haptic('light'); activeCardId = cid; document.getElementById('modal-card-limit').classList.add('show'); }
+        function openCardLimitModal(cid) {
+            haptic('light'); activeCardId = cid;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-card-limit').classList.add('show');
+        }
         async function submitCardLimit() {
             const val = parseFloat(document.getElementById('card-limit-val').value) || null;
             await db(`cards?id=eq.${activeCardId}`, { method: 'PATCH', body: JSON.stringify({ buy_limit: val }) });
             closeModals();
-            showToast("Лимит обновлен ✅");
+            showToast(currentLang === 'ru' ? "✅ Лимит обновлен!" : "✅ Limit updated!");
+            haptic('success');
             await refreshData();
             renderCards();
         }
 
         function openCardOpModal(cid, type) {
             haptic('light'); activeCardId = cid; activeOpType = type;
-            document.getElementById('modal-op-title').innerText = type === 'deposit' ? 'Пополнение кассы' : 'Снятие средств';
+            document.body.style.overflow = 'hidden';
+            const isRu = currentLang === 'ru';
+            document.getElementById('modal-op-title').innerText = type === 'deposit'
+                ? (isRu ? '➕ Пополнение кассы' : '➕ Cash Deposit')
+                : (isRu ? '➖ Снятие / Инкассация' : '➖ Cash Withdrawal');
+            document.getElementById('modal-op-btn').innerText = type === 'deposit'
+                ? (isRu ? 'Внести' : 'Deposit')
+                : (isRu ? 'Списать' : 'Withdraw');
             document.getElementById('modal-card-op').classList.add('show');
         }
         async function submitCardOp() {
@@ -2105,18 +2826,27 @@
             if (!amt || amt <= 0) return;
             await db(`card_operations`, {
                 method: 'POST',
-                body: JSON.stringify({ card_id: activeCardId, tg_id: currentUser.tg_id, type: activeOpType, amount: amt, comment: comm })
+                body: JSON.stringify({
+                    card_id: activeCardId,
+                    tg_id: currentUser.tg_id,
+                    type: activeOpType,
+                    amount: amt,
+                    comment: comm
+                })
             });
             closeModals();
-            showToast("Операция записана ✅");
+            showToast(currentLang === 'ru' ? "✅ Операция записана!" : "✅ Operation saved!");
+            haptic('success');
             await refreshData();
             renderCards();
         }
 
         async function deleteCard(cid) {
-            if (!confirm("Удалить карту?")) return;
+            haptic('medium');
+            const confirmMsg = currentLang === 'ru' ? "Удалить карту? Все привязанные сделки сохранятся." : "Delete card? Linked trades will be preserved.";
+            if (!confirm(confirmMsg)) return;
             await db(`cards?id=eq.${cid}`, { method: 'DELETE' });
-            showToast("Карта удалена");
+            showToast(currentLang === 'ru' ? "🗑 Карта удалена" : "🗑 Card deleted");
             await refreshData();
             renderAll();
         }
@@ -2127,8 +2857,10 @@
         function setTradeType(type) {
             haptic('light');
             currentType = type;
-            document.getElementById('btn-buy').className = `p-tab ${type === 'buy' ? 'active' : ''}`;
-            document.getElementById('btn-sell').className = `p-tab ${type === 'sell' ? 'active' : ''}`;
+            document.getElementById('btn-buy').className = `switch-btn ${type === 'buy' ? 'active buy' : ''}`;
+            document.getElementById('btn-sell').className = `switch-btn ${type === 'sell' ? 'active sell' : ''}`;
+            const btn = document.getElementById('btn-save');
+            btn.className = `action-btn ${type === 'sell' ? 'sell-mode' : ''}`;
             checkTradeInputs();
         }
 
@@ -2137,12 +2869,18 @@
             calcMode = mode;
             document.getElementById('tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
             document.getElementById('tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const t = I18N[currentLang] || I18N.ru;
             const sym = getCurrencySymbol();
-            document.getElementById('lbl-amount').innerText = mode === 'fiat' ? `Сумма в фиате (${sym})` : 'Объем USDT (🪙)';
+            document.getElementById('lbl-amount').innerHTML = mode === 'fiat'
+                ? `${t.modeFiat} (<span class="sym">${sym}</span>)`
+                : `${t.modeCrypto} (🪙)`;
+
             checkTradeInputs();
         }
 
         function checkTradeInputs() {
+            const isRu = currentLang === 'ru';
             const amount = parseFloat(document.getElementById('inp-amount').value);
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const btn = document.getElementById('btn-save');
@@ -2153,20 +2891,26 @@
             if (amount > 0 && rate > 0) {
                 const sym = getCurrencySymbol();
                 prev.style.display = 'block';
-                let fiat = 0, crypto = 0;
+
+                let fiat = 0;
+                let crypto = 0;
+
                 if (calcMode === 'fiat') {
                     fiat = amount;
                     crypto = fiat / rate;
-                    prevText.innerText = "Расчетный объем:";
-                    prevResult.innerText = `${crypto.toFixed(2)} USDT`;
+                    prevText.innerText = isRu ? "Расчетный объем USDT:" : "Estimated USDT Volume:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
                 } else {
                     crypto = amount;
                     fiat = crypto * rate;
-                    prevText.innerText = "Расчетная сумма:";
-                    prevResult.innerText = `${fiat.toFixed(2)} ${sym}`;
+                    prevText.innerText = isRu ? "Расчетный фиат:" : "Estimated Fiat:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
                 }
-                btn.className = `action-btn ${currentType === 'sell' ? 'sell-mode' : ''}`;
-                btn.innerText = `Сохранить ${currentType === 'buy' ? 'покупку' : 'продажу'}: ${fiat.toFixed(2)} ${sym}`;
+
+                const actionTitle = currentType === 'buy'
+                    ? (isRu ? 'ПОКУПКУ' : 'BUY')
+                    : (isRu ? 'ПРОДАЖУ' : 'SELL');
+                btn.innerText = `${isRu ? 'СОХРАНИТЬ' : 'SAVE'} ${actionTitle}: ${fiat.toLocaleString(undefined, {maximumFractionDigits: 2})} ${sym}`;
                 btn.style.display = 'block';
             } else {
                 prev.style.display = 'none';
@@ -2183,33 +2927,46 @@
             const cardId = document.getElementById('inp-card-sel').value || null;
             if (!amount || !rate || amount <= 0 || rate <= 0) return;
 
-            let fiat = 0, crypto = 0;
+            let fiat = 0;
+            let crypto = 0;
+
             if (calcMode === 'fiat') {
-                fiat = amount; crypto = parseFloat((fiat / rate).toFixed(2));
+                fiat = amount;
+                crypto = parseFloat((fiat / rate).toFixed(2));
             } else {
-                crypto = amount; fiat = parseFloat((crypto * rate).toFixed(2));
+                crypto = amount;
+                fiat = parseFloat((crypto * rate).toFixed(2));
             }
 
             await db(`trades`, {
                 method: 'POST',
-                body: JSON.stringify({ tg_id: currentUser.tg_id, type: currentType, crypto_amount: crypto, rate: rate, fiat_amount: fiat, card_id: cardId ? parseInt(cardId) : null })
+                body: JSON.stringify({
+                    tg_id: currentUser.tg_id,
+                    type: currentType,
+                    crypto_amount: crypto,
+                    rate: rate,
+                    fiat_amount: fiat,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
             });
 
             document.getElementById('inp-amount').value = '';
             document.getElementById('inp-rate').value = '';
             checkTradeInputs();
 
-            showToast("Сделка добавлена ✅");
+            showToast(currentLang === 'ru' ? "✅ Сделка сохранена!" : "✅ Trade saved!");
+            haptic('success');
             await refreshData();
             renderAll();
-            switchSection('dashboard', document.querySelector('.nav-btn[data-target="dashboard"]'));
+            scrollToSection('dashboard');
         }
 
         function renderHistory() {
+            const isRu = currentLang === 'ru';
             const container = document.getElementById('history-container');
             container.innerHTML = '';
             if (userTrades.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">Сделок пока нет</div>`;
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">${isRu ? 'Сделок пока нет.' : 'No trades recorded.'}</div>`;
                 return;
             }
 
@@ -2220,27 +2977,32 @@
                 const isBuy = t.type === 'buy';
                 const d = new Date(t.date);
                 d.setHours(d.getUTCHours() + tz);
-                const dateStr = d.toLocaleDateString('ru-RU', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                const dateStr = d.toLocaleDateString(isRu ? 'ru-RU' : 'en-US', {month:'short', day:'numeric'}) + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
                 const boundCard = userCards.find(c => c.id === t.card_id);
-                const cardBadge = boundCard ? `<span style="font-size: 11px; background: var(--bg-card-sub); padding: 2px 6px; border-radius: 6px;">💳 ${boundCard.card_name}</span>` : '';
+                const cardBadge = boundCard ? `<span class="card-pill">💳 ${boundCard.card_name}</span>` : '';
+
+                const labelType = isBuy
+                    ? (isRu ? 'ПОКУПКА 🟢' : 'BUY 🟢')
+                    : (isRu ? 'ПРОДАЖА 🔴' : 'SELL 🔴');
 
                 container.innerHTML += `
                     <div class="history-item">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: flex; gap: 6px; align-items: center;">
-                                <b style="font-size: 12px; color: ${isBuy ? 'var(--trade-green)' : 'var(--trade-red)'};">${isBuy ? 'ПОКУПКА 🟢' : 'ПРОДАЖА 🔴'}</b>
+                                <span style="font-size: 11px; font-weight: 800; color: ${isBuy ? 'var(--trade-green)' : 'var(--trade-red)'};">${labelType}</span>
                                 ${cardBadge}
                             </div>
                             <span style="font-size: 11px; color: var(--text-muted);">${dateStr}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div>
-                                <div style="font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">${parseFloat(t.fiat_amount || 0).toLocaleString()} ${sym}</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">${t.crypto_amount} USDT @ ${t.rate} ${sym}</div>
+                                <div style="font-size: 17px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT @ ${t.rate} ${sym}</div>
                             </div>
                             <div style="display: flex; gap: 6px;">
-                                <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px;" onclick="openEditTradeModal(${t.id})">✏️</button>
-                                <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px; color: var(--trade-red);" onclick="deleteTradeCloud(${t.id})">🗑</button>
+                                <button class="btn-card-action" style="padding: 6px 11px;" onclick="openEditTradeModal(${t.id})">✏️</button>
+                                <button class="btn-card-action" style="padding: 6px 11px; color: var(--trade-red);" onclick="deleteTradeCloud(${t.id})">🗑</button>
                             </div>
                         </div>
                     </div>
@@ -2248,15 +3010,65 @@
             });
         }
 
+        function setEditCalcMode(mode) {
+            haptic('light');
+            editCalcMode = mode;
+            document.getElementById('modal-tab-mode-fiat').className = `p-tab ${mode === 'fiat' ? 'active' : ''}`;
+            document.getElementById('modal-tab-mode-crypto').className = `p-tab ${mode === 'crypto' ? 'active' : ''}`;
+
+            const t = I18N[currentLang] || I18N.ru;
+            const sym = getCurrencySymbol();
+            document.getElementById('modal-lbl-amount').innerHTML = mode === 'fiat'
+                ? `${t.modeFiat} (<span class="sym">${sym}</span>)`
+                : `${t.modeCrypto} (🪙)`;
+
+            const tr = userTrades.find(x => x.id === activeEditTradeId);
+            if (tr) {
+                document.getElementById('modal-inp-amount').value = mode === 'fiat' ? tr.fiat_amount : tr.crypto_amount;
+            }
+            checkEditTradeInputs();
+        }
+
+        function checkEditTradeInputs() {
+            const isRu = currentLang === 'ru';
+            const amount = parseFloat(document.getElementById('modal-inp-amount').value);
+            const rate = parseFloat(document.getElementById('modal-rate').value);
+            const prevText = document.getElementById('modal-preview-text');
+            const prevResult = document.getElementById('modal-preview-result');
+
+            if (amount > 0 && rate > 0) {
+                const sym = getCurrencySymbol();
+                if (editCalcMode === 'fiat') {
+                    const crypto = amount / rate;
+                    prevText.innerText = isRu ? "Расчетный объем USDT:" : "Estimated USDT:";
+                    prevResult.innerText = `${crypto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
+                } else {
+                    const fiat = amount * rate;
+                    prevText.innerText = isRu ? "Расчетный фиат:" : "Estimated Fiat:";
+                    prevResult.innerText = `${fiat.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${sym}`;
+                }
+            }
+        }
+
+        document.getElementById('modal-inp-amount').addEventListener('input', checkEditTradeInputs);
+        document.getElementById('modal-rate').addEventListener('input', checkEditTradeInputs);
+
         function openEditTradeModal(tid) {
             haptic('light');
             activeEditTradeId = tid;
             const tr = userTrades.find(x => x.id === tid);
             if (!tr) return;
-            document.getElementById('modal-trade-id').innerText = `Сделка #${tid}`;
-            document.getElementById('modal-inp-amount').value = tr.fiat_amount;
+
+            const isRu = currentLang === 'ru';
+            document.getElementById('modal-trade-id').innerText = `${isRu ? 'Сделка' : 'Trade'} #${tid}`;
             document.getElementById('modal-rate').value = tr.rate;
             document.getElementById('modal-card-sel').value = tr.card_id || "";
+
+            setEditCalcMode('fiat');
+            document.getElementById('modal-inp-amount').value = tr.fiat_amount;
+            checkEditTradeInputs();
+
+            document.body.style.overflow = 'hidden';
             document.getElementById('edit-modal').classList.add('show');
         }
 
@@ -2266,22 +3078,40 @@
             const cardId = document.getElementById('modal-card-sel').value || null;
             if (!amount || !r || amount <= 0 || r <= 0) return;
 
-            const c = parseFloat((amount / r).toFixed(2));
+            let c = 0;
+            let f = 0;
+
+            if (editCalcMode === 'fiat') {
+                f = amount;
+                c = parseFloat((f / r).toFixed(2));
+            } else {
+                c = amount;
+                f = parseFloat((c * r).toFixed(2));
+            }
+
             await db(`trades?id=eq.${activeEditTradeId}`, {
                 method: 'PATCH',
-                body: JSON.stringify({ crypto_amount: c, rate: r, fiat_amount: amount, card_id: cardId ? parseInt(cardId) : null })
+                body: JSON.stringify({
+                    crypto_amount: c,
+                    rate: r,
+                    fiat_amount: f,
+                    card_id: cardId ? parseInt(cardId) : null
+                })
             });
 
             closeModals();
-            showToast("Сделка обновлена ✅");
+            showToast(currentLang === 'ru' ? "✏️ Сделка обновлена!" : "✏️ Trade updated!");
+            haptic('success');
             await refreshData();
             renderAll();
         }
 
         async function deleteTradeCloud(tid) {
-            if (!confirm("Удалить эту сделку?")) return;
+            haptic('medium');
+            const confirmMsg = currentLang === 'ru' ? "Удалить сделку из базы?" : "Delete trade from database?";
+            if (!confirm(confirmMsg)) return;
             await db(`trades?id=eq.${tid}`, { method: 'DELETE' });
-            showToast("Сделка удалена");
+            showToast(currentLang === 'ru' ? "🗑 Сделка удалена" : "🗑 Trade deleted");
             await refreshData();
             renderAll();
         }
@@ -2292,8 +3122,11 @@
             const tz = parseInt(document.getElementById('set-tz').value);
             currentUser.currency = cur;
             currentUser.tz_offset = tz;
-            await db(`users?tg_id=eq.${currentUser.tg_id}`, { method: 'PATCH', body: JSON.stringify({ currency: cur, tz_offset: tz }) });
-            showToast("Настройки сохранены ✅");
+            await db(`users?tg_id=eq.${currentUser.tg_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ currency: cur, tz_offset: tz })
+            });
+            showToast(currentLang === 'ru' ? "⚙️ Настройки сохранены!" : "⚙️ Settings saved!");
             renderAll();
         }
 
@@ -2306,18 +3139,20 @@
         function copyRefLink() {
             haptic('light');
             navigator.clipboard.writeText(document.getElementById('ref-link-box').innerText);
-            showToast("Ссылка скопирована!");
+            showToast(currentLang === 'ru' ? "Ссылка скопирована!" : "Link copied!");
         }
 
         function shareRefLink() {
             haptic('light');
             const link = document.getElementById('ref-link-box').innerText;
-            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent("Терминал для учета P2P-кругов:")}`;
+            const t = I18N[currentLang] || I18N.ru;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.shareText)}`;
             if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
             else window.open(url, '_blank');
         }
 
         function closeModals() {
+            document.body.style.overflow = '';
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
         }
 
@@ -2325,7 +3160,7 @@
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
+            setTimeout(() => t.classList.remove('show'), 2300);
         }
 
         function haptic(type) {
