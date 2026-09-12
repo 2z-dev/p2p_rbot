@@ -2,13 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
     <title>P2P Terminal Pro — Enterprise Ledger & WAC</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
+            --tg-top-safe: var(--tg-content-safe-area-inset-top, var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)));
+            --app-top-padding: max(26px, calc(var(--tg-top-safe) + 16px));
             --bg-main: #05070a;
             --bg-card: rgba(14, 18, 26, 0.88);
             --bg-card-hover: rgba(22, 28, 40, 0.96);
@@ -284,7 +286,7 @@
         }
 
         .container {
-            padding: 16px;
+            padding: var(--app-top-padding) 16px 20px 16px;
             max-width: 580px;
             margin: 0 auto;
             position: relative;
@@ -296,7 +298,7 @@
 
         .page-section {
             margin-bottom: 48px;
-            scroll-margin-top: 24px;
+            scroll-margin-top: calc(var(--app-top-padding) + 16px);
             position: relative;
             transform-style: preserve-3d;
         }
@@ -933,7 +935,7 @@
 
         #toast {
             position: fixed;
-            top: 20px;
+            top: calc(var(--app-top-padding) + 10px);
             left: 50%;
             transform: translateX(-50%) translateY(-120px) scale(0.9);
             background: rgba(18, 24, 32, 0.96);
@@ -2646,7 +2648,23 @@
             if (nav) nav.style.display = 'flex';
         }
 
+        function syncTelegramSafeAreas() {
+            if (!tg) return;
+            const updateInsets = () => {
+                const topInset = tg.contentSafeAreaInset?.top || tg.safeAreaInset?.top || 0;
+                if (topInset > 0) {
+                    document.documentElement.style.setProperty('--tg-content-safe-area-inset-top', `${topInset}px`);
+                }
+            };
+            try {
+                tg.onEvent?.('contentSafeAreaChanged', updateInsets);
+                tg.onEvent?.('safeAreaChanged', updateInsets);
+                updateInsets();
+            } catch (e) {}
+        }
+
         async function init() {
+            syncTelegramSafeAreas();
             applyLanguage(currentLang);
             applyUiMode(uiMode);
             initBlockchainCanvas();
@@ -3352,7 +3370,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div>
                                 <div style="font-size: 17px; font-weight: 800;">${parseFloat(t.fiat_amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
-                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT @ ${t.rate} ${sym}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t.crypto_amount} USDT / ${t.rate} ${sym}</div>
                             </div>
                             <div style="display: flex; gap: 6px;">
                                 <button class="btn-card-action" style="padding: 6px 11px;" onclick="openEditTradeModal(${t.id})">✏️</button>
