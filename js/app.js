@@ -38,9 +38,9 @@ const I18N = {
         showSecondary: "📊 Развернуть подробную статистику",
         hideSecondary: "📊 Скрыть подробную статистику",
         netIn: "Чистая в",
-        formulaFiat: "Продажа − Покупка",
+        formulaFiat: "Фиатный остаток: разница поступивших и отданных рублей на картах",
         netInUsdt: "Чистая в USDT",
-        formulaUsdt: "Покупка − Продажа",
+        formulaUsdt: "Крипто-остаток: чистая прибыль в USDT на бирже сверх депозита",
         midPriceHint: "⚖️ Средняя цена (Mid Price):",
         turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
         statWac: "🛒 WAC Закупка",
@@ -741,121 +741,131 @@ const I18N = {
 ==================================================== */
 const HELP_DATA = {
     total_profit: {
-        title: "💰 ОБЩАЯ ПРИБЫЛЬ И МАТЕМАТИКА",
-        text: `<b>В P2P-арбитраже капитал разделен между двумя средами:</b><br><br>
-        <b>1. Фиат на банковских картах:</b> Разница между выручкой с продаж и затратами на закупку.<br>
-        <b>2. Монеты на бирже (USDT):</b> Чистый остаток крипты после завершения сделок.<br><br>
-        <b>Формула консолидированного профита:</b><br>
+        title: "💰 ОБЩАЯ ПРИБЫЛЬ",
+        text: `<b>Консолидированный доход в арбитраже:</b><br><br>
         <code>Общая прибыль = Чистая в фиате + (Чистая в USDT × Mid Price)</code><br><br>
-        <i>Курс Mid Price — это средневзвешенная цена ваших реальных сделок. Все расчеты дней в календаре строятся строго на базе этой формулы.</i>`
+        Складывает чистый заработок рублей на счетах и стоимость оставшихся монет USDT по фактическому среднему курсу.`
+    },
+    period_compare: {
+        title: "📈 СРАВНЕНИЕ С ПРОШЛЫМ ПЕРИОДОМ",
+        text: `Показывает процентный прирост или спад прибыли по отношению к аналогичному отрезку времени в прошлом (вчера, прошлый месяц или предыдущие N дней). Если сделок ранее не было, выводится статус первого запуска.`
     },
     net_fiat: {
-        title: "💵 ЧИСТАЯ ПРИБЫЛЬ В ФИАТЕ",
-        text: `<b>Фактическое изменение денег на банковских счетах:</b><br><br>
-        <code>Фиатная прибыль = Выручка от продажи USDT − Расход на покупку USDT</code><br><br>
-        • <b>Значение выше нуля (+):</b> Вы получили на карты больше рублей, чем потратили на закуп.<br>
-        • <b>Значение ниже нуля (−):</b> Часть фиата перешла в монеты USDT на баланс биржи.`
+        title: "💵 ЧИСТАЯ В ФИАТЕ",
+        text: `<b>Движение рублей на банковских картах:</b><br><br>
+        <code>Поступления от продажи USDT − Расходы на закупку USDT</code><br><br>
+        • <b>Плюс (+):</b> Вы забрали больше рублей, чем потратили (доход зафиксирован на карте).<br>
+        • <b>Минус (−):</b> Часть рублей ушла в покупку монет и сейчас находится на балансе биржи.`
     },
     net_usdt: {
-        title: "🪙 ЧИСТАЯ ПРИБЫЛЬ В USDT",
-        text: `<b>Чистый остаток криптовалюты на счете биржи:</b><br><br>
-        <code>Крипто-профит = Купленный объем USDT − Проданный объем USDT</code><br><br>
-        • <b>Значение выше нуля (+):</b> Вы заработали крипту сверх оборотного депозита.<br>
-        • <b>Значение ниже нуля (−):</b> Вы продали больше монет, чем закупили за этот период.`
+        title: "🪙 ЧИСТАЯ В USDT",
+        text: `<b>Движение криптовалюты на бирже:</b><br><br>
+        <code>Купленный объем USDT − Проданный объем USDT</code><br><br>
+        • <b>Плюс (+):</b> Вы вернули фиатный депозит, а прибыль оставили в монетах USDT.<br>
+        • <b>Минус (−):</b> Вы распродали старый склад монет на сумму большую, чем закупили за этот период.`
+    },
+    cards_actions_help: {
+        title: "💳 УПРАВЛЕНИЕ КАРТАМИ",
+        text: `• <b>Трансфер:</b> перемещение денег между своими картами без влияния на торговую прибыль.<br>• <b>Создать:</b> добавление новой карты с суточным и месячным лимитом по 115-ФЗ.`
+    },
+    template_chat_help: {
+        title: "💬 ШАБЛОН РЕКВИЗИТОВ ДЛЯ ЧАТА",
+        text: `Вы настраиваете текст сообщения один раз с тегами {bank}, {number}, {holder}. При нажатии кнопки копирования терминал сам подставит реальные реквизиты карты для отправки покупателю на бирже.`
+    },
+    history_info: {
+        title: "📜 ИСТОРИЯ ОПЕРАЦИЙ",
+        text: `Реестр всех ваших покупок, продаж и кругов. Кнопка 🔁 моментально переносит параметры ордера в калькулятор для быстрого повтора.`
+    },
+    history_delete_help: {
+        title: "🗑 ОЧИСТКА ИСТОРИИ",
+        text: `Позволяет безопасно стереть сделки за сегодня, за текущий месяц или полностью очистить облачную историю операций.`
     },
     calc_deal_budget: {
-        title: "💵 ПРАЙС СДЕЛКИ (СУММА КРУГА)",
-        text: `Сумма в национальной валюте, которую вы отдаете при покупке монет (тело сделки). От этого значения калькулятор рассчитывает доходность и спред.`
+        title: "💵 СУММА КРУГА (ПРАЙС)",
+        text: `Объем фиата в рублях, на который вы совершаете закупку монет в связке.`
     },
     calc_profit_mode: {
-        title: "⚡️ РЕЖИМ ФИКСАЦИИ ПРИБЫЛИ КРУГА",
-        text: `• <b>Прибыль в фиате:</b> Весь закупленный объем USDT продается по указанному курсу. Результат круга — возврат депозита плюс чистый плюс на карту в рублях.<br><br>
-        • <b>Прибыль в USDT:</b> Продается только объем монет, достаточный для возврата исходного фиатного депозита на карту, а прибыль остается в монетах на бирже.`
+        title: "⚡️ РЕЖИМ ФИКСАЦИИ ПРИБЫЛИ",
+        text: `• <b>В фиате:</b> продаете все монеты, профит падает на карту в рублях.<br>• <b>В USDT:</b> возвращаете тело депозита на карту, а прибыль остается в крипте.`
     },
     calc_rates: {
         title: "📈 КУРСЫ КРУГА",
-        text: `• <b>Покупка:</b> фактический курс, по которому вы приобрели USDT.<br>
-        • <b>Продажа:</b> курс сброса USDT покупателю.<br>
-        • <b>Спред:</b> процент отдачи на каждый вложенный рубль.`
+        text: `Курс закупки USDT и курс продажи покупателю. Разница между ними формирует спред.`
     },
     single_order_type: {
-        title: "⚡️ ТИП ЕДИНИЧНОГО ОРДЕРА",
-        text: `• <b>Покупка 🟢:</b> запись закупки (списание фиата с карты, пополнение баланса USDT).<br>
-        • <b>Продажа 🔴:</b> запись сброса (списание монет USDT, зачисление фиата на карту).`
+        title: "⚡️ ТИП ОРДЕРА",
+        text: `Покупка 🟢 (тратим фиат, получаем USDT) или Продажа 🔴 (отдаем USDT, получаем фиат).`
     },
     trade_input_mode: {
-        title: "🔄 РЕЖИМ ВВОДА СУММЫ",
-        text: `• <b>Сумма фиата:</b> указываете объем в валюте, терминал автоматически вычисляет количество USDT по курсу.<br>
-        • <b>Объем USDT:</b> указываете количество монет, сумма в фиате рассчитывается сама.`
+        title: "🔄 РЕЖИМ ВВОДА",
+        text: `Ввод от суммы в рублях или от точного количества монет USDT.`
     },
     trade_card_bind: {
-        title: "💳 ПРИВЯЗКА КАРТЫ К СДЕЛКЕ",
-        text: `При выборе карты оборот автоматически списывается или зачисляется в кассу карты и уменьшает суточный лимит.`
+        title: "💳 ПРИВЯЗКА КАРТЫ",
+        text: `Связывает ордер с картой: сумма сразу списывается или зачисляется в кассу и учитывается в лимитах.`
     },
     card_limits_help: {
-        title: "🛡 СУТОЧНЫЕ И МЕСЯЧНЫЕ ЛИМИТЫ",
-        text: `Лимиты дроп-карты. При приближении к 90% полоска становится желтой, а при превышении — карта переходит в статус «⛔️ Лимит исчерпан», предотвращая блокировки по 115-ФЗ.`
+        title: "🛡 ЛИМИТЫ 115-ФЗ",
+        text: `Суточный и месячный объем оборота по карте. При превышении карта автоматически помечается статусом «Лимит исчерпан».`
     },
     card_status_help: {
-        title: "⏳ СТАТУСЫ КАРТЫ",
-        text: `• <b>В работе 🟢:</b> карта активна для проведения ордеров.<br>
-        • <b>На отлежке ⏳:</b> пауза на прогрев (по таймеру вернется в работу сама).<br>
-        • <b>Лимит исчерпан ⛔️:</b> суточный или месячный лимит завершен.<br>
-        • <b>115-ФЗ (Архив) 🔥:</b> заблокированная карта, убирается в конец списка.`
+        title: "⏳ СТАТУСЫ КАРТ",
+        text: `• <b>В работе 🟢:</b> карта активна.<br>• <b>На отлежке ⏳:</b> карта на паузе, таймер показывает точный обратный отсчет.<br>• <b>115-ФЗ 🔥:</b> заблокированная карта, переносится в конец списка.`
     },
     admin_banner_help: {
         title: "📢 ЖИВОЙ БАННЕР",
-        text: `Трансляция текстового сообщения в шапке экрана всем подключенным пользователям бота в реальном времени.`
+        text: `Текст, который в реальном времени появляется вверху экрана у всех пользователей терминала.`
     },
     admin_promo_help: {
         title: "🎟 ПРОМОКОДЫ",
-        text: `Выпуск бонусных промокодов на дни доступа с лимитом активаций.`
+        text: `Выпуск бонусных промокодов на дни подписки.`
     },
     admin_broadcast_help: {
-        title: "🤖 РАССЫЛКА В БОТЕ",
-        text: `Отправка личного сервисного сообщения от имени Telegram-бота всем пользователям из базы.`
+        title: "🤖 РАССЫЛКА",
+        text: `Отправка сообщения через Telegram-бота всем пользователям из базы.`
     },
     calculator: {
         title: "⚡️ КАЛЬКУЛЯТОР КРУГА",
-        text: `Позволяет зафиксировать полный торговый цикл (закупка + сброс) единой записью с расчетом спреда и профита.`
+        text: `Расчет полного цикла арбитража с сохранением результатов в базу данных.`
     },
     spread: {
-        title: "📊 СПРЕД СДЕЛКИ",
-        text: `Процент отдачи на вложенный капитал: ((Курс продажи − Курс покупки) / Курс покупки) × 100%.`
+        title: "📊 СПРЕД",
+        text: `Процент чистой маржи с одного круга: ((Продажа − Покупка) / Покупка) × 100%.`
     },
     mid_price: {
         title: "⚖️ MID PRICE",
-        text: `Средневзвешенный курс доллара за выбранный интервал времени для честной конвертации крипто-остатка.`
+        text: `Средневзвешенная цена доллара за выбранный период для справедливой оценки крипто-остатка.`
     },
     turnover: {
         title: "💸 ОБОРОТ",
-        text: `Суммарный прокрученный объем фиатных средств и монет.`
+        text: `Сумма всех прокрученных фиатных средств и монет.`
     },
     wac: {
         title: "🛒 WAC ЗАКУПКА",
-        text: `Weighted Average Cost — реальная себестоимость закупки одного доллара USDT с учетом всех ваших ордеров.`
+        text: `Реальная себестоимость закупки одного доллара USDT с учетом всех ваших сделок.`
     },
     avg_sell: {
         title: "🏷 СРЕДНЯЯ ПРОДАЖА",
-        text: `Средневзвешенный курс сброса USDT покупателям.`
+        text: `Фактический средний курс продажи монет покупателям.`
     },
     roi: {
         title: "📈 ROI ОТ ОБОРОТА",
-        text: `Рентабельность оборотного капитала: сколько чистой прибыли приносит каждый прокрученный рубль.`
+        text: `Сколько копеек чистой прибыли принес каждый прокрученный рубль оборота.`
     },
     calc_card: {
-        title: "💳 ПРИВЯЗКА КАРТЫ К КРУГУ",
-        text: `Прибыль и оборот круга отобразятся в кассе карты, а объем закупки зачтется в суточный расход лимита.`
+        title: "💳 КАРТА КРУГА",
+        text: `Привязка связки к банковской карте для авто-учета кассы.`
     },
     calendar: {
-        title: "📅 КАЛЕНДАРЬ ПРИБЫЛИ",
-        text: `Зажатие и движение пальцем по сетке открывает всплывающую подсказку дня. Нажатие открывает сводку.`
+        title: "📅 КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ",
+        text: `Каждый день считает полную общую прибыль (рубли + USDT по курсу дня). Зажмите палец на ячейке для быстрого просмотра.`
     },
     cards_overview: {
-        title: "💳 КАРТЫ И ЛИМИТЫ",
-        text: `Контроль кассы, учет лимитов 115-ФЗ, таймеры отлежки и шаблоны реквизитов.`
+        title: "💳 МОДУЛЬ КАРТ",
+        text: `Учет кассы, остатка денег на счетах и лимитов 115-ФЗ.`
     }
 };
+
 
 
 /* ====================================================
@@ -1626,10 +1636,11 @@ function renderHeatmap() {
             return d.getDate() === day;
         });
 
-        let dayProfitFiat = 0;
+
         let dayBoughtUsdt = 0;
         let daySoldUsdt = 0;
         let dayTurnover = 0;
+        let dBF = 0, dBC = 0, dSF = 0, dSC = 0;
 
         dayTrades.forEach(t => {
             const f = parseFloat(t.fiat_amount || 0);
@@ -1637,18 +1648,31 @@ function renderHeatmap() {
             dayTurnover += f;
 
             if (t.is_cycle) {
-                dayProfitFiat += parseFloat(t.cycle_profit_rub || 0);
+                dBF += f;
+                dBC += c;
+                const cProfitRub = parseFloat(t.cycle_profit_rub || 0);
+                const cProfitUsdt = parseFloat(t.cycle_profit_usdt || 0);
+
+                if (t.cycle_mode === 'crypto' || cProfitUsdt !== 0) {
+                    dSF += f;
+                    dSC += (c - cProfitUsdt);
+                } else {
+                    dSF += (f + cProfitRub);
+                    dSC += c;
+                }
             } else if (t.type === 'buy') {
-                dayProfitFiat -= f;
-                dayBoughtUsdt += c;
+                dBF += f;
+                dBC += c;
             } else {
-                dayProfitFiat += f;
-                daySoldUsdt += c;
+                dSF += f;
+                dSC += c;
             }
         });
 
-        const dayCryptoDiff = dayBoughtUsdt - daySoldUsdt;
-        const totalDayProfit = dayProfitFiat + (dayCryptoDiff * calendarMonthMidPrice);
+        // Честный расчет общей прибыли дня: фиатный профит + (крипто-профит * MidPrice)
+        const dayProfitFiat = dSF - dBF;
+        const dayProfitUsdt = dBC - dSC;
+        const totalDayProfit = dayProfitFiat + (dayProfitUsdt * calendarMonthMidPrice);
 
         let colorClass = '';
         if (dayTrades.length > 0) {
@@ -1919,7 +1943,21 @@ function renderCards() {
 
         let statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
         if (currentStatus === 'cooldown') {
-            statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">⏳ Отлежка</span>';
+            const coolUntil = c.cooldown_until || extra.cooldown_until;
+            let coolText = '⏳ На отлежке';
+            if (coolUntil) {
+                const diffMs = new Date(coolUntil).getTime() - now.getTime();
+                if (diffMs > 0) {
+                    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const totalMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const dObj = new Date(coolUntil);
+                    const timeStr = `${dObj.getDate()} ${dObj.toLocaleDateString('ru-RU', { month: 'short' })}, ${String(dObj.getHours()).padStart(2, '0')}:${String(dObj.getMinutes()).padStart(2, '0')}`;
+                    coolText = `⏳ До ${timeStr} (осталось ${totalHours}ч ${totalMins}м)`;
+                } else {
+                    coolText = '⏳ Отлежка завершена';
+                }
+            }
+            statusBadgeHtml = `<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">${coolText}</span>`;
         } else if (currentStatus === 'limit_reached') {
             statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-yellow); font-weight: 900;">⛔️ Лимит исчерпан</span>';
         } else if (currentStatus === 'burned') {
@@ -2299,6 +2337,27 @@ async function saveCardFullSettings() {
 
     if (!name) return showToast("⚠️ Название карты обязательно!");
 
+    // Сохраняем лимиты и отлежку в локальное хранилище
+    const extraKey = `p2p_card_extra_${activeSheetCard.id}`;
+    const extraData = { month_limit: monthLimit, buy_limit: dayLimit, note: note, cooldown_until: cooldownUntil };
+    localStorage.setItem(extraKey, JSON.stringify(extraData));
+
+    // Моментально обновляем данные карты в памяти приложения
+    activeSheetCard.card_name = name;
+    activeSheetCard.card_number = num;
+    activeSheetCard.holder_name = holder;
+    activeSheetCard.buy_limit = dayLimit;
+    activeSheetCard.month_limit = monthLimit;
+    activeSheetCard.status = status;
+    activeSheetCard.note = note;
+    activeSheetCard.cooldown_until = cooldownUntil;
+    activeSheetCard.color_accent = activeSelectedCardColor;
+
+    const inList = userCards.find(x => x.id === activeSheetCard.id);
+    if (inList) {
+        Object.assign(inList, activeSheetCard);
+    }
+
     try {
         await db(`cards?id=eq.${activeSheetCard.id}`, {
             method: 'PATCH',
@@ -2327,26 +2386,14 @@ async function saveCardFullSettings() {
                     color_accent: activeSelectedCardColor
                 })
             });
-        } catch(err) {
-            return showToast("Ошибка сохранения карты в базу");
-        }
+        } catch(err) {}
     }
 
-    activeSheetCard.card_name = name;
-    activeSheetCard.card_number = num;
-    activeSheetCard.holder_name = holder;
-    activeSheetCard.buy_limit = dayLimit;
-    activeSheetCard.month_limit = monthLimit;
-    activeSheetCard.status = status;
-    activeSheetCard.note = note;
-    activeSheetCard.cooldown_until = cooldownUntil;
-
-
-    showToast("✅ Настройки карты сохранены!");
-    await refreshData();
+    showToast("✅ Настройки и лимиты карты сохранены!");
     renderCards();
     openCardBottomSheet(activeSheetCard.id);
 }
+
 
 
 // Работа с глобальным шаблоном ордера
@@ -2898,6 +2945,22 @@ function getActiveTimeframeTitle() {
     return "ОТЧЕТ";
 }
 
+/* ====================================================
+   PNL-ОТЧЕТ: ГЕНЕРАЦИЯ И ОТПРАВКА В TELEGRAM
+==================================================== */
+let currentPnlBlob = null;
+
+function getPnlTimeframeLabel() {
+    if (currentPeriod === 'today') return "ЗА СЕГОДНЯ";
+    if (currentPeriod === 'month') return "ЗА ЭТОТ МЕСЯЦ";
+    if (currentPeriod === 'all') return "ЗА ВСЕ ВРЕМЯ";
+    if (currentPeriod === 'custom' && customStartDate && customEndDate) {
+        const pad = n => String(n).padStart(2, '0');
+        return `${pad(customStartDate.getDate())}.${pad(customStartDate.getMonth() + 1)} — ${pad(customEndDate.getDate())}.${pad(customEndDate.getMonth() + 1)}`;
+    }
+    return "ОТЧЕТ";
+}
+
 function openPnlPage() {
     haptic('medium');
     const canvas = document.createElement('canvas');
@@ -2905,25 +2968,25 @@ function openPnlPage() {
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
 
-    // 1. Фон
-    const bgGrad = ctx.createLinearGradient(0, 0, 1200, 720);
-    bgGrad.addColorStop(0, '#06080d');
-    bgGrad.addColorStop(0.5, '#0a0e17');
-    bgGrad.addColorStop(1, '#05070a');
-    ctx.fillStyle = bgGrad;
+    // 1. Темный премиальный фон
+    const bg = ctx.createLinearGradient(0, 0, 1200, 720);
+    bg.addColorStop(0, '#06080d');
+    bg.addColorStop(0.5, '#090d15');
+    bg.addColorStop(1, '#05070a');
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 1200, 720);
 
-    // 2. Неоновые сферы
-    const orb1 = ctx.createRadialGradient(180, 130, 20, 180, 130, 420);
-    orb1.addColorStop(0, 'rgba(243, 166, 0, 0.16)');
-    orb1.addColorStop(1, 'transparent');
-    ctx.fillStyle = orb1;
+    // 2. Световые неоновые пятна
+    const g1 = ctx.createRadialGradient(180, 130, 10, 180, 130, 400);
+    g1.addColorStop(0, 'rgba(243, 166, 0, 0.18)');
+    g1.addColorStop(1, 'transparent');
+    ctx.fillStyle = g1;
     ctx.fillRect(0, 0, 1200, 720);
 
-    const orb2 = ctx.createRadialGradient(1020, 580, 20, 1020, 580, 440);
-    orb2.addColorStop(0, 'rgba(46, 187, 154, 0.14)');
-    orb2.addColorStop(1, 'transparent');
-    ctx.fillStyle = orb2;
+    const g2 = ctx.createRadialGradient(1020, 580, 10, 1020, 580, 420);
+    g2.addColorStop(0, 'rgba(46, 187, 154, 0.15)');
+    g2.addColorStop(1, 'transparent');
+    ctx.fillStyle = g2;
     ctx.fillRect(0, 0, 1200, 720);
 
     // 3. Рамка
@@ -2936,19 +2999,19 @@ function openPnlPage() {
     ctx.font = '900 36px Inter, sans-serif';
     ctx.fillText('P2P TERMINAL PRO', 70, 95);
 
-    // Таймфрейм
-    const tfText = `🗓 ПЕРИОД: ${getActiveTimeframeTitle()}`;
+    // Бейдж таймфрейма
+    const tf = `🗓 ПЕРИОД: ${getPnlTimeframeLabel()}`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.fillRect(70, 118, 290, 36);
+    ctx.fillRect(70, 118, 300, 36);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.lineWidth = 1;
-    ctx.strokeRect(70, 118, 290, 36);
+    ctx.strokeRect(70, 118, 300, 36);
 
     ctx.fillStyle = '#cbd5e1';
     ctx.font = '800 15px Inter, sans-serif';
-    ctx.fillText(tfText, 86, 142);
+    ctx.fillText(tf, 86, 142);
 
-    // Дата отчета справа
+    // Дата справа
     const dateStr = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
     ctx.fillStyle = '#94a3b8';
     ctx.font = '600 20px Inter, sans-serif';
@@ -2959,13 +3022,13 @@ function openPnlPage() {
     // 5. Показатель прибыли
     const totalRub = document.getElementById('val-total-profit-rub')?.innerText || "0.00 ₽";
     const totalUsdt = document.getElementById('val-total-profit-usdt')?.innerText || "0.00 USDT";
-    const isNegative = totalRub.includes('-');
+    const isNeg = totalRub.includes('-');
 
     ctx.fillStyle = '#64748b';
     ctx.font = '800 18px Inter, sans-serif';
     ctx.fillText('ОБЩАЯ ЧИСТАЯ ПРИБЫЛЬ ЗА ПЕРИОД', 70, 220);
 
-    ctx.fillStyle = isNegative ? '#f23645' : '#2ebb9a';
+    ctx.fillStyle = isNeg ? '#f23645' : '#2ebb9a';
     ctx.font = '900 76px Inter, sans-serif';
     ctx.fillText(totalRub, 70, 305);
 
@@ -3019,10 +3082,14 @@ function openPnlPage() {
     ctx.font = '600 20px Inter, sans-serif';
     ctx.fillText('Enterprise Ledger & WAC Analytics Terminal', 360, 623);
 
-    // Экспорт в DataURL для удобного сохранения на смартфонах
-    const imgDataUrl = canvas.toDataURL('image/png');
+    // Сохраняем DataURL для отображения превью
+    const dataUrl = canvas.toDataURL('image/png');
     const imgEl = document.getElementById('pnl-rendered-img');
-    if (imgEl) imgEl.src = imgDataUrl;
+    if (imgEl) imgEl.src = dataUrl;
+
+    canvas.toBlob(blob => {
+        currentPnlBlob = blob;
+    }, 'image/png');
 
     const modal = document.getElementById('pnl-card-modal');
     if (modal) modal.classList.add('show');
@@ -3034,35 +3101,60 @@ function closePnlPage() {
     if (modal) modal.classList.remove('show');
 }
 
-function downloadPnlImage() {
+// 100% рабочая отправка фото пользователю в Telegram-чат
+async function sendPnlToTelegramChat() {
     haptic('medium');
-    const imgEl = document.getElementById('pnl-rendered-img');
-    if (!imgEl || !imgEl.src) return;
+    if (!currentUser || !currentUser.tg_id) {
+        return showToast("⚠️ Пользователь не определен");
+    }
 
-    const link = document.createElement('a');
-    link.download = `PnL_${getActiveTimeframeTitle().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.png`;
-    link.href = imgEl.src;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast("💾 Фото сохранено!");
+    if (!currentPnlBlob) {
+        return showToast("⚠️ Изображение еще генерируется...");
+    }
+
+    const token = document.getElementById('admin-broadcast-token')?.value?.trim() || "8872511749:AAG-gbaprKsqDa24yL9JWMEL4XOApCScQAs";
+    showToast("⏳ Отправка фото в чат бота...");
+
+    try {
+        const formData = new FormData();
+        formData.append('chat_id', currentUser.tg_id);
+        formData.append('photo', currentPnlBlob, `pnl_${new Date().getTime()}.png`);
+        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: ${document.getElementById('val-total-profit-rub')?.innerText || ''}\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража`);
+        formData.append('parse_mode', 'HTML');
+
+        const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+            playCashSound();
+            haptic('success');
+            showToast("✅ Фото отправлено вам в личные сообщения бота!");
+        } else {
+            throw new Error(data.description || "Ошибка API");
+        }
+    } catch(err) {
+        showToast("❌ Ошибка отправки фото в бот");
+    }
 }
 
-function sharePnlCard() {
+function sharePnlText() {
     haptic('light');
-    const timeframe = getActiveTimeframeTitle();
+    const tf = getPnlTimeframeLabel();
     const totalRub = document.getElementById('val-total-profit-rub')?.innerText || "0.00 ₽";
     const spread = document.getElementById('val-avg-spread')?.innerText || "0.00%";
-
-    const text = `📊 Мой результат в P2P (${timeframe}):\n💰 Прибыль: ${totalRub}\n📈 Средний спред: ${spread}\n\nВеду прозрачный учет касс и сделок в @P2P_Rbot`;
+    const text = `📊 Мой результат в P2P (${tf}):\n💰 Прибыль: ${totalRub}\n📈 Средний спред: ${spread}\n\nВеду прозрачный учет касс и сделок в @P2P_Rbot`;
 
     if (tg?.openTelegramLink) {
         tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent('https://t.me/P2P_Rbot')}&text=${encodeURIComponent(text)}`);
     } else {
         navigator.clipboard.writeText(text);
-        showToast("Текст отчета скопирован в буфер");
+        showToast("Текст скопирован в буфер");
     }
 }
+
 
 
 /* ====================================================

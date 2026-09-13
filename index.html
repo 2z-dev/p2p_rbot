@@ -135,8 +135,11 @@
                     </div>
                 </div>
 
-                <div id="val-period-compare" class="period-compare-badge" style="color: var(--bybit-green);">
-                    📈 +0.0% к прошлому периоду
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div id="val-period-compare" class="period-compare-badge" style="color: var(--bybit-green); margin-top: 0;">
+                        📈 +0.0% к прошлому периоду
+                    </div>
+                    <span class="help-icon" onclick="openHelpModal('period_compare', event)">?</span>
                 </div>
             </div>
 
@@ -191,7 +194,7 @@
                                 <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
                             </div>
                             <div id="val-profit-rub" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
-                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaFiat"><b>Фиатный остаток:</b> чистая разница рублей на картах (поступления с продаж минус затраты на закупку).</div>
+                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaFiat"><b>Фиатный остаток:</b> чистая разница рублей на картах (все поступления с продаж минус все расходы на покупку USDT).</div>
                         </div>
 
                         <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
@@ -200,8 +203,9 @@
                                 <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
                             </div>
                             <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
-                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистая прибыль в монетах USDT, оставшаяся на бирже сверх возвращенного депозита.</div>
+                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистый объем монет USDT на бирже, заработанный вами сверх возвращенного фиатного депозита.</div>
                         </div>
+                    </div>
 
                     </div>
 
@@ -442,9 +446,10 @@
                     </h1>
                     <p class="subtitle" style="margin: 0;" data-i18n="cardsSubtitle">Контроль кассы, лимиты и авто-смены</p>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-card-action" style="padding: 7px 12px;" onclick="openTransferModal()" data-i18n="btnTransfer">🔄 Трансфер</button>
-                    <button class="btn-card-action" style="padding: 7px 12px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button class="btn-card-action" style="padding: 7px 10px;" onclick="openTransferModal()" data-i18n="btnTransfer">🔄 Трансфер</button>
+                    <button class="btn-card-action" style="padding: 7px 10px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
+                    <span class="help-icon" onclick="openHelpModal('cards_actions_help', event)">?</span>
                 </div>
             </div>
 
@@ -453,6 +458,7 @@
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 16px;">💬</span>
                     <span style="font-size: 12px; font-weight: 700; color: #e2e8f0;">Шаблон реквизитов для сделок</span>
+                    <span class="help-icon" onclick="openHelpModal('template_chat_help', event)">?</span>
                 </div>
                 <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">Настроить ⚙️</span>
             </div>
@@ -467,8 +473,12 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <h1 style="margin: 0; display: flex; align-items: center; gap: 6px;">
                     <span data-i18n="historyTitle">История операций</span>
+                    <span class="help-icon" onclick="openHelpModal('history_info', event)">?</span>
                 </h1>
-                <button class="btn-card-action" style="padding: 6px 12px; color: var(--bybit-red);" onclick="openDeleteHistoryModal()">🗑 Очистить</button>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <button class="btn-card-action" style="padding: 6px 12px; color: var(--bybit-red);" onclick="openDeleteHistoryModal()">🗑 Очистить</button>
+                    <span class="help-icon" onclick="openHelpModal('history_delete_help', event)">?</span>
+                </div>
             </div>
 
             <p class="subtitle" data-i18n="historySubtitle">Синхронизированные сделки, круги и заметки</p>
@@ -1221,28 +1231,29 @@
 
     <div id="toast">Действие выполнено!</div>
 
-        <!-- МОДАЛЬНОЕ ОКНО PNL-КАРТОЧКИ -->
-        <div id="pnl-card-modal" class="modal-overlay" onclick="closePnlPage()">
-            <div class="glass-card modal-box" onclick="event.stopPropagation()" style="max-width: 480px; text-align: center; padding: 18px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <span class="badge" style="color: var(--bybit-yellow); font-size: 12px; margin: 0;">📸 PnL-ОТЧЕТ РЕЗУЛЬТАТОВ</span>
-                    <button class="btn-card-action" style="padding: 4px 10px;" onclick="closePnlPage()">✕</button>
-                </div>
+    <!-- МОДАЛЬНОЕ ОКНО PNL-КАРТОЧКИ -->
+    <div id="pnl-card-modal" class="modal-overlay" onclick="closePnlPage()">
+        <div class="glass-card modal-box" onclick="event.stopPropagation()" style="max-width: 480px; text-align: center; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="badge" style="color: var(--bybit-yellow); font-size: 12px; margin: 0;">📸 PnL-ОТЧЕТ РЕЗУЛЬТАТОВ</span>
+                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closePnlPage()">✕</button>
+            </div>
 
-                <div class="pnl-preview-container">
-                    <img id="pnl-rendered-img" alt="PnL Report" style="width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 12px 35px rgba(0,0,0,0.6); display: block;">
-                </div>
+            <div class="pnl-preview-container">
+                <img id="pnl-rendered-img" alt="PnL Report" style="width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 12px 35px rgba(0,0,0,0.6); display: block;">
+            </div>
 
-                <div style="font-size: 11px; color: var(--text-muted); margin: 10px 0 14px 0; line-height: 1.4;">
-                    💡 <i>Нажмите и удерживайте картинку пальцем, чтобы сохранить ее в Фото на телефоне</i>
-                </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin: 8px 0 14px 0; line-height: 1.4;">
+                💡 <i>Нажмите «Отправить мне в бот» — фото моментально придет вам в личные сообщения Telegram!</i>
+            </div>
 
-                <div class="analytics-grid" style="margin-top: 0;">
-                    <button class="action-btn" style="padding: 12px; font-size: 12px;" onclick="downloadPnlImage()">📥 Скачать фото</button>
-                    <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="sharePnlCard()">🚀 Отправить в TG</button>
-                </div>
+            <div class="analytics-grid" style="margin-top: 0;">
+                <button class="action-btn gold" style="padding: 12px; font-size: 12px;" onclick="sendPnlToTelegramChat()">🚀 Отправить мне в бот</button>
+                <button class="action-btn-secondary" style="padding: 12px; font-size: 12px;" onclick="sharePnlText()">📋 Текст в чат</button>
             </div>
         </div>
+    </div>
+
 
         <!-- НАВИГАЦИЯ -->
 
