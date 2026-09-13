@@ -525,6 +525,19 @@
                     </label>
                 </div>
 
+                <!-- ВОЗВРАЩЕННЫЙ ТУМБЛЕР ВИЗУАЛЬНЫХ ЭФФЕКТОВ (FX) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 800;" data-i18n="fxModeTitle">Визуальные спецэффекты (FX)</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="ui-mode-desc">Минимализм (OLED черный, без анимаций)</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-ui-mode" onchange="switchUiMode(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);">
                     <div>
                         <div style="font-size: 13px; font-weight: 800;" data-i18n="feedModeTitle">Режим общей ленты</div>

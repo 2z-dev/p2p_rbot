@@ -3974,7 +3974,7 @@ function switchLayoutMode(isChecked) {
     if (layoutMode !== 'feed') {
         document.getElementById('dashboard').style.display = 'block';
     }
-    showToast(isChecked ? "📜 Режим ленты включен" : "📱 Режим вкладок включен");
+    //showToast(isChecked ? "📜 Режим ленты включен" : "📱 Режим вкладок включен");
 }
 
 function switchUiMode(isChecked) {
@@ -3987,7 +3987,7 @@ function switchUiMode(isChecked) {
     if (desc) desc.innerText = isChecked ? "Полный FX (3D эффекты и фон)" : "Минимализм (OLED черный, без анимаций)";
 
     applyIncognito();
-    showToast(isChecked ? "🌟 Полный FX активирован" : "⚡️ Минимализм включен");
+    //showToast(isChecked ? "🌟 Полный FX активирован" : "⚡️ Минимализм включен");
 }
 
 function handleNavClick(targetId, el) {
@@ -4207,6 +4207,10 @@ async function init() {
     // ПРИНУДИТЕЛЬНО ПРИМЕНЯЕМ РЕЖИМ ОТОБРАЖЕНИЯ ПРИ СТАРТЕ
     switchLayoutMode(layoutMode === 'feed');
 
+    // ИНИЦИАЛИЗАЦИЯ ТУМБЛЕРА ВИЗУАЛЬНЫХ ЭФФЕКТОВ (FX) ПРИ СТАРТЕ
+    const toggleUi = document.getElementById('toggle-ui-mode');
+    if (toggleUi) toggleUi.checked = (uiMode === 'fx');
+
     const toggleSound = document.getElementById('toggle-sound-mode');
     if (toggleSound) toggleSound.checked = soundEnabled;
 
@@ -4284,6 +4288,7 @@ async function init() {
         }
     });
 }
+
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
