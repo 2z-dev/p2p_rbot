@@ -848,11 +848,24 @@ if (tg) {
     try {
         tg.expand();
         tg.ready();
-        // Запрещаем свайп закрытия окна вниз
         if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
         if (typeof tg.isVerticalSwipesEnabled !== 'undefined') tg.isVerticalSwipesEnabled = false;
+        // Защита от белого фона Telegram при сворачивании и открытии
+        if (tg.setHeaderColor) tg.setHeaderColor('#05070a');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#05070a');
     } catch(e) {}
 }
+
+// Восстановление фона при возвращении во вкладку
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && tg) {
+        try {
+            if (tg.setHeaderColor) tg.setHeaderColor('#05070a');
+            if (tg.setBackgroundColor) tg.setBackgroundColor('#05070a');
+        } catch(e) {}
+    }
+});
+
 
 
 /* ====================================================
@@ -1214,6 +1227,7 @@ async function saveCalculatedCycle() {
         profitUsdt = parseFloat((boughtUsdt - (fiat / sellRate)).toFixed(2));
     }
 
+    // Сохранение без лишних полей, которые вызывают ошибку БД
     try {
         await db('trades', {
             method: 'POST',
@@ -1221,7 +1235,6 @@ async function saveCalculatedCycle() {
                 tg_id: currentUser.tg_id,
                 type: 'buy',
                 is_cycle: true,
-                cycle_mode: cycleProfitMode,
                 crypto_amount: boughtUsdt,
                 rate: buyRate,
                 buy_rate: buyRate,
@@ -1230,37 +1243,39 @@ async function saveCalculatedCycle() {
                 cycle_spread: spreadPct,
                 cycle_profit_rub: profitFiat,
                 cycle_profit_usdt: profitUsdt,
-                card_id: cardId ? parseInt(cardId) : null
+                card_id: cardId ? parseInt(cardId) : null,
+                tag_color: 'yellow',
+                note: cycleProfitMode === 'crypto' ? 'Прибыль в USDT' : 'Прибыль в фиате'
             })
         });
 
         playCashSound();
         haptic('success');
-        showToast("✅ Круг сохранен без задвоения!");
+        showToast("✅ Круг сохранен!");
         await refreshData();
         renderAll();
     } catch(e) {
-        showToast("❌ Ошибка сохранения круга");
+        showToast("❌ Ошибка сохранения в базу");
     }
 }
-
 
 document.getElementById('calc-fiat-amt')?.addEventListener('input', runCalculator);
 document.getElementById('calc-buy-rate')?.addEventListener('input', runCalculator);
 document.getElementById('calc-sell-rate')?.addEventListener('input', runCalculator);
-
 
 function clearCalculator() {
     haptic('light');
     const f = document.getElementById('calc-fiat-amt');
     const b = document.getElementById('calc-buy-rate');
     const s = document.getElementById('calc-sell-rate');
-    if (f) f.value = '10000';
+    if (f) f.value = '';
     if (b) b.value = '';
     if (s) s.value = '';
     runCalculator();
     showToast("Калькулятор очищен");
 }
+
+
 
 /* ====================================================
    МАТЕМАТИКА ПРИБЫЛИ
@@ -1819,8 +1834,9 @@ function renderCards() {
     }
 
     const sym = getCurrencySymbol();
+    const now = new Date();
 
-    // Применение порядка из localStorage
+    // Пользовательский порядок
     const savedOrder = JSON.parse(localStorage.getItem('p2p_card_custom_order') || '[]');
     if (savedOrder.length > 0) {
         userCards.sort((a, b) => {
@@ -1830,7 +1846,7 @@ function renderCards() {
         });
     }
 
-    // Деактивированные улетают вниз, закрепленные наверх
+    // 115-ФЗ строго вниз списка, закрепленные строго наверх
     const sorted = [...userCards].sort((a, b) => {
         if (a.status === 'burned') return 1;
         if (b.status === 'burned') return -1;
@@ -1844,21 +1860,20 @@ function renderCards() {
 
     const startIndex = (cardsCurrentPage - 1) * ITEMS_PER_PAGE;
     const pageItems = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    const now = new Date();
 
-    pageItems.forEach((c, index) => {
+    pageItems.forEach((c) => {
         const extra = JSON.parse(localStorage.getItem(`p2p_card_extra_${c.id}`) || '{}');
         const monthLimitVal = parseFloat(c.month_limit || extra.month_limit || 0);
         const dayLimitVal = parseFloat(c.buy_limit || 0);
 
         const cTrades = userTrades.filter(tr => tr.card_id === c.id);
-        const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const gainSell = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const balance = deps - wdrs + gainSell - spentBuy;
+        const spentBuyAll = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const gainSellAll = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const depsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const wdrsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const balance = depsAll - wdrsAll + gainSellAll - spentBuyAll;
 
-        // Дневной и месячный расходы
+        // Расход суточный и месячный
         const spentToday = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString())
                                   .reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
         const spentMonth = cTrades.filter(tr => {
@@ -1866,55 +1881,93 @@ function renderCards() {
             return tr.type === 'buy' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         }).reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
 
-        // Две полоски лимита
+        // Расчет процентов
         const dayPct = dayLimitVal > 0 ? Math.min(100, Math.round((spentToday / dayLimitVal) * 100)) : 0;
         const monthPct = monthLimitVal > 0 ? Math.min(100, Math.round((spentMonth / monthLimitVal) * 100)) : 0;
+
+        // Авто-статус «Лимит исчерпан» если суточный или месячный лимит достигнут
+        let currentStatus = c.status || 'active';
+        if (currentStatus !== 'burned' && currentStatus !== 'cooldown') {
+            if ((dayLimitVal > 0 && spentToday >= dayLimitVal) || (monthLimitVal > 0 && spentMonth >= monthLimitVal)) {
+                currentStatus = 'limit_reached';
+            }
+        }
+
+        let statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
+        if (currentStatus === 'cooldown') {
+            statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">⏳ Отлежка</span>';
+        } else if (currentStatus === 'limit_reached') {
+            statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-yellow); font-weight: 900;">⛔️ Лимит исчерпан</span>';
+        } else if (currentStatus === 'burned') {
+            statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">🔥 115-ФЗ (Архив)</span>';
+        }
 
         const dayColor = dayPct > 90 ? 'danger' : (dayPct > 70 ? 'warning' : '');
         const monthColor = monthPct > 90 ? 'danger' : (monthPct > 70 ? 'warning' : '');
 
-        const isBurned = c.status === 'burned';
+        const isBurned = currentStatus === 'burned';
         const isPinned = c.is_pinned;
-        const isCooldown = c.status === 'cooldown';
 
+        // Количество операций за сегодня: покупки и продажи
         const todayBuys = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString()).length;
         const todaySells = cTrades.filter(tr => (tr.type === 'sell' || tr.is_cycle) && new Date(tr.date).toDateString() === now.toDateString()).length;
+
+        // Текст для полосок
+        const dayStatText = dayLimitVal > 0
+            ? `${Math.round(spentToday).toLocaleString()} / ${Math.round(dayLimitVal).toLocaleString()} ${sym} (${dayPct}%)`
+            : `Лимит: ∞`;
+        const monthStatText = monthLimitVal > 0
+            ? `${Math.round(spentMonth).toLocaleString()} / ${Math.round(monthLimitVal).toLocaleString()} ${sym} (${monthPct}%)`
+            : `Лимит: ∞`;
 
         container.innerHTML += `
             <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}" onclick="openCardBottomSheet(${c.id})">
                 <div class="card-stripe" style="background: ${c.color_accent || 'var(--bybit-yellow)'};"></div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <div style="display: flex; flex-direction: column; gap: 2px;" onclick="event.stopPropagation()">
-                        <button class="cal-nav-btn" style="width: 22px; height: 18px; font-size: 10px;" onclick="moveCardPosition(${c.id}, -1, event)">▲</button>
-                        <button class="cal-nav-btn" style="width: 22px; height: 18px; font-size: 10px;" onclick="moveCardPosition(${c.id}, 1, event)">▼</button>
-                    </div>
-                    <div style="flex: 1; padding-left: 4px;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 800; font-size: 14px;">${c.card_name}</span>
-                            ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
-                            ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">ДЕАКТИВИРОВАНА</span>' : ''}
-                            ${isCooldown ? '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>' : ''}
+
+                <!-- Верхняя линия: кнопки перемещения, имя, статус, баланс и сделки -->
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="display: flex; flex-direction: column; gap: 2px;" onclick="event.stopPropagation()">
+                            <button class="cal-nav-btn" style="width: 20px; height: 17px; font-size: 9px;" onclick="moveCardPosition(${c.id}, -1, event)">▲</button>
+                            <button class="cal-nav-btn" style="width: 20px; height: 17px; font-size: 9px;" onclick="moveCardPosition(${c.id}, 1, event)">▼</button>
                         </div>
-                        <div class="card-dual-bars-wrap">
-                            <div class="card-bar-line">
-                                <span class="card-bar-tag">Д</span>
-                                <div class="card-mini-bar">
-                                    <div class="card-mini-bar-fill ${dayColor}" style="width: ${dayLimitVal > 0 ? dayPct : 0}%;"></div>
-                                </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-weight: 800; font-size: 15px;">${c.card_name}</span>
+                                ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
                             </div>
-                            <div class="card-bar-line">
-                                <span class="card-bar-tag">М</span>
-                                <div class="card-mini-bar">
-                                    <div class="card-mini-bar-fill ${monthColor}" style="width: ${monthLimitVal > 0 ? monthPct : 0}%;"></div>
-                                </div>
+                            <div style="margin-top: 2px;">${statusBadgeHtml}</div>
+                        </div>
+                    </div>
+
+                    <!-- Баланс и правее него ордера: Покупки / Продажи -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="text-align: right;">
+                            <div class="privacy-blur" style="font-size: 16px; font-weight: 900;">
+                                ${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}
                             </div>
+                        </div>
+                        <div class="ops-bubble" title="Покупки / Продажи за сегодня" style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); white-space: nowrap;">
+                            🟢 ${todayBuys} / 🔴 ${todaySells}
                         </div>
                     </div>
                 </div>
-                <div style="text-align: right; margin-left: 10px;">
-                    <div class="privacy-blur" style="font-size: 15px; font-weight: 900;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
-                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 3px;">
-                        <span class="ops-bubble" title="Сделок за сегодня (Покупки/Продажи)">${todayBuys}/${todaySells}</span>
+
+                <!-- Полоски лимитов на всю ширину карточки -->
+                <div class="card-dual-bars-wrap">
+                    <div class="card-bar-line">
+                        <span class="card-bar-tag">Д</span>
+                        <div class="card-mini-bar">
+                            <div class="card-mini-bar-fill ${dayColor}" style="width: ${dayLimitVal > 0 ? dayPct : 0}%;"></div>
+                        </div>
+                        <span class="card-bar-stat-text">${dayStatText}</span>
+                    </div>
+                    <div class="card-bar-line">
+                        <span class="card-bar-tag">М</span>
+                        <div class="card-mini-bar">
+                            <div class="card-mini-bar-fill ${monthColor}" style="width: ${monthLimitVal > 0 ? monthPct : 0}%;"></div>
+                        </div>
+                        <span class="card-bar-stat-text">${monthStatText}</span>
                     </div>
                 </div>
             </div>
@@ -1926,9 +1979,6 @@ function renderCards() {
         renderCards();
     });
 }
-
-
-
 function renderPaginationBar(containerEl, totalPages, curPage, onChangePage) {
     if (!containerEl) return;
     if (totalPages <= 1) {
@@ -1968,7 +2018,6 @@ function openCardBottomSheet(cid) {
     activeCardId = cid;
     document.getElementById('sheet-card-title').innerText = activeSheetCard.card_name;
 
-    // Вкладка настроек карты
     document.getElementById('csheet-inp-name').value = activeSheetCard.card_name || '';
     document.getElementById('csheet-inp-num').value = activeSheetCard.card_number || '';
     document.getElementById('csheet-inp-holder').value = activeSheetCard.holder_name || '';
@@ -1977,7 +2026,6 @@ function openCardBottomSheet(cid) {
     document.getElementById('sheet-set-status').value = activeSheetCard.status || 'active';
     document.getElementById('csheet-inp-notes').value = activeSheetCard.note || '';
 
-    // Таймер отлежки
     const wrapCool = document.getElementById('wrap-cooldown-until');
     const inpCool = document.getElementById('csheet-inp-cooldown-until');
     if (activeSheetCard.status === 'cooldown') {
@@ -1995,7 +2043,6 @@ function openCardBottomSheet(cid) {
         d.classList.toggle('selected', d.style.background === activeSelectedCardColor || d.getAttribute('style')?.includes(activeSelectedCardColor));
     });
 
-    // Расчет сводки кассы (строго обороты, покупки, продажи, снятия и пополнения)
     const sym = getCurrencySymbol();
     const cTrades = userTrades.filter(tr => tr.card_id === cid);
     const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
@@ -2008,12 +2055,17 @@ function openCardBottomSheet(cid) {
     if (bEl) bEl.innerText = `${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
 
     const bFiatEl = document.getElementById('csheet-val-bought-fiat');
-    if (bFiatEl) bFiatEl.innerText = `${spentBuy.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym} (${cTrades.filter(t => t.type === 'buy').length} ордеров)`;
+    if (bFiatEl) bFiatEl.innerText = `${spentBuy.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
 
     const sFiatEl = document.getElementById('csheet-val-sold-fiat');
-    if (sFiatEl) sFiatEl.innerText = `${gainSell.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym} (${cTrades.filter(t => t.type === 'sell').length} ордеров)`;
+    if (sFiatEl) sFiatEl.innerText = `${gainSell.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
 
-    // Индикатор прогресса суточного лимита
+    const depsEl = document.getElementById('csheet-val-deps-fiat');
+    if (depsEl) depsEl.innerText = `+${deps.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+
+    const wdrsEl = document.getElementById('csheet-val-wdrs-fiat');
+    if (wdrsEl) wdrsEl.innerText = `-${wdrs.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+
     const limitWrap = document.getElementById('sheet-limit-progress-wrap');
     if (limitWrap) {
         if (activeSheetCard.buy_limit && parseFloat(activeSheetCard.buy_limit) > 0) {
@@ -2036,6 +2088,7 @@ function openCardBottomSheet(cid) {
     switchCardSheetTab('stats');
     document.getElementById('card-sheet-modal').classList.add('show');
 }
+
 
 function toggleCooldownDateInput(status) {
     const wrap = document.getElementById('wrap-cooldown-until');

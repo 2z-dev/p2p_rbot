@@ -30,7 +30,7 @@
 
 html {
     scroll-behavior: smooth;
-    background-color: var(--bg-main);
+    background-color: #05070a !important;
     overscroll-behavior-y: none;
     overscroll-behavior: none;
 }
@@ -40,7 +40,7 @@ body {
     padding: 0;
     overscroll-behavior-y: none;
     overscroll-behavior: none;
-    background-color: var(--bg-main);
+    background-color: #05070a !important;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: var(--text-main);
     overflow-x: hidden;
@@ -325,48 +325,34 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 /* ПЛАШКА БАННЕРА */
 #site-live-banner {
     display: block;
-    margin-bottom: 12px;
-    border-radius: 14px;
-    padding: 8px 12px;
+    margin-bottom: 14px;
+    border-radius: 18px;
+    padding: 14px 18px;
     transition: all 0.3s var(--ease-apple);
 }
 #site-live-banner.banner-empty { display: none; }
 #site-live-banner.banner-active {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: linear-gradient(90deg, rgba(243, 166, 0, 0.22) 0%, rgba(255, 122, 0, 0.22) 100%);
-    border: 1.5px solid var(--bybit-yellow);
-    box-shadow: 0 0 20px rgba(243, 166, 0, 0.35), inset 0 0 10px rgba(243, 166, 0, 0.15);
+    display: block;
+    background: linear-gradient(135deg, rgba(243, 166, 0, 0.26) 0%, rgba(255, 122, 0, 0.22) 100%);
+    border: 2px solid var(--bybit-yellow);
+    box-shadow: 0 0 25px rgba(243, 166, 0, 0.4), inset 0 0 14px rgba(243, 166, 0, 0.2);
     animation: bannerGlowPulse 2.8s infinite alternate ease-in-out;
 }
 @keyframes bannerGlowPulse {
-    0% { border-color: var(--bybit-yellow); box-shadow: 0 0 14px rgba(243, 166, 0, 0.3); }
-    100% { border-color: #ff9900; box-shadow: 0 0 24px rgba(255, 153, 0, 0.5); }
-}
-
-.banner-pulse-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--bybit-green);
-    box-shadow: 0 0 8px var(--bybit-green);
-    flex-shrink: 0;
-    animation: pulseDot 1.4s infinite ease-in-out;
-}
-@keyframes pulseDot {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.35); opacity: 1; }
+    0% { border-color: var(--bybit-yellow); box-shadow: 0 0 16px rgba(243, 166, 0, 0.35); }
+    100% { border-color: #ff9900; box-shadow: 0 0 28px rgba(255, 153, 0, 0.55); }
 }
 
 .banner-desc {
-    font-size: 12px;
+    font-size: 15px;
     color: #ffffff;
-    line-height: 1.4;
-    font-weight: 600;
+    line-height: 1.45;
+    font-weight: 800;
+    letter-spacing: 0.2px;
     word-break: break-word;
-    flex: 1;
+    text-align: center;
 }
+
 
 .hero-profit-card {
     background: linear-gradient(145deg, rgba(24, 29, 38, 0.94) 0%, rgba(13, 16, 22, 0.98) 100%);
@@ -650,16 +636,34 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 }
 .action-btn-secondary:active { transform: scale(0.97); }
 
-/* КАРТЫ: ДВЕ ПОЛОСКИ ЛИМИТОВ И DRAG & DROP */
-.card-row-item {
-    background: rgba(18, 22, 32, 0.94);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
+/* КАРТЫ: ПЛАШКА ШАБЛОНА И ПОЛНОРАЗМЕРНЫЕ ПОЛОСКИ */
+.card-template-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.card-template-banner:active {
+    background: rgba(243, 166, 0, 0.1);
+    border-color: var(--bybit-yellow);
+    transform: scale(0.98);
+}
+
+.card-row-item {
+    background: rgba(18, 22, 32, 0.94);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -667,32 +671,52 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 }
 .card-row-item:active { transform: scale(0.98); }
 .card-row-item.pinned { border-color: rgba(243, 166, 0, 0.5); }
-.card-row-item.burned { opacity: 0.45; filter: grayscale(0.9); background: rgba(10, 12, 16, 0.85); order: 999; }
+.card-row-item.burned { opacity: 0.5; filter: grayscale(0.85); background: rgba(10, 12, 16, 0.85); order: 999; }
 .card-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
-
-.card-drag-handle {
-    padding: 4px 6px;
-    color: var(--text-muted);
-    font-size: 14px;
-    cursor: grab;
-    user-select: none;
-    margin-right: 4px;
-}
-.card-drag-handle:active { cursor: grabbing; }
 
 .card-dual-bars-wrap {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-top: 6px;
-    max-width: 180px;
+    gap: 6px;
+    width: 100%;
+    margin-top: 4px;
 }
-.card-bar-line { display: flex; align-items: center; gap: 6px; }
-.card-bar-tag { font-size: 9px; font-weight: 800; color: var(--text-muted); width: 14px; }
-.card-mini-bar { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.08); border-radius: 2px; overflow: hidden; }
-.card-mini-bar-fill { height: 100%; background: var(--bybit-green); transition: width 0.3s ease; }
+.card-bar-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+.card-bar-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 12px;
+    flex-shrink: 0;
+}
+.card-mini-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.card-mini-bar-fill {
+    height: 100%;
+    background: var(--bybit-green);
+    transition: width 0.3s ease;
+}
 .card-mini-bar-fill.warning { background: var(--bybit-yellow); }
 .card-mini-bar-fill.danger { background: var(--bybit-red); }
+
+.card-bar-stat-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    white-space: nowrap;
+    text-align: right;
+    min-width: 130px;
+}
 
 .card-btns-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
 .btn-card-action {
@@ -935,4 +959,37 @@ input:checked + .slider:before { transform: translateX(22px); background-color: 
 .card-drag-handle:active {
     cursor: grabbing;
     color: var(--bybit-yellow);
+}
+/* ЯРКАЯ АНИМАЦИЯ И ПОДСВЕТКА ВЫБОРА ТИПА СДЕЛКИ */
+.trade-switch .switch-btn {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.trade-switch .switch-btn:active {
+    transform: scale(0.94);
+}
+
+#edit-type-buy.active {
+    background: rgba(46, 187, 154, 0.25) !important;
+    color: var(--bybit-green) !important;
+    border-color: var(--bybit-green) !important;
+    box-shadow: 0 0 20px rgba(46, 187, 154, 0.35) !important;
+    transform: scale(1.03);
+}
+
+#edit-type-sell.active {
+    background: rgba(242, 54, 69, 0.25) !important;
+    color: var(--bybit-red) !important;
+    border-color: var(--bybit-red) !important;
+    box-shadow: 0 0 20px rgba(242, 54, 69, 0.35) !important;
+    transform: scale(1.03);
+}
+
+#edit-type-cycle.active {
+    background: rgba(243, 166, 0, 0.25) !important;
+    color: var(--bybit-yellow) !important;
+    border-color: var(--bybit-yellow) !important;
+    box-shadow: 0 0 20px rgba(243, 166, 0, 0.35) !important;
+    transform: scale(1.03);
 }

@@ -71,11 +71,11 @@
                 </div>
             </div>
 
-            <!-- УЗКАЯ ПЛАШКА БАННЕРА-ОБЪЯВЛЕНИЯ (МЕЖДУ ПОДПИСКОЙ И СВОДКОЙ) -->
+            <!-- ПЛАШКА БАННЕРА-ОБЪЯВЛЕНИЯ -->
             <div id="site-live-banner" class="banner-empty">
-                <span class="banner-pulse-dot"></span>
                 <div class="banner-desc" id="site-live-banner-text"></div>
             </div>
+
 
             <!-- ПЕРИОДЫ -->
             <div class="period-tabs">
@@ -277,8 +277,9 @@
                         <span style="color: var(--text-muted);" data-i18n="calcDealPrice">Прайс сделки</span>
                         <span class="sym" style="color: var(--bybit-yellow); font-weight: 700;">₽</span>
                     </div>
-                    <input type="number" inputmode="decimal" id="calc-fiat-amt" class="styled-input" style="padding: 10px 14px; font-size: 14px;" value="10000" placeholder="10000">
+                    <input type="number" inputmode="decimal" id="calc-fiat-amt" class="styled-input" style="padding: 10px 14px; font-size: 14px;" placeholder="10000">
                 </div>
+
 
                 <div class="period-tabs" style="margin-bottom: 10px;">
                     <div class="p-tab active" id="calc-mode-fiat" onclick="setCycleProfitMode('fiat')">💰 Прибыль в фиате</div>
@@ -406,26 +407,35 @@
             </div>
         </section>
 
-        <!-- 3. КАРТЫ С ДВУМЯ ПОЛОСКАМИ ЛИМИТОВ И DRAG & DROP -->
+        <!-- 3. КАРТЫ -->
         <section id="cards" class="page-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <div>
                     <h1 style="margin: 0; display: flex; align-items: center; gap: 6px;">
                         <span data-i18n="cardsTitle">Мои карты</span>
                         <span class="help-icon" onclick="openHelpModal('cards_overview', event)">?</span>
                     </h1>
-                    <p class="subtitle" style="margin: 0;" data-i18n="cardsSubtitle">Две полоски расходов, лимиты и смены</p>
+                    <p class="subtitle" style="margin: 0;" data-i18n="cardsSubtitle">Контроль кассы, лимиты и авто-смены</p>
                 </div>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn-card-action" style="padding: 7px 10px;" onclick="openTemplateEditorModal()" title="Настройка шаблона чата ордера">💬 Шаблон</button>
-                    <button class="btn-card-action" style="padding: 7px 10px;" onclick="openTransferModal()" data-i18n="btnTransfer">🔄 Трансфер</button>
-                    <button class="btn-card-action" style="padding: 7px 11px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-card-action" style="padding: 7px 12px;" onclick="openTransferModal()" data-i18n="btnTransfer">🔄 Трансфер</button>
+                    <button class="btn-card-action" style="padding: 7px 12px;" onclick="openNewCardModal()" data-i18n="btnCreateCard">➕ Создать</button>
                 </div>
+            </div>
+
+            <!-- АККУРАТНАЯ ПЛАШКА НАСТРОЙКИ ШАБЛОНА ЧАТА -->
+            <div class="card-template-banner" onclick="openTemplateEditorModal()">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px;">💬</span>
+                    <span style="font-size: 12px; font-weight: 700; color: #e2e8f0;">Шаблон реквизитов для сделок</span>
+                </div>
+                <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">Настроить ⚙️</span>
             </div>
 
             <div id="cards-container"></div>
             <div id="cards-pagination" class="pagination-bar"></div>
         </section>
+
 
         <!-- 4. ИСТОРИЯ ОПЕРАЦИЙ -->
         <section id="history" class="page-section">
@@ -739,7 +749,16 @@
                         <span class="stat-card-title">🏷 Принято фиата</span>
                         <div class="stat-card-val privacy-blur" id="csheet-val-sold-fiat">0 ₽</div>
                     </div>
+                    <div class="stat-card">
+                        <span class="stat-card-title">➕ Пополнено кассы</span>
+                        <div class="stat-card-val txt-green privacy-blur" id="csheet-val-deps-fiat">0 ₽</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-title">➖ Снято наличных</span>
+                        <div class="stat-card-val txt-gold privacy-blur" id="csheet-val-wdrs-fiat">0 ₽</div>
+                    </div>
                 </div>
+
 
                 <div class="card-btns-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 12px;">
                     <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="copyCardFullRequisites()">📋 Шаблон чата ордера</button>
