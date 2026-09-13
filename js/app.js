@@ -872,6 +872,11 @@ let activeSelectedCardColor = '#f3a600';
 
 let isSecondaryExpanded = false;
 let isHeatmapOpen = false;
+// Переменные для месяца календаря, шаблонов и drag-and-drop
+let calendarViewDate = new Date();
+let draggedCardId = null;
+let editTradeMode = 'fiat'; // 'fiat' или 'crypto'
+let globalCardTemplate = localStorage.getItem('p2p_global_msg_template') || "{bank}: {number} ({holder})\nОплата строго со своего счета! Чек обязателен.";
 
 // ПАГИНАЦИЯ (МАКСИМУМ 25 ШТУК, ДО 4 СТРАНИЦ)
 const ITEMS_PER_PAGE = 25;
@@ -1241,6 +1246,14 @@ function clearCalculator() {
 /* ====================================================
    МАТЕМАТИКА ПРИБЫЛИ
 ==================================================== */
+function formatSignedMoney(val, decimals = 2) {
+    const num = Number(val) || 0;
+    if (Math.abs(num) < 0.00001) return `0.${'0'.repeat(decimals)}`;
+    const sign = num > 0 ? '+' : '-';
+    return `${sign}${Math.abs(num).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
+}
+
+
 function calculateStats() {
     const tz = parseInt(currentUser?.tz_offset) || 3;
     const now = new Date();
@@ -1309,30 +1322,27 @@ function calculateStats() {
     const elTotalFiat = document.getElementById('val-total-profit-rub');
     updateMetricColor(elTotalFiat, totalProfitFiat);
     if (elTotalFiat) {
-        const sign = totalProfitFiat > 0 ? '+' : '';
-        elTotalFiat.innerHTML = `${sign}${totalProfitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
+        elTotalFiat.innerHTML = `${formatSignedMoney(totalProfitFiat, 2)} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
     }
 
     const elTotalUsdt = document.getElementById('val-total-profit-usdt');
     updateMetricColor(elTotalUsdt, totalProfitUsdt);
     if (elTotalUsdt) {
-        const sign = totalProfitUsdt > 0 ? '+' : '';
-        elTotalUsdt.innerText = `${sign}${totalProfitUsdt.toFixed(2)} USDT`;
+        elTotalUsdt.innerText = `${formatSignedMoney(totalProfitUsdt, 2)} USDT`;
     }
 
     const elProfitFiat = document.getElementById('val-profit-rub');
     updateMetricColor(elProfitFiat, profitFiat);
     if (elProfitFiat) {
-        const sign = profitFiat > 0 ? '+' : '';
-        elProfitFiat.innerText = `${sign}${profitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+        elProfitFiat.innerText = `${formatSignedMoney(profitFiat, 2)} ${sym}`;
     }
 
     const elProfitUsdt = document.getElementById('val-profit-usdt');
     updateMetricColor(elProfitUsdt, profitUsdt);
     if (elProfitUsdt) {
-        const sign = profitUsdt > 0 ? '+' : '';
-        elProfitUsdt.innerText = `${sign}${profitUsdt.toFixed(2)} USDT`;
+        elProfitUsdt.innerText = `${formatSignedMoney(profitUsdt, 2)} USDT`;
     }
+
 
     const elMidPrice = document.getElementById('hint-mid-price');
     if (elMidPrice) elMidPrice.innerText = midPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1393,19 +1403,35 @@ function calculatePeriodComparison(currentProfit) {
     const compBadge = document.getElementById('val-period-compare');
     if (!compBadge) return;
 
-    let priorTrades = [];
+    const tz = parseInt(currentUser?.tz_offset) || 3;
     const now = new Date();
+    now.setHours(now.getUTCHours() + tz);
+
+    let priorTrades = [];
 
     if (currentPeriod === 'today') {
         const yesterday = new Date(now);
         yesterday.setDate(now.getDate() - 1);
-        priorTrades = userTrades.filter(t => new Date(t.date).toDateString() === yesterday.toDateString());
-    } else if (currentPeriod === 'month') {
-        const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
-        const lastMonthYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
         priorTrades = userTrades.filter(t => {
             const d = new Date(t.date);
-            return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+            d.setHours(d.getUTCHours() + tz);
+            return d.toDateString() === yesterday.toDateString();
+        });
+    } else if (currentPeriod === 'month') {
+        const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+        const lastYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+        priorTrades = userTrades.filter(t => {
+            const d = new Date(t.date);
+            d.setHours(d.getUTCHours() + tz);
+            return d.getMonth() === lastMonth && d.getFullYear() === lastYear;
+        });
+    } else if (currentPeriod === 'custom' && customStartDate && customEndDate) {
+        const diffMs = customEndDate.getTime() - customStartDate.getTime();
+        const priorStart = new Date(customStartDate.getTime() - diffMs);
+        const priorEnd = new Date(customStartDate.getTime() - 1);
+        priorTrades = userTrades.filter(t => {
+            const time = new Date(t.date).getTime();
+            return time >= priorStart.getTime() && time <= priorEnd.getTime();
         });
     }
 
@@ -1415,26 +1441,45 @@ function calculatePeriodComparison(currentProfit) {
         return;
     }
 
-    const priorProfit = priorTrades.reduce((acc, t) => {
-        if (t.is_cycle) return acc + parseFloat(t.cycle_profit_rub || 0);
-        return acc + (t.type === 'sell' ? parseFloat(t.fiat_amount || 0) : -parseFloat(t.fiat_amount || 0));
-    }, 0);
+    // Честный расчет прибыли прошлого периода по той же формуле
+    let pBF = 0, pBC = 0, pSF = 0, pSC = 0, pCycleRub = 0;
+    priorTrades.forEach(t => {
+        const f = parseFloat(t.fiat_amount || 0);
+        const c = parseFloat(t.crypto_amount || 0);
+        if (t.is_cycle) {
+            pBF += f; pSF += f; pBC += c;
+            pSC += (t.sell_rate ? f / parseFloat(t.sell_rate) : c);
+            pCycleRub += parseFloat(t.cycle_profit_rub || 0);
+        } else if (t.type === 'buy') {
+            pBF += f; pBC += c;
+        } else {
+            pSF += f; pSC += c;
+        }
+    });
 
-    if (priorProfit === 0) {
-        compBadge.innerHTML = `📈 +100% к прошлому периоду`;
-        compBadge.style.color = "var(--bybit-green)";
+    const pWac = pBC > 0 ? pBF / pBC : 0;
+    const pAvgSell = pSC > 0 ? pSF / pSC : 0;
+    const pMid = (pWac > 0 && pAvgSell > 0) ? (pWac + pAvgSell) / 2 : (pWac || pAvgSell || 0);
+    const priorProfit = (pSF - pBF + pCycleRub) + ((pBC - pSC) * pMid);
+
+    if (Math.abs(priorProfit) < 0.01) {
+        compBadge.innerHTML = currentProfit >= 0 ? `📈 +100% к прошлому периоду` : `📉 -100% к прошлому периоду`;
+        compBadge.style.color = currentProfit >= 0 ? "var(--bybit-green)" : "var(--bybit-red)";
         return;
     }
 
     const diffPct = (((currentProfit - priorProfit) / Math.abs(priorProfit)) * 100).toFixed(1);
-    if (diffPct >= 0) {
-        compBadge.innerHTML = `📈 +${diffPct}% к прошлому периоду`;
+    const numDiff = parseFloat(diffPct);
+
+    if (numDiff >= 0) {
+        compBadge.innerHTML = `📈 +${numDiff}% к прошлому периоду`;
         compBadge.style.color = "var(--bybit-green)";
     } else {
-        compBadge.innerHTML = `📉 ${diffPct}% к прошлому периоду`;
+        compBadge.innerHTML = `📉 -${Math.abs(numDiff)}% к прошлому периоду`;
         compBadge.style.color = "var(--bybit-red)";
     }
 }
+
 
 /* ====================================================
    КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ (СКОЛЬЖЕНИЕ И АВТОЗАКРЫТИЕ)
@@ -1448,7 +1493,19 @@ function toggleHeatmapPanel() {
     if (isHeatmapOpen) renderHeatmap();
 }
 
-function renderHeatmap(globalMidPrice = 0) {
+function navigateCalendarMonth(delta) {
+    haptic('light');
+    calendarViewDate.setMonth(calendarViewDate.getMonth() + delta);
+    renderHeatmap();
+}
+
+function resetCalendarToCurrentMonth() {
+    haptic('light');
+    calendarViewDate = new Date();
+    renderHeatmap();
+}
+
+function renderHeatmap() {
     const container = document.getElementById('calendar-grid-container');
     const popup = document.getElementById('calendar-floating-popup');
     if (!container) return;
@@ -1457,27 +1514,55 @@ function renderHeatmap(globalMidPrice = 0) {
     const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     days.forEach(d => container.innerHTML += `<div class="cal-head">${d}</div>`);
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+    const year = calendarViewDate.getFullYear();
+    const month = calendarViewDate.getMonth();
     const totalDays = new Date(year, month + 1, 0).getDate();
     const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
 
     const monthTitle = document.getElementById('heatmap-month-title');
     if (monthTitle) {
-        monthTitle.innerText = now.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' }).toUpperCase();
+        monthTitle.innerText = calendarViewDate.toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' }).toUpperCase();
     }
 
     for (let i = 0; i < firstDayIndex; i++) {
         container.innerHTML += `<div></div>`;
     }
 
+    const tz = parseInt(currentUser?.tz_offset) || 3;
+
+    // 1. Сначала фильтруем сделки за весь отображаемый месяц для вычисления постоянного MidPrice месяца
+    const monthTrades = userTrades.filter(t => {
+        const d = new Date(t.date);
+        d.setHours(d.getUTCHours() + tz);
+        return d.getFullYear() === year && d.getMonth() === month;
+    });
+
+    let mBF = 0, mBC = 0, mSF = 0, mSC = 0;
+    monthTrades.forEach(t => {
+        const f = parseFloat(t.fiat_amount || 0);
+        const c = parseFloat(t.crypto_amount || 0);
+        if (t.is_cycle) {
+            mBF += f; mSF += f; mBC += c;
+            mSC += (t.sell_rate ? f / parseFloat(t.sell_rate) : c);
+        } else if (t.type === 'buy') {
+            mBF += f; mBC += c;
+        } else {
+            mSF += f; mSC += c;
+        }
+    });
+
+    const mWac = mBC > 0 ? mBF / mBC : 0;
+    const mAvgSell = mSC > 0 ? mSF / mSC : 0;
+    // Фиксированный курс конвертации месяца — гарантирует математическое совпадение суммы дней с месячной прибылью
+    const calendarMonthMidPrice = (mWac > 0 && mAvgSell > 0) ? (mWac + mAvgSell) / 2 : (mWac || mAvgSell || 0);
+
     const dayCellsData = {};
 
     for (let day = 1; day <= totalDays; day++) {
-        const dayTrades = userTrades.filter(t => {
+        const dayTrades = monthTrades.filter(t => {
             const d = new Date(t.date);
-            return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+            d.setHours(d.getUTCHours() + tz);
+            return d.getDate() === day;
         });
 
         let dayProfitFiat = 0;
@@ -1502,12 +1587,12 @@ function renderHeatmap(globalMidPrice = 0) {
         });
 
         const dayCryptoDiff = dayBoughtUsdt - daySoldUsdt;
-        const totalDayProfit = dayProfitFiat + (dayCryptoDiff * globalMidPrice);
+        const totalDayProfit = dayProfitFiat + (dayCryptoDiff * calendarMonthMidPrice);
 
         let colorClass = '';
         if (dayTrades.length > 0) {
             if (totalDayProfit > 10000) colorClass = 'profit-pos-high';
-            else if (totalDayProfit > 2500) colorClass = 'profit-pos-mid';
+            else if (totalDayProfit > 2000) colorClass = 'profit-pos-mid';
             else if (totalDayProfit >= 0) colorClass = 'profit-pos-low';
             else colorClass = 'profit-neg';
         }
@@ -1537,8 +1622,8 @@ function renderHeatmap(globalMidPrice = 0) {
 
         document.getElementById('pop-date').innerText = `${data.day} ${monthTitle ? monthTitle.innerText : ''}`;
         const pVal = document.getElementById('pop-profit');
-        pVal.innerText = `${(data.profit >= 0 ? '+' : '')}${data.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
-        pVal.style.color = data.profit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+        pVal.innerText = `${formatSignedMoney(data.profit, 2)} ${sym}`;
+        pVal.style.color = data.profit < 0 ? 'var(--bybit-red)' : (data.profit > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
 
         const spreadCalc = data.turnover > 0 ? ((data.profit / data.turnover) * 100).toFixed(2) : "0.00";
         document.getElementById('pop-extra').innerText = `${data.count} сдел. • Спред: ${spreadCalc}%`;
@@ -1592,6 +1677,7 @@ function renderHeatmap(globalMidPrice = 0) {
     };
 }
 
+
 function openDayDetailsModal(day, profit, count, turnover) {
     const sym = getCurrencySymbol();
     document.getElementById('day-modal-title').innerText = `📅 Сводка за ${day} число`;
@@ -1616,7 +1702,54 @@ function closeDayDetailsModal(event) {
 /* ====================================================
    МОДУЛЬ КАРТ: СТАТУСЫ, ЛИМИТЫ, ПАГИНАЦИЯ (МАКСИМУМ 25, ДО 4 СТР)
 ==================================================== */
+// Автопроверка выхода из отлежки по таймеру
+async function checkCardCooldowns() {
+    const now = new Date();
+    for (let c of userCards) {
+        if (c.status === 'cooldown' && c.cooldown_until && new Date(c.cooldown_until) <= now) {
+            c.status = 'active';
+            c.cooldown_until = null;
+            try {
+                await db(`cards?id=eq.${c.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: 'active', cooldown_until: null })
+                });
+            } catch(e) {}
+        }
+    }
+}
+
+function handleCardDragStart(e, cardId) {
+    draggedCardId = cardId;
+    e.dataTransfer.setData('text/plain', cardId);
+    e.currentTarget.classList.add('dragging');
+}
+
+function handleCardDragOver(e) {
+    e.preventDefault();
+}
+
+async function handleCardDrop(e, targetCardId) {
+    e.preventDefault();
+    if (!draggedCardId || draggedCardId === targetCardId) return;
+
+    haptic('medium');
+    const fromIdx = userCards.findIndex(c => c.id === draggedCardId);
+    const toIdx = userCards.findIndex(c => c.id === targetCardId);
+
+    if (fromIdx !== -1 && toIdx !== -1) {
+        const [moved] = userCards.splice(fromIdx, 1);
+        userCards.splice(toIdx, 0, moved);
+
+        const orderMap = userCards.map(c => c.id);
+        localStorage.setItem('p2p_card_custom_order', JSON.stringify(orderMap));
+        renderCards();
+        showToast("Порядок карт сохранен 🔀");
+    }
+}
+
 function renderCards() {
+    checkCardCooldowns();
     const container = document.getElementById('cards-container');
     const paginationContainer = document.getElementById('cards-pagination');
     if (!container) return;
@@ -1630,7 +1763,19 @@ function renderCards() {
 
     const sym = getCurrencySymbol();
 
-    const sorted = [...userCards].sort((a, b) => {
+    // Пользовательская сортировка (drag-and-drop) с приоритетом закрепа и улетом деактивированных вниз
+    const savedOrder = JSON.parse(localStorage.getItem('p2p_card_custom_order') || '[]');
+    let sorted = [...userCards];
+
+    if (savedOrder.length > 0) {
+        sorted.sort((a, b) => {
+            const idxA = savedOrder.indexOf(a.id);
+            const idxB = savedOrder.indexOf(b.id);
+            return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+        });
+    }
+
+    sorted.sort((a, b) => {
         if (a.status === 'burned') return 1;
         if (b.status === 'burned') return -1;
         if (a.is_pinned && !b.is_pinned) return -1;
@@ -1644,53 +1789,100 @@ function renderCards() {
     const startIndex = (cardsCurrentPage - 1) * ITEMS_PER_PAGE;
     const pageItems = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
+    const now = new Date();
+
     pageItems.forEach(c => {
-        const spentBuy = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const gainSell = userTrades.filter(tr => tr.card_id === c.id && tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const wdrsInLimit = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw' && o.count_in_limit).reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        // Все операции по карте
+        const cTrades = userTrades.filter(tr => tr.card_id === c.id);
+        const spentBuyAll = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const gainSellAll = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const depsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const wdrsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
 
-        const balance = deps - wdrs + gainSell - spentBuy;
-        const totalUsedLimit = spentBuy + wdrsInLimit;
+        const balance = depsAll - wdrsAll + gainSellAll - spentBuyAll;
 
-        const todayTrades = userTrades.filter(tr => {
-            return tr.card_id === c.id && new Date(tr.date).toDateString() === new Date().toDateString();
-        });
-        const buysCount = todayTrades.filter(tr => tr.type === 'buy').length;
-        const sellsCount = todayTrades.filter(tr => tr.type === 'sell' || tr.is_cycle).length;
+        // Расчет суточного и месячного расхода для 2-х полосок
+        const spentBuyDay = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString())
+                                   .reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const wdrsDay = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw' && o.count_in_limit && new Date(o.created_at || o.date).toDateString() === now.toDateString())
+                               .reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const totalUsedDay = spentBuyDay + wdrsDay;
 
-        const limit = c.buy_limit ? parseFloat(c.buy_limit) : null;
-        let miniBarHtml = '';
-        if (limit && limit > 0) {
-            const pct = Math.min(100, Math.round((totalUsedLimit / limit) * 100));
-            const colorClass = pct > 90 ? 'danger' : (pct > 70 ? 'warning' : '');
-            miniBarHtml = `
-                <div class="card-mini-bar">
-                    <div class="card-mini-bar-fill ${colorClass}" style="width: ${pct}%;"></div>
-                </div>
-            `;
+        const spentBuyMonth = cTrades.filter(tr => {
+            const d = new Date(tr.date);
+            return tr.type === 'buy' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const wdrsMonth = cardOps.filter(o => {
+            const d = new Date(o.created_at || o.date);
+            return o.card_id === c.id && o.type === 'withdraw' && o.count_in_limit && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const totalUsedMonth = spentBuyMonth + wdrsMonth;
+
+        const dayLimit = c.buy_limit ? parseFloat(c.buy_limit) : 0;
+        const monthLimit = c.month_limit ? parseFloat(c.month_limit) : 0;
+
+        // Генерация двух полосок лимитов
+        let dualBarsHtml = '';
+        if (dayLimit > 0 || monthLimit > 0) {
+            dualBarsHtml = `<div class="card-dual-bars-wrap">`;
+            if (dayLimit > 0) {
+                const dayPct = Math.min(100, Math.round((totalUsedDay / dayLimit) * 100));
+                const dayClass = dayPct > 90 ? 'danger' : (dayPct > 70 ? 'warning' : '');
+                dualBarsHtml += `
+                    <div class="card-bar-line">
+                        <span class="card-bar-tag">Д</span>
+                        <div class="card-mini-bar">
+                            <div class="card-mini-bar-fill ${dayClass}" style="width: ${dayPct}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            if (monthLimit > 0) {
+                const monthPct = Math.min(100, Math.round((totalUsedMonth / monthLimit) * 100));
+                const monthClass = monthPct > 90 ? 'danger' : (monthPct > 70 ? 'warning' : '');
+                dualBarsHtml += `
+                    <div class="card-bar-line">
+                        <span class="card-bar-tag">М</span>
+                        <div class="card-mini-bar">
+                            <div class="card-mini-bar-fill ${monthClass}" style="width: ${monthPct}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            dualBarsHtml += `</div>`;
         }
 
         const isBurned = c.status === 'burned';
         const isPinned = c.is_pinned;
+        const isCooldown = c.status === 'cooldown';
+
+        const todayBuys = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString()).length;
+        const todaySells = cTrades.filter(tr => (tr.type === 'sell' || tr.is_cycle) && new Date(tr.date).toDateString() === now.toDateString()).length;
 
         container.innerHTML += `
-            <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}" onclick="openCardBottomSheet(${c.id})">
-                <div class="card-stripe" style="background: ${c.color_accent || 'var(--bybit-yellow)'};"></div>
-                <div style="flex: 1; padding-left: 8px;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-weight: 800; font-size: 14px;">${c.card_name}</span>
-                        ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
-                        ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">115-ФЗ</span>' : ''}
-                        ${c.status === 'cooldown' ? '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>' : ''}
+            <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}"
+                 draggable="true"
+                 ondragstart="handleCardDragStart(event, ${c.id})"
+                 ondragover="handleCardDragOver(event)"
+                 ondrop="handleCardDrop(event, ${c.id})"
+                 onclick="openCardBottomSheet(${c.id})">
+                <div class="card-stripe" style="background: ${c.color_accent || '#f3a600'};"></div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span class="card-drag-handle" onclick="event.stopPropagation()">⋮⋮</span>
+                    <div style="flex: 1; padding-left: 4px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-weight: 800; font-size: 14px;">${c.card_name}</span>
+                            ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
+                            ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">ДЕАКТИВИРОВАНА</span>' : ''}
+                            ${isCooldown ? '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>' : ''}
+                        </div>
+                        ${dualBarsHtml}
                     </div>
-                    ${miniBarHtml}
                 </div>
                 <div style="text-align: right; margin-left: 10px;">
                     <div class="privacy-blur" style="font-size: 15px; font-weight: 900;">${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}</div>
                     <div style="display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 3px;">
-                        <span class="ops-bubble" title="Сделок за сегодня (Покупки/Продажи)">${buysCount}/${sellsCount}</span>
+                        <span class="ops-bubble" title="Сделок за сегодня (Покупки/Продажи)">${todayBuys}/${todaySells}</span>
                     </div>
                 </div>
             </div>
@@ -1702,6 +1894,7 @@ function renderCards() {
         renderCards();
     });
 }
+
 
 function renderPaginationBar(containerEl, totalPages, curPage, onChangePage) {
     if (!containerEl) return;
@@ -1751,12 +1944,25 @@ function openCardBottomSheet(cid) {
     document.getElementById('sheet-set-status').value = activeSheetCard.status || 'active';
     document.getElementById('csheet-inp-notes').value = activeSheetCard.note || '';
 
+    // Таймер отлежки
+    const wrapCool = document.getElementById('wrap-cooldown-until');
+    const inpCool = document.getElementById('csheet-inp-cooldown-until');
+    if (activeSheetCard.status === 'cooldown') {
+        if (wrapCool) wrapCool.style.display = 'block';
+        if (inpCool && activeSheetCard.cooldown_until) {
+            inpCool.value = new Date(activeSheetCard.cooldown_until).toISOString().slice(0, 16);
+        }
+    } else {
+        if (wrapCool) wrapCool.style.display = 'none';
+        if (inpCool) inpCool.value = '';
+    }
+
     activeSelectedCardColor = activeSheetCard.color_accent || '#f3a600';
     document.querySelectorAll('#sheet-card-colors .color-swatch-dot').forEach(d => {
         d.classList.toggle('selected', d.style.background === activeSelectedCardColor || d.getAttribute('style')?.includes(activeSelectedCardColor));
     });
 
-    // Расчет персональной статистики чисто по этой карте
+    // Расчет сводки кассы (строго обороты, покупки, продажи, снятия и пополнения)
     const sym = getCurrencySymbol();
     const cTrades = userTrades.filter(tr => tr.card_id === cid);
     const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
@@ -1765,65 +1971,44 @@ function openCardBottomSheet(cid) {
     const wdrs = cardOps.filter(o => o.card_id === cid && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
     const balance = deps - wdrs + gainSell - spentBuy;
 
-    document.getElementById('sheet-card-balance').innerText = `${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
+    const bEl = document.getElementById('sheet-card-balance');
+    if (bEl) bEl.innerText = `${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
 
+    const bFiatEl = document.getElementById('csheet-val-bought-fiat');
+    if (bFiatEl) bFiatEl.innerText = `${spentBuy.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym} (${cTrades.filter(t => t.type === 'buy').length} ордеров)`;
+
+    const sFiatEl = document.getElementById('csheet-val-sold-fiat');
+    if (sFiatEl) sFiatEl.innerText = `${gainSell.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym} (${cTrades.filter(t => t.type === 'sell').length} ордеров)`;
+
+    // Индикатор прогресса суточного лимита
     const limitWrap = document.getElementById('sheet-limit-progress-wrap');
-    if (activeSheetCard.buy_limit && parseFloat(activeSheetCard.buy_limit) > 0) {
-        const limit = parseFloat(activeSheetCard.buy_limit);
-        const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
-        limitWrap.innerHTML = `
-            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
-                <span>Суточный расход:</span>
-                <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
-            </div>
-            <div class="card-mini-bar" style="height: 6px;">
-                <div class="card-mini-bar-fill ${pct > 90 ? 'danger' : ''}" style="width: ${pct}%;"></div>
-            </div>
-        `;
-    } else {
-        limitWrap.innerHTML = `<span style="font-size: 11px; color: var(--text-muted);">Суточный лимит: Без ограничений</span>`;
-    }
-
-    // Метрики чисто карты
-    let cardBuyFiat = 0, cardBuyCrypto = 0, cardSellFiat = 0, cardSellCrypto = 0, cycleRub = 0;
-    let turnToday = 0, turnMonth = 0;
-    const now = new Date();
-
-    cTrades.forEach(t => {
-        const f = parseFloat(t.fiat_amount || 0);
-        const c = parseFloat(t.crypto_amount || 0);
-        const tDate = new Date(t.date);
-
-        if (tDate.toDateString() === now.toDateString()) turnToday += f;
-        if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) turnMonth += f;
-
-        if (t.is_cycle) {
-            cardBuyFiat += f; cardSellFiat += f;
-            cardBuyCrypto += c;
-            const soldC = t.sell_rate ? f / parseFloat(t.sell_rate) : c;
-            cardSellCrypto += soldC;
-            cycleRub += parseFloat(t.cycle_profit_rub || 0);
-        } else if (t.type === 'buy') {
-            cardBuyFiat += f; cardBuyCrypto += c;
+    if (limitWrap) {
+        if (activeSheetCard.buy_limit && parseFloat(activeSheetCard.buy_limit) > 0) {
+            const limit = parseFloat(activeSheetCard.buy_limit);
+            const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
+            limitWrap.innerHTML = `
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
+                    <span>Суточный расход:</span>
+                    <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
+                </div>
+                <div class="card-mini-bar" style="height: 6px;">
+                    <div class="card-mini-bar-fill ${pct > 90 ? 'danger' : ''}" style="width: ${pct}%;"></div>
+                </div>
+            `;
         } else {
-            cardSellFiat += f; cardSellCrypto += c;
+            limitWrap.innerHTML = `<span style="font-size: 11px; color: var(--text-muted);">Суточный лимит: Без ограничений</span>`;
         }
-    });
-
-    const cardProfitFiat = (cardSellFiat - cardBuyFiat) + cycleRub;
-    const cardProfitUsdt = cardBuyCrypto - cardSellCrypto;
-    const cardWac = cardBuyCrypto > 0 ? (cardBuyFiat / cardBuyCrypto) : 0;
-
-    document.getElementById('csheet-val-profit-rub').innerText = `${(cardProfitFiat >= 0 ? '+' : '')}${cardProfitFiat.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
-    document.getElementById('csheet-val-profit-usdt').innerText = `${(cardProfitUsdt >= 0 ? '+' : '')}${cardProfitUsdt.toFixed(2)} USDT`;
-    document.getElementById('csheet-val-turn-today').innerText = `${turnToday.toLocaleString()} ${sym}`;
-    document.getElementById('csheet-val-turn-month').innerText = `${turnMonth.toLocaleString()} ${sym}`;
-    document.getElementById('csheet-val-wac').innerText = cardWac.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('csheet-val-trades-cnt').innerText = `${cTrades.length} / ${cTrades.filter(x => x.type === 'buy').length} / ${cTrades.filter(x => x.type === 'sell' || x.is_cycle).length}`;
+    }
 
     switchCardSheetTab('stats');
     document.getElementById('card-sheet-modal').classList.add('show');
 }
+
+function toggleCooldownDateInput(status) {
+    const wrap = document.getElementById('wrap-cooldown-until');
+    if (wrap) wrap.style.display = status === 'cooldown' ? 'block' : 'none';
+}
+
 
 function renderCardTradesList() {
     const listEl = document.getElementById('sheet-card-trades-list');
@@ -1869,6 +2054,8 @@ async function saveCardFullSettings() {
     const monthLimit = parseFloat(document.getElementById('csheet-inp-month-limit').value) || null;
     const status = document.getElementById('sheet-set-status').value;
     const note = document.getElementById('csheet-inp-notes').value.trim();
+    const coolUntilVal = document.getElementById('csheet-inp-cooldown-until')?.value;
+    const cooldownUntil = (status === 'cooldown' && coolUntilVal) ? new Date(coolUntilVal).toISOString() : null;
 
     if (!name) return showToast("⚠️ Название карты обязательно!");
 
@@ -1882,6 +2069,7 @@ async function saveCardFullSettings() {
                 buy_limit: dayLimit,
                 month_limit: monthLimit,
                 status: status,
+                cooldown_until: cooldownUntil,
                 color_accent: activeSelectedCardColor,
                 note: note
             })
@@ -1895,6 +2083,61 @@ async function saveCardFullSettings() {
         showToast("Ошибка сохранения настроек");
     }
 }
+
+// Работа с глобальным шаблоном ордера
+function openTemplateEditorModal() {
+    haptic('light');
+    const inp = document.getElementById('inp-global-template');
+    if (inp) inp.value = globalCardTemplate;
+    document.getElementById('modal-template-editor').classList.add('show');
+}
+
+function insertTagIntoTemplate(tag) {
+    haptic('light');
+    const inp = document.getElementById('inp-global-template');
+    if (!inp) return;
+    const start = inp.selectionStart;
+    const end = inp.selectionEnd;
+    inp.value = inp.value.substring(0, start) + tag + inp.value.substring(end);
+    inp.focus();
+}
+
+function saveGlobalMessageTemplate() {
+    haptic('medium');
+    const val = document.getElementById('inp-global-template')?.value.trim();
+    if (val) {
+        globalCardTemplate = val;
+        localStorage.setItem('p2p_global_msg_template', val);
+        closeModals();
+        showToast("💬 Шаблон сохранен!");
+    }
+}
+
+function resetTemplateToDefault() {
+    haptic('light');
+    globalCardTemplate = "{bank}: {number} ({holder})\nОплата строго со своего счета! Чек обязателен.";
+    localStorage.setItem('p2p_global_msg_template', globalCardTemplate);
+    const inp = document.getElementById('inp-global-template');
+    if (inp) inp.value = globalCardTemplate;
+    showToast("Шаблон сброшен к стандарту");
+}
+
+function copyCardFullRequisites() {
+    if (!activeSheetCard) return;
+    const bName = activeSheetCard.card_name || 'Банк';
+    const num = activeSheetCard.card_number || 'Реквизиты не указаны';
+    const holder = activeSheetCard.holder_name || '';
+
+    let text = globalCardTemplate
+        .replace(/{bank}/gi, bName)
+        .replace(/{number}/gi, num)
+        .replace(/{holder}/gi, holder);
+
+    navigator.clipboard.writeText(text);
+    haptic('success');
+    showToast("📋 Шаблон ордера скопирован!");
+}
+
 
 function closeCardSheet() {
     document.getElementById('card-sheet-modal').classList.remove('show');
@@ -1930,15 +2173,7 @@ function copyCardNumberOnly() {
     showToast("💳 16 цифр скопированы!");
 }
 
-function copyCardFullRequisites() {
-    if (!activeSheetCard) return;
-    const num = activeSheetCard.card_number || 'Реквизиты не заданы';
-    const holder = activeSheetCard.holder_name ? ` (${activeSheetCard.holder_name})` : '';
-    const text = `${activeSheetCard.card_name}: ${num}${holder}\nОплата строго со своего счета! Третьих лиц не принимаю, чек обязателен.`;
-    navigator.clipboard.writeText(text);
-    haptic('success');
-    showToast("📋 Шаблон ордера скопирован!");
-}
+
 
 function openSheetCardOp(type) {
     closeCardSheet();
@@ -2090,9 +2325,15 @@ function renderHistory() {
         const dateStr = d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const boundCard = userCards.find(c => c.id === t.card_id);
         const cardBadge = boundCard ? `<span class="card-pill">💳 ${boundCard.card_name}</span>` : '';
+
+        // Полоска ТОЛЬКО если выбрана метка цвета, круги без навязчивой полоски по умолчанию
         const borderCol = colorBorderMap[t.tag_color] || 'transparent';
 
         if (t.is_cycle) {
+            const pVal = parseFloat(t.cycle_profit_rub || 0);
+            const pColor = pVal < 0 ? 'var(--bybit-red)' : (pVal > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+            const formattedCycleProfit = formatSignedMoney(pVal, 2);
+
             container.innerHTML += `
                 <div class="history-item" style="border-left-color: ${borderCol};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -2104,11 +2345,11 @@ function renderHistory() {
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            <div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: var(--bybit-green);">
-                                +${parseFloat(t.cycle_profit_rub || 0).toLocaleString()} ${sym}
+                            <div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: ${pColor};">
+                                ${formattedCycleProfit} ${sym}
                             </div>
                             <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
-                                ${t.buy_rate} → ${t.sell_rate} ${sym} / Спред: +${t.cycle_spread}%
+                                ${t.buy_rate} → ${t.sell_rate} ${sym} / Спред: ${formatSignedMoney(t.cycle_spread, 2)}%
                             </div>
                             ${t.note ? `<div style="font-size: 11px; color: var(--bybit-blue); margin-top: 3px;">📝 ${t.note}</div>` : ''}
                         </div>
@@ -2160,6 +2401,7 @@ function renderHistory() {
     });
 }
 
+
 function repeatTradeInCalc(tradeId) {
     if (!requireSubscription()) return;
     haptic('light');
@@ -2183,6 +2425,26 @@ function repeatTradeInCalc(tradeId) {
     }
 }
 
+function setEditTradeMode(mode) {
+    haptic('light');
+    editTradeMode = mode;
+    document.getElementById('tab-edit-fiat')?.classList.toggle('active', mode === 'fiat');
+    document.getElementById('tab-edit-crypto')?.classList.toggle('active', mode === 'crypto');
+
+    const lbl = document.getElementById('lbl-edit-amount');
+    const sym = getCurrencySymbol();
+    if (lbl) {
+        lbl.innerHTML = mode === 'fiat' ? `Сумма в фиате (<span class="sym">${sym}</span>)` : `Объем USDT (🪙)`;
+    }
+
+    const tr = userTrades.find(x => x.id === activeEditTradeId);
+    if (!tr) return;
+    const amtInput = document.getElementById('modal-inp-amount');
+    if (amtInput) {
+        amtInput.value = mode === 'fiat' ? tr.fiat_amount : tr.crypto_amount;
+    }
+}
+
 function openEditTradeModal(tid) {
     if (!requireSubscription()) return;
     haptic('light');
@@ -2191,6 +2453,12 @@ function openEditTradeModal(tid) {
     if (!tr) return;
 
     document.getElementById('modal-trade-id').innerText = `Сделка #${tid}`;
+    editTradeMode = 'fiat';
+    document.getElementById('tab-edit-fiat')?.classList.add('active');
+    document.getElementById('tab-edit-crypto')?.classList.remove('active');
+
+    const sym = getCurrencySymbol();
+    document.getElementById('lbl-edit-amount').innerHTML = `Сумма в фиате (<span class="sym">${sym}</span>)`;
     document.getElementById('modal-inp-amount').value = tr.fiat_amount;
     document.getElementById('modal-rate').value = tr.rate || tr.buy_rate;
     document.getElementById('modal-card-sel').value = tr.card_id || "";
@@ -2207,19 +2475,22 @@ function openEditTradeModal(tid) {
 async function submitEditTrade() {
     if (!requireSubscription()) return;
 
-    const amt = parseFloat(document.getElementById('modal-inp-amount').value);
+    const val = parseFloat(document.getElementById('modal-inp-amount').value);
     const r = parseFloat(document.getElementById('modal-rate').value);
     const cid = document.getElementById('modal-card-sel').value || null;
     const note = document.getElementById('modal-note').value.trim();
 
-    if (!amt || !r) return showToast("⚠️ Заполните сумму и курс!");
+    if (!val || !r || val <= 0 || r <= 0) return showToast("⚠️ Заполните сумму и курс!");
+
+    let fiat = editTradeMode === 'fiat' ? val : parseFloat((val * r).toFixed(2));
+    let crypto = editTradeMode === 'fiat' ? parseFloat((val / r).toFixed(2)) : val;
 
     await db(`trades?id=eq.${activeEditTradeId}`, {
         method: 'PATCH',
         body: JSON.stringify({
-            fiat_amount: amt,
+            fiat_amount: fiat,
             rate: r,
-            crypto_amount: parseFloat((amt / r).toFixed(2)),
+            crypto_amount: crypto,
             card_id: cid ? parseInt(cid) : null,
             note: note,
             tag_color: activeSelectedDealColor
@@ -2231,6 +2502,7 @@ async function submitEditTrade() {
     renderAll();
 }
 
+
 async function deleteTradeCloud(tid) {
     if (!requireSubscription()) return;
     haptic('medium');
@@ -2239,6 +2511,56 @@ async function deleteTradeCloud(tid) {
     showToast("🗑 Сделка удалена");
     await refreshData();
     renderAll();
+}
+
+function openDeleteHistoryModal() {
+    if (!requireSubscription()) return;
+    haptic('light');
+    document.getElementById('modal-history-delete').classList.add('show');
+}
+
+async function executeDeleteHistory(scope) {
+    if (!requireSubscription()) return;
+    haptic('medium');
+
+    const tz = parseInt(currentUser?.tz_offset) || 3;
+    const now = new Date();
+    let toDeleteIds = [];
+
+    if (scope === 'today') {
+        toDeleteIds = userTrades.filter(t => {
+            const d = new Date(t.date);
+            d.setHours(d.getUTCHours() + tz);
+            return d.toDateString() === now.toDateString();
+        }).map(t => t.id);
+    } else if (scope === 'month') {
+        toDeleteIds = userTrades.filter(t => {
+            const d = new Date(t.date);
+            d.setHours(d.getUTCHours() + tz);
+            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).map(t => t.id);
+    } else if (scope === 'all') {
+        toDeleteIds = userTrades.map(t => t.id);
+    }
+
+    if (toDeleteIds.length === 0) {
+        closeModals();
+        return showToast("Сделок для удаления не найдено");
+    }
+
+    if (!confirm(`Точно удалить ${toDeleteIds.length} сделок? Действие необратимо!`)) return;
+
+    try {
+        await db(`trades?tg_id=eq.${currentUser.tg_id}&id=in.(${toDeleteIds.join(',')})`, {
+            method: 'DELETE'
+        });
+        closeModals();
+        showToast(`🗑 Удалено сделок: ${toDeleteIds.length}`);
+        await refreshData();
+        renderAll();
+    } catch(e) {
+        showToast("Ошибка при удалении");
+    }
 }
 
 /* ====================================================
@@ -2372,6 +2694,9 @@ async function loadActiveUsersForAdmin() {
         (tradesRes || []).forEach(t => {
             tradeCountsByUid[t.tg_id] = (tradeCountsByUid[t.tg_id] || 0) + 1;
         });
+
+        // В базу заносятся только те, кто реально заходил в Mini App (есть reg_date) или имеет подписку/триал
+        rawAdminUsersList = rawAdminUsersList.filter(u => u.reg_date || u.sub_end || u.trial_used);
 
         rawAdminUsersList.forEach(u => {
             u._tradesCount = tradeCountsByUid[u.tg_id] || 0;

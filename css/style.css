@@ -913,3 +913,22 @@ input:checked + .slider:before { transform: translateX(22px); background-color: 
     cursor: pointer;
 }
 .template-chip:active { background: var(--bybit-yellow); color: #000; }
+/* Стили Drag-and-drop карт */
+.card-row-item.dragging {
+    opacity: 0.35;
+    transform: scale(0.96);
+    border: 1.5px dashed var(--bybit-yellow);
+}
+
+.card-drag-handle {
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    padding: 6px 4px;
+    font-size: 16px;
+    color: var(--text-muted);
+}
+.card-drag-handle:active {
+    cursor: grabbing;
+    color: var(--bybit-yellow);
+}

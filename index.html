@@ -428,7 +428,9 @@
                 <h1 style="margin: 0; display: flex; align-items: center; gap: 6px;">
                     <span data-i18n="historyTitle">История операций</span>
                 </h1>
+                <button class="btn-card-action" style="padding: 6px 12px; color: var(--bybit-red);" onclick="openDeleteHistoryModal()">🗑 Очистить</button>
             </div>
+
             <p class="subtitle" data-i18n="historySubtitle">Синхронизированные сделки, круги и заметки</p>
             <div class="glass-card">
                 <div id="history-container"></div>
@@ -943,10 +945,15 @@
             <h2 style="font-size: 18px; margin: 0 0 4px 0;">Редактирование операции</h2>
             <p class="subtitle" id="modal-trade-id">Сделка #...</p>
 
+            <div class="period-tabs" style="margin-bottom: 12px;">
+                <div class="p-tab active" id="tab-edit-fiat" onclick="setEditTradeMode('fiat')">Сумма фиата</div>
+                <div class="p-tab" id="tab-edit-crypto" onclick="setEditTradeMode('crypto')">Объем USDT (🪙)</div>
+            </div>
             <div class="input-wrap">
-                <span class="badge">Сумма в фиате (<span class="sym">₽</span>)</span>
+                <span class="badge" id="lbl-edit-amount">Сумма в фиате (<span class="sym">₽</span>)</span>
                 <input type="number" inputmode="decimal" id="modal-inp-amount" class="styled-input">
             </div>
+
             <div class="input-wrap">
                 <span class="badge">Курс USDT</span>
                 <input type="number" inputmode="decimal" id="modal-rate" class="styled-input">
@@ -1065,9 +1072,28 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО ОЧИСТКИ ИСТОРИИ -->
+    <div id="modal-history-delete" class="modal-overlay" onclick="closeModals()">
+        <div class="glass-card modal-box" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0; color: var(--bybit-red); font-size: 18px;">🗑 Удаление сделок</h3>
+                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeModals()">✕</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                Выберите диапазон операций, которые требуется удалить из облачной базы:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="action-btn-secondary" style="padding: 12px;" onclick="executeDeleteHistory('today')">Удалить за сегодня 📅</button>
+                <button class="action-btn-secondary" style="padding: 12px;" onclick="executeDeleteHistory('month')">Удалить за этот месяц 🗓</button>
+                <button class="action-btn" style="background: var(--bybit-red); color: #fff; padding: 12px;" onclick="executeDeleteHistory('all')">Удалить ВСЕ сделки ❌</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast">Действие выполнено!</div>
 
     <!-- НАВИГАЦИЯ -->
+
     <div class="bottom-nav">
         <div class="nav-btn active" data-target="dashboard" onclick="handleNavClick('dashboard', this)">
             <i>📊</i><span data-i18n="navDashboard">Сводка</span>
