@@ -4225,13 +4225,16 @@ async function init() {
             document.getElementById('disp-uid').innerText = currentUser.tg_id;
             document.getElementById('ref-link-box').innerText = `https://t.me/P2P_Rbot?start=${currentUser.tg_id}`;
 
-            // Честное количество приглашенных из базы без рандомных чисел
+            // Считаем строго тех рефералов, кто нажал кнопку и использовал триал
             try {
-                const refs = await db(`users?ref_by=eq.${currentUser.tg_id}&select=tg_id`);
-                document.getElementById('ref-count-val').innerText = refs ? refs.length : 0;
+                const refs = await db(`users?ref_by=eq.${currentUser.tg_id}&trial_used=eq.true&select=tg_id`);
+                const refEl = document.getElementById('ref-count-val');
+                if (refEl) refEl.innerText = refs ? refs.length : 0;
             } catch(e) {
-                document.getElementById('ref-count-val').innerText = 0;
+                const refEl = document.getElementById('ref-count-val');
+                if (refEl) refEl.innerText = 0;
             }
+
 
         } catch(e) {
             console.error(e);
