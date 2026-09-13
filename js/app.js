@@ -3320,11 +3320,13 @@ async function adminInspectUser() {
     haptic('medium');
     showToast("⏳ Сбор данных пользователя...");
 
-    const [uRes, tRes, cRes, oRes] = await Promise.all([
+    const [uRes, tRes, cRes, oRes, refsTotalRes, refsActiveRes] = await Promise.all([
         db(`users?tg_id=eq.${targetId}`),
         db(`trades?tg_id=eq.${targetId}&order=date.desc`),
         db(`cards?tg_id=eq.${targetId}&order=created_at.asc`),
-        db(`card_operations?tg_id=eq.${targetId}`)
+        db(`card_operations?tg_id=eq.${targetId}`),
+        db(`users?ref_by=eq.${targetId}&select=tg_id`, { count: 'exact' }),
+        db(`users?ref_by=eq.${targetId}&trial_used=eq.true&select=tg_id`, { count: 'exact' })
     ]);
 
     if (!uRes || uRes.length === 0) {
@@ -3336,6 +3338,10 @@ async function adminInspectUser() {
     const cards = cRes || [];
     const ops = oRes || [];
     const sym = u.currency === 'USD' ? '$' : (u.currency === 'KZT' ? '₸' : (u.currency === 'UAH' ? '₴' : '₽'));
+
+    // Реферальная статистика
+    const totalRefs = refsTotalRes ? refsTotalRes.length : 0;
+    const activeRefs = refsActiveRes ? refsActiveRes.length : 0;
 
     // 1. Расчет финансовой статистики пользователя
     let bF = 0, bC = 0, sF = 0, sC = 0, buysCnt = 0, sellsCnt = 0;
@@ -3409,7 +3415,7 @@ async function adminInspectUser() {
         });
     }
 
-    // 4. Сборка HTML модального окна
+    // 4. Сборка HTML модального окна досье
     document.getElementById('dossier-header-sub').innerText = `Telegram ID: ${u.tg_id}`;
     const container = document.getElementById('dossier-modal-content');
     container.innerHTML = `
@@ -3424,6 +3430,21 @@ async function adminInspectUser() {
                 <b>Использовал триал:</b> ${u.trial_used ? '✅ ДА' : '⚪️ НЕТ'}<br>
                 <b>Реферер (кто пригласил):</b> ${u.ref_by ? '<code>' + u.ref_by + '</code>' : 'Органический'}<br>
                 <b>Валюта / Таймзона:</b> ${u.currency || 'RUB'} / UTC+${u.tz_offset || 3}
+            </div>
+        </div>
+
+        <!-- Партнерская сеть (Рефералы) -->
+        <div style="background: rgba(243, 166, 0, 0.08); border: 1px solid rgba(243, 166, 0, 0.25); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px; text-transform: uppercase;">🤝 Партнерская сеть</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 8px; text-align: center;">
+                    <div style="font-size: 10px; color: var(--text-muted);">Всего перешло</div>
+                    <div style="font-size: 15px; font-weight: 900; color: #fff; margin-top: 2px;">${totalRefs}</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 8px; text-align: center;">
+                    <div style="font-size: 10px; color: var(--text-muted);">Активировали триал</div>
+                    <div style="font-size: 15px; font-weight: 900; color: var(--bybit-green); margin-top: 2px;">${activeRefs}</div>
+                </div>
             </div>
         </div>
 
@@ -3458,6 +3479,7 @@ async function adminInspectUser() {
 
     document.getElementById('modal-admin-user-dossier').classList.add('show');
 }
+
 
 
 async function adminUserAction(action) {
