@@ -4170,6 +4170,9 @@ async function init() {
     const toggleLayout = document.getElementById('toggle-layout-mode');
     if (toggleLayout) toggleLayout.checked = (layoutMode === 'feed');
 
+    // ПРИНУДИТЕЛЬНО ПРИМЕНЯЕМ РЕЖИМ ОТОБРАЖЕНИЯ ПРИ СТАРТЕ
+    switchLayoutMode(layoutMode === 'feed');
+
     const toggleSound = document.getElementById('toggle-sound-mode');
     if (toggleSound) toggleSound.checked = soundEnabled;
 

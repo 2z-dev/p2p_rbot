@@ -177,86 +177,89 @@
             </div>
 
             <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ С ОПИСАНИЯМИ -->
-              <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
-                  <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
-                  <span id="toggle-arrow">▾</span>
-              </button>
+            <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
+                <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
+                <span id="toggle-arrow">▾</span>
+            </button>
 
-              <div id="secondary-stats-wrap">
-                  <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
-                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                          <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
-                              <div style="display: flex; justify-content: space-between; align-items: center;">
-                                  <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                                      <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
-                                  </div>
-                                  <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
-                              </div>
-                              <div id="val-profit-rub" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
-                              <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaFiat"><b>Фиатный остаток:</b> чистая разница рублей на картах (все поступления с продаж минус все расходы на покупку USDT).</div>
-                          </div>
+            <div id="secondary-stats-wrap">
+                <div class="glass-card unified-stats-block" style="padding: 18px; margin-bottom: 12px;">
 
-                          <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
-                              <div style="display: flex; justify-content: space-between; align-items: center;">
-                                  <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
-                                  <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
-                              </div>
-                              <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
-                              <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистый объем монет USDT на бирже, заработанный вами сверх возвращенного фиатного депозита.</div>
-                          </div>
-                      </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <div class="stat-inner-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                                    <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
+                                </div>
+                                <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
+                            </div>
+                            <div id="val-profit-rub" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
+                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaFiat"><b>Фиатный остаток:</b> чистая разница рублей на картах (все поступления с продаж минус все расходы на покупку USDT).</div>
+                        </div>
 
-                      <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 4px;">
-                          <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
-                          <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
-                          <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
-                      </div>
-                  </div>
+                        <div class="stat-inner-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
+                                <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
+                            </div>
+                            <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
+                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистый объем монет USDT на бирже, заработанный вами сверх возвращенного фиатного депозита.</div>
+                        </div>
+                    </div>
 
-                  <div class="analytics-grid">
-                      <div class="stat-card" style="grid-column: span 2;">
-                          <span class="stat-card-title">
-                              <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
-                              <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
-                          </span>
-                          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
-                              <div class="stat-card-val privacy-blur" id="val-fiat-turn">0 ₽</div>
-                              <div class="stat-card-val txt-blue privacy-blur" id="val-crypto-turn">0.00 USDT</div>
-                          </div>
-                      </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 10px; display: flex; justify-content: center; align-items: center; gap: 4px;">
+                        <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
+                        <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
+                        <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
+                    </div>
 
-                      <div class="stat-card">
-                          <span class="stat-card-title">
-                              <span data-i18n="statWac">🛒 WAC Закупка</span>
-                              <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
-                          </span>
-                          <div class="stat-card-val" id="val-wac">0.00</div>
-                      </div>
+                    <div class="analytics-grid" style="margin-top: 0;">
+                        <div class="stat-card stat-inner-box" style="grid-column: span 2;">
+                            <span class="stat-card-title">
+                                <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
+                                <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
+                            </span>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
+                                <div class="stat-card-val privacy-blur" id="val-fiat-turn">0 ₽</div>
+                                <div class="stat-card-val txt-blue privacy-blur" id="val-crypto-turn">0.00 USDT</div>
+                            </div>
+                        </div>
 
-                      <div class="stat-card">
-                          <span class="stat-card-title">
-                              <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
-                              <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
-                          </span>
-                          <div class="stat-card-val" id="val-avg-sell">0.00</div>
-                      </div>
+                        <div class="stat-card stat-inner-box">
+                            <span class="stat-card-title">
+                                <span data-i18n="statWac">🛒 WAC Закупка</span>
+                                <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
+                            </span>
+                            <div class="stat-card-val" id="val-wac">0.00</div>
+                        </div>
 
-                      <div class="stat-card">
-                          <span class="stat-card-title">
-                              <span data-i18n="statRoi">📈 ROI от оборота</span>
-                              <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
-                          </span>
-                          <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
-                      </div>
+                        <div class="stat-card stat-inner-box">
+                            <span class="stat-card-title">
+                                <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
+                                <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
+                            </span>
+                            <div class="stat-card-val" id="val-avg-sell">0.00</div>
+                        </div>
 
-                      <div class="stat-card">
-                          <span class="stat-card-title">
-                              <span data-i18n="statOps">🔢 Сделок / Покупок / Продаж</span>
-                          </span>
-                          <div class="stat-card-val" id="val-trades-count">0 / 0 / 0</div>
-                      </div>
-                  </div>
-              </div>
+                        <div class="stat-card stat-inner-box">
+                            <span class="stat-card-title">
+                                <span data-i18n="statRoi">📈 ROI от оборота</span>
+                                <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
+                            </span>
+                            <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
+                        </div>
+
+                        <div class="stat-card stat-inner-box">
+                            <span class="stat-card-title">
+                                <span data-i18n="statOps">🔢 Сделок / Покупок / Продаж</span>
+                            </span>
+                            <div class="stat-card-val" id="val-trades-count">0 / 0 / 0</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
 
               <!-- КАЛЬКУЛЯТОР КРУГА -->
               <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.4);">

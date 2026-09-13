@@ -1051,3 +1051,15 @@ body.locked-no-sub .bottom-nav {
     border: 1.5px solid rgba(243, 166, 0, 0.4) !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(243, 166, 0, 0.15) !important;
 }
+.unified-stats-block {
+    background: linear-gradient(145deg, rgba(20, 25, 35, 0.95) 0%, rgba(10, 13, 18, 0.98) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+.unified-stats-block .stat-inner-box {
+    background: rgba(0, 0, 0, 0.28) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 14px;
+    padding: 12px;
+}
