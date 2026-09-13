@@ -567,14 +567,36 @@
                 <div style="margin-bottom: 18px;">
                     <span class="badge" style="margin-bottom: 4px;" data-i18n="tzTitle">Часовой пояс (UTC)</span>
                     <select id="set-tz" class="styled-input" onchange="updateTimezone(this.value)">
-                        <option value="2">UTC+2</option>
-                        <option value="3">UTC+3 (Москва / Киев)</option>
-                        <option value="4">UTC+4 (Баку / Тбилиси)</option>
-                        <option value="5">UTC+5 (Ташкент / Екатеринбург)</option>
-                        <option value="6">UTC+6 (Астана / Бишкек)</option>
-                        <option value="7">UTC+7 (Новосибирск / Бангкок)</option>
+                        <option value="-12">UTC-12:00</option>
+                        <option value="-11">UTC-11:00</option>
+                        <option value="-10">UTC-10:00</option>
+                        <option value="-9">UTC-09:00</option>
+                        <option value="-8">UTC-08:00 (Los Angeles)</option>
+                        <option value="-7">UTC-07:00 (Denver)</option>
+                        <option value="-6">UTC-06:00 (Chicago)</option>
+                        <option value="-5">UTC-05:00 (New York)</option>
+                        <option value="-4">UTC-04:00 (Santiago)</option>
+                        <option value="-3">UTC-03:00 (Buenos Aires)</option>
+                        <option value="-2">UTC-02:00</option>
+                        <option value="-1">UTC-01:00</option>
+                        <option value="0">UTC±00:00 (London)</option>
+                        <option value="1">UTC+1:00 (Paris)</option>
+                        <option value="2">UTC+2:00 (Cairo / Kaliningrad)</option>
+                        <option value="3" selected>UTC+3:00 (Москва / Санкт-Петербург / Минск)</option>
+                        <option value="4">UTC+4:00 (Самара / Баку / Тбилиси)</option>
+                        <option value="5">UTC+5:00 (Екатеринбург / Ташкент)</option>
+                        <option value="6">UTC+6:00 (Астана / Бишкек / Омск)</option>
+                        <option value="7">UTC+7:00 (Красноярск / Новосибирск / Бангкок)</option>
+                        <option value="8">UTC+8:00 (Иркутск / Пекин / Сингапур)</option>
+                        <option value="9">UTC+9:00 (Якутск / Токио)</option>
+                        <option value="10">UTC+10:00 (Владивосток)</option>
+                        <option value="11">UTC+11:00 (Магадан)</option>
+                        <option value="12">UTC+12:00 (Камчатка)</option>
+                        <option value="13">UTC+13:00</option>
+                        <option value="14">UTC+14:00</option>
                     </select>
                 </div>
+
 
                 <button class="action-btn-secondary" onclick="openSupport()" data-i18n="btnSupport">👨‍💻 Служба поддержки</button>
             </div>

@@ -1348,21 +1348,32 @@ function formatSignedMoney(val, decimals = 2) {
 
 
 function calculateStats() {
-    const tz = parseInt(currentUser?.tz_offset) || 3;
-    const now = new Date();
-    now.setHours(now.getUTCHours() + tz);
+    const tz = parseInt(currentUser?.tz_offset) !== undefined ? parseInt(currentUser.tz_offset) : 3;
+
+    // Получаем текущую дату в выбранном часовом поясе пользователя через UTC-смещение
+    const nowUtc = new Date();
+    const userNow = new Date(nowUtc.getTime() + (tz * 3600 * 1000));
 
     const filtered = userTrades.filter(t => {
-        const d = new Date(t.date);
-        d.setHours(d.getUTCHours() + tz);
-        if (currentPeriod === 'today') return d.toDateString() === now.toDateString();
-        if (currentPeriod === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        const dUtc = new Date(t.date);
+        const dUser = new Date(dUtc.getTime() + (tz * 3600 * 1000));
+
+        if (currentPeriod === 'today') {
+            return dUser.getUTCFullYear() === userNow.getUTCFullYear() &&
+                   dUser.getUTCMonth() === userNow.getUTCMonth() &&
+                   dUser.getUTCDate() === userNow.getUTCDate();
+        }
+        if (currentPeriod === 'month') {
+            return dUser.getUTCFullYear() === userNow.getUTCFullYear() &&
+                   dUser.getUTCMonth() === userNow.getUTCMonth();
+        }
         if (currentPeriod === 'custom' && customStartDate && customEndDate) {
-            const tradeTime = new Date(t.date).getTime();
+            const tradeTime = dUser.getTime();
             return tradeTime >= customStartDate.getTime() && tradeTime <= customEndDate.getTime();
         }
         return true;
     });
+
 
     let bF = 0, bC = 0, sF = 0, sC = 0, sellsCount = 0, buysCount = 0;
     let cycleProfitFiatTotal = 0;
@@ -1630,14 +1641,15 @@ function renderHeatmap() {
         container.innerHTML += `<div></div>`;
     }
 
-    const tz = parseInt(currentUser?.tz_offset) || 3;
+    const tz = parseInt(currentUser?.tz_offset) !== undefined ? parseInt(currentUser.tz_offset) : 3;
 
-    // 1. Сначала фильтруем сделки за весь отображаемый месяц для вычисления постоянного MidPrice месяца
+    // 1. Фильтруем сделки за отображаемый месяц с учетом часового пояса
     const monthTrades = userTrades.filter(t => {
-        const d = new Date(t.date);
-        d.setHours(d.getUTCHours() + tz);
-        return d.getFullYear() === year && d.getMonth() === month;
+        const dUtc = new Date(t.date);
+        const dUser = new Date(dUtc.getTime() + (tz * 3600 * 1000));
+        return dUser.getUTCFullYear() === year && dUser.getUTCMonth() === month;
     });
+
 
     let mBF = 0, mBC = 0, mSF = 0, mSC = 0;
     monthTrades.forEach(t => {
@@ -1662,9 +1674,9 @@ function renderHeatmap() {
 
     for (let day = 1; day <= totalDays; day++) {
         const dayTrades = monthTrades.filter(t => {
-            const d = new Date(t.date);
-            d.setHours(d.getUTCHours() + tz);
-            return d.getDate() === day;
+            const dUtc = new Date(t.date);
+            const dUser = new Date(dUtc.getTime() + (tz * 3600 * 1000));
+            return dUser.getUTCDate() === day;
         });
 
 
