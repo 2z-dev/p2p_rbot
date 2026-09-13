@@ -344,14 +344,16 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 }
 
 .banner-desc {
-    font-size: 15px;
+    font-size: 19px;
     color: #ffffff;
-    line-height: 1.45;
-    font-weight: 800;
-    letter-spacing: 0.2px;
+    line-height: 1.4;
+    font-weight: 900;
+    letter-spacing: 0.3px;
     word-break: break-word;
     text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
+
 
 
 .hero-profit-card {
@@ -677,28 +679,38 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 .card-dual-bars-wrap {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 9px;
     width: 100%;
-    margin-top: 4px;
+    margin-top: 6px;
 }
-.card-bar-line {
+.card-bar-block {
     display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+.card-bar-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
     width: 100%;
 }
 .card-bar-tag {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     color: var(--text-muted);
-    width: 12px;
-    flex-shrink: 0;
+    text-transform: uppercase;
+}
+.card-bar-stat-text {
+    font-size: 11px;
+    font-weight: 800;
+    color: #e2e8f0;
 }
 .card-mini-bar {
-    flex: 1;
+    width: 100%;
     height: 6px;
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: hidden;
 }
 .card-mini-bar-fill {
@@ -709,14 +721,6 @@ h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5p
 .card-mini-bar-fill.warning { background: var(--bybit-yellow); }
 .card-mini-bar-fill.danger { background: var(--bybit-red); }
 
-.card-bar-stat-text {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    white-space: nowrap;
-    text-align: right;
-    min-width: 130px;
-}
 
 .card-btns-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
 .btn-card-action {

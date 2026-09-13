@@ -1244,7 +1244,7 @@ async function saveCalculatedCycle() {
                 cycle_profit_rub: profitFiat,
                 cycle_profit_usdt: profitUsdt,
                 card_id: cardId ? parseInt(cardId) : null,
-                tag_color: 'yellow',
+                tag_color: 'default',
                 note: cycleProfitMode === 'crypto' ? 'Прибыль в USDT' : 'Прибыль в фиате'
             })
         });
@@ -1746,20 +1746,24 @@ function closeDayDetailsModal(event) {
    МОДУЛЬ КАРТ: СТАТУСЫ, ЛИМИТЫ, ПАГИНАЦИЯ (МАКСИМУМ 25, ДО 4 СТР)
 ==================================================== */
 // Автопроверка выхода из отлежки по таймеру
-async function checkCardCooldowns() {
+function checkCardCooldowns() {
     const now = new Date();
-    for (let c of userCards) {
-        if (c.status === 'cooldown' && c.cooldown_until && new Date(c.cooldown_until) <= now) {
+    userCards.forEach(c => {
+        const extra = JSON.parse(localStorage.getItem(`p2p_card_extra_${c.id}`) || '{}');
+        const coolUntil = c.cooldown_until || extra.cooldown_until;
+        if (c.status === 'cooldown' && coolUntil && new Date(coolUntil) <= now) {
             c.status = 'active';
             c.cooldown_until = null;
-            try {
-                await db(`cards?id=eq.${c.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ status: 'active', cooldown_until: null })
-                });
-            } catch(e) {}
+            extra.cooldown_until = null;
+            localStorage.setItem(`p2p_card_extra_${c.id}`, JSON.stringify(extra));
+            db(`cards?id=eq.${c.id}`, { method: 'PATCH', body: JSON.stringify({ status: 'active' }) }).catch(()=>{});
+
+            // Системное уведомление о выходе из отлежки
+            playCashSound();
+            haptic('success');
+            showToast(`🔔 Карта «${c.card_name}» вышла из отлежки и готова к работе!`);
         }
-    }
+    });
 }
 
 function handleCardDragStart(e, cardId) {
@@ -1836,7 +1840,6 @@ function renderCards() {
     const sym = getCurrencySymbol();
     const now = new Date();
 
-    // Пользовательский порядок
     const savedOrder = JSON.parse(localStorage.getItem('p2p_card_custom_order') || '[]');
     if (savedOrder.length > 0) {
         userCards.sort((a, b) => {
@@ -1846,7 +1849,6 @@ function renderCards() {
         });
     }
 
-    // 115-ФЗ строго вниз списка, закрепленные строго наверх
     const sorted = [...userCards].sort((a, b) => {
         if (a.status === 'burned') return 1;
         if (b.status === 'burned') return -1;
@@ -1873,24 +1875,38 @@ function renderCards() {
         const wdrsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
         const balance = depsAll - wdrsAll + gainSellAll - spentBuyAll;
 
-        // Расход суточный и месячный
-        const spentToday = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString())
-                                  .reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const spentMonth = cTrades.filter(tr => {
+        // Покупки сегодня и в этом месяце
+        const spentBuyToday = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString())
+                                     .reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const spentBuyMonth = cTrades.filter(tr => {
             const d = new Date(tr.date);
             return tr.type === 'buy' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         }).reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
 
-        // Расчет процентов
-        const dayPct = dayLimitVal > 0 ? Math.min(100, Math.round((spentToday / dayLimitVal) * 100)) : 0;
-        const monthPct = monthLimitVal > 0 ? Math.min(100, Math.round((spentMonth / monthLimitVal) * 100)) : 0;
+        // Снятия, которые учитываются в расходе лимита
+        const wdrsTodayInLimit = cardOps.filter(o => {
+            const isToday = new Date(o.created_at || o.date || now).toDateString() === now.toDateString();
+            return o.card_id === c.id && o.type === 'withdraw' && (o.count_in_limit === true || o.count_in_limit === 'true') && isToday;
+        }).reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
 
-        // Авто-статус «Лимит исчерпан» если суточный или месячный лимит достигнут
+        const wdrsMonthInLimit = cardOps.filter(o => {
+            const d = new Date(o.created_at || o.date || now);
+            const isThisMonth = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            return o.card_id === c.id && o.type === 'withdraw' && (o.count_in_limit === true || o.count_in_limit === 'true') && isThisMonth;
+        }).reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+
+        // Итоговый расход лимита
+        const totalSpentToday = spentBuyToday + wdrsTodayInLimit;
+        const totalSpentMonth = spentBuyMonth + wdrsMonthInLimit;
+
+        const dayPct = dayLimitVal > 0 ? Math.min(100, Math.round((totalSpentToday / dayLimitVal) * 100)) : 0;
+        const monthPct = monthLimitVal > 0 ? Math.min(100, Math.round((totalSpentMonth / monthLimitVal) * 100)) : 0;
+
+        // Автоматический статус "Лимит исчерпан"
         let currentStatus = c.status || 'active';
         if (currentStatus !== 'burned' && currentStatus !== 'cooldown') {
-            if ((dayLimitVal > 0 && spentToday >= dayLimitVal) || (monthLimitVal > 0 && spentMonth >= monthLimitVal)) {
-                currentStatus = 'limit_reached';
-            }
+            const isLimitHit = (dayLimitVal > 0 && totalSpentToday >= dayLimitVal) || (monthLimitVal > 0 && totalSpentMonth >= monthLimitVal);
+            currentStatus = isLimitHit ? 'limit_reached' : 'active';
         }
 
         let statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
@@ -1908,23 +1924,20 @@ function renderCards() {
         const isBurned = currentStatus === 'burned';
         const isPinned = c.is_pinned;
 
-        // Количество операций за сегодня: покупки и продажи
         const todayBuys = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString()).length;
         const todaySells = cTrades.filter(tr => (tr.type === 'sell' || tr.is_cycle) && new Date(tr.date).toDateString() === now.toDateString()).length;
 
-        // Текст для полосок
         const dayStatText = dayLimitVal > 0
-            ? `${Math.round(spentToday).toLocaleString()} / ${Math.round(dayLimitVal).toLocaleString()} ${sym} (${dayPct}%)`
-            : `Лимит: ∞`;
+            ? `${Math.round(totalSpentToday).toLocaleString()} / ${Math.round(dayLimitVal).toLocaleString()} ${sym} (${dayPct}%)`
+            : `∞`;
         const monthStatText = monthLimitVal > 0
-            ? `${Math.round(spentMonth).toLocaleString()} / ${Math.round(monthLimitVal).toLocaleString()} ${sym} (${monthPct}%)`
-            : `Лимит: ∞`;
+            ? `${Math.round(totalSpentMonth).toLocaleString()} / ${Math.round(monthLimitVal).toLocaleString()} ${sym} (${monthPct}%)`
+            : `∞`;
 
         container.innerHTML += `
             <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}" onclick="openCardBottomSheet(${c.id})">
                 <div class="card-stripe" style="background: ${c.color_accent || 'var(--bybit-yellow)'};"></div>
 
-                <!-- Верхняя линия: кнопки перемещения, имя, статус, баланс и сделки -->
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <div style="display: flex; flex-direction: column; gap: 2px;" onclick="event.stopPropagation()">
@@ -1940,7 +1953,6 @@ function renderCards() {
                         </div>
                     </div>
 
-                    <!-- Баланс и правее него ордера: Покупки / Продажи -->
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div style="text-align: right;">
                             <div class="privacy-blur" style="font-size: 16px; font-weight: 900;">
@@ -1953,21 +1965,25 @@ function renderCards() {
                     </div>
                 </div>
 
-                <!-- Полоски лимитов на всю ширину карточки -->
+                <!-- Полоски лимита на всю ширину с данными над ними -->
                 <div class="card-dual-bars-wrap">
-                    <div class="card-bar-line">
-                        <span class="card-bar-tag">Д</span>
+                    <div class="card-bar-block">
+                        <div class="card-bar-header">
+                            <span class="card-bar-tag">Суточный лимит</span>
+                            <span class="card-bar-stat-text">${dayStatText}</span>
+                        </div>
                         <div class="card-mini-bar">
                             <div class="card-mini-bar-fill ${dayColor}" style="width: ${dayLimitVal > 0 ? dayPct : 0}%;"></div>
                         </div>
-                        <span class="card-bar-stat-text">${dayStatText}</span>
                     </div>
-                    <div class="card-bar-line">
-                        <span class="card-bar-tag">М</span>
+                    <div class="card-bar-block">
+                        <div class="card-bar-header">
+                            <span class="card-bar-tag">Месячный лимит</span>
+                            <span class="card-bar-stat-text">${monthStatText}</span>
+                        </div>
                         <div class="card-mini-bar">
                             <div class="card-mini-bar-fill ${monthColor}" style="width: ${monthLimitVal > 0 ? monthPct : 0}%;"></div>
                         </div>
-                        <span class="card-bar-stat-text">${monthStatText}</span>
                     </div>
                 </div>
             </div>
@@ -1998,96 +2014,136 @@ function renderPaginationBar(containerEl, totalPages, curPage, onChangePage) {
 ==================================================== */
 function switchCardSheetTab(tab) {
     haptic('light');
-    const tabs = ['stats', 'settings', 'history'];
+    const tabs = ['stats', 'cash', 'settings', 'history'];
     tabs.forEach(t => {
         const btn = document.getElementById(`tab-csheet-${t}`);
         const view = document.getElementById(`csheet-view-${t}`);
         if (btn) btn.classList.toggle('active', t === tab);
         if (view) view.style.display = (t === tab) ? 'block' : 'none';
     });
-    if (tab === 'history') {
-        renderCardTradesList();
-    }
+    if (tab === 'history') renderCardTradesList();
+    if (tab === 'cash') renderCardCashList();
 }
 
-function openCardBottomSheet(cid) {
-    haptic('light');
-    activeSheetCard = userCards.find(c => c.id === cid);
+async function changeCardStatusDirectly(status) {
+    if (!requireSubscription()) return;
     if (!activeSheetCard) return;
+    haptic('medium');
 
-    activeCardId = cid;
-    document.getElementById('sheet-card-title').innerText = activeSheetCard.card_name;
-
-    document.getElementById('csheet-inp-name').value = activeSheetCard.card_name || '';
-    document.getElementById('csheet-inp-num').value = activeSheetCard.card_number || '';
-    document.getElementById('csheet-inp-holder').value = activeSheetCard.holder_name || '';
-    document.getElementById('csheet-inp-day-limit').value = activeSheetCard.buy_limit || '';
-    document.getElementById('csheet-inp-month-limit').value = activeSheetCard.month_limit || '';
-    document.getElementById('sheet-set-status').value = activeSheetCard.status || 'active';
-    document.getElementById('csheet-inp-notes').value = activeSheetCard.note || '';
-
-    const wrapCool = document.getElementById('wrap-cooldown-until');
-    const inpCool = document.getElementById('csheet-inp-cooldown-until');
-    if (activeSheetCard.status === 'cooldown') {
-        if (wrapCool) wrapCool.style.display = 'block';
-        if (inpCool && activeSheetCard.cooldown_until) {
-            inpCool.value = new Date(activeSheetCard.cooldown_until).toISOString().slice(0, 16);
+    let cooldownUntil = null;
+    if (status === 'cooldown') {
+        const hours = prompt("На сколько часов отправить карту в отлежку?", "24");
+        if (hours && parseFloat(hours) > 0) {
+            const d = new Date();
+            d.setHours(d.getHours() + parseFloat(hours));
+            cooldownUntil = d.toISOString();
         }
-    } else {
-        if (wrapCool) wrapCool.style.display = 'none';
-        if (inpCool) inpCool.value = '';
     }
 
-    activeSelectedCardColor = activeSheetCard.color_accent || '#f3a600';
-    document.querySelectorAll('#sheet-card-colors .color-swatch-dot').forEach(d => {
-        d.classList.toggle('selected', d.style.background === activeSelectedCardColor || d.getAttribute('style')?.includes(activeSelectedCardColor));
-    });
+    activeSheetCard.status = status;
+    activeSheetCard.cooldown_until = cooldownUntil;
+
+    const extra = JSON.parse(localStorage.getItem(`p2p_card_extra_${activeSheetCard.id}`) || '{}');
+    extra.cooldown_until = cooldownUntil;
+    localStorage.setItem(`p2p_card_extra_${activeSheetCard.id}`, JSON.stringify(extra));
+
+    try {
+        await db(`cards?id=eq.${activeSheetCard.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: status })
+        });
+    } catch(e) {}
+
+    showToast("Статус карты обновлен!");
+    await refreshData();
+    renderCards();
+    openCardBottomSheet(activeSheetCard.id);
+}
+
+function renderCardCashList() {
+    const listEl = document.getElementById('sheet-card-cash-list');
+    if (!listEl || !activeCardId) return;
+    listEl.innerHTML = '';
+
+    const ops = cardOps.filter(o => o.card_id === activeCardId);
+    if (ops.length === 0) {
+        listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 18px;">Операций по кассе нет</div>`;
+        return;
+    }
 
     const sym = getCurrencySymbol();
-    const cTrades = userTrades.filter(tr => tr.card_id === cid);
-    const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-    const gainSell = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-    const deps = cardOps.filter(o => o.card_id === cid && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-    const wdrs = cardOps.filter(o => o.card_id === cid && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-    const balance = deps - wdrs + gainSell - spentBuy;
+    ops.forEach(o => {
+        const d = new Date(o.created_at || o.date || new Date());
+        const dateStr = d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const isDep = o.type === 'deposit';
 
-    const bEl = document.getElementById('sheet-card-balance');
-    if (bEl) bEl.innerText = `${balance.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
-
-    const bFiatEl = document.getElementById('csheet-val-bought-fiat');
-    if (bFiatEl) bFiatEl.innerText = `${spentBuy.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
-
-    const sFiatEl = document.getElementById('csheet-val-sold-fiat');
-    if (sFiatEl) sFiatEl.innerText = `${gainSell.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
-
-    const depsEl = document.getElementById('csheet-val-deps-fiat');
-    if (depsEl) depsEl.innerText = `+${deps.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
-
-    const wdrsEl = document.getElementById('csheet-val-wdrs-fiat');
-    if (wdrsEl) wdrsEl.innerText = `-${wdrs.toLocaleString(undefined, {minimumFractionDigits: 2})} ${sym}`;
-
-    const limitWrap = document.getElementById('sheet-limit-progress-wrap');
-    if (limitWrap) {
-        if (activeSheetCard.buy_limit && parseFloat(activeSheetCard.buy_limit) > 0) {
-            const limit = parseFloat(activeSheetCard.buy_limit);
-            const pct = Math.min(100, Math.round((spentBuy / limit) * 100));
-            limitWrap.innerHTML = `
-                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
-                    <span>Суточный расход:</span>
-                    <span>${spentBuy.toLocaleString()} / ${limit.toLocaleString()} ${sym} (${pct}%)</span>
+        listEl.innerHTML += `
+            <div class="history-item" style="margin-bottom: 8px; padding: 10px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                    <span style="font-weight: 800; color: ${isDep ? 'var(--bybit-green)' : 'var(--bybit-yellow)'};">
+                        ${isDep ? '➕ ПОПОЛНЕНИЕ' : '➖ СНЯТИЕ'} ${o.count_in_limit ? '<span style="color: var(--bybit-red); font-size: 10px;">[В ЛИМИТЕ]</span>' : ''}
+                    </span>
+                    <span style="color: var(--text-muted);">${dateStr}</span>
                 </div>
-                <div class="card-mini-bar" style="height: 6px;">
-                    <div class="card-mini-bar-fill ${pct > 90 ? 'danger' : ''}" style="width: ${pct}%;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 15px; font-weight: 800;">${parseFloat(o.amount).toLocaleString()} ${sym}</div>
+                        ${o.comment ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">💬 ${o.comment}</div>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-card-action" style="padding: 5px 8px;" onclick="editCardOpPrompt(${o.id})">✏️</button>
+                        <button class="btn-card-action" style="padding: 5px 8px; color: var(--bybit-red);" onclick="deleteCardOpCloud(${o.id})">🗑</button>
+                    </div>
                 </div>
-            `;
-        } else {
-            limitWrap.innerHTML = `<span style="font-size: 11px; color: var(--text-muted);">Суточный лимит: Без ограничений</span>`;
-        }
-    }
-
-    switchCardSheetTab('stats');
-    document.getElementById('card-sheet-modal').classList.add('show');
+            </div>
+        `;
+    });
 }
+
+async function editCardOpPrompt(opId) {
+    if (!requireSubscription()) return;
+    const op = cardOps.find(x => x.id === opId);
+    if (!op) return;
+
+    const newAmt = prompt("Введите новую сумму операции:", op.amount);
+    if (!newAmt || isNaN(parseFloat(newAmt)) || parseFloat(newAmt) <= 0) return;
+
+    const newComm = prompt("Комментарий к операции:", op.comment || "");
+
+    try {
+        await db(`card_operations?id=eq.${opId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                amount: parseFloat(newAmt),
+                comment: newComm || ""
+            })
+        });
+        showToast("✅ Операция кассы обновлена!");
+        await refreshData();
+        renderCards();
+        openCardBottomSheet(activeCardId);
+        switchCardSheetTab('cash');
+    } catch(e) {
+        showToast("Ошибка обновления операции");
+    }
+}
+
+async function deleteCardOpCloud(opId) {
+    if (!requireSubscription()) return;
+    if (!confirm("Удалить эту операцию кассы?")) return;
+
+    try {
+        await db(`card_operations?id=eq.${opId}`, { method: 'DELETE' });
+        showToast("🗑 Операция удалена");
+        await refreshData();
+        renderCards();
+        openCardBottomSheet(activeCardId);
+        switchCardSheetTab('cash');
+    } catch(e) {
+        showToast("Ошибка удаления");
+    }
+}
+
 
 
 function toggleCooldownDateInput(status) {
@@ -2554,6 +2610,15 @@ function setEditTradeMode(mode) {
 
 let editDealType = 'buy';
 
+let editCycleProfitMode = 'fiat'; // 'fiat' или 'crypto'
+
+function setEditCycleProfitMode(mode) {
+    haptic('light');
+    editCycleProfitMode = mode;
+    document.getElementById('tab-edit-cycle-fiat')?.classList.toggle('active', mode === 'fiat');
+    document.getElementById('tab-edit-cycle-crypto')?.classList.toggle('active', mode === 'crypto');
+}
+
 function setEditDealType(type) {
     haptic('light');
     editDealType = type;
@@ -2578,6 +2643,11 @@ function openEditTradeModal(tid) {
     document.getElementById('tab-edit-crypto')?.classList.remove('active');
 
     setEditDealType(tr.is_cycle ? 'cycle' : tr.type);
+
+    if (tr.is_cycle) {
+        editCycleProfitMode = (parseFloat(tr.cycle_profit_usdt || 0) !== 0 || tr.note?.includes('USDT')) ? 'crypto' : 'fiat';
+        setEditCycleProfitMode(editCycleProfitMode);
+    }
 
     document.getElementById('modal-inp-amount').value = tr.fiat_amount;
     document.getElementById('modal-rate').value = tr.buy_rate || tr.rate;
@@ -2623,8 +2693,16 @@ async function submitEditTrade() {
         payload.buy_rate = r;
         payload.sell_rate = sellR > 0 ? sellR : r;
         payload.cycle_spread = sellR > 0 ? parseFloat((((sellR - r) / r) * 100).toFixed(2)) : 0;
-        payload.cycle_profit_rub = sellR > 0 ? parseFloat(((crypto * sellR) - fiat).toFixed(2)) : 0;
-        payload.cycle_profit_usdt = 0;
+
+        if (editCycleProfitMode === 'fiat') {
+            payload.cycle_profit_rub = sellR > 0 ? parseFloat(((crypto * sellR) - fiat).toFixed(2)) : 0;
+            payload.cycle_profit_usdt = 0;
+            payload.note = note ? `${note} (Фиат)` : 'Прибыль в фиате';
+        } else {
+            payload.cycle_profit_rub = 0;
+            payload.cycle_profit_usdt = sellR > 0 ? parseFloat((crypto - (fiat / sellR)).toFixed(2)) : 0;
+            payload.note = note ? `${note} (USDT)` : 'Прибыль в USDT';
+        }
     } else {
         payload.is_cycle = false;
         payload.type = editDealType;
@@ -2640,6 +2718,7 @@ async function submitEditTrade() {
     await refreshData();
     renderAll();
 }
+
 
 
 
@@ -3046,6 +3125,47 @@ async function adminCreatePromo() {
         document.getElementById('new-promo-days').value = '';
     } catch(e) {
         showToast("Ошибка создания промокода");
+    }
+}
+async function adminBroadcastMessage() {
+    haptic('medium');
+    const token = document.getElementById('admin-broadcast-token')?.value?.trim();
+    const text = document.getElementById('admin-broadcast-text')?.value?.trim();
+
+    if (!token) return showToast("⚠️ Укажите токен бота!");
+    if (!text) return showToast("⚠️ Введите текст сообщения!");
+
+    showToast("⏳ Запуск рассылки...");
+
+    try {
+        const users = await db('users?select=tg_id');
+        if (!users || users.length === 0) return showToast("Пользователей нет в базе");
+
+        let sent = 0;
+        let failed = 0;
+
+        for (let u of users) {
+            try {
+                const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: u.tg_id,
+                        text: text,
+                        parse_mode: 'HTML'
+                    })
+                });
+                if (resp.ok) sent++;
+                else failed++;
+            } catch(err) {
+                failed++;
+            }
+        }
+
+        showToast(`✅ Рассылка завершена: доставлено ${sent}, ошибок ${failed}`);
+        document.getElementById('admin-broadcast-text').value = '';
+    } catch(e) {
+        showToast("❌ Ошибка при отправке рассылки");
     }
 }
 

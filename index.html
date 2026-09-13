@@ -641,6 +641,22 @@
                     <div id="admin-user-dossier" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; margin-top: 12px; font-size: 12px; line-height: 1.6;"></div>
                 </div>
 
+                <!-- РАССЫЛКА СООБЩЕНИЙ ЧЕРЕЗ БОТА -->
+                <div style="margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 14px; border-radius: 16px; border: 1px solid var(--glass-border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">📢 РАССЫЛКА СООБЩЕНИЙ В БОТА</span>
+                    </div>
+                    <div class="input-wrap" style="margin-bottom: 8px;">
+                        <span style="font-size: 10px; color: var(--text-muted);">ТОКЕН TELEGRAM БОТА</span>
+                        <input type="text" id="admin-broadcast-token" class="styled-input" style="padding: 10px; font-size: 12px;" value="8872511749:AAG-gbaprKsqDa24yL9JWMEL4XOApCScQAs">
+                    </div>
+                    <div class="input-wrap" style="margin-bottom: 10px;">
+                        <span style="font-size: 10px; color: var(--text-muted);">ТЕКСТ СООБЩЕНИЯ ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ</span>
+                        <textarea id="admin-broadcast-text" class="styled-input" style="height: 80px; font-family: inherit; font-size: 13px; resize: none;" placeholder="Введите текст рассылки..."></textarea>
+                    </div>
+                    <button class="action-btn gold" style="padding: 11px; font-size: 12px;" onclick="adminBroadcastMessage()">🚀 Отправить рассылку всем</button>
+                </div>
+
                 <!-- КОНФИГ СИСТЕМЫ -->
                 <div>
                     <span class="badge" style="color: var(--bybit-green); font-size: 11px;">⚙️ КОНФИГ СИСТЕМЫ</span>
@@ -728,17 +744,41 @@
 
             <div class="period-tabs" style="margin-bottom: 12px;">
                 <div class="p-tab active" id="tab-csheet-stats" onclick="switchCardSheetTab('stats')">📊 Сводка</div>
+                <div class="p-tab" id="tab-csheet-cash" onclick="switchCardSheetTab('cash')">💸 Касса</div>
                 <div class="p-tab" id="tab-csheet-settings" onclick="switchCardSheetTab('settings')">⚙️ Настройки</div>
-                <div class="p-tab" id="tab-csheet-history" onclick="switchCardSheetTab('history')">📜 Сделки карты</div>
+                <div class="p-tab" id="tab-csheet-history" onclick="switchCardSheetTab('history')">📜 Сделки</div>
             </div>
 
-            <!-- 1. СВОДКА КАРТЫ (ПРИБЫЛЬ УБРАНА) -->
+            <!-- 1. СВОДКА КАРТЫ -->
             <div id="csheet-view-stats">
                 <div class="glass-card" style="padding: 14px; background: rgba(0,0,0,0.3); margin-bottom: 12px;">
-                    <div style="font-size: 11px; color: var(--text-muted);">ТЕКУЩИЙ ОСТАТОК КАССЫ</div>
-                    <div style="font-size: 26px; font-weight: 900; margin: 4px 0;" id="sheet-card-balance" class="privacy-blur">0.00 ₽</div>
-                    <div id="sheet-limit-progress-wrap" style="margin-top: 8px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted);">ТЕКУЩИЙ ОСТАТОК КАССЫ</div>
+                            <div style="font-size: 26px; font-weight: 900; margin: 4px 0;" id="sheet-card-balance" class="privacy-blur">0.00 ₽</div>
+                        </div>
+                        <div id="sheet-status-quick-badge"></div>
+                    </div>
+
+                    <!-- Быстрое управление статусом прямо в сводке -->
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--glass-border);">
+                        <span class="badge" style="margin-bottom: 4px;">Смена статуса карты:</span>
+                        <select id="sheet-quick-status" class="styled-input" style="padding: 9px 12px; font-size: 12px;" onchange="changeCardStatusDirectly(this.value)">
+                            <option value="active">🟢 В работе</option>
+                            <option value="cooldown">⏳ На отлежке (по таймеру)</option>
+                            <option value="burned">🔥 115-ФЗ (в архив)</option>
+                        </select>
+                    </div>
+
+                    <!-- Быстрые действия: Внести и Снять прямо в сводке -->
+                    <div class="card-btns-grid" style="grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                        <button class="action-btn" style="padding: 10px; font-size: 12px;" onclick="openSheetCardOp('deposit')">➕ Внести в кассу</button>
+                        <button class="action-btn sell-mode" style="padding: 10px; font-size: 12px;" onclick="openSheetCardOp('withdraw')">➖ Снять наличные</button>
+                    </div>
+
+                    <div id="sheet-limit-progress-wrap" style="margin-top: 10px;"></div>
                 </div>
+
 
                 <div class="analytics-grid" style="margin-bottom: 14px;">
                     <div class="stat-card">
@@ -846,10 +886,20 @@
                 </div>
             </div>
 
-            <!-- 3. СДЕЛКИ ТОЛЬКО ПО ЭТОЙ КАРТЕ -->
+            <!-- ВКЛАДКА ОПЕРАЦИЙ КАССЫ (ПОПОЛНЕНИЯ / СНЯТИЯ) -->
+            <div id="csheet-view-cash" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">История кассы карты</span>
+                    <button class="btn-card-action" style="padding: 6px 10px;" onclick="openSheetCardOp('deposit')">➕ Новая операция</button>
+                </div>
+                <div id="sheet-card-cash-list" style="max-height: 45vh; overflow-y: auto;"></div>
+            </div>
+
+            <!-- СДЕЛКИ ТОЛЬКО ПО ЭТОЙ КАРТЕ -->
             <div id="csheet-view-history" style="display: none;">
                 <div id="sheet-card-trades-list" style="max-height: 45vh; overflow-y: auto;"></div>
             </div>
+
         </div>
     </div>
 
@@ -991,7 +1041,13 @@
             <div class="input-wrap" id="wrap-edit-sell-rate" style="display: none;">
                 <span class="badge">Курс продажи (для круга)</span>
                 <input type="number" inputmode="decimal" id="modal-sell-rate" class="styled-input" placeholder="0.00">
+
+                <div class="period-tabs" style="margin-top: 10px; margin-bottom: 0;">
+                    <div class="p-tab active" id="tab-edit-cycle-fiat" onclick="setEditCycleProfitMode('fiat')">💰 Прибыль в фиате</div>
+                    <div class="p-tab" id="tab-edit-cycle-crypto" onclick="setEditCycleProfitMode('crypto')">🪙 Прибыль в USDT</div>
+                </div>
             </div>
+
 
             <div class="input-wrap">
                 <span class="badge">Привязанная карта</span>
