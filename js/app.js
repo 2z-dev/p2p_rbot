@@ -848,8 +848,12 @@ if (tg) {
     try {
         tg.expand();
         tg.ready();
+        // Запрещаем свайп закрытия окна вниз
+        if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+        if (typeof tg.isVerticalSwipesEnabled !== 'undefined') tg.isVerticalSwipesEnabled = false;
     } catch(e) {}
 }
+
 
 /* ====================================================
    СОСТОЯНИЕ ПРИЛОЖЕНИЯ
@@ -1081,24 +1085,26 @@ async function loadLiveSiteBanner() {
     const textEl = document.getElementById('site-live-banner-text');
     if (!bannerEl || !textEl) return;
 
+    let bannerText = localStorage.getItem('p2p_live_banner_text') || '';
+    let isActive = localStorage.getItem('p2p_live_banner_active') === 'true';
+
     try {
         const [txtRes, actRes] = await Promise.all([
             db(`bot_config?key=eq.SITE_BANNER_TEXT`),
             db(`bot_config?key=eq.SITE_BANNER_ACTIVE`)
         ]);
+        if (txtRes?.[0]) bannerText = txtRes[0].value;
+        if (actRes?.[0]) isActive = actRes[0].value === 'true' || actRes[0].value === true;
+    } catch(e) {}
 
-        const bannerText = txtRes?.[0]?.value || "";
-        const isActive = actRes?.[0]?.value === 'true' || actRes?.[0]?.value === true;
-
-        if (isActive && bannerText.trim().length > 0) {
-            textEl.innerText = bannerText;
-            bannerEl.style.display = 'block';
-            const adminInp = document.getElementById('admin-banner-text');
-            if (adminInp) adminInp.value = bannerText;
-        } else {
-            bannerEl.style.display = 'none';
-        }
-    } catch(e) {
+    if (isActive && bannerText.trim().length > 0) {
+        textEl.innerText = bannerText;
+        bannerEl.className = 'banner-active';
+        bannerEl.style.display = 'flex';
+        const adminInp = document.getElementById('admin-banner-text');
+        if (adminInp) adminInp.value = bannerText;
+    } else {
+        bannerEl.className = 'banner-empty';
         bannerEl.style.display = 'none';
     }
 }
@@ -1106,21 +1112,34 @@ async function loadLiveSiteBanner() {
 async function adminUpdateBanner(isActive) {
     haptic('medium');
     const text = document.getElementById('admin-banner-text').value.trim();
+
+    localStorage.setItem('p2p_live_banner_text', text);
+    localStorage.setItem('p2p_live_banner_active', String(isActive));
+
     try {
         await Promise.all([
             db(`bot_config?key=eq.SITE_BANNER_TEXT`, { method: 'PATCH', body: JSON.stringify({ value: text }) }),
             db(`bot_config?key=eq.SITE_BANNER_ACTIVE`, { method: 'PATCH', body: JSON.stringify({ value: String(isActive) }) })
         ]);
-        showToast(isActive ? "📢 Баннер включен на сайте!" : "Баннер выключен");
-        await loadLiveSiteBanner();
-    } catch(e) {
-        showToast("Ошибка обновления баннера");
-    }
+    } catch(e) {}
+
+    showToast(isActive ? "📢 Баннер включен!" : "Баннер скрыт");
+    await loadLiveSiteBanner();
 }
 
 /* ====================================================
    КАЛЬКУЛЯТОР КРУГА (ЕДИНАЯ СДЕЛКА)
 ==================================================== */
+let cycleProfitMode = 'fiat'; // 'fiat' или 'crypto'
+
+function setCycleProfitMode(mode) {
+    haptic('light');
+    cycleProfitMode = mode;
+    document.getElementById('calc-mode-fiat')?.classList.toggle('active', mode === 'fiat');
+    document.getElementById('calc-mode-crypto')?.classList.toggle('active', mode === 'crypto');
+    runCalculator();
+}
+
 function runCalculator() {
     const fiat = parseFloat(document.getElementById('calc-fiat-amt')?.value) || 0;
     const buyRate = parseFloat(document.getElementById('calc-buy-rate')?.value) || 0;
@@ -1133,52 +1152,39 @@ function runCalculator() {
     const elProfitFiat = document.getElementById('calc-profit-fiat-val');
     const sym = getCurrencySymbol();
 
-    let boughtUsdt = 0;
-    let soldUsdt = 0;
-
-    if (fiat > 0 && buyRate > 0) {
-        boughtUsdt = fiat / buyRate;
-        if (elBuyCrypto) elBuyCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
-    } else if (elBuyCrypto) {
-        elBuyCrypto.innerText = `0.00 USDT`;
-    }
-
-    if (fiat > 0 && sellRate > 0) {
-        soldUsdt = fiat / sellRate;
-        if (elSellCrypto) elSellCrypto.innerText = `${soldUsdt.toFixed(2)} USDT`;
-    } else if (elSellCrypto) {
-        elSellCrypto.innerText = `0.00 USDT`;
-    }
-
     if (fiat > 0 && buyRate > 0 && sellRate > 0) {
         const spreadPct = ((sellRate - buyRate) / buyRate) * 100;
-        const profitUsdt = boughtUsdt - soldUsdt;
-        const midRate = (buyRate + sellRate) / 2;
-        const profitFiat = profitUsdt * midRate;
+        const boughtUsdt = fiat / buyRate;
 
-        if (elSpread) {
-            elSpread.innerText = (spreadPct > 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
-            elSpread.style.color = spreadPct >= 0 ? 'var(--bybit-yellow)' : 'var(--bybit-red)';
-        }
+        if (elBuyCrypto) elBuyCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
 
-        if (elProfitUsdt) {
-            elProfitUsdt.innerText = (profitUsdt > 0 ? "+" : "") + profitUsdt.toFixed(2) + " USDT";
-            elProfitUsdt.style.color = profitUsdt >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
-        }
+        if (cycleProfitMode === 'fiat') {
+            // Весь объем USDT продается: фиатный доход минус сумма закупки
+            const soldFiat = boughtUsdt * sellRate;
+            const profitFiat = soldFiat - fiat;
+            if (elSellCrypto) elSellCrypto.innerText = `${boughtUsdt.toFixed(2)} USDT`;
 
-        if (elProfitFiat) {
-            elProfitFiat.innerText = `≈ ${(profitFiat > 0 ? "+" : "")}${profitFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+            if (elSpread) elSpread.innerText = (spreadPct >= 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
+            if (elProfitUsdt) elProfitUsdt.innerText = "0.00 USDT";
+            if (elProfitFiat) elProfitFiat.innerText = `${formatSignedMoney(profitFiat, 2)} ${sym}`;
+        } else {
+            // Продаем только на сумму закупки (тело 10к возвращаем), остаток USDT — чистая прибыль
+            const soldUsdt = fiat / sellRate;
+            const profitUsdt = boughtUsdt - soldUsdt;
+            if (elSellCrypto) elSellCrypto.innerText = `${soldUsdt.toFixed(2)} USDT`;
+
+            if (elSpread) elSpread.innerText = (spreadPct >= 0 ? "+" : "") + spreadPct.toFixed(2) + "%";
+            if (elProfitUsdt) elProfitUsdt.innerText = `${formatSignedMoney(profitUsdt, 2)} USDT`;
+            if (elProfitFiat) elProfitFiat.innerText = `0.00 ${sym}`;
         }
     } else {
-        if (elSpread) { elSpread.innerText = "0.00%"; elSpread.style.color = 'var(--text-main)'; }
-        if (elProfitUsdt) { elProfitUsdt.innerText = "0.00 USDT"; elProfitUsdt.style.color = 'var(--text-main)'; }
-        if (elProfitFiat) { elProfitFiat.innerText = `≈ 0.00 ${sym}`; }
+        if (elBuyCrypto) elBuyCrypto.innerText = `0.00 USDT`;
+        if (elSellCrypto) elSellCrypto.innerText = `0.00 USDT`;
+        if (elSpread) elSpread.innerText = "0.00%";
+        if (elProfitUsdt) elProfitUsdt.innerText = "0.00 USDT";
+        if (elProfitFiat) elProfitFiat.innerText = `0.00 ${sym}`;
     }
 }
-
-document.getElementById('calc-fiat-amt')?.addEventListener('input', runCalculator);
-document.getElementById('calc-buy-rate')?.addEventListener('input', runCalculator);
-document.getElementById('calc-sell-rate')?.addEventListener('input', runCalculator);
 
 async function saveCalculatedCycle() {
     if (!requireSubscription()) return;
@@ -1194,12 +1200,19 @@ async function saveCalculatedCycle() {
         return;
     }
 
-    const boughtUsdt = parseFloat((fiat / buyRate).toFixed(2));
-    const soldUsdt = parseFloat((fiat / sellRate).toFixed(2));
     const spreadPct = parseFloat((((sellRate - buyRate) / buyRate) * 100).toFixed(2));
-    const profitUsdt = parseFloat((boughtUsdt - soldUsdt).toFixed(2));
-    const midRate = (buyRate + sellRate) / 2;
-    const profitFiat = parseFloat((profitUsdt * midRate).toFixed(2));
+    const boughtUsdt = parseFloat((fiat / buyRate).toFixed(2));
+
+    let profitFiat = 0;
+    let profitUsdt = 0;
+
+    if (cycleProfitMode === 'fiat') {
+        profitFiat = parseFloat(((boughtUsdt * sellRate) - fiat).toFixed(2));
+        profitUsdt = 0;
+    } else {
+        profitFiat = 0;
+        profitUsdt = parseFloat((boughtUsdt - (fiat / sellRate)).toFixed(2));
+    }
 
     try {
         await db('trades', {
@@ -1208,6 +1221,7 @@ async function saveCalculatedCycle() {
                 tg_id: currentUser.tg_id,
                 type: 'buy',
                 is_cycle: true,
+                cycle_mode: cycleProfitMode,
                 crypto_amount: boughtUsdt,
                 rate: buyRate,
                 buy_rate: buyRate,
@@ -1216,20 +1230,25 @@ async function saveCalculatedCycle() {
                 cycle_spread: spreadPct,
                 cycle_profit_rub: profitFiat,
                 cycle_profit_usdt: profitUsdt,
-                card_id: cardId ? parseInt(cardId) : null,
-                tag_color: 'green'
+                card_id: cardId ? parseInt(cardId) : null
             })
         });
 
         playCashSound();
         haptic('success');
-        showToast("✅ Круг сохранен единой записью!");
+        showToast("✅ Круг сохранен без задвоения!");
         await refreshData();
         renderAll();
     } catch(e) {
         showToast("❌ Ошибка сохранения круга");
     }
 }
+
+
+document.getElementById('calc-fiat-amt')?.addEventListener('input', runCalculator);
+document.getElementById('calc-buy-rate')?.addEventListener('input', runCalculator);
+document.getElementById('calc-sell-rate')?.addEventListener('input', runCalculator);
+
 
 function clearCalculator() {
     haptic('light');
@@ -1279,14 +1298,23 @@ function calculateStats() {
         const c = parseFloat(t.crypto_amount || 0);
 
         if (t.is_cycle) {
-            bF += f;
-            sF += f;
-            bC += c;
-            const soldC = t.sell_rate ? f / parseFloat(t.sell_rate) : c;
-            sC += soldC;
             buysCount++;
             sellsCount++;
-            cycleProfitFiatTotal += parseFloat(t.cycle_profit_rub || 0);
+            bF += f;
+            bC += c;
+
+            const cProfitRub = parseFloat(t.cycle_profit_rub || 0);
+            const cProfitUsdt = parseFloat(t.cycle_profit_usdt || 0);
+
+            if (t.cycle_mode === 'crypto' || cProfitUsdt !== 0) {
+                // Вся прибыль осталась в монетах, в фиате оборот закрыт в ноль
+                sF += f;
+                sC += (c - cProfitUsdt);
+            } else {
+                // Прибыль в фиате: продали на сумму + прибыль
+                sF += (f + cProfitRub);
+                sC += c;
+            }
         } else if (t.type === 'buy') {
             bF += f;
             bC += c;
@@ -1302,7 +1330,7 @@ function calculateStats() {
     const avgSell = sC > 0 ? sF / sC : 0;
     const midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || 0);
 
-    const profitFiat = (sF - bF) + cycleProfitFiatTotal;
+    const profitFiat = sF - bF;
     const profitUsdt = bC - sC;
 
     const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
@@ -1747,6 +1775,35 @@ async function handleCardDrop(e, targetCardId) {
         showToast("Порядок карт сохранен 🔀");
     }
 }
+function moveCardPosition(cardId, direction, event) {
+    if (event) event.stopPropagation();
+    haptic('light');
+    const idx = userCards.findIndex(c => c.id === cardId);
+    if (idx === -1) return;
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= userCards.length) return;
+
+    const temp = userCards[idx];
+    userCards[idx] = userCards[targetIdx];
+    userCards[targetIdx] = temp;
+
+    const order = userCards.map(c => c.id);
+    localStorage.setItem('p2p_card_custom_order', JSON.stringify(order));
+    renderCards();
+    showToast("Порядок обновлен ↕️");
+}
+
+function checkCardCooldowns() {
+    const now = new Date();
+    userCards.forEach(c => {
+        const extra = JSON.parse(localStorage.getItem(`p2p_card_extra_${c.id}`) || '{}');
+        const coolUntil = c.cooldown_until || extra.cooldown_until;
+        if (c.status === 'cooldown' && coolUntil && new Date(coolUntil) <= now) {
+            c.status = 'active';
+            db(`cards?id=eq.${c.id}`, { method: 'PATCH', body: JSON.stringify({ status: 'active' }) }).catch(()=>{});
+        }
+    });
+}
 
 function renderCards() {
     checkCardCooldowns();
@@ -1763,19 +1820,18 @@ function renderCards() {
 
     const sym = getCurrencySymbol();
 
-    // Пользовательская сортировка (drag-and-drop) с приоритетом закрепа и улетом деактивированных вниз
+    // Применение порядка из localStorage
     const savedOrder = JSON.parse(localStorage.getItem('p2p_card_custom_order') || '[]');
-    let sorted = [...userCards];
-
     if (savedOrder.length > 0) {
-        sorted.sort((a, b) => {
-            const idxA = savedOrder.indexOf(a.id);
-            const idxB = savedOrder.indexOf(b.id);
-            return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+        userCards.sort((a, b) => {
+            const iA = savedOrder.indexOf(a.id);
+            const iB = savedOrder.indexOf(b.id);
+            return (iA === -1 ? 999 : iA) - (iB === -1 ? 999 : iB);
         });
     }
 
-    sorted.sort((a, b) => {
+    // Деактивированные улетают вниз, закрепленные наверх
+    const sorted = [...userCards].sort((a, b) => {
         if (a.status === 'burned') return 1;
         if (b.status === 'burned') return -1;
         if (a.is_pinned && !b.is_pinned) return -1;
@@ -1788,69 +1844,34 @@ function renderCards() {
 
     const startIndex = (cardsCurrentPage - 1) * ITEMS_PER_PAGE;
     const pageItems = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
     const now = new Date();
 
-    pageItems.forEach(c => {
-        // Все операции по карте
+    pageItems.forEach((c, index) => {
+        const extra = JSON.parse(localStorage.getItem(`p2p_card_extra_${c.id}`) || '{}');
+        const monthLimitVal = parseFloat(c.month_limit || extra.month_limit || 0);
+        const dayLimitVal = parseFloat(c.buy_limit || 0);
+
         const cTrades = userTrades.filter(tr => tr.card_id === c.id);
-        const spentBuyAll = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const gainSellAll = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const depsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const wdrsAll = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const gainSell = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const deps = cardOps.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const wdrs = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+        const balance = deps - wdrs + gainSell - spentBuy;
 
-        const balance = depsAll - wdrsAll + gainSellAll - spentBuyAll;
-
-        // Расчет суточного и месячного расхода для 2-х полосок
-        const spentBuyDay = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString())
-                                   .reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const wdrsDay = cardOps.filter(o => o.card_id === c.id && o.type === 'withdraw' && o.count_in_limit && new Date(o.created_at || o.date).toDateString() === now.toDateString())
-                               .reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const totalUsedDay = spentBuyDay + wdrsDay;
-
-        const spentBuyMonth = cTrades.filter(tr => {
+        // Дневной и месячный расходы
+        const spentToday = cTrades.filter(tr => tr.type === 'buy' && new Date(tr.date).toDateString() === now.toDateString())
+                                  .reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+        const spentMonth = cTrades.filter(tr => {
             const d = new Date(tr.date);
             return tr.type === 'buy' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         }).reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
-        const wdrsMonth = cardOps.filter(o => {
-            const d = new Date(o.created_at || o.date);
-            return o.card_id === c.id && o.type === 'withdraw' && o.count_in_limit && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        }).reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
-        const totalUsedMonth = spentBuyMonth + wdrsMonth;
 
-        const dayLimit = c.buy_limit ? parseFloat(c.buy_limit) : 0;
-        const monthLimit = c.month_limit ? parseFloat(c.month_limit) : 0;
+        // Две полоски лимита
+        const dayPct = dayLimitVal > 0 ? Math.min(100, Math.round((spentToday / dayLimitVal) * 100)) : 0;
+        const monthPct = monthLimitVal > 0 ? Math.min(100, Math.round((spentMonth / monthLimitVal) * 100)) : 0;
 
-        // Генерация двух полосок лимитов
-        let dualBarsHtml = '';
-        if (dayLimit > 0 || monthLimit > 0) {
-            dualBarsHtml = `<div class="card-dual-bars-wrap">`;
-            if (dayLimit > 0) {
-                const dayPct = Math.min(100, Math.round((totalUsedDay / dayLimit) * 100));
-                const dayClass = dayPct > 90 ? 'danger' : (dayPct > 70 ? 'warning' : '');
-                dualBarsHtml += `
-                    <div class="card-bar-line">
-                        <span class="card-bar-tag">Д</span>
-                        <div class="card-mini-bar">
-                            <div class="card-mini-bar-fill ${dayClass}" style="width: ${dayPct}%;"></div>
-                        </div>
-                    </div>
-                `;
-            }
-            if (monthLimit > 0) {
-                const monthPct = Math.min(100, Math.round((totalUsedMonth / monthLimit) * 100));
-                const monthClass = monthPct > 90 ? 'danger' : (monthPct > 70 ? 'warning' : '');
-                dualBarsHtml += `
-                    <div class="card-bar-line">
-                        <span class="card-bar-tag">М</span>
-                        <div class="card-mini-bar">
-                            <div class="card-mini-bar-fill ${monthClass}" style="width: ${monthPct}%;"></div>
-                        </div>
-                    </div>
-                `;
-            }
-            dualBarsHtml += `</div>`;
-        }
+        const dayColor = dayPct > 90 ? 'danger' : (dayPct > 70 ? 'warning' : '');
+        const monthColor = monthPct > 90 ? 'danger' : (monthPct > 70 ? 'warning' : '');
 
         const isBurned = c.status === 'burned';
         const isPinned = c.is_pinned;
@@ -1860,15 +1881,13 @@ function renderCards() {
         const todaySells = cTrades.filter(tr => (tr.type === 'sell' || tr.is_cycle) && new Date(tr.date).toDateString() === now.toDateString()).length;
 
         container.innerHTML += `
-            <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}"
-                 draggable="true"
-                 ondragstart="handleCardDragStart(event, ${c.id})"
-                 ondragover="handleCardDragOver(event)"
-                 ondrop="handleCardDrop(event, ${c.id})"
-                 onclick="openCardBottomSheet(${c.id})">
-                <div class="card-stripe" style="background: ${c.color_accent || '#f3a600'};"></div>
-                <div style="display: flex; align-items: center; gap: 4px;">
-                    <span class="card-drag-handle" onclick="event.stopPropagation()">⋮⋮</span>
+            <div class="card-row-item ${isBurned ? 'burned' : ''} ${isPinned ? 'pinned' : ''}" onclick="openCardBottomSheet(${c.id})">
+                <div class="card-stripe" style="background: ${c.color_accent || 'var(--bybit-yellow)'};"></div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;" onclick="event.stopPropagation()">
+                        <button class="cal-nav-btn" style="width: 22px; height: 18px; font-size: 10px;" onclick="moveCardPosition(${c.id}, -1, event)">▲</button>
+                        <button class="cal-nav-btn" style="width: 22px; height: 18px; font-size: 10px;" onclick="moveCardPosition(${c.id}, 1, event)">▼</button>
+                    </div>
                     <div style="flex: 1; padding-left: 4px;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <span style="font-weight: 800; font-size: 14px;">${c.card_name}</span>
@@ -1876,7 +1895,20 @@ function renderCards() {
                             ${isBurned ? '<span style="font-size: 10px; color: var(--bybit-red); font-weight: 900;">ДЕАКТИВИРОВАНА</span>' : ''}
                             ${isCooldown ? '<span style="font-size: 10px; color: var(--bybit-purple); font-weight: 800;">Отлежка</span>' : ''}
                         </div>
-                        ${dualBarsHtml}
+                        <div class="card-dual-bars-wrap">
+                            <div class="card-bar-line">
+                                <span class="card-bar-tag">Д</span>
+                                <div class="card-mini-bar">
+                                    <div class="card-mini-bar-fill ${dayColor}" style="width: ${dayLimitVal > 0 ? dayPct : 0}%;"></div>
+                                </div>
+                            </div>
+                            <div class="card-bar-line">
+                                <span class="card-bar-tag">М</span>
+                                <div class="card-mini-bar">
+                                    <div class="card-mini-bar-fill ${monthColor}" style="width: ${monthLimitVal > 0 ? monthPct : 0}%;"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div style="text-align: right; margin-left: 10px;">
@@ -1894,6 +1926,7 @@ function renderCards() {
         renderCards();
     });
 }
+
 
 
 function renderPaginationBar(containerEl, totalPages, curPage, onChangePage) {
@@ -2050,8 +2083,8 @@ async function saveCardFullSettings() {
     const name = document.getElementById('csheet-inp-name').value.trim();
     const num = document.getElementById('csheet-inp-num').value.trim();
     const holder = document.getElementById('csheet-inp-holder').value.trim();
-    const dayLimit = parseFloat(document.getElementById('csheet-inp-day-limit').value) || null;
-    const monthLimit = parseFloat(document.getElementById('csheet-inp-month-limit').value) || null;
+    const dayLimit = parseFloat(document.getElementById('csheet-inp-day-limit').value) || 0;
+    const monthLimit = parseFloat(document.getElementById('csheet-inp-month-limit').value) || 0;
     const status = document.getElementById('sheet-set-status').value;
     const note = document.getElementById('csheet-inp-notes').value.trim();
     const coolUntilVal = document.getElementById('csheet-inp-cooldown-until')?.value;
@@ -2059,7 +2092,13 @@ async function saveCardFullSettings() {
 
     if (!name) return showToast("⚠️ Название карты обязательно!");
 
+    // Сохраняем расширенные данные локально на случай, если колонок нет в структуре Supabase
+    const extraKey = `p2p_card_extra_${activeSheetCard.id}`;
+    const extraData = { month_limit: monthLimit, note: note, cooldown_until: cooldownUntil };
+    localStorage.setItem(extraKey, JSON.stringify(extraData));
+
     try {
+        // Пробуем полное обновление
         await db(`cards?id=eq.${activeSheetCard.id}`, {
             method: 'PATCH',
             body: JSON.stringify({
@@ -2069,20 +2108,35 @@ async function saveCardFullSettings() {
                 buy_limit: dayLimit,
                 month_limit: monthLimit,
                 status: status,
-                cooldown_until: cooldownUntil,
                 color_accent: activeSelectedCardColor,
                 note: note
             })
         });
-
-        showToast("✅ Настройки карты сохранены!");
-        await refreshData();
-        renderAll();
-        openCardBottomSheet(activeSheetCard.id);
     } catch(e) {
-        showToast("Ошибка сохранения настроек");
+        // Если база выдала ошибку по полям month_limit/note, сохраняем стандартные поля
+        try {
+            await db(`cards?id=eq.${activeSheetCard.id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    card_name: name,
+                    card_number: num,
+                    holder_name: holder,
+                    buy_limit: dayLimit,
+                    status: status,
+                    color_accent: activeSelectedCardColor
+                })
+            });
+        } catch(err) {
+            return showToast("Ошибка сохранения карты в базу");
+        }
     }
+
+    showToast("✅ Настройки карты сохранены!");
+    await refreshData();
+    renderCards();
+    openCardBottomSheet(activeSheetCard.id);
 }
+
 
 // Работа с глобальным шаблоном ордера
 function openTemplateEditorModal() {
@@ -2445,6 +2499,19 @@ function setEditTradeMode(mode) {
     }
 }
 
+let editDealType = 'buy';
+
+function setEditDealType(type) {
+    haptic('light');
+    editDealType = type;
+    document.getElementById('edit-type-buy')?.classList.toggle('active', type === 'buy');
+    document.getElementById('edit-type-sell')?.classList.toggle('active', type === 'sell');
+    document.getElementById('edit-type-cycle')?.classList.toggle('active', type === 'cycle');
+
+    const sellWrap = document.getElementById('wrap-edit-sell-rate');
+    if (sellWrap) sellWrap.style.display = type === 'cycle' ? 'block' : 'none';
+}
+
 function openEditTradeModal(tid) {
     if (!requireSubscription()) return;
     haptic('light');
@@ -2457,10 +2524,13 @@ function openEditTradeModal(tid) {
     document.getElementById('tab-edit-fiat')?.classList.add('active');
     document.getElementById('tab-edit-crypto')?.classList.remove('active');
 
-    const sym = getCurrencySymbol();
-    document.getElementById('lbl-edit-amount').innerHTML = `Сумма в фиате (<span class="sym">${sym}</span>)`;
+    setEditDealType(tr.is_cycle ? 'cycle' : tr.type);
+
     document.getElementById('modal-inp-amount').value = tr.fiat_amount;
-    document.getElementById('modal-rate').value = tr.rate || tr.buy_rate;
+    document.getElementById('modal-rate').value = tr.buy_rate || tr.rate;
+    const sRateInp = document.getElementById('modal-sell-rate');
+    if (sRateInp) sRateInp.value = tr.sell_rate || '';
+
     document.getElementById('modal-card-sel').value = tr.card_id || "";
     document.getElementById('modal-note').value = tr.note || "";
 
@@ -2477,6 +2547,7 @@ async function submitEditTrade() {
 
     const val = parseFloat(document.getElementById('modal-inp-amount').value);
     const r = parseFloat(document.getElementById('modal-rate').value);
+    const sellR = parseFloat(document.getElementById('modal-sell-rate')?.value) || 0;
     const cid = document.getElementById('modal-card-sel').value || null;
     const note = document.getElementById('modal-note').value.trim();
 
@@ -2485,22 +2556,38 @@ async function submitEditTrade() {
     let fiat = editTradeMode === 'fiat' ? val : parseFloat((val * r).toFixed(2));
     let crypto = editTradeMode === 'fiat' ? parseFloat((val / r).toFixed(2)) : val;
 
+    const payload = {
+        fiat_amount: fiat,
+        rate: r,
+        crypto_amount: crypto,
+        card_id: cid ? parseInt(cid) : null,
+        note: note,
+        tag_color: activeSelectedDealColor
+    };
+
+    if (editDealType === 'cycle') {
+        payload.is_cycle = true;
+        payload.buy_rate = r;
+        payload.sell_rate = sellR > 0 ? sellR : r;
+        payload.cycle_spread = sellR > 0 ? parseFloat((((sellR - r) / r) * 100).toFixed(2)) : 0;
+        payload.cycle_profit_rub = sellR > 0 ? parseFloat(((crypto * sellR) - fiat).toFixed(2)) : 0;
+        payload.cycle_profit_usdt = 0;
+    } else {
+        payload.is_cycle = false;
+        payload.type = editDealType;
+    }
+
     await db(`trades?id=eq.${activeEditTradeId}`, {
         method: 'PATCH',
-        body: JSON.stringify({
-            fiat_amount: fiat,
-            rate: r,
-            crypto_amount: crypto,
-            card_id: cid ? parseInt(cid) : null,
-            note: note,
-            tag_color: activeSelectedDealColor
-        })
+        body: JSON.stringify(payload)
     });
+
     closeModals();
-    showToast("✏️ Сделка успешно обновлена!");
+    showToast("✏️ Сделка обновлена!");
     await refreshData();
     renderAll();
 }
+
 
 
 async function deleteTradeCloud(tid) {

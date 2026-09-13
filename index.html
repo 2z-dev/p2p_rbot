@@ -280,6 +280,11 @@
                     <input type="number" inputmode="decimal" id="calc-fiat-amt" class="styled-input" style="padding: 10px 14px; font-size: 14px;" value="10000" placeholder="10000">
                 </div>
 
+                <div class="period-tabs" style="margin-bottom: 10px;">
+                    <div class="p-tab active" id="calc-mode-fiat" onclick="setCycleProfitMode('fiat')">💰 Прибыль в фиате</div>
+                    <div class="p-tab" id="calc-mode-crypto" onclick="setCycleProfitMode('crypto')">🪙 Прибыль в USDT</div>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 14px; padding: 10px;">
                         <div style="font-size: 11px; font-weight: 800; color: var(--bybit-green); margin-bottom: 6px;" data-i18n="calcBuyHeader">
@@ -945,6 +950,12 @@
             <h2 style="font-size: 18px; margin: 0 0 4px 0;">Редактирование операции</h2>
             <p class="subtitle" id="modal-trade-id">Сделка #...</p>
 
+            <div class="trade-switch" style="margin-bottom: 12px;">
+                <div class="switch-btn" id="edit-type-buy" onclick="setEditDealType('buy')">ПОКУПКА</div>
+                <div class="switch-btn" id="edit-type-sell" onclick="setEditDealType('sell')">ПРОДАЖА</div>
+                <div class="switch-btn" id="edit-type-cycle" onclick="setEditDealType('cycle')">КРУГ ⚡️</div>
+            </div>
+
             <div class="period-tabs" style="margin-bottom: 12px;">
                 <div class="p-tab active" id="tab-edit-fiat" onclick="setEditTradeMode('fiat')">Сумма фиата</div>
                 <div class="p-tab" id="tab-edit-crypto" onclick="setEditTradeMode('crypto')">Объем USDT (🪙)</div>
@@ -953,11 +964,16 @@
                 <span class="badge" id="lbl-edit-amount">Сумма в фиате (<span class="sym">₽</span>)</span>
                 <input type="number" inputmode="decimal" id="modal-inp-amount" class="styled-input">
             </div>
-
             <div class="input-wrap">
                 <span class="badge">Курс USDT</span>
                 <input type="number" inputmode="decimal" id="modal-rate" class="styled-input">
             </div>
+
+            <div class="input-wrap" id="wrap-edit-sell-rate" style="display: none;">
+                <span class="badge">Курс продажи (для круга)</span>
+                <input type="number" inputmode="decimal" id="modal-sell-rate" class="styled-input" placeholder="0.00">
+            </div>
+
             <div class="input-wrap">
                 <span class="badge">Привязанная карта</span>
                 <select id="modal-card-sel" class="styled-input"></select>
