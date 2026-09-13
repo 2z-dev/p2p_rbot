@@ -1,7 +1,38 @@
 /* ====================================================
-   P2P TERMINAL PRO — CORE ENGINE v8.2.0
+   P2P TERMINAL PRO — CORE ENGINE v1.0.0
    Enterprise Ledger, Card Manager, Calendar & WAC Engine
 ==================================================== */
+/* ====================================================
+   CLIENT HARDENING & ANTI-DEBUG CORE
+==================================================== */
+(function() {
+    // 1. Блокировка контекстного меню правой кнопки мыши
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 2. Блокировка вызова DevTools горячими клавишами
+    document.addEventListener('keydown', e => {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+            (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+            (e.ctrlKey && (e.key === 'u' || e.key === 'U'))
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
+    // 3. Защита от остановки скрипта через debugger
+    setInterval(() => {
+        const startTime = performance.now();
+        (function() { return false; }['constructor']('debugger')());
+        if (performance.now() - startTime > 100) {
+            document.body.innerHTML = '<div style="color:red;padding:40px;text-align:center;font-family:sans-serif;">Security policy violation. Terminal locked.</div>';
+        }
+    }, 1500);
+})();
+
 
 const API_URL = "https://slddpusuckhhvvetpgxa.supabase.co/rest/v1";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZGRwdXN1Y2toaHZ2ZXRwZ3hhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODYwNzMyMiwiZXhwIjoyMTA0MTgzMzIyfQ.obfZa6h7dKqVvzdHUAXRQ6TAZ8dSsmBZqmUCtBVO0QM";
@@ -3949,7 +3980,7 @@ function runTerminalBootSequence(onComplete) {
         "<span class='c-gold'>[AUTH]</span> Verifying Telegram Mini App Handshake...",
         "<span class='c-blue'>[DB]</span> Connecting to Encrypted Supabase Node...",
         "<span class='c-green'>[LEDGER]</span> Synchronizing WAC Engine & Cards...",
-        "<span class='c-gold'>[READY]</span> Terminal Pro v8.2.0 Ready."
+        "<span class='c-gold'>[READY]</span> Terminal Pro v1.0.0 Ready."
     ];
 
     let step = 0;

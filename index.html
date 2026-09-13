@@ -27,8 +27,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v8.5.0</div>
-                <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v1.0.0</div>                <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
             <div class="progress-box" style="padding: 10px 16px 14px 16px;">
@@ -177,207 +176,205 @@
                 </div>
             </div>
 
-            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ С ОПИСАНИЯМИ ИЗ a.js -->
-            <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
-                <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
-                <span id="toggle-arrow">▾</span>
-            </button>
+            <!-- ВТОРОСТЕПЕННЫЕ ПОКАЗАТЕЛИ С ОПИСАНИЯМИ -->
+              <button class="details-toggle-btn" id="btn-toggle-details" onclick="toggleSecondaryStats()">
+                  <span id="txt-toggle-details" data-i18n="showSecondary">📊 Развернуть подробную статистику</span>
+                  <span id="toggle-arrow">▾</span>
+              </button>
 
-            <div id="secondary-stats-wrap">
-                <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                                    <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
-                                </div>
-                                <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
-                            </div>
-                            <div id="val-profit-rub" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
-                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaFiat"><b>Фиатный остаток:</b> чистая разница рублей на картах (все поступления с продаж минус все расходы на покупку USDT).</div>
-                        </div>
+              <div id="secondary-stats-wrap">
+                  <div class="glass-card" style="padding: 16px; margin-bottom: 12px;">
+                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                          <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                              <div style="display: flex; justify-content: space-between; align-items: center;">
+                                  <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                                      <span data-i18n="netIn">Чистая в</span> <span class="sym">₽</span>
+                                  </div>
+                                  <span class="help-icon" onclick="openHelpModal('net_fiat', event)">?</span>
+                              </div>
+                              <div id="val-profit-rub" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 <span class="sym">₽</span></div>
+                              <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaFiat"><b>Фиатный остаток:</b> чистая разница рублей на картах (все поступления с продаж минус все расходы на покупку USDT).</div>
+                          </div>
 
-                        <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
-                                <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
-                            </div>
-                            <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
-                            <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистый объем монет USDT на бирже, заработанный вами сверх возвращенного фиатного депозита.</div>
-                        </div>
-                    </div>
+                          <div style="background: rgba(0,0,0,0.32); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px;">
+                              <div style="display: flex; justify-content: space-between; align-items: center;">
+                                  <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" data-i18n="netInUsdt">Чистая в USDT</div>
+                                  <span class="help-icon" onclick="openHelpModal('net_usdt', event)">?</span>
+                              </div>
+                              <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
+                              <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистый объем монет USDT на бирже, заработанный вами сверх возвращенного фиатного депозита.</div>
+                          </div>
+                      </div>
 
-                    </div>
+                      <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 4px;">
+                          <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
+                          <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
+                          <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
+                      </div>
+                  </div>
 
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 4px;">
-                        <span data-i18n="midPriceHint">⚖️ Средняя цена (Mid Price):</span>
-                        <b id="hint-mid-price" style="color: var(--bybit-yellow);">0.00</b> <span class="sym">₽</span>
-                        <span class="help-icon" onclick="openHelpModal('mid_price', event)">?</span>
-                    </div>
-                </div>
+                  <div class="analytics-grid">
+                      <div class="stat-card" style="grid-column: span 2;">
+                          <span class="stat-card-title">
+                              <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
+                              <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
+                          </span>
+                          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
+                              <div class="stat-card-val privacy-blur" id="val-fiat-turn">0 ₽</div>
+                              <div class="stat-card-val txt-blue privacy-blur" id="val-crypto-turn">0.00 USDT</div>
+                          </div>
+                      </div>
 
-                <div class="analytics-grid">
-                    <div class="stat-card" style="grid-column: span 2;">
-                        <span class="stat-card-title">
-                            <span data-i18n="turnCombinedTitle">💸 Оборот (Фиат / USDT)</span>
-                            <span class="help-icon" onclick="openHelpModal('turnover', event)">?</span>
-                        </span>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
-                            <div class="stat-card-val privacy-blur" id="val-fiat-turn">0 ₽</div>
-                            <div class="stat-card-val txt-blue privacy-blur" id="val-crypto-turn">0.00 USDT</div>
-                        </div>
-                    </div>
+                      <div class="stat-card">
+                          <span class="stat-card-title">
+                              <span data-i18n="statWac">🛒 WAC Закупка</span>
+                              <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
+                          </span>
+                          <div class="stat-card-val" id="val-wac">0.00</div>
+                      </div>
 
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statWac">🛒 WAC Закупка</span>
-                            <span class="help-icon" onclick="openHelpModal('wac', event)">?</span>
-                        </span>
-                        <div class="stat-card-val" id="val-wac">0.00</div>
-                    </div>
+                      <div class="stat-card">
+                          <span class="stat-card-title">
+                              <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
+                              <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
+                          </span>
+                          <div class="stat-card-val" id="val-avg-sell">0.00</div>
+                      </div>
 
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statAvgSell">🏷 Ср. Продажа</span>
-                            <span class="help-icon" onclick="openHelpModal('avg_sell', event)">?</span>
-                        </span>
-                        <div class="stat-card-val" id="val-avg-sell">0.00</div>
-                    </div>
+                      <div class="stat-card">
+                          <span class="stat-card-title">
+                              <span data-i18n="statRoi">📈 ROI от оборота</span>
+                              <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
+                          </span>
+                          <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
+                      </div>
 
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statRoi">📈 ROI от оборота</span>
-                            <span class="help-icon" onclick="openHelpModal('roi', event)">?</span>
-                        </span>
-                        <div class="stat-card-val txt-green" id="val-roi">0.00%</div>
-                    </div>
+                      <div class="stat-card">
+                          <span class="stat-card-title">
+                              <span data-i18n="statOps">🔢 Сделок / Покупок / Продаж</span>
+                          </span>
+                          <div class="stat-card-val" id="val-trades-count">0 / 0 / 0</div>
+                      </div>
+                  </div>
+              </div>
 
-                    <div class="stat-card">
-                        <span class="stat-card-title">
-                            <span data-i18n="statOps">🔢 Сделок / Покупок / Продаж</span>
-                        </span>
-                        <div class="stat-card-val" id="val-trades-count">0 / 0 / 0</div>
-                    </div>
-                </div>
-            </div>
+              <!-- КАЛЬКУЛЯТОР КРУГА -->
+              <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.4);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                      <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;" data-i18n="calcTitle">
+                          ⚡️ КАЛЬКУЛЯТОР КРУГА
+                      </span>
+                      <span class="help-icon" onclick="openHelpModal('calculator', event)">?</span>
+                  </div>
 
-            <!-- КАЛЬКУЛЯТОР КРУГА -->
-            <div class="glass-card" style="margin-bottom: 12px; border: 1px solid rgba(243, 166, 0, 0.4);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;" data-i18n="calcTitle">
-                        ⚡️ КАЛЬКУЛЯТОР КРУГА
-                    </span>
-                    <span class="help-icon" onclick="openHelpModal('calculator', event)">?</span>
-                </div>
+                  <div class="input-wrap" style="margin-bottom: 10px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                          <span class="badge" style="margin: 0;" data-i18n="calcBindCard">Привязать карту к кругу</span>
+                          <span class="help-icon" onclick="openHelpModal('calc_card', event)">?</span>
+                      </div>
+                      <select id="calc-card-sel" class="styled-input" style="padding: 10px 14px; font-size: 13px;">
+                          <option value="">Без привязки к карте</option>
+                      </select>
+                  </div>
 
-                <div class="input-wrap" style="margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <span class="badge" style="margin: 0;" data-i18n="calcBindCard">Привязать карту к кругу</span>
-                        <span class="help-icon" onclick="openHelpModal('calc_card', event)">?</span>
-                    </div>
-                    <select id="calc-card-sel" class="styled-input" style="padding: 10px 14px; font-size: 13px;">
-                        <option value="">Без привязки к карте</option>
-                    </select>
-                </div>
+                  <div class="input-wrap" style="margin-bottom: 10px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 4px;">
+                          <div style="display: flex; align-items: center;">
+                              <span style="color: var(--text-muted);" data-i18n="calcDealPrice">Прайс сделки (Сумма закупки)</span>
+                              <span class="help-icon" onclick="openHelpModal('calc_deal_budget', event)">?</span>
+                          </div>
+                          <span class="sym" style="color: var(--bybit-yellow); font-weight: 700;">₽</span>
+                      </div>
+                      <input type="number" inputmode="decimal" id="calc-fiat-amt" class="styled-input" style="padding: 10px 14px; font-size: 14px;" placeholder="10000">
+                  </div>
 
-                <div class="input-wrap" style="margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 4px;">
-                        <div style="display: flex; align-items: center;">
-                            <span style="color: var(--text-muted);" data-i18n="calcDealPrice">Прайс сделки (Сумма закупки)</span>
-                            <span class="help-icon" onclick="openHelpModal('calc_deal_budget', event)">?</span>
-                        </div>
-                        <span class="sym" style="color: var(--bybit-yellow); font-weight: 700;">₽</span>
-                    </div>
-                    <input type="number" inputmode="decimal" id="calc-fiat-amt" class="styled-input" style="padding: 10px 14px; font-size: 14px;" placeholder="10000">
-                </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                      <span class="badge" style="margin: 0;">Тип фиксации прибыли:</span>
+                      <span class="help-icon" onclick="openHelpModal('calc_profit_mode', event)">?</span>
+                  </div>
+                  <div class="period-tabs" style="margin-bottom: 10px;">
+                      <div class="p-tab active" id="calc-mode-fiat" onclick="setCycleProfitMode('fiat')">💰 Прибыль в фиате</div>
+                      <div class="p-tab" id="calc-mode-crypto" onclick="setCycleProfitMode('crypto')">🪙 Прибыль в USDT</div>
+                  </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <span class="badge" style="margin: 0;">Тип фиксации прибыли:</span>
-                    <span class="help-icon" onclick="openHelpModal('calc_profit_mode', event)">?</span>
-                </div>
-                <div class="period-tabs" style="margin-bottom: 10px;">
-                    <div class="p-tab active" id="calc-mode-fiat" onclick="setCycleProfitMode('fiat')">💰 Прибыль в фиате</div>
-                    <div class="p-tab" id="calc-mode-crypto" onclick="setCycleProfitMode('crypto')">🪙 Прибыль в USDT</div>
-                </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                      <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 14px; padding: 10px;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                              <div style="font-size: 11px; font-weight: 800; color: var(--bybit-green);" data-i18n="calcBuyHeader">ПОКУПКА 🟢</div>
+                              <span class="help-icon" onclick="openHelpModal('calc_rates', event)">?</span>
+                          </div>
+                          <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcBuyRate">Курс USDT</div>
+                          <input type="number" inputmode="decimal" id="calc-buy-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="86.04">
+                          <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-buy-crypto">
+                              0.00 USDT
+                          </div>
+                      </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 14px; padding: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-green);" data-i18n="calcBuyHeader">ПОКУПКА 🟢</div>
-                            <span class="help-icon" onclick="openHelpModal('calc_rates', event)">?</span>
-                        </div>
-                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcBuyRate">Курс USDT</div>
-                        <input type="number" inputmode="decimal" id="calc-buy-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="86.04">
-                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-buy-crypto">
-                            0.00 USDT
-                        </div>
-                    </div>
+                      <div style="background: rgba(242, 54, 69, 0.08); border: 1px solid rgba(242, 54, 69, 0.25); border-radius: 14px; padding: 10px;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                              <div style="font-size: 11px; font-weight: 800; color: var(--bybit-red);" data-i18n="calcSellHeader">ПРОДАЖА 🔴</div>
+                              <span class="help-icon" onclick="openHelpModal('calc_rates', event)">?</span>
+                          </div>
+                          <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcSellRate">Курс USDT</div>
+                          <input type="number" inputmode="decimal" id="calc-sell-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="95.00">
+                          <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-sell-crypto">
+                              0.00 USDT
+                          </div>
+                      </div>
+                  </div>
 
-                    <div style="background: rgba(242, 54, 69, 0.08); border: 1px solid rgba(242, 54, 69, 0.25); border-radius: 14px; padding: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-red);" data-i18n="calcSellHeader">ПРОДАЖА 🔴</div>
-                            <span class="help-icon" onclick="openHelpModal('calc_rates', event)">?</span>
-                        </div>
-                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;" data-i18n="calcSellRate">Курс USDT</div>
-                        <input type="number" inputmode="decimal" id="calc-sell-rate" class="styled-input" style="padding: 8px 10px; font-size: 13px;" placeholder="95.00">
-                        <div style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--text-main);" id="calc-sell-crypto">
-                            0.00 USDT
-                        </div>
-                    </div>
-                </div>
+                  <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px; margin-bottom: 12px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                          <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcSpread">Спред:</span>
+                          <b id="calc-spread-val" style="font-size: 14px; color: var(--bybit-yellow);">0.00%</b>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                          <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcProfit">Прибыль с круга:</span>
+                          <div style="text-align: right;">
+                              <b id="calc-profit-usdt-val" class="privacy-blur" style="font-size: 15px; color: var(--bybit-green);">0.00 USDT</b>
+                              <div id="calc-profit-fiat-val" class="privacy-blur" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">≈ 0.00 ₽</div>
+                          </div>
+                      </div>
+                  </div>
 
+                  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+                      <button class="action-btn" style="padding: 12px; font-size: 12px;" onclick="saveCalculatedCycle()" data-i18n="calcSaveCycle">
+                          Сохранить круг ✅
+                      </button>
+                      <button class="action-btn-secondary" style="padding: 12px; font-size: 12px;" onclick="clearCalculator()" data-i18n="calcClear">
+                          Очистить ❌
+                      </button>
+                  </div>
+              </div>
 
-                <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 14px; padding: 11px; margin-bottom: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcSpread">Спред:</span>
-                        <b id="calc-spread-val" style="font-size: 14px; color: var(--bybit-yellow);">0.00%</b>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span style="font-size: 11px; color: var(--text-muted);" data-i18n="calcProfit">Прибыль с круга:</span>
-                        <div style="text-align: right;">
-                            <b id="calc-profit-usdt-val" class="privacy-blur" style="font-size: 15px; color: var(--bybit-green);">0.00 USDT</b>
-                            <div id="calc-profit-fiat-val" class="privacy-blur" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">≈ 0.00 ₽</div>
-                        </div>
-                    </div>
-                </div>
+              <!-- КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ С ЛИСТАНИЕМ И ТОЧНЫМ СЧЕТОМ ДНЕЙ -->
+              <button class="details-toggle-btn" style="margin-top: 4px;" onclick="toggleHeatmapPanel()">
+                  <span data-i18n="calendarMonthTitle">📅 Календарь общей прибыли</span>
+                  <span class="help-icon" onclick="openHelpModal('calendar', event)">?</span>
+                  <span id="heatmap-arrow" style="margin-left: auto;">▾</span>
+              </button>
 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
-                    <button class="action-btn" style="padding: 12px; font-size: 12px;" onclick="saveCalculatedCycle()" data-i18n="calcSaveCycle">
-                        Сохранить круг ✅
-                    </button>
-                    <button class="action-btn-secondary" style="padding: 12px; font-size: 12px;" onclick="clearCalculator()" data-i18n="calcClear">
-                        Очистить ❌
-                    </button>
-                </div>
-            </div>
+              <div id="heatmap-panel">
+                  <div class="calendar-month-nav">
+                      <button class="cal-nav-btn" onclick="navigateCalendarMonth(-1)">‹</button>
+                      <div class="cal-month-title-wrap" onclick="resetCalendarToCurrentMonth()">
+                          <div id="heatmap-month-title">Текущий месяц</div>
+                          <div class="cal-reset-today-btn">Вернуться в текущий</div>
+                      </div>
+                      <button class="cal-nav-btn" onclick="navigateCalendarMonth(1)">›</button>
+                  </div>
 
-            <!-- КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ С ЛИСТАНИЕМ И ТОЧНЫМ СЧЕТОМ ДНЕЙ -->
-            <button class="details-toggle-btn" style="margin-top: 4px;" onclick="toggleHeatmapPanel()">
-                <span data-i18n="calendarMonthTitle">📅 Календарь общей прибыли</span>
-                <span class="help-icon" onclick="openHelpModal('calendar', event)">?</span>
-                <span id="heatmap-arrow" style="margin-left: auto;">▾</span>
-            </button>
+                  <div id="calendar-floating-popup">
+                      <div style="font-size: 10px; color: var(--text-muted);" id="pop-date">1 число</div>
+                      <div style="font-size: 14px; font-weight: 900;" id="pop-profit">+0.00 ₽</div>
+                      <div style="font-size: 10px; color: #cbd5e1;" id="pop-extra">0 сдел. • 0.00%</div>
+                  </div>
 
-            <div id="heatmap-panel">
-                <div class="calendar-month-nav">
-                    <button class="cal-nav-btn" onclick="navigateCalendarMonth(-1)">‹</button>
-                    <div class="cal-month-title-wrap" onclick="resetCalendarToCurrentMonth()">
-                        <div id="heatmap-month-title">Текущий месяц</div>
-                        <div class="cal-reset-today-btn">Вернуться в текущий</div>
-                    </div>
-                    <button class="cal-nav-btn" onclick="navigateCalendarMonth(1)">›</button>
-                </div>
+                  <div class="calendar-grid" id="calendar-grid-container"></div>
+              </div>
 
-                <div id="calendar-floating-popup">
-                    <div style="font-size: 10px; color: var(--text-muted);" id="pop-date">1 число</div>
-                    <div style="font-size: 14px; font-weight: 900;" id="pop-profit">+0.00 ₽</div>
-                    <div style="font-size: 10px; color: #cbd5e1;" id="pop-extra">0 сдел. • 0.00%</div>
-                </div>
+          </section>
 
-                <div class="calendar-grid" id="calendar-grid-container"></div>
-            </div>
-
-        </section>
 
         <!-- 2. СДЕЛКА -->
         <section id="trade" class="page-section">
