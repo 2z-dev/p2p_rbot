@@ -2977,7 +2977,7 @@ function getActiveTimeframeTitle() {
 }
 
 /* ====================================================
-   PNL-ОТЧЕТ: ГЕНЕРАЦИЯ И ОТПРАВКА В TELEGRAM
+   ГЕНЕРАЦИЯ PNL-КАРТОЧКИ (ЮЗЕРНЕЙМ + v1.0.0)
 ==================================================== */
 let currentPnlBlob = null;
 
@@ -3025,29 +3025,40 @@ function openPnlPage() {
     ctx.lineWidth = 3;
     ctx.strokeRect(32, 32, 1136, 656);
 
-    // 4. Шапка
+    // 4. Шапка: Версия v1.0.0 и Юзернейм
+    const userTag = currentUser?.username ? `@${currentUser.username}` : (currentUser?.first_name || `ID: ${currentUser?.tg_id || 'TRADER'}`);
+
     ctx.fillStyle = '#f3a600';
-    ctx.font = '900 36px Inter, sans-serif';
-    ctx.fillText('P2P TERMINAL PRO', 70, 95);
+    ctx.font = '900 34px Inter, sans-serif';
+    ctx.fillText('P2P TERMINAL PRO', 70, 92);
+
+    ctx.fillStyle = 'var(--bybit-green)';
+    ctx.font = '800 18px Inter, sans-serif';
+    ctx.fillText('v1.0.0', 400, 92);
+
+    // Юзернейм трейдера под логотипом
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '800 20px Inter, sans-serif';
+    ctx.fillText(`👤 ${userTag}`, 70, 126);
 
     // Бейдж таймфрейма
-    const tf = `🗓 ПЕРИОД: ${getPnlTimeframeLabel()}`;
+    const tf = `🗓 ${getPnlTimeframeLabel()}`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.fillRect(70, 118, 300, 36);
+    ctx.fillRect(70, 142, 260, 34);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.lineWidth = 1;
-    ctx.strokeRect(70, 118, 300, 36);
+    ctx.strokeRect(70, 142, 260, 34);
 
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = '800 15px Inter, sans-serif';
-    ctx.fillText(tf, 86, 142);
+    ctx.font = '800 14px Inter, sans-serif';
+    ctx.fillText(tf, 86, 164);
 
     // Дата справа
     const dateStr = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
     ctx.fillStyle = '#94a3b8';
     ctx.font = '600 20px Inter, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(dateStr, 1120, 95);
+    ctx.fillText(dateStr, 1120, 92);
     ctx.textAlign = 'left';
 
     // 5. Показатель прибыли
@@ -3057,15 +3068,15 @@ function openPnlPage() {
 
     ctx.fillStyle = '#64748b';
     ctx.font = '800 18px Inter, sans-serif';
-    ctx.fillText('ОБЩАЯ ЧИСТАЯ ПРИБЫЛЬ ЗА ПЕРИОД', 70, 220);
+    ctx.fillText('ОБЩАЯ ЧИСТАЯ ПРИБЫЛЬ ЗА ПЕРИОД', 70, 235);
 
     ctx.fillStyle = isNeg ? '#f23645' : '#2ebb9a';
     ctx.font = '900 76px Inter, sans-serif';
-    ctx.fillText(totalRub, 70, 305);
+    ctx.fillText(totalRub, 70, 315);
 
     ctx.fillStyle = '#38bdf8';
     ctx.font = '800 28px Inter, sans-serif';
-    ctx.fillText(`≈ ${totalUsdt}`, 70, 355);
+    ctx.fillText(`≈ ${totalUsdt}`, 70, 365);
 
     // 6. Плитки статистики
     const stats = [
@@ -3075,7 +3086,7 @@ function openPnlPage() {
         { label: 'СДЕЛОК ЗАКРЫТО', val: document.getElementById('val-trades-count')?.innerText?.split('/')[0]?.trim() || '0' }
     ];
 
-    const boxY = 410;
+    const boxY = 415;
     const boxW = 245;
     const boxH = 110;
     const gap = 20;
@@ -3113,7 +3124,6 @@ function openPnlPage() {
     ctx.font = '600 20px Inter, sans-serif';
     ctx.fillText('Enterprise Ledger & WAC Analytics Terminal', 360, 623);
 
-    // Сохраняем DataURL для отображения превью
     const dataUrl = canvas.toDataURL('image/png');
     const imgEl = document.getElementById('pnl-rendered-img');
     if (imgEl) imgEl.src = dataUrl;
@@ -3132,7 +3142,6 @@ function closePnlPage() {
     if (modal) modal.classList.remove('show');
 }
 
-// 100% рабочая отправка фото пользователю в Telegram-чат
 async function sendPnlToTelegramChat() {
     haptic('medium');
     if (!currentUser || !currentUser.tg_id) {
@@ -3140,17 +3149,18 @@ async function sendPnlToTelegramChat() {
     }
 
     if (!currentPnlBlob) {
-        return showToast("⚠️ Изображение еще генерируется...");
+        return showToast("⚠️ Формирование изображения...");
     }
 
+    // Берем токен из конфигурации или дефолтный служебный
     const token = document.getElementById('admin-broadcast-token')?.value?.trim() || "8872511749:AAG-gbaprKsqDa24yL9JWMEL4XOApCScQAs";
-    showToast("⏳ Отправка фото в чат бота...");
+    showToast("⏳ Отправка в бот...");
 
     try {
         const formData = new FormData();
         formData.append('chat_id', currentUser.tg_id);
         formData.append('photo', currentPnlBlob, `pnl_${new Date().getTime()}.png`);
-        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: ${document.getElementById('val-total-profit-rub')?.innerText || ''}\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража`);
+        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: ${document.getElementById('val-total-profit-rub')?.innerText || ''}\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража v1.0.0`);
         formData.append('parse_mode', 'HTML');
 
         const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
@@ -3162,27 +3172,12 @@ async function sendPnlToTelegramChat() {
         if (data.ok) {
             playCashSound();
             haptic('success');
-            showToast("✅ Фото отправлено вам в личные сообщения бота!");
+            showToast("✅ Отчет отправлен в чат бота!");
         } else {
-            throw new Error(data.description || "Ошибка API");
+            throw new Error(data.description || "Ошибка");
         }
     } catch(err) {
         showToast("❌ Ошибка отправки фото в бот");
-    }
-}
-
-function sharePnlText() {
-    haptic('light');
-    const tf = getPnlTimeframeLabel();
-    const totalRub = document.getElementById('val-total-profit-rub')?.innerText || "0.00 ₽";
-    const spread = document.getElementById('val-avg-spread')?.innerText || "0.00%";
-    const text = `📊 Мой результат в P2P (${tf}):\n💰 Прибыль: ${totalRub}\n📈 Средний спред: ${spread}\n\nВеду прозрачный учет касс и сделок в @P2P_Rbot`;
-
-    if (tg?.openTelegramLink) {
-        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent('https://t.me/P2P_Rbot')}&text=${encodeURIComponent(text)}`);
-    } else {
-        navigator.clipboard.writeText(text);
-        showToast("Текст скопирован в буфер");
     }
 }
 
@@ -3516,38 +3511,50 @@ async function saveAdminConfig() {
 ==================================================== */
 function checkSubscription() {
     const badgeEl = document.getElementById('disp-tier-badge');
+    const paywallEl = document.getElementById('paywall');
+    const paywallReason = document.getElementById('paywall-reason');
+    const navEl = document.querySelector('.bottom-nav');
+
     if (!currentUser) return false;
 
-    if (currentUser.is_banned) {
-        if (badgeEl) {
-            badgeEl.className = 'sub-tier-badge tier-expired';
-            badgeEl.innerText = '⛔️ Banned';
-        }
-        document.getElementById('paywall').style.display = 'block';
-        return false;
-    }
-
-    if (!currentUser.sub_end) {
-        if (badgeEl) {
-            badgeEl.className = 'sub-tier-badge tier-expired';
-            badgeEl.innerText = '❌ Нет подписки';
-        }
-        document.getElementById('paywall').style.display = 'block';
-        return false;
-    }
-
     const now = new Date();
-    const end = new Date(currentUser.sub_end);
-    if (end < now) {
-        if (badgeEl) {
-            badgeEl.className = 'sub-tier-badge tier-expired';
-            badgeEl.innerText = '⏳ Подписка истекла';
+    const isSubActive = currentUser.sub_end && new Date(currentUser.sub_end) > now;
+    const isBanned = !!currentUser.is_banned;
+
+    // ЕСЛИ НЕТ ПОДПИСКИ ИЛИ БАН — ПОЛНОСТЬЮ СКРЫВАЕМ ВЕСЬ ИНТЕРФЕЙС
+    if (isBanned || !isSubActive) {
+        document.body.classList.add('locked-no-sub');
+        if (navEl) navEl.style.display = 'none';
+
+        document.querySelectorAll('.page-section').forEach(sec => {
+            sec.style.display = 'none';
+        });
+
+        if (paywallEl) {
+            paywallEl.className = 'page-section fullscreen-lock';
+            paywallEl.style.display = 'flex';
         }
-        document.getElementById('paywall').style.display = 'block';
+
+        if (isBanned) {
+            if (badgeEl) { badgeEl.className = 'sub-tier-badge tier-expired'; badgeEl.innerText = '⛔️ Доступ заблокирован'; }
+            if (paywallReason) paywallReason.innerText = 'Ваш аккаунт заблокирован администратором.';
+        } else if (!currentUser.sub_end) {
+            if (badgeEl) { badgeEl.className = 'sub-tier-badge tier-expired'; badgeEl.innerText = '❌ Нет подписки'; }
+            if (paywallReason) paywallReason.innerText = 'У вас нет активной подписки. Активируйте триал или оформите доступ.';
+        } else {
+            if (badgeEl) { badgeEl.className = 'sub-tier-badge tier-expired'; badgeEl.innerText = '⏳ Срок подписки истек'; }
+            if (paywallReason) paywallReason.innerText = `Ваша подписка завершилась ${new Date(currentUser.sub_end).toLocaleDateString()}. Продлите доступ для продолжения.`;
+        }
+
         return false;
     }
 
-    document.getElementById('paywall').style.display = 'none';
+    // ПОДПИСКА АКТИВНА
+    document.body.classList.remove('locked-no-sub');
+    if (paywallEl) paywallEl.style.display = 'none';
+    if (navEl) navEl.style.display = 'flex';
+
+    const end = new Date(currentUser.sub_end);
     if (badgeEl) {
         if (end.getFullYear() > 2099) {
             badgeEl.className = 'sub-tier-badge tier-vip';
@@ -3557,6 +3564,13 @@ function checkSubscription() {
             badgeEl.innerText = `⚡️ Премиум до ${end.toLocaleDateString()}`;
         }
     }
+
+    // Возвращаем видимость активной вкладке
+    const activeNav = document.querySelector('.nav-btn.active');
+    const targetId = activeNav ? activeNav.getAttribute('data-target') : 'dashboard';
+    const activeSection = document.getElementById(targetId);
+    if (activeSection) activeSection.style.display = 'block';
+
     return true;
 }
 
@@ -3955,13 +3969,25 @@ function renderAll() {
 
 async function refreshData() {
     if (!currentUser) return;
-    const [u, c, t, o] = await Promise.all([
-        db(`users?tg_id=eq.${currentUser.tg_id}`),
+
+    // 1. Сначала проверяем только профиль и статус подписки
+    const u = await db(`users?tg_id=eq.${currentUser.tg_id}`);
+    if (u && u.length > 0) currentUser = u[0];
+
+    // 2. ЗАЩИТА: Если подписки нет — очищаем массивы и не качаем данные из базы
+    if (!hasActiveSubscription()) {
+        userCards = [];
+        userTrades = [];
+        cardOps = [];
+        return;
+    }
+
+    // 3. Скачиваем конфиденциальные данные только при наличии активного доступа
+    const [c, t, o] = await Promise.all([
         db(`cards?tg_id=eq.${currentUser.tg_id}&order=created_at.asc`),
         db(`trades?tg_id=eq.${currentUser.tg_id}&order=date.desc`),
         db(`card_operations?tg_id=eq.${currentUser.tg_id}`)
     ]);
-    if (u && u.length > 0) currentUser = u[0];
     userCards = c || [];
     userTrades = t || [];
     cardOps = o || [];

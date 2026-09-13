@@ -1028,3 +1028,26 @@ input:checked + .slider:before { transform: translateX(22px); background-color: 
     border-radius: 16px;
     overflow: hidden;
 }
+/* ПОЛНАЯ БЛОКИРОВКА БЕЗ ПОДПИСКИ */
+body.locked-no-sub .container > section,
+body.locked-no-sub .bottom-nav {
+    display: none !important;
+}
+
+#paywall.fullscreen-lock {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 20px 10px;
+}
+
+#paywall.fullscreen-lock .glass-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(14, 18, 26, 0.96) !important;
+    border: 1.5px solid rgba(243, 166, 0, 0.4) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(243, 166, 0, 0.15) !important;
+}
