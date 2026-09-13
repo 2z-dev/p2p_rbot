@@ -3025,16 +3025,13 @@ function openPnlPage() {
     ctx.lineWidth = 3;
     ctx.strokeRect(32, 32, 1136, 656);
 
-    // 4. Шапка: Версия v1.0.0 и Юзернейм
+    // 4. Шапка: Юзернейм без номера версии
     const userTag = currentUser?.username ? `@${currentUser.username}` : (currentUser?.first_name || `ID: ${currentUser?.tg_id || 'TRADER'}`);
 
     ctx.fillStyle = '#f3a600';
-    ctx.font = '900 34px Inter, sans-serif';
+    ctx.font = '900 36px Inter, sans-serif';
     ctx.fillText('P2P TERMINAL PRO', 70, 92);
 
-    ctx.fillStyle = 'var(--bybit-green)';
-    ctx.font = '800 18px Inter, sans-serif';
-    ctx.fillText('v1.0.0', 400, 92);
 
     // Юзернейм трейдера под логотипом
     ctx.fillStyle = '#38bdf8';
@@ -3160,7 +3157,7 @@ async function sendPnlToTelegramChat() {
         const formData = new FormData();
         formData.append('chat_id', currentUser.tg_id);
         formData.append('photo', currentPnlBlob, `pnl_${new Date().getTime()}.png`);
-        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: ${document.getElementById('val-total-profit-rub')?.innerText || ''}\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража v1.0.0`);
+        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: ${document.getElementById('val-total-profit-rub')?.innerText || ''}\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража`);
         formData.append('parse_mode', 'HTML');
 
         const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
@@ -3301,39 +3298,155 @@ function selectAdminUserFromDb(tgId) {
     adminInspectUser();
 }
 
+/* ====================================================
+   ПОЛНОЕ ДОСЬЕ ПОЛЬЗОВАТЕЛЯ (МОДАЛЬНОЕ ОКНО)
+==================================================== */
 async function adminInspectUser() {
     const targetId = parseInt(document.getElementById('admin-target-uid').value);
-    if (!targetId) return showToast("⚠️ Введите ID!");
+    if (!targetId) return showToast("⚠️ Введите ID пользователя!");
 
-    const [uRes, tRes] = await Promise.all([
+    haptic('medium');
+    showToast("⏳ Сбор данных пользователя...");
+
+    const [uRes, tRes, cRes, oRes] = await Promise.all([
         db(`users?tg_id=eq.${targetId}`),
-        db(`trades?tg_id=eq.${targetId}`)
+        db(`trades?tg_id=eq.${targetId}&order=date.desc`),
+        db(`cards?tg_id=eq.${targetId}&order=created_at.asc`),
+        db(`card_operations?tg_id=eq.${targetId}`)
     ]);
 
-    const box = document.getElementById('admin-user-dossier');
     if (!uRes || uRes.length === 0) {
-        box.style.display = 'block';
-        box.innerHTML = `<span style="color: var(--bybit-red);">Пользователь не найден в базе</span>`;
-        return;
+        return showToast("❌ Пользователь не найден в базе");
     }
 
     const u = uRes[0];
-    const tradesCnt = tRes ? tRes.length : 0;
-    const subStr = u.sub_end ? (new Date(u.sub_end).getFullYear() > 2099 ? '♾️ VIP Навсегда' : new Date(u.sub_end).toLocaleDateString()) : '❌ Нет доступа';
+    const trades = tRes || [];
+    const cards = cRes || [];
+    const ops = oRes || [];
+    const sym = u.currency === 'USD' ? '$' : (u.currency === 'KZT' ? '₸' : (u.currency === 'UAH' ? '₴' : '₽'));
 
-    box.style.display = 'block';
-    box.innerHTML = `
-        <div style="font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px;">
-            👤 ${u.first_name || ''} (@${u.username || 'нет'})
+    // 1. Расчет финансовой статистики пользователя
+    let bF = 0, bC = 0, sF = 0, sC = 0, buysCnt = 0, sellsCnt = 0;
+    trades.forEach(t => {
+        const f = parseFloat(t.fiat_amount || 0);
+        const c = parseFloat(t.crypto_amount || 0);
+        if (t.is_cycle) {
+            buysCnt++; sellsCnt++;
+            bF += f; bC += c;
+            const cProfitRub = parseFloat(t.cycle_profit_rub || 0);
+            const cProfitUsdt = parseFloat(t.cycle_profit_usdt || 0);
+            if (t.cycle_mode === 'crypto' || cProfitUsdt !== 0) {
+                sF += f; sC += (c - cProfitUsdt);
+            } else {
+                sF += (f + cProfitRub); sC += c;
+            }
+        } else if (t.type === 'buy') {
+            bF += f; bC += c; buysCnt++;
+        } else {
+            sF += f; sC += c; sellsCnt++;
+        }
+    });
+
+    const wac = bC > 0 ? bF / bC : 0;
+    const avgSell = sC > 0 ? sF / sC : 0;
+    const midPrice = (wac > 0 && avgSell > 0) ? (wac + avgSell) / 2 : (wac || avgSell || 0);
+    const profitFiat = sF - bF;
+    const profitUsdt = bC - sC;
+    const totalProfit = profitFiat + (profitUsdt * midPrice);
+    const fiatTurnover = bF + sF;
+    const cryptoTurnover = bC + sC;
+    const avgSpread = wac > 0 && avgSell > 0 ? (((avgSell / wac) - 1) * 100).toFixed(2) : "0.00";
+
+    // 2. Статус подписки
+    const now = new Date();
+    let subBadge = '<span style="color: var(--text-muted); font-weight: 800;">❌ Нет подписки</span>';
+    if (u.is_banned) {
+        subBadge = '<span style="color: var(--bybit-red); font-weight: 900;">⛔️ Заблокирован</span>';
+    } else if (u.sub_end && new Date(u.sub_end).getFullYear() > 2099) {
+        subBadge = '<span style="color: var(--bybit-yellow); font-weight: 900;">💎 VIP Навсегда</span>';
+    } else if (u.sub_end && new Date(u.sub_end) > now) {
+        subBadge = `<span style="color: var(--bybit-green); font-weight: 800;">🟢 Активна до ${new Date(u.sub_end).toLocaleDateString()}</span>`;
+    } else if (u.sub_end) {
+        subBadge = `<span style="color: var(--bybit-red); font-weight: 800;">⏳ Истекла (${new Date(u.sub_end).toLocaleDateString()})</span>`;
+    }
+
+    // 3. Формирование списка карт пользователя
+    let cardsHtml = '';
+    if (cards.length === 0) {
+        cardsHtml = '<div style="color: var(--text-muted); font-size: 12px; padding: 6px 0;">Карт не добавлено</div>';
+    } else {
+        cards.forEach(c => {
+            const cTrades = trades.filter(tr => tr.card_id === c.id);
+            const spentBuy = cTrades.filter(tr => tr.type === 'buy').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+            const gainSell = cTrades.filter(tr => tr.type === 'sell').reduce((acc, tr) => acc + parseFloat(tr.fiat_amount || 0), 0);
+            const deps = ops.filter(o => o.card_id === c.id && o.type === 'deposit').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+            const wdrs = ops.filter(o => o.card_id === c.id && o.type === 'withdraw').reduce((acc, o) => acc + parseFloat(o.amount || 0), 0);
+            const bal = deps - wdrs + gainSell - spentBuy;
+
+            cardsHtml += `
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; font-size: 11px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 800;">
+                        <span>💳 ${c.card_name} (${c.status || 'active'})</span>
+                        <span style="color: var(--bybit-green);">${bal.toLocaleString()} ${sym}</span>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 10px; margin-top: 2px;">
+                        Номер: <code>${c.card_number || 'не указан'}</code> • Дневной лимит: ${c.buy_limit ? c.buy_limit + ' ' + sym : '∞'}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // 4. Сборка HTML модального окна
+    document.getElementById('dossier-header-sub').innerText = `Telegram ID: ${u.tg_id}`;
+    const container = document.getElementById('dossier-modal-content');
+    container.innerHTML = `
+        <!-- Профиль -->
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 14px; font-weight: 900; color: #fff;">${u.first_name || 'Без имени'} ${u.username ? '(@' + u.username + ')' : ''}</span>
+                ${subBadge}
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.6;">
+                <b>Регистрация:</b> ${u.reg_date ? new Date(u.reg_date).toLocaleDateString() : '—'}<br>
+                <b>Использовал триал:</b> ${u.trial_used ? '✅ ДА' : '⚪️ НЕТ'}<br>
+                <b>Реферер (кто пригласил):</b> ${u.ref_by ? '<code>' + u.ref_by + '</code>' : 'Органический'}<br>
+                <b>Валюта / Таймзона:</b> ${u.currency || 'RUB'} / UTC+${u.tz_offset || 3}
+            </div>
         </div>
-        <b>Telegram ID:</b> <code>${u.tg_id}</code><br>
-        <b>Статус подписки:</b> ${subStr}<br>
-        <b>Сделок в терминале:</b> ${tradesCnt}<br>
-        <b>Был пробный период:</b> ${u.trial_used ? 'ДА' : 'НЕТ'}<br>
-        <b>Заблокирован:</b> ${u.is_banned ? '⛔️ ДА' : '🟢 НЕТ'}<br>
-        <b>Дата регистрации:</b> ${u.reg_date ? new Date(u.reg_date).toLocaleDateString() : '—'}
+
+        <!-- Финансовые показатели -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 12px; padding: 10px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Общая прибыль</div>
+                <div style="font-size: 16px; font-weight: 900; color: ${totalProfit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)'}; margin-top: 4px;">
+                    ${formatSignedMoney(totalProfit, 2)} ${sym}
+                </div>
+            </div>
+            <div style="background: rgba(243, 166, 0, 0.08); border: 1px solid rgba(243, 166, 0, 0.25); border-radius: 12px; padding: 10px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Средний спред</div>
+                <div style="font-size: 16px; font-weight: 900; color: var(--bybit-yellow); margin-top: 4px;">
+                    ${avgSpread}%
+                </div>
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; margin-bottom: 12px; font-size: 11px; line-height: 1.6;">
+            <b>Оборот фиата:</b> ${fiatTurnover.toLocaleString()} ${sym}<br>
+            <b>Оборот крипты:</b> ${cryptoTurnover.toLocaleString()} USDT<br>
+            <b>Всего сделок:</b> ${trades.length} (🟢 ${buysCnt} покупок / 🔴 ${sellsCnt} продаж)
+        </div>
+
+        <!-- Карты -->
+        <div style="margin-bottom: 6px;">
+            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px; text-transform: uppercase;">Банковские карты (${cards.length})</div>
+            ${cardsHtml}
+        </div>
     `;
+
+    document.getElementById('modal-admin-user-dossier').classList.add('show');
 }
+
 
 async function adminUserAction(action) {
     const targetId = parseInt(document.getElementById('admin-target-uid').value);

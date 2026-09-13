@@ -1250,10 +1250,25 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО ДОСЬЕ ПОЛЬЗОВАТЕЛЯ -->
+    <div id="modal-admin-user-dossier" class="modal-overlay" onclick="closeModals()">
+        <div class="glass-card modal-box" onclick="event.stopPropagation()" style="max-width: 520px; max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; color: var(--bybit-yellow);">📂 Досье пользователя</h3>
+                    <div style="font-size: 11px; color: var(--text-muted);" id="dossier-header-sub">Загрузка данных...</div>
+                </div>
+                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeModals()">✕</button>
+            </div>
+            <div id="dossier-modal-content"></div>
+            <button class="action-btn gold" style="margin-top: 15px; padding: 11px;" onclick="closeModals()">Закрыть досье</button>
+        </div>
+    </div>
 
-        <!-- НАВИГАЦИЯ -->
+    <!-- НАВИГАЦИЯ -->
 
-        <div class="bottom-nav">
+    <div class="bottom-nav">
+
         <div class="nav-btn active" data-target="dashboard" onclick="handleNavClick('dashboard', this)">
             <i>📊</i><span data-i18n="navDashboard">Сводка</span>
         </div>
