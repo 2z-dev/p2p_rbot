@@ -1340,18 +1340,25 @@ body.locked-no-sub .bottom-nav {
     font-family: 'Fira Code', monospace;
     font-size: 12px;
 }
-/* ПЛАШКА ПРИБЛИЗИТЕЛЬНОГО ЭКВИВАЛЕНТА СПРАВА */
-.approx-profit-badge {
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 5px 10px;
+/* КРУПНЫЙ ВЫВОД РАЗДЕЛЬНОЙ ПРИБЫЛИ И СТРОКА ЭКВИВАЛЕНТОВ */
+.hero-split-profit {
+    font-size: clamp(20px, 6vw, 27px) !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.6px !important;
+    line-height: 1.2 !important;
+    width: 100%;
+    word-break: break-word;
+    display: block;
+}
+
+.approx-profit-row {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 1px;
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.04);
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 800;
+    flex-wrap: wrap;
 }
 /* ====================================================
    ИНТЕРАКТИВНЫЕ ВИДЖЕТЫ И СХЕМЫ РУКОВОДСТВА ПОЛЬЗОВАТЕЛЯ

@@ -1579,28 +1579,31 @@ function calculateStats() {
         el.style.color = val < 0 ? 'var(--bybit-red)' : (val > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
     }
 
-    // 1. РАЗДЕЛЬНЫЙ ВЫВОД (+1000 ₽ + 15 USDT) СЛЕВА
+    // 1. ПОЛНОРАЗМЕРНЫЙ РАЗДЕЛЬНЫЙ ВЫВОД С ЕДИНЫМ ЗНАКОМ (БЕЗ ДВОЙНЫХ ПЛЮСОВ)
     const elSplit = document.getElementById('val-total-profit-split');
     if (elSplit) {
         const fiatStr = formatSignedMoney(profitFiat, 2);
-        const usdtSign = profitUsdt >= 0 ? '+' : '-';
-        const usdtStr = `${usdtSign} ${Math.abs(profitUsdt).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const usdtSign = profitUsdt >= 0 ? '+' : '−';
+        const usdtFormatted = Math.abs(profitUsdt).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         elSplit.style.color = totalProfitFiat < 0 ? 'var(--bybit-red)' : (totalProfitFiat > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
-        elSplit.innerHTML = `<span>${fiatStr} <span style="font-size: 14px; color: var(--text-muted);">${sym}</span></span> <span style="font-size: 14px; color: var(--text-muted); margin: 0 1px;">+</span> <span>${usdtStr} <span style="font-size: 12px; color: var(--text-muted);">USDT</span></span>`;
+        elSplit.innerHTML = `<span>${fiatStr} <span style="font-size: 0.75em; color: var(--text-muted);">${sym}</span></span> <span style="color: var(--text-muted); margin: 0 3px;">${usdtSign}</span> <span>${usdtFormatted} <span style="font-size: 0.7em; color: var(--text-muted);">USDT</span></span>`;
     }
 
-    // 2. ПРИБЛИЗИТЕЛЬНО В ФИАТЕ И В ДОЛЛАРАХ СПРАВА
+    // 2. СТРОКА ЭКВИВАЛЕНТОВ В СКОБКАХ С ДИНАМИЧЕСКИМИ ЦВЕТАМИ
+    const colorFiat = totalProfitFiat < 0 ? 'var(--bybit-red)' : (totalProfitFiat > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+    const colorUsd = totalProfitUsdt < 0 ? 'var(--bybit-red)' : (totalProfitUsdt > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+
     const elApproxFiat = document.getElementById('val-approx-fiat');
     if (elApproxFiat) {
-        elApproxFiat.innerText = `≈ ${formatSignedMoney(totalProfitFiat, 2)} ${sym}`;
-        elApproxFiat.style.color = totalProfitFiat < 0 ? 'var(--bybit-red)' : (totalProfitFiat > 0 ? 'var(--bybit-yellow)' : 'var(--text-muted)');
+        elApproxFiat.innerText = `(≈ ${formatSignedMoney(totalProfitFiat, 2)} ${sym})`;
+        elApproxFiat.style.color = colorFiat;
     }
 
     const elApproxUsd = document.getElementById('val-approx-usd');
     if (elApproxUsd) {
-        elApproxUsd.innerText = `≈ ${formatSignedMoney(totalProfitUsdt, 2)} $`;
-        elApproxUsd.style.color = totalProfitUsdt < 0 ? 'var(--bybit-red)' : (totalProfitUsdt > 0 ? 'var(--bybit-blue)' : 'var(--text-muted)');
+        elApproxUsd.innerText = `(≈ ${formatSignedMoney(totalProfitUsdt, 2)} $)`;
+        elApproxUsd.style.color = colorUsd;
     }
 
     // Сохраняем скрытые элементы для совместимости со сторонними обработчиками
@@ -1984,13 +1987,25 @@ function openDayDetailsModal(day, profitFiat, profitUsdt, totalProfit, totalProf
     document.getElementById('day-modal-title').innerText = `📅 Сводка за ${day} число`;
 
     const profitEl = document.getElementById('day-modal-profit-val');
-    const usdtSign = profitUsdt >= 0 ? '+' : '-';
-    profitEl.innerHTML = `<span>${formatSignedMoney(profitFiat, 2)} ${sym}</span> <span style="color: var(--text-muted); font-size: 15px;">+</span> <span>${usdtSign} ${Math.abs(profitUsdt).toFixed(2)} USDT</span>`;
+    const usdtSign = profitUsdt >= 0 ? '+' : '−';
+    const usdtFormatted = Math.abs(profitUsdt).toFixed(2);
+
+    profitEl.innerHTML = `<span>${formatSignedMoney(profitFiat, 2)} ${sym}</span> <span style="color: var(--text-muted); margin: 0 4px;">${usdtSign}</span> <span>${usdtFormatted} USDT</span>`;
     profitEl.style.color = totalProfit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
 
-    const approxEl = document.getElementById('day-modal-profit-approx');
-    if (approxEl) {
-        approxEl.innerText = `≈ ${formatSignedMoney(totalProfit, 2)} ${sym}  (≈ ${formatSignedMoney(totalProfitUsdt, 2)} $)`;
+    const colorF = totalProfit < 0 ? 'var(--bybit-red)' : (totalProfit > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+    const colorU = totalProfitUsdt < 0 ? 'var(--bybit-red)' : (totalProfitUsdt > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+
+    const approxFiatEl = document.getElementById('day-modal-approx-fiat');
+    if (approxFiatEl) {
+        approxFiatEl.innerText = `(≈ ${formatSignedMoney(totalProfit, 2)} ${sym})`;
+        approxFiatEl.style.color = colorF;
+    }
+
+    const approxUsdEl = document.getElementById('day-modal-approx-usd');
+    if (approxUsdEl) {
+        approxUsdEl.innerText = `(≈ ${formatSignedMoney(totalProfitUsdt, 2)} $)`;
+        approxUsdEl.style.color = colorU;
     }
 
     document.getElementById('day-modal-trades-cnt').innerText = `${count} сделок`;
@@ -3385,19 +3400,20 @@ function openPnlPage() {
     ctx.font = '800 16px Inter, sans-serif';
     ctx.fillText('ЧИСТАЯ ПРИБЫЛЬ ЗА ПЕРИОД (ФИАТ + USDT)', 70, 230);
 
-    // РАЗДЕЛЬНАЯ СТРОКА НА ХОЛСТЕ: +1 000.00 ₽  +  15.00 USDT
+    // РАЗДЕЛЬНАЯ СТРОКА НА ХОЛСТЕ БЕЗ ДВОЙНЫХ ЗНАКОВ
     const pFiatStr = `${formatSignedMoney(pFiat, 2)} ${sym}`;
-    const usdtSign = pUsdt >= 0 ? '+' : '-';
-    const pUsdtStr = `${usdtSign} ${Math.abs(pUsdt).toFixed(2)} USDT`;
-    const splitMainText = `${pFiatStr}  +  ${pUsdtStr}`;
+    const pSign = pUsdt >= 0 ? '+' : '−';
+    const pUsdtStr = `${Math.abs(pUsdt).toFixed(2)} USDT`;
+    const splitMainText = `${pFiatStr}  ${pSign}  ${pUsdtStr}`;
 
     ctx.fillStyle = pTotalFiat < 0 ? '#f23645' : '#2ebb9a';
-    ctx.font = '900 50px Inter, sans-serif';
+    ctx.font = '900 52px Inter, sans-serif';
     ctx.fillText(splitMainText, 70, 295);
 
-    // ПРИБЛИЗИТЕЛЬНО В ФИАТЕ И В ДОЛЛАРАХ МЕНЬШИМ ШРИФТОМ ПОД НИМ
-    const approxLine = `≈ ${formatSignedMoney(pTotalFiat, 2)} ${sym}   (≈ ${formatSignedMoney(pTotalUsdt, 2)} $)`;
-    ctx.fillStyle = '#38bdf8';
+    // СТРОКА В СКОБКАХ С ЦВЕТОВЫМ РАЗДЕЛЕНИЕМ
+    const pColorHex = pTotalFiat < 0 ? '#f23645' : (pTotalFiat > 0 ? '#2ebb9a' : '#94a3b8');
+    const approxLine = `(≈ ${formatSignedMoney(pTotalFiat, 2)} ${sym})   (≈ ${formatSignedMoney(pTotalUsdt, 2)} $)`;
+    ctx.fillStyle = pColorHex;
     ctx.font = '800 24px Inter, sans-serif';
     ctx.fillText(approxLine, 70, 345);
 
@@ -5056,7 +5072,453 @@ function instSimulateFxToggle() {
 }
 
 /* ====================================================
-   ГЕНЕРАТОР КОНТЕНТА ВКЛАДОК РУКОВОДСТВА
+   ОБРАБОТЧИКИ ДЛЯ ИНТЕРАКТИВНЫХ ВИДЖЕТОВ В РУКОВОДСТВЕ
+==================================================== */
+let instIncognitoState = false;
+function instSimulateIncognito() {
+    haptic('light');
+    instIncognitoState = !instIncognitoState;
+    const valEl = document.getElementById('inst-demo-profit-val');
+    const approxEl = document.getElementById('inst-demo-profit-approx');
+    const iconEl = document.getElementById('inst-demo-incognito-btn');
+
+    if (instIncognitoState) {
+        if (valEl) valEl.style.filter = 'blur(10px)';
+        if (approxEl) approxEl.style.filter = 'blur(10px)';
+        if (iconEl) iconEl.innerText = '🕶 Включен';
+    } else {
+        if (valEl) valEl.style.filter = 'none';
+        if (approxEl) approxEl.style.filter = 'none';
+        if (iconEl) iconEl.innerText = '👁 Выключен';
+    }
+}
+
+let instCalcMode = 'fiat';
+function instSimulateCalcMode(mode) {
+    haptic('light');
+    instCalcMode = mode;
+    document.getElementById('inst-calc-btn-fiat')?.classList.toggle('active', mode === 'fiat');
+    document.getElementById('inst-calc-btn-crypto')?.classList.toggle('active', mode === 'crypto');
+    instSimulateCalcRun();
+}
+
+function instSimulateCalcRun() {
+    const amt = parseFloat(document.getElementById('inst-calc-inp-amt')?.value) || 100000;
+    const buyR = parseFloat(document.getElementById('inst-calc-inp-buy')?.value) || 90.00;
+    const sellR = parseFloat(document.getElementById('inst-calc-inp-sell')?.value) || 92.50;
+
+    const spread = (((sellR - buyR) / buyR) * 100).toFixed(2);
+    const boughtUsdt = amt / buyR;
+
+    const resBox = document.getElementById('inst-calc-live-result');
+    if (!resBox) return;
+
+    if (instCalcMode === 'fiat') {
+        const soldFiat = boughtUsdt * sellR;
+        const profitFiat = (soldFiat - amt).toFixed(2);
+        resBox.innerHTML = `
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в фиате:</div>
+            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
+                +${parseFloat(profitFiat).toLocaleString()} ₽ <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
+            </div>
+            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
+                Куплено ${boughtUsdt.toFixed(2)} USDT и полностью продано. Депозит ${amt.toLocaleString()} ₽ возвращен на карту вместе со спредом.
+            </div>
+        `;
+    } else {
+        const soldUsdt = amt / sellR;
+        const profitUsdt = (boughtUsdt - soldUsdt).toFixed(2);
+        resBox.innerHTML = `
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в USDT:</div>
+            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
+                +${profitUsdt} USDT <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
+            </div>
+            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
+                Продано ${soldUsdt.toFixed(2)} USDT (возврат тела ${amt.toLocaleString()} ₽ на карту). Вся чистая прибыль осталась в монетах USDT.
+            </div>
+        `;
+    }
+}
+
+function instSimulateDaySelect(dayNum, profitFiat, profitUsdt, midP, spread) {
+    haptic('light');
+    document.querySelectorAll('.inst-cal-cell').forEach(c => c.classList.remove('selected'));
+    const clickedCell = document.getElementById(`inst-cal-cell-${dayNum}`);
+    if (clickedCell) clickedCell.classList.add('selected');
+
+    const totalF = (profitFiat + (profitUsdt * midP)).toFixed(2);
+    const totalU = (totalF / midP).toFixed(2);
+    const sign = profitUsdt >= 0 ? '+' : '−';
+    const colorF = totalF < 0 ? 'var(--bybit-red)' : (totalF > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+    const colorU = totalU < 0 ? 'var(--bybit-red)' : (totalU > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+
+    const outBox = document.getElementById('inst-cal-day-detail');
+    if (outBox) {
+        outBox.innerHTML = `
+            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 4px;">
+                📅 ВЫБРАН ДЕНЬ: ${dayNum} СЕНТЯБРЯ 2026
+            </div>
+            <div style="font-size: 15px; font-weight: 900; color: ${colorF};">
+                ${formatSignedMoney(profitFiat, 2)} ₽ <span style="color: var(--text-muted);">${sign}</span> ${Math.abs(profitUsdt).toFixed(2)} USDT
+            </div>
+            <div style="font-size: 12px; font-weight: 800; margin-top: 4px; display: flex; gap: 8px;">
+                <span style="color: ${colorF};">(≈ ${formatSignedMoney(totalF, 2)} ₽)</span>
+                <span style="color: ${colorU};">(≈ ${formatSignedMoney(totalU, 2)} $)</span>
+                <span style="color: var(--text-muted); margin-left: auto;">Спред: +${spread}%</span>
+            </div>
+        `;
+    }
+}
+
+let instTradeType = 'buy';
+function instSimulateTradeType(type) {
+    haptic('light');
+    instTradeType = type;
+    const btnB = document.getElementById('inst-trade-btn-buy');
+    const btnS = document.getElementById('inst-trade-btn-sell');
+    const prevBtn = document.getElementById('inst-trade-submit-btn');
+
+    if (type === 'buy') {
+        btnB?.classList.add('active', 'buy');
+        btnS?.classList.remove('active', 'sell');
+        if (prevBtn) {
+            prevBtn.className = 'action-btn';
+            prevBtn.innerText = 'СОХРАНИТЬ ПОКУПКУ: 50 000.00 ₽';
+        }
+    } else {
+        btnS?.classList.add('active', 'sell');
+        btnB?.classList.remove('active', 'buy');
+        if (prevBtn) {
+            prevBtn.className = 'action-btn sell-mode';
+            prevBtn.innerText = 'СОХРАНИТЬ ПРОДАЖУ: 50 000.00 ₽';
+        }
+    }
+}
+
+let instCardDemoState = { dayLimit: 150000, daySpent: 0 };
+function instSimulateCardStep(step) {
+    haptic('medium');
+    const barEl = document.getElementById('inst-card-bar-fill');
+    const statEl = document.getElementById('inst-card-bar-stat');
+    const statusEl = document.getElementById('inst-card-status-badge');
+    const logEl = document.getElementById('inst-card-action-log');
+
+    if (step === 'buy') {
+        instCardDemoState.daySpent = 135000;
+        const pct = Math.round((instCardDemoState.daySpent / instCardDemoState.dayLimit) * 100);
+        if (barEl) {
+            barEl.style.width = `${pct}%`;
+            barEl.className = 'card-mini-bar-fill danger';
+        }
+        if (statEl) statEl.innerText = `${instCardDemoState.daySpent.toLocaleString()} / ${instCardDemoState.dayLimit.toLocaleString()} ₽ (${pct}%)`;
+        if (logEl) logEl.innerText = 'Закупка фиата на 135 000 ₽. Расход лимита 90% — полоска подсвечена красным цветом (danger).';
+    } else if (step === 'withdraw') {
+        instCardDemoState.daySpent = 150000;
+        if (barEl) {
+            barEl.style.width = '100%';
+            barEl.className = 'card-mini-bar-fill danger';
+        }
+        if (statEl) statEl.innerText = '150 000 / 150 000 ₽ (100%)';
+        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-yellow); font-weight: 900;">⛔️ Лимит исчерпан</span>';
+        if (logEl) logEl.innerText = 'Снятие 15 000 ₽ в банкомате с флагом [В ЛИМИТЕ]. Лимит достиг 100% — статус "Лимит исчерпан" назначен системой автоматически.';
+    } else if (step === 'cooldown') {
+        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-purple); font-weight: 800;">⏳ До 15 сен, 14:00 (осталось 23ч 59м)</span>';
+        if (logEl) logEl.innerText = 'Карта переведена в отлежку на 24 часа. Включен обратный отсчет таймера реального времени.';
+    } else if (step === 'reset') {
+        instCardDemoState.daySpent = 0;
+        if (barEl) {
+            barEl.style.width = '0%';
+            barEl.className = 'card-mini-bar-fill';
+        }
+        if (statEl) statEl.innerText = '0 / 150 000 ₽ (0%)';
+        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
+        if (logEl) logEl.innerText = 'Наступило 00:00:00. Суточный лимит сброшен в ноль, карта возвращена в штатный статус "В работе".';
+    }
+}
+
+function instSimulateRepeat() {
+    haptic('success');
+    const logBox = document.getElementById('inst-repeat-log');
+    if (logBox) {
+        logBox.innerHTML = `
+            <div style="color: var(--bybit-green); font-weight: 800;">✅ ПАРАМЕТРЫ СВЯЗКИ СКОПИРОВАНЫ В КАЛЬКУЛЯТОР:</div>
+            <div style="margin-top: 4px; color: #cbd5e1;">
+                • Прайс: <b>100 000 ₽</b> | Карта: <b>Т-Банк 1</b><br>
+                • Закупка: <b>90.20 ₽</b> ➔ Продажа: <b>92.80 ₽</b><br>
+                • Режим фиксации: <b>💰 Прибыль в фиате</b><br>
+                Всплывает уведомление: «🔁 Все параметры круга скопированы!»
+            </div>
+        `;
+    }
+}
+
+let instFxSimState = true;
+function instSimulateFxToggle() {
+    haptic('light');
+    instFxSimState = !instFxSimState;
+    const box = document.getElementById('inst-fx-preview-box');
+    const txt = document.getElementById('inst-fx-status-text');
+    if (instFxSimState) {
+        if (box) {
+            box.style.background = 'linear-gradient(135deg, rgba(243, 166, 0, 0.15) 0%, rgba(46, 187, 154, 0.15) 100%)';
+            box.style.borderColor = 'var(--bybit-yellow)';
+        }
+        if (txt) txt.innerText = 'Full FX: 3D сферы, неоновые частицы, стекломорфизм (28px)';
+    } else {
+        if (box) {
+            box.style.background = '#05070a';
+            box.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+        }
+        if (txt) txt.innerText = 'OLED Черный: абсолютный чёрный фон (#05070a), минимум энергопотребления';
+    }
+}
+
+/* ====================================================
+   ПОЛНОЕ ИНТЕРАКТИВНОЕ РУКОВОДСТВО ПОЛЬЗОВАТЕЛЯ (РЕАЛЬНЫЙ UI 1:1)
+==================================================== */
+let currentInstTab = 'dashboard';
+
+function openInstructionSheet() {
+    if (!requireSubscription()) return;
+    haptic('medium');
+    const sel = document.getElementById('inst-sheet-lang');
+    if (sel) sel.value = currentLang;
+
+    switchInstTab(currentInstTab || 'dashboard');
+    document.getElementById('instruction-sheet-modal').classList.add('show');
+}
+
+function closeInstructionSheet(event) {
+    if (event && event.target && event.target !== event.currentTarget) return;
+    haptic('light');
+    document.getElementById('instruction-sheet-modal').classList.remove('show');
+}
+
+function switchInstTab(tabKey) {
+    haptic('light');
+    currentInstTab = tabKey;
+    const tabs = ['dash', 'calc', 'calendar', 'trade', 'cards', 'history', 'profile'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`tab-inst-${t}`);
+        if (btn) {
+            btn.classList.toggle('active', (t === tabKey) || (t === 'dash' && tabKey === 'dashboard'));
+        }
+    });
+
+    renderInstructionTabContent(tabKey);
+}
+
+/* ====================================================
+   ОБРАБОТЧИКИ ДЛЯ ИНТЕРАКТИВНЫХ ВИДЖЕТОВ В РУКОВОДСТВЕ
+==================================================== */
+// 1. Интерактив инкогнито
+let instIncognitoState = false;
+function instSimulateIncognito() {
+    haptic('light');
+    instIncognitoState = !instIncognitoState;
+    const valEl = document.getElementById('inst-demo-profit-val');
+    const approxEl = document.getElementById('inst-demo-profit-approx');
+    const iconEl = document.getElementById('inst-demo-incognito-btn');
+
+    if (instIncognitoState) {
+        if (valEl) valEl.style.filter = 'blur(10px)';
+        if (approxEl) approxEl.style.filter = 'blur(10px)';
+        if (iconEl) iconEl.innerText = '🕶 Включен';
+    } else {
+        if (valEl) valEl.style.filter = 'none';
+        if (approxEl) approxEl.style.filter = 'none';
+        if (iconEl) iconEl.innerText = '👁 Выключен';
+    }
+}
+
+// 2. Интерактив калькулятора связок
+let instCalcMode = 'fiat';
+function instSimulateCalcMode(mode) {
+    haptic('light');
+    instCalcMode = mode;
+    document.getElementById('inst-calc-btn-fiat')?.classList.toggle('active', mode === 'fiat');
+    document.getElementById('inst-calc-btn-crypto')?.classList.toggle('active', mode === 'crypto');
+    instSimulateCalcRun();
+}
+
+function instSimulateCalcRun() {
+    const amt = parseFloat(document.getElementById('inst-calc-inp-amt')?.value) || 100000;
+    const buyR = parseFloat(document.getElementById('inst-calc-inp-buy')?.value) || 90.00;
+    const sellR = parseFloat(document.getElementById('inst-calc-inp-sell')?.value) || 92.50;
+
+    const spread = (((sellR - buyR) / buyR) * 100).toFixed(2);
+    const boughtUsdt = amt / buyR;
+
+    const resBox = document.getElementById('inst-calc-live-result');
+    if (!resBox) return;
+
+    if (instCalcMode === 'fiat') {
+        const soldFiat = boughtUsdt * sellR;
+        const profitFiat = (soldFiat - amt).toFixed(2);
+        resBox.innerHTML = `
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в фиате:</div>
+            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
+                +${parseFloat(profitFiat).toLocaleString()} ₽ <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
+            </div>
+            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
+                Куплено ${boughtUsdt.toFixed(2)} USDT и полностью продано. Депозит ${amt.toLocaleString()} ₽ возвращен на карту вместе со спредом.
+            </div>
+        `;
+    } else {
+        const soldUsdt = amt / sellR;
+        const profitUsdt = (boughtUsdt - soldUsdt).toFixed(2);
+        resBox.innerHTML = `
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в USDT:</div>
+            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
+                +${profitUsdt} USDT <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
+            </div>
+            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
+                Продано ${soldUsdt.toFixed(2)} USDT (возврат тела ${amt.toLocaleString()} ₽ на карту). Вся чистая прибыль осталась в монетах USDT.
+            </div>
+        `;
+    }
+}
+
+// 3. Интерактив календаря
+function instSimulateDaySelect(dayNum, profitFiat, profitUsdt, midP, spread) {
+    haptic('light');
+    document.querySelectorAll('.inst-cal-cell').forEach(c => c.classList.remove('selected'));
+    const clickedCell = document.getElementById(`inst-cal-cell-${dayNum}`);
+    if (clickedCell) clickedCell.classList.add('selected');
+
+    const totalF = (profitFiat + (profitUsdt * midP)).toFixed(2);
+    const totalU = (totalF / midP).toFixed(2);
+    const sign = profitUsdt >= 0 ? '+' : '−';
+    const colorF = totalF < 0 ? 'var(--bybit-red)' : (totalF > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+    const colorU = totalU < 0 ? 'var(--bybit-red)' : (totalU > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
+
+    const outBox = document.getElementById('inst-cal-day-detail');
+    if (outBox) {
+        outBox.innerHTML = `
+            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 4px;">
+                📅 ВЫБРАН ДЕНЬ: ${dayNum} СЕНТЯБРЯ 2026
+            </div>
+            <div style="font-size: 16px; font-weight: 900; color: ${colorF};">
+                ${formatSignedMoney(profitFiat, 2)} ₽ <span style="color: var(--text-muted);">${sign}</span> ${Math.abs(profitUsdt).toFixed(2)} USDT
+            </div>
+            <div style="font-size: 12px; font-weight: 800; margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <span style="color: ${colorF};">(≈ ${formatSignedMoney(totalF, 2)} ₽)</span>
+                <span style="color: ${colorU};">(≈ ${formatSignedMoney(totalU, 2)} $)</span>
+                <span style="color: var(--text-muted); margin-left: auto;">Спред: +${spread}%</span>
+            </div>
+        `;
+    }
+}
+
+// 4. Интерактив одиночной сделки
+let instTradeType = 'buy';
+function instSimulateTradeType(type) {
+    haptic('light');
+    instTradeType = type;
+    const btnB = document.getElementById('inst-trade-btn-buy');
+    const btnS = document.getElementById('inst-trade-btn-sell');
+    const prevBtn = document.getElementById('inst-trade-submit-btn');
+
+    if (type === 'buy') {
+        btnB?.classList.add('active', 'buy');
+        btnS?.classList.remove('active', 'sell');
+        if (prevBtn) {
+            prevBtn.className = 'action-btn';
+            prevBtn.innerText = 'СОХРАНИТЬ ПОКУПКУ: 50 000.00 ₽';
+        }
+    } else {
+        btnS?.classList.add('active', 'sell');
+        btnB?.classList.remove('active', 'buy');
+        if (prevBtn) {
+            prevBtn.className = 'action-btn sell-mode';
+            prevBtn.innerText = 'СОХРАНИТЬ ПРОДАЖУ: 50 000.00 ₽';
+        }
+    }
+}
+
+// 5. Интерактив модуля карт
+let instCardDemoState = { dayLimit: 150000, daySpent: 0 };
+function instSimulateCardStep(step) {
+    haptic('medium');
+    const barEl = document.getElementById('inst-card-bar-fill');
+    const statEl = document.getElementById('inst-card-bar-stat');
+    const statusEl = document.getElementById('inst-card-status-badge');
+    const logEl = document.getElementById('inst-card-action-log');
+
+    if (step === 'buy') {
+        instCardDemoState.daySpent = 135000;
+        const pct = Math.round((instCardDemoState.daySpent / instCardDemoState.dayLimit) * 100);
+        if (barEl) {
+            barEl.style.width = `${pct}%`;
+            barEl.className = 'card-mini-bar-fill danger';
+        }
+        if (statEl) statEl.innerText = `${instCardDemoState.daySpent.toLocaleString()} / ${instCardDemoState.dayLimit.toLocaleString()} ₽ (${pct}%)`;
+        if (logEl) logEl.innerText = 'Закупка фиата на 135 000 ₽. Расход лимита 90% — полоска подсвечена красным цветом (danger).';
+    } else if (step === 'withdraw') {
+        instCardDemoState.daySpent = 150000;
+        if (barEl) {
+            barEl.style.width = '100%';
+            barEl.className = 'card-mini-bar-fill danger';
+        }
+        if (statEl) statEl.innerText = '150 000 / 150 000 ₽ (100%)';
+        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-yellow); font-weight: 900;">⛔️ Лимит исчерпан</span>';
+        if (logEl) logEl.innerText = 'Снятие 15 000 ₽ в банкомате с флагом [В ЛИМИТЕ]. Лимит достиг 100% — статус "Лимит исчерпан" назначен системой автоматически.';
+    } else if (step === 'cooldown') {
+        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-purple); font-weight: 800;">⏳ До 15 сен, 14:00 (осталось 23ч 59м)</span>';
+        if (logEl) logEl.innerText = 'Карта переведена в отлежку на 24 часа. Включен обратный отсчет таймера реального времени.';
+    } else if (step === 'reset') {
+        instCardDemoState.daySpent = 0;
+        if (barEl) {
+            barEl.style.width = '0%';
+            barEl.className = 'card-mini-bar-fill';
+        }
+        if (statEl) statEl.innerText = '0 / 150 000 ₽ (0%)';
+        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
+        if (logEl) logEl.innerText = 'Наступило 00:00:00. Суточный лимит сброшен в ноль, карта возвращена в штатный статус "В работе".';
+    }
+}
+
+// 6. Интерактив быстрого повтора
+function instSimulateRepeat() {
+    haptic('success');
+    const logBox = document.getElementById('inst-repeat-log');
+    if (logBox) {
+        logBox.innerHTML = `
+            <div style="color: var(--bybit-green); font-weight: 800;">✅ ПАРАМЕТРЫ СВЯЗКИ СКОПИРОВАНЫ В КАЛЬКУЛЯТОР:</div>
+            <div style="margin-top: 4px; color: #cbd5e1;">
+                • Прайс: <b>100 000 ₽</b> | Карта: <b>Т-Банк 1</b><br>
+                • Закупка: <b>90.20 ₽</b> ➔ Продажа: <b>92.80 ₽</b><br>
+                • Режим фиксации: <b>💰 Прибыль в фиате</b><br>
+                Всплывает системное уведомление: «🔁 Все параметры круга скопированы!»
+            </div>
+        `;
+    }
+}
+
+// 7. Интерактив FX
+let instFxSimState = true;
+function instSimulateFxToggle() {
+    haptic('light');
+    instFxSimState = !instFxSimState;
+    const box = document.getElementById('inst-fx-preview-box');
+    const txt = document.getElementById('inst-fx-status-text');
+    if (instFxSimState) {
+        if (box) {
+            box.style.background = 'linear-gradient(135deg, rgba(243, 166, 0, 0.15) 0%, rgba(46, 187, 154, 0.15) 100%)';
+            box.style.borderColor = 'var(--bybit-yellow)';
+        }
+        if (txt) txt.innerText = 'Full FX: 3D сферы, неоновые частицы, стекломорфизм (28px)';
+    } else {
+        if (box) {
+            box.style.background = '#05070a';
+            box.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+        }
+        if (txt) txt.innerText = 'OLED Черный: абсолютный чёрный фон (#05070a), минимум энергопотребления';
+    }
+}
+
+/* ====================================================
+   ГЕНЕРАТОР ПОЛНОГО РУКОВОДСТВА ПОЛЬЗОВАТЕЛЯ (РЕАЛЬНЫЙ UI 1:1)
 ==================================================== */
 function renderInstructionTabContent(tabKey) {
     const container = document.getElementById('inst-sheet-body');
@@ -5074,92 +5536,134 @@ function renderInstructionTabContent(tabKey) {
                 Главный аналитический пульт терминала консолидирует финансовые потоки со всех задействованных бирж и банковских счетов, рассчитывая фактический финансовый результат арбитража в реальном времени.
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ [ ⚡️ Премиум до 28.10.2026 ]                              [ 👁 / 🕶 ]       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 📢 ОБЪЯВЛЕНИЕ: Курс USDT на Bybit вырос до 93.40 ₽. Спред на закупке +1.8%   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ [ За сегодня ]   [ За месяц ]   [ Все время ]   [ Свой период 📅 ]           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 💰 ОБЩАЯ ПРИБЫЛЬ                             [ 📸 PnL ]   [ ? ]             │
-│                                                                             │
-│ +4 500.00 ₽ + 35.50 USDT                  ┌───────────────────────────────┐ │
-│                                           │  ≈ +7 820.00 ₽   (Mid Price)  │ │
-│                                           │  ≈ +83.70 $      (Конвертация)│ │
-│                                           └───────────────────────────────┘ │
-│ 💡 Раздельный профит в фиате и USDT. Справа — общий эквивалент по Mid Price. │
-│ 📈 +14.2% к прошлому периоду                                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 📊 СПРЕД СДЕЛОК                                                   [ ? ]     │
-│ ┌───────────────────────────────┐   ┌───────────────────────────────┐       │
-│ │ ПОСЛЕДНИЙ КРУГ                │   │ СР. ЗА ПЕРИОД                 │       │
-│ │ +2.84%                        │   │ +1.92%                        │       │
-│ │ 90.20 → 92.76 ₽               │   │ По WAC за таймфрейм           │       │
-│ └───────────────────────────────┘   └───────────────────────────────┘       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ [ 📊 Развернуть подробную статистику ▾ ]                                    │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ГЛАВНОГО ЭКРАНА -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; margin-bottom: 14px;">
+                <div class="tier-badge-row" style="margin-bottom: 8px;">
+                    <div class="sub-tier-badge tier-month" style="padding: 9px 12px; font-size: 11px;">
+                        ⚡️ Премиум до 28.10.2026
+                    </div>
+                    <div class="incognito-toggle-btn" style="width: 36px; height: 36px; font-size: 16px;">
+                        👁
+                    </div>
+                </div>
+
+                <div class="instruction-banner-btn" style="padding: 8px 12px; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">📢</span>
+                        <div style="font-size: 11px; font-weight: 800; color: var(--bybit-green);">
+                            ОБЪЯВЛЕНИЕ: Курс USDT на Bybit вырос до 93.40 ₽. Спред +1.8%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="period-tabs" style="margin-bottom: 8px;">
+                    <div class="p-tab active">За сегодня</div>
+                    <div class="p-tab">За месяц</div>
+                    <div class="p-tab">Все время</div>
+                    <div class="p-tab">Свой период 📅</div>
+                </div>
+
+                <div class="glass-card hero-profit-card" style="margin-bottom: 8px; padding: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="badge" style="color: rgba(255,255,255,0.7); margin: 0;">💰 ОБЩАЯ ПРИБЫЛЬ</span>
+                        <button class="pnl-header-btn">📸 PnL</button>
+                    </div>
+                    <div class="hero-split-profit" style="color: var(--bybit-green); margin-top: 6px;">
+                        +4 500.00 ₽ + 35.50 USDT
+                    </div>
+                    <div class="approx-profit-row" style="margin-bottom: 6px;">
+                        <span style="color: var(--bybit-green);">(≈ +7 820.00 ₽)</span>
+                        <span style="color: var(--bybit-green);">(≈ +83.70 $)</span>
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-muted); line-height: 1.35; margin-bottom: 4px;">
+                        💡 Раздельный профит в фиате и USDT. Снизу — общий эквивалент по Mid Price.
+                    </div>
+                    <div style="font-size: 11px; color: var(--bybit-green); font-weight: 700;">
+                        📈 +14.2% к прошлому периоду
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px;">
+                        <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Последний круг</div>
+                        <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-top: 2px;">+2.84%</div>
+                        <div style="font-size: 9px; color: var(--text-muted);">90.20 → 92.76 ₽</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px;">
+                        <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Ср. за период</div>
+                        <div style="font-size: 15px; font-weight: 900; color: var(--bybit-green); margin-top: 2px;">+1.92%</div>
+                        <div style="font-size: 9px; color: var(--text-muted);">По WAC за таймфрейм</div>
+                    </div>
+                </div>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Верхняя системная панель и безопасность</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
                 • <b>Кнопка «Режим инкогнито» (👁 / 🕶):</b> Переключает класс <code>privacy-active</code> в <code>body</code>. На все числовые блоки, балансы карт, торговые обороты и строчки профита накладывается CSS-фильтр <code>blur(10px)</code>. Геометрия интерфейса, отступы и размеры шрифтов остаются неизменными, предотвращая утечку финансовой информации в общественных местах. Состояние сохраняется в <code>localStorage('p2p_incognito')</code>.<br>
-                • <b>Плашка статуса подписки (<code>#disp-tier-badge</code>):</b> Динамический индикатор доступа: <code>💎 VIP Навсегда</code> (аккаунты со сроком > 2099 года), <code>⚡️ Премиум до [Дата]</code> или <code>⏳ Срок подписки истек</code> (доступ блокируется пейволлом <code>#paywall</code>).<br>
-                • <b>Живой баннер объявлений (<code>#site-live-banner</code>):</b> Блок системных уведомлений от администрации терминала с неоновой золотой пульсацией.
+                • <b>Плашка статуса подписки (<code>#disp-tier-badge</code>):</b> Динамический индикатор доступа. Отображает градации: <code>💎 VIP Навсегда</code> (аккаунты со сроком подписки > 2099 года), <code>⚡️ Премиум до [Дата]</code> (активная помесячная подписка), <code>⏳ Срок подписки истек / ⛔️ Доступ заблокирован</code> (при истечении срока или бане интерфейс терминала блокируется пейволлом <code>#paywall</code>, отключая доступ к базам кассы и сделок).<br>
+                • <b>Живой баннер объявлений (<code>#site-live-banner</code>):</b> Блок системных уведомлений от администрации, работающий через сокет/REST Supabase. При активации подсвечивается неоновым золотым пульсирующим градиентом.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Управление временными интервалами (Таймфреймы)</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Быстрые вкладки («За сегодня», «За месяц», «Все время»):</b> Мгновенная фильтрация массива сделок с поправкой на часовой пояс трейдера (<code>tz_offset</code>). Сделки сопоставляются строго с началом текущих суток <code>00:00:00</code> локального времени.<br>
-                • <b>Вкладка «Свой период 📅»</b>: Раскрывает пресеты быстрого выбора («Вчера», «7 дней», «14 дней», «30 дней») и точные поля выбора дат «С даты / По дату».
+                • <b>Быстрые вкладки («За сегодня», «За месяц», «Все время»):</b> Мгновенная фильтрация массива сделок с поправкой на смещение часового пояса пользователя (<code>tz_offset</code>). Все сделки сопоставляются строго с началом текущих суток <code>00:00:00</code> или 1-м числом текущего месяца локального времени.<br>
+                • <b>Вкладка «Свой период 📅»:</b> Раскрывает панель тонкой настройки выборки:<br>
+                - <i>Пресеты быстрого выбора:</i> кнопки «Вчера» (1 день назад), «7 дней», «14 дней», «30 дней» автоматически заполняют даты начала и конца периода.<br>
+                - <i>Селекторы дат «С даты» и «По дату»:</i> нативные поля календаря с валидацией границ и кнопкой «Применить ⚡️».
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">3. Главная карточка: раздельная прибыль и эквивалент</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Левая часть (Чистый раздельный профит):</b> Отображает прямой остаток рублей на картах и монет USDT на бирже:<br>
+                Карточка общей прибыли разделяет фиатный доход и накопленный объем криптовалюты:<br>
+                • <b>Раздельный профит (на всю ширину):</b> Отображает прямой остаток рублей на картах и монет USDT на бирже, заработанных за выбранный период:<br>
                 <code>Чистая в фиате = Выручка с продаж USDT − Затраты на закупку USDT</code><br>
                 <code>Чистая в USDT = Купленный объем USDT − Проданный объем USDT</code><br>
-                Текст выводится крупно: <code>+4 500.00 ₽ + 35.50 USDT</code> с цветовой индикацией PnL.<br>
-                • <b>Правая часть (Плашка эквивалента <code>.approx-profit-badge</code>):</b> Доход пересчитывается по средневзвешенному биржевому курсу (Mid Price):<br>
+                Текст выводится крупным шрифтом на всю длину экрана без лишних знаков: <code>+4 500.00 ₽ + 35.50 USDT</code> (знак между ними динамически переключается на <code>+</code> или <code>−</code> в зависимости от профита).<br>
+                • <b>Строка эквивалента в скобках:</b> Под основной строкой выводится общий эквивалент по курсу Mid Price:<br>
                 <code>Общая прибыль в фиате = Чистая в фиате + (Чистая в USDT × Mid Price)</code><br>
                 <code>Общая прибыль в USD = Общая прибыль в фиате / Mid Price</code><br>
-                Выводится компактно: <code>≈ +7 820.00 ₽</code> и <code>≈ +83.70 $</code>.<br>
-                • <b>Индикатор сравнения с прошлым периодом:</b> Сопоставляет профит с аналогичным прошлым периодом (вчера, прошлый месяц или предыдущие N дней).
+                Выводится в строку с динамическим окрашиванием: <code>(≈ +7 820.00 ₽)</code> и <code>(≈ +83.70 $)</code> в зеленый цвет при плюсе и в красный при просадке.<br>
+                • <b>Индикатор сравнения с прошлым периодом (<code>#val-period-compare</code>):</b> Сравнивает финансовый результат с идентичным предшествующим отрезком времени с точностью до десятых долей процента.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">4. Генератор PnL-карточки (📸 PnL)</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                Создает графический отчет на Canvas ($1200 \times 720$ px): текст периода выводится чистой золотой строкой без рамок, прибыль печатается раздельно, а кнопка «Отправить мне в бот» моментально доставляет изображение в диалог Telegram.
+                Создает графический отчет на Canvas ($1200 \times 720$ px):<br>
+                • <b>Отсутствие рамки периода:</b> Текст таймфрейма (например, <code>🗓 ЗА СЕГОДНЯ</code>) отрисовывается без прямоугольного контейнера, образуя аккуратную золотую строку под логотипом и никнеймом трейдера.<br>
+                • <b>Раздельный рендер прибыли:</b> По центру карточки крупным кеглем печатается раздельная строка <code>+4 500.00 ₽  +  35.50 USDT</code>, а строкой ниже — <code>(≈ +7 820.00 ₽)   (≈ +83.70 $)</code> с окрашиванием скобок в цвет финансового результата.<br>
+                • <b>Кнопка «Отправить мне в бот»:</b> Конвертирует Canvas в бинарный Blob и через Telegram Bot API отправляет изображение прямо в диалог с ботом с готовым текстовым описанием.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">5. Блок спредов и подробная аналитика</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
-                • <b>Виджет спреда:</b> Маржа последнего закрытого круга и средневзвешенный спред за период.<br>
-                • <b>WAC Закупка (Weighted Average Cost):</b> Реальная себестоимость закупки одного доллара с учетом объемов каждой отдельной партии: $\text{WAC} = \sum (\text{Объем}_i \times \text{Курс}_i) / \sum \text{Объем}_i$.<br>
-                • <b>ROI от оборота:</b> Чистая рентабельность капитала: $(\text{Общая прибыль} / \text{Оборот фиата}) \times 100\%$.
+                • <b>Виджет спреда:</b> Маржа последнего закрытого цикла и средневзвешенный спред за выбранный период.<br>
+                • <b>WAC Закупка (Weighted Average Cost):</b> Реальная себестоимость закупки одного доллара USDT с учетом объемов каждой партии: $\text{WAC} = \sum (\text{Объем}_i \times \text{Курс}_i) / \sum \text{Объем}_i$.<br>
+                • <b>Mid Price:</b> Справедливая средняя цена исполнения между средней закупкой и средней продажей за период.<br>
+                • <b>Оборот фиата и USDT:</b> Общая сумма всех прокрученных рублей и монет за выбранный отрезок.<br>
+                • <b>ROI от оборота:</b> Эффективность капитала в процентах: $(\text{Общая прибыль} / \text{Оборот фиата}) \times 100\%$.
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 1 -->
+            <!-- ИНТЕРАКТИВ 1 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
-                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">СВОДКА И ИНКОГНИТО</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">СИМУЛЯТОР ГЛАВНОГО ЭКРАНА СВОДКИ</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 10px;">
-                    <div>
-                        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Общая прибыль за период</div>
-                        <div id="inst-demo-profit-val" style="font-size: 18px; font-weight: 900; color: var(--bybit-green); transition: filter 0.25s ease;">
-                            +8 450.00 ₽ + 62.10 USDT
-                        </div>
-                        <div id="inst-demo-profit-approx" style="font-size: 11px; color: var(--text-muted); transition: filter 0.25s ease;">
-                            ≈ +14 286.00 ₽ (≈ +152.00 $)
-                        </div>
+                <div style="background: rgba(0,0,0,0.5); padding: 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">💰 ОБЩАЯ ПРИБЫЛЬ</span>
+                        <button class="inst-action-btn" id="inst-demo-incognito-btn" onclick="instSimulateIncognito()">👁 Выключен</button>
                     </div>
-                    <button class="inst-action-btn" id="inst-demo-incognito-btn" onclick="instSimulateIncognito()">
-                        👁 Выключен
-                    </button>
+                    <div id="inst-demo-profit-val" class="hero-split-profit" style="color: var(--bybit-green); transition: filter 0.25s ease;">
+                        +8 450.00 ₽ + 62.10 USDT
+                    </div>
+                    <div id="inst-demo-profit-approx" class="approx-profit-row" style="transition: filter 0.25s ease;">
+                        <span style="color: var(--bybit-green);">(≈ +14 286.00 ₽)</span>
+                        <span style="color: var(--bybit-green);">(≈ +152.00 $)</span>
+                    </div>
                 </div>
                 <div style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
-                    Нажмите кнопку выше: произойдет симуляция переключения режима инкогнито с наложением фильтра <code>blur</code> на балансы без сдвига верстки.
+                    Кликните кнопку [ 👁 Выключен ], чтобы протестировать размытие балансов без изменения размеров блоков интерфейса.
                 </div>
             </div>
         `,
@@ -5172,54 +5676,102 @@ function renderInstructionTabContent(tabKey) {
                 РАЗДЕЛ 2: Калькулятор связок (Фиат vs USDT)
             </div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 12px 0;">
-                Профессиональный инструмент предварительного расчета маржинальности арбитражного цикла (закупка + продажа) с фиксацией параметров в облачном журнале.
+                Инструмент предварительного расчета маржинальности арбитражного цикла (закупка + продажа) с фиксацией параметров в облачном журнале.
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ ⚡️ КАЛЬКУЛЯТОР КРУГА                                                [ ? ]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Привязать карту к кругу:                                            [ ? ]   │
-│ [ 💳 Т-Банк 1 (Касса: 154 000.00 ₽)                                      ▼ ]│
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Прайс сделки (Сумма закупки):                                       [ ? ]   │
-│ [ 100000                                                                  ] │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Тип фиксации прибыли:                                               [ ? ]   │
-│ [ 💰 Прибыль в фиате (АКТИВЕН) ]       [ 🪙 Прибыль в USDT ]                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ ┌───────────────────────────────┐   ┌───────────────────────────────┐       │
-│ │ ПОКУПКА 🟢              [ ? ] │   │ ПРОДАЖА 🔴              [ ? ] │       │
-│ │ Курс USDT                     │   │ Курс USDT                     │       │
-│ │ [ 90.20                     ] │   │ [ 92.80                     ] │       │
-│ │ Получено: 1 108.65 USDT       │   │ Продано: 1 108.65 USDT        │       │
-│ └───────────────────────────────┘   └───────────────────────────────┘       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Спред: +2.88%                                                               │
-│ Прибыль с круга:                                                            │
-│ 0.00 USDT                                                                   │
-│ ≈ +2 882.48 ₽                                                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ [ Сохранить круг ✅ ]                                  [ Очистить ❌ ]      │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 КАЛЬКУЛЯТОРА -->
+            <div class="glass-card" style="border: 1px solid rgba(243, 166, 0, 0.4); margin-bottom: 14px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">⚡️ КАЛЬКУЛЯТОР КРУГА</span>
+                    <span class="help-icon">?</span>
+                </div>
+
+                <div class="input-wrap" style="margin-bottom: 8px;">
+                    <span class="badge" style="margin-bottom: 4px;">Привязать карту к кругу</span>
+                    <select class="styled-input" style="padding: 8px 12px; font-size: 12px;">
+                        <option>💳 Т-Банк 1 (Касса: 154 000.00 ₽)</option>
+                    </select>
+                </div>
+
+                <div class="input-wrap" style="margin-bottom: 8px;">
+                    <span class="badge" style="margin-bottom: 4px;">Прайс сделки (Сумма закупки)</span>
+                    <input type="number" class="styled-input" style="padding: 8px 12px; font-size: 13px;" value="100000">
+                </div>
+
+                <div class="period-tabs" style="margin-bottom: 8px;">
+                    <div class="p-tab active">💰 Прибыль в фиате</div>
+                    <div class="p-tab">🪙 Прибыль в USDT</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <div style="background: rgba(46, 187, 154, 0.08); border: 1px solid rgba(46, 187, 154, 0.25); border-radius: 12px; padding: 8px;">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--bybit-green); margin-bottom: 4px;">ПОКУПКА 🟢</div>
+                        <input type="number" class="styled-input" style="padding: 6px 8px; font-size: 12px;" value="90.20">
+                        <div style="font-size: 11px; font-weight: 800; margin-top: 4px;">1 108.65 USDT</div>
+                    </div>
+                    <div style="background: rgba(242, 54, 69, 0.08); border: 1px solid rgba(242, 54, 69, 0.25); border-radius: 12px; padding: 8px;">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--bybit-red); margin-bottom: 4px;">ПРОДАЖА 🔴</div>
+                        <input type="number" class="styled-input" style="padding: 6px 8px; font-size: 12px;" value="92.80">
+                        <div style="font-size: 11px; font-weight: 800; margin-top: 4px;">1 108.65 USDT</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+                        <span style="color: var(--text-muted);">Спред:</span>
+                        <b style="color: var(--bybit-yellow);">+2.88%</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                        <span style="color: var(--text-muted);">Прибыль с круга:</span>
+                        <div style="text-align: right;">
+                            <b style="color: var(--bybit-green);">0.00 USDT</b>
+                            <div style="font-size: 10px; color: var(--text-muted);">≈ +2 882.48 ₽</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+                    <button class="action-btn" style="padding: 10px; font-size: 11px;">Сохранить круг ✅</button>
+                    <button class="action-btn-secondary" style="padding: 10px; font-size: 11px;">Очистить ❌</button>
+                </div>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Архитектура параметров калькулятора</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Селектор привязки карты (<code>#calc-card-sel</code>):</b> Связывает круг со счетом. При сохранении сумма закупки списывается с кассы, выручка возвращается, а объем покупки учитывается в суточном и месячном лимитах 115-ФЗ.<br>
-                • <b>Прайс сделки (<code>#calc-fiat-amt</code>):</b> Базовый фиатный депозит для покупки партии USDT.<br>
-                • <b>Курсы покупки и продажи:</b> Рассчитывают объем полученных монет: $USDT = \text{Фиат} / \text{Курс покупки}$.
+                • <b>Селектор привязки карты (<code>#calc-card-sel</code>):</b> Связывает связку со счетом. При сохранении круга сумма закупки списывается с остатка кассы, а выручка с продажи зачисляется обратно. При этом объем закупки сразу учитывается в счет суточного и месячного лимитов карты.<br>
+                • <b>Поле «Прайс сделки (Сумма закупки)» (<code>#calc-fiat-amt</code>):</b> Базовый фиатный депозит, выделенный на покупку партии монет.<br>
+                • <b>Поля курсов закупки (<code>#calc-buy-rate</code>) и продажи (<code>#calc-sell-rate</code>):</b><br>
+                - <i>Покупка 🟢:</i> курс мейкера или тейкера на прием фиата. Рассчитывает объем монет: $USDT_{куплено} = \text{Сумма} / \text{Курс покупки}$.<br>
+                - <i>Продажа 🔴:</i> курс отдачи монет.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Математика двух режимов фиксации профита</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Режим «💰 Прибыль в фиате»:</b> Продается весь объем монет ($USDT_{прод} = USDT_{куп}$). Исходный депозит вместе со спредом возвращается на банковскую карту: $\text{Прибыль ₽} = (USDT \times \text{Курс продажи}) - \text{Сумма}$.<br>
-                • <b>Режим «🪙 Прибыль в USDT»:</b> Продается только часть крипты, необходимая для возврата тела депозита: $USDT_{прод} = \text{Сумма} / \text{Курс продажи}$. Прибыль остается на бирже в крипте: $\text{Прибыль USDT} = USDT_{куп} - USDT_{прод}$.
+                • <b>Режим «💰 Прибыль в фиате» (<code>cycleProfitMode = 'fiat'</code>):</b><br>
+                Весь объем купленных монет распродается контрагентам:<br>
+                $USDT_{продано} = USDT_{куплено}$<br>
+                $\text{Выручка в фиате} = USDT_{продано} \times \text{Курс продажи}$<br>
+                $\text{Чистая прибыль в фиате} = \text{Выручка в фиате} - \text{Сумма закупки}$<br>
+                $\text{Чистая прибыль в USDT} = 0.00$<br>
+                <i>Результат:</i> тело депозита вместе с наторгованной маржой возвращается на банковскую карту в рублях.<br>
+                • <b>Режим «🪙 Прибыль в USDT» (<code>cycleProfitMode = 'crypto'</code>):</b><br>
+                Продается только часть объема, достаточная для возврата исходного фиатного депозита на карту:<br>
+                $USDT_{продано} = \text{Сумма закупки} / \text{Курс продажи}$<br>
+                $\text{Чистая прибыль в USDT} = USDT_{куплено} - USDT_{продано}$<br>
+                $\text{Чистая прибыль в фиате} = 0.00$<br>
+                <i>Результат:</i> исходная сумма в рублях возвращается на банковский счет, а заработанный спред оседает на биржевом кошельке в виде чистых долларов USDT.
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 2 -->
+            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">3. Сохранение в облачную базу</div>
+            <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
+                Кнопка <b>Сохранить круг ✅</b> записывает связку в таблицу <code>trades</code> базы данных со специальным маркером <code>is_cycle: true</code>, полями <code>buy_rate</code>, <code>sell_rate</code>, <code>cycle_spread</code>, <code>cycle_profit_rub</code> и <code>cycle_profit_usdt</code>. Действие сопровождается тактильным звуком перезвона золотых монет (<code>playCashSound</code>) и системным haptic-откликом.
+            </p>
+
+            <!-- ИНТЕРАКТИВ 2 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
-                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">РАСЧЕТ КРУГА В РЕАЛЬНОМ ВРЕМЕНИ</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">СИМУЛЯЦИЯ РАСЧЕТА СВЯЗКИ 100 000 ₽</span>
                 </div>
                 <div class="period-tabs" style="margin-bottom: 10px;">
                     <div class="p-tab active" id="inst-calc-btn-fiat" onclick="instSimulateCalcMode('fiat')">💰 Прибыль в фиате</div>
@@ -5245,7 +5797,7 @@ function renderInstructionTabContent(tabKey) {
                         +2 777.78 ₽ <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +2.78%)</span>
                     </div>
                     <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
-                        Куплено 1111.11 USDT и полностью продано. Депозит 100 000 ₽ возвращен, доход зачислен на карту.
+                        Куплено 1 111.11 USDT и полностью продано. Депозит 100 000 ₽ возвращен, доход зачислен на карту.
                     </div>
                 </div>
             </div>
@@ -5259,75 +5811,89 @@ function renderInstructionTabContent(tabKey) {
                 РАЗДЕЛ 3: Календарь общей прибыли
             </div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 12px 0;">
-                Интерактивная матрица доходности по дням месяца с пересчетом общего эквивалента и аналитикой закрытых сессий.
+                Интерактивная тепловая карта торговых дней с динамическим расчетом консолидированной доходности каждого дня.
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ 📅 Календарь общей прибыли                                          [ ? ]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ [ ‹ ]                      СЕНТЯБРЬ 2026                      [ › ]         │
-│                        (Вернуться в текущий)                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│     Пн      Вт      Ср      Чт      Пт      Сб      Вс                      │
-│     31       1       2       3       4       5       6                      │
-│    [   ]   [ 🟢]   [ 🟢]   [ 🟢]   [ 🟢]   [ 🟢]   [ 🟢]                    │
-│                                                                             │
-│      7       8       9      10      11      12      13                      │
-│    [ 🟢]   [ 🟢]   [ 🔴]   [ 🟢]   [ 🟢]   [ 🟢]   [ 🟢]                    │
-│                                                                             │
-│     14      15      16      17      18      19      20                      │
-│    [ 🔥]   [   ]   [   ]   [   ]   [   ]   [   ]   [   ]                    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Всплывающий тултип при зажатии пальца:                                      │
-│ ┌─────────────────────────────────────────────────────────────────────────┐ │
-│ │ 14 СЕНТЯБРЯ 2026                                                        │ │
-│ │ +3 200 ₽  +18.5 USDT                                                    │ │
-│ │ ≈ +4 939 ₽ • 12 сдел. • Спред: +2.10%                                   │ │
-│ └─────────────────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 КАЛЕНДАРЯ -->
+            <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
+                <div class="calendar-month-nav" style="margin-bottom: 10px;">
+                    <button class="cal-nav-btn">‹</button>
+                    <div class="cal-month-title-wrap">
+                        <div style="font-size: 13px; font-weight: 800; color: var(--bybit-yellow);">СЕНТЯБРЬ 2026</div>
+                        <div class="cal-reset-today-btn">Вернуться в текущий</div>
+                    </div>
+                    <button class="cal-nav-btn">›</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 10px; color: var(--text-muted); font-weight: 800; margin-bottom: 6px;">
+                    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px;">
+                    <div class="cal-day-cell profit-pos-low">1</div>
+                    <div class="cal-day-cell profit-pos-mid">2</div>
+                    <div class="cal-day-cell profit-pos-high">3</div>
+                    <div class="cal-day-cell profit-pos-mid">4</div>
+                    <div class="cal-day-cell profit-pos-low">5</div>
+                    <div class="cal-day-cell profit-pos-mid">6</div>
+                    <div class="cal-day-cell profit-pos-high">7</div>
+                    <div class="cal-day-cell profit-pos-mid">8</div>
+                    <div class="cal-day-cell profit-neg">9</div>
+                    <div class="cal-day-cell profit-pos-mid">10</div>
+                    <div class="cal-day-cell profit-pos-high">11</div>
+                    <div class="cal-day-cell profit-pos-low">12</div>
+                    <div class="cal-day-cell profit-pos-mid">13</div>
+                    <div class="cal-day-cell profit-pos-high touch-active">14</div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.5); border: 1.5px solid var(--bybit-yellow); border-radius: 14px; padding: 10px; text-align: center;">
+                    <div style="font-size: 10px; color: var(--text-muted);">14 СЕНТЯБРЯ 2026</div>
+                    <div style="font-size: 15px; font-weight: 900; color: var(--bybit-green); margin: 2px 0;">
+                        +3 200 ₽ + 18.5 USDT
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">
+                        (≈ +4 939 ₽) (≈ +52.54 $) • 12 сдел. • Спред: +2.10%
+                    </div>
+                </div>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Механика тепловой карты</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Градация ячеек (по переведенной прибыли дня):</b> Ячейка окрашивается по значению <code>TotalDayProfit</code> (фиатный доход + USDT × Mid Price месяца):<br>
-                - <code>profit-pos-high</code> (Изумруд): прибыль дня > 10 000 ₽.<br>
-                - <code>profit-pos-mid</code> (Насыщенный зеленый): прибыль дня от 2 000 до 10 000 ₽.<br>
-                - <code>profit-pos-low</code> (Приглушенный зеленый): прибыль дня от 0 до 2 000 ₽.<br>
-                - <code>profit-neg</code> (Красный): отрицательный результат (просадка).<br>
-                • <b>Скольжение пальцем:</b> Зажатие пальца перемещает тултип с раздельным доходом без кликов.
+                • <b>Цветовая градация ячеек (строго по переведенной общей прибыли дня):</b><br>
+                Каждая ячейка дня окрашивается по значению $TotalDayProfit$, где фиатный остаток складывается со стоимостью крипто-остатка по единому Mid Price месяца:<br>
+                - <code>profit-pos-high</code> (Изумрудный): прибыль дня $> 10\,000$ ₽.<br>
+                - <code>profit-pos-mid</code> (Насыщенный зеленый): прибыль дня от $2\,000$ до $10\,000$ ₽.<br>
+                - <code>profit-pos-low</code> (Приглушенный зеленый): прибыль дня от $0$ до $2\,000$ ₽.<br>
+                - <code>profit-neg</code> (Красный): отрицательный финансовый результат (просадка).<br>
+                • <b>Скольжение пальцем (Touch Tracking):</b> События <code>pointerdown</code> и <code>pointermove</code> отслеживают палец на сетке через <code>document.elementFromPoint</code>. Плавающий тултип перемещается над днями без кликов, выдавая haptic-импульс.
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 3 -->
+            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Всплывающий бейдж и модальное окно дня</div>
+            <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
+                • <b>Плавающий тултип:</b> Дата, раздельный профит без лишних знаков (<code>+3 200 ₽ + 18.5 USDT</code>) и строкой ниже — эквивалент, число сделок и дневной спред.<br>
+                • <b>Модальное окно сводки дня (<code>#modal-day-details</code>):</b> Открывается при клике на ячейку: раздельный профит крупно, скобки <code>(≈ ... ₽) (≈ ... $)</code>, дневной оборот и спред.
+            </p>
+
+            <!-- ИНТЕРАКТИВ 3 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
-                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">ТЕСТ КЛИКА ПО ДНЯМ МЕСЯЦА</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">ТЕСТ СКОЛЬЖЕНИЯ И ВЫБОРА ДНЯ</span>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px;">
-                    <div id="inst-cal-cell-10" class="cal-day-cell profit-pos-mid inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(10, 2400, 12.0, 94.0, 1.85)">
-                        10 сен
-                    </div>
-                    <div id="inst-cal-cell-11" class="cal-day-cell profit-pos-high inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(11, 11500, 25.0, 94.0, 2.65)">
-                        11 сен
-                    </div>
-                    <div id="inst-cal-cell-12" class="cal-day-cell profit-neg inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(12, -1200, -5.0, 94.0, -0.90)">
-                        12 сен
-                    </div>
-                    <div id="inst-cal-cell-13" class="cal-day-cell profit-pos-low inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(13, 850, 4.2, 94.0, 1.15)">
-                        13 сен
-                    </div>
-                    <div id="inst-cal-cell-14" class="cal-day-cell profit-pos-high inst-cal-cell selected" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(14, 4500, 35.5, 94.0, 2.10)">
-                        14 сен
-                    </div>
+                    <div id="inst-cal-cell-10" class="cal-day-cell profit-pos-mid inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(10, 2400, 12.0, 94.0, 1.85)">10 сен</div>
+                    <div id="inst-cal-cell-11" class="cal-day-cell profit-pos-high inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(11, 11500, 25.0, 94.0, 2.65)">11 сен</div>
+                    <div id="inst-cal-cell-12" class="cal-day-cell profit-neg inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(12, -1200, -5.0, 94.0, -0.90)">12 сен</div>
+                    <div id="inst-cal-cell-13" class="cal-day-cell profit-pos-low inst-cal-cell" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(13, 850, 4.2, 94.0, 1.15)">13 сен</div>
+                    <div id="inst-cal-cell-14" class="cal-day-cell profit-pos-high inst-cal-cell selected" style="aspect-ratio: 1.2;" onclick="instSimulateDaySelect(14, 4100, 22.0, 94.0, 2.34)">14 сен</div>
                 </div>
                 <div id="inst-cal-day-detail" style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
-                    <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 4px;">
-                        📅 ВЫБРАН ДЕНЬ: 14 СЕНТЯБРЯ 2026
-                    </div>
-                    <div style="font-size: 14px; font-weight: 900; color: var(--bybit-green);">
-                        +4 500.00 ₽ + 35.50 USDT
-                    </div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-                        ≈ +7 837.00 ₽ (≈ +83.37 $) • Спред: +2.10%
+                    <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 4px;">📅 ВЫБРАН ДЕНЬ: 14 СЕНТЯБРЯ 2026</div>
+                    <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">+4 100.00 ₽ + 22.00 USDT</div>
+                    <div style="font-size: 12px; font-weight: 800; margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <span style="color: var(--bybit-green);">(≈ +6 168.00 ₽)</span>
+                        <span style="color: var(--bybit-green);">(≈ +65.61 $)</span>
+                        <span style="color: var(--text-muted); margin-left: auto;">Спред: +2.34%</span>
                     </div>
                 </div>
             </div>
@@ -5341,45 +5907,66 @@ function renderInstructionTabContent(tabKey) {
                 РАЗДЕЛ 4: Одиночные операции (Сделки)
             </div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 12px 0;">
-                Модуль ручной фиксации разовых ордеров покупки или продажи при раздельной торговле без связывания в моментальный круг.
+                Модуль ручной фиксации единичных торговых ордеров для работы по раздельной схеме (когда монеты закупаются у одного мерчанта, а распродаются частями в разное время).
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ Новая операция                                                              │
-│ Внести единичный ордер в базу                                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Тип операции:                                                       [ ? ]   │
-│ [ ПОКУПКА 🟢 (АКТИВЕН) ]               [ ПРОДАЖА 🔴 ]                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Способ указания суммы:                                              [ ? ]   │
-│ [ Сумма фиата (₽) (АКТИВЕН) ]          [ Объем USDT (🪙) ]                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Сумма в фиате (₽):                                                          │
-│ [ 50000.00                                                                ] │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Курс USDT:                                                                  │
-│ [ 90.50                                                                   ] │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Банковская карта (Опционально):                                     [ ? ]   │
-│ [ 💳 Т-Банк 2                                                            ▼ ]│
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Расчетный объем USDT: 552.49 USDT                                           │
-│ [ СОХРАНИТЬ ПОКУПКУ: 50000.00 ₽ ]                                           │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ФОРМЫ ОРДЕРА -->
+            <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
+                <div style="margin-bottom: 8px;">
+                    <span class="badge" style="margin-bottom: 4px;">Тип операции:</span>
+                    <div class="trade-switch" style="margin-bottom: 8px;">
+                        <div class="switch-btn active buy" style="padding: 9px; font-size: 11px;">ПОКУПКА 🟢</div>
+                        <div class="switch-btn" style="padding: 9px; font-size: 11px;">ПРОДАЖА 🔴</div>
+                    </div>
+                </div>
+
+                <div class="period-tabs" style="margin-bottom: 10px;">
+                    <div class="p-tab active">Сумма фиата (₽)</div>
+                    <div class="p-tab">Объем USDT (🪙)</div>
+                </div>
+
+                <div class="input-wrap" style="margin-bottom: 8px;">
+                    <span class="badge" style="margin-bottom: 4px;">Сумма в фиате (₽)</span>
+                    <input type="number" class="styled-input" style="padding: 8px 12px; font-size: 13px;" value="50000.00">
+                </div>
+
+                <div class="input-wrap" style="margin-bottom: 8px;">
+                    <span class="badge" style="margin-bottom: 4px;">Курс USDT</span>
+                    <input type="number" class="styled-input" style="padding: 8px 12px; font-size: 13px;" value="90.50">
+                </div>
+
+                <div class="input-wrap" style="margin-bottom: 10px;">
+                    <span class="badge" style="margin-bottom: 4px;">Банковская карта</span>
+                    <select class="styled-input" style="padding: 8px 12px; font-size: 12px;">
+                        <option>💳 Т-Банк 2</option>
+                    </select>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 10px; font-size: 12px;">
+                    Расчетный объем USDT: <b style="color: var(--bybit-yellow);">552.49 USDT</b>
+                </div>
+
+                <button class="action-btn" style="padding: 11px; font-size: 12px;">
+                    СОХРАНИТЬ ПОКУПКУ: 50000.00 ₽
+                </button>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Логика полей и автокалькуляции</div>
-            <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Селектор стороны сделки:</b><br>
-                - <code>ПОКУПКА 🟢</code>: списание фиата с кассы карты, учет в суточном/месячном лимитах 115-ФЗ, зачисление USDT на биржевой баланс.<br>
-                - <code>ПРОДАЖА 🔴</code>: списание USDT с баланса, зачисление фиата на карту (лимиты 115-ФЗ не расходуются).<br>
-                • <b>Способ указания суммы:</b> от суммы фиата ($USDT = \text{Фиат} / \text{Курс}$) либо от объема монет ($\text{Фиат} = USDT \times \text{Курс}$).
+            <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
+                • <b>Селектор стороны сделки (ПОКУПКА 🟢 / ПРОДАЖА 🔴):</b><br>
+                - <i>Покупка (<code>buy</code>):</i> списание фиата с кассы карты, учет в расходе суточного/месячного лимитов 115-ФЗ, зачисление USDT на склад. Кнопка сохранения окрашивается в зеленый цвет.<br>
+                - <i>Продажа (<code>sell</code>):</i> списание USDT со склада, поступление фиата в кассу карты (лимиты 115-ФЗ не расходуются). Кнопка сохранения окрашивается в красный цвет.<br>
+                • <b>Режим ввода («Сумма фиата» / «Объем USDT»):</b><br>
+                - <i>Ввод в фиате:</i> трейдер вводит рубли, система вычисляет криптовалюту: $\text{USDT} = \text{Фиат} / \text{Курс}$.<br>
+                - <i>Ввод в крипте:</i> трейдер указывает точный объем USDT из ордера, система рассчитывает эквивалент: $\text{Фиат} = \text{USDT} \times \text{Курс}$.<br>
+                • <b>Привязка к банковской карте (<code>#inp-card-sel</code>):</b> Автоматически синхронизирует ордер с кассой счета. Если карта не выбрана, сделка фиксируется только в общем PnL без изменения кассовых остатков.
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 4 -->
+            <!-- ИНТЕРАКТИВ 4 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
-                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">СМЕНА ТИПА СДЕЛКИ</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">СИМУЛЯЦИЯ СОХРАНЕНИЯ ОДИНОЧНОЙ СДЕЛКИ</span>
                 </div>
                 <div class="trade-switch" style="margin-bottom: 12px;">
                     <div class="switch-btn active buy" id="inst-trade-btn-buy" onclick="instSimulateTradeType('buy')">ПОКУПКА 🟢</div>
@@ -5388,13 +5975,13 @@ function renderInstructionTabContent(tabKey) {
                 <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
                         <span style="color: var(--text-muted);">Параметры:</span>
-                        <span style="color: #fff; font-weight: 800;">50 000 ₽ / курс 90.50</span>
+                        <span style="color: #fff; font-weight: 800;">500.00 USDT по курсу 93.10 ₽</span>
                     </div>
-                    <div style="font-size: 12px; color: var(--bybit-yellow); font-weight: 800;">
-                        Расчетный объем: 552.49 USDT
+                    <div style="font-size: 13px; color: var(--bybit-yellow); font-weight: 900;">
+                        Расчетный фиат: 46 550.00 ₽ (Карта: Сбер 1)
                     </div>
                 </div>
-                <button class="action-btn" id="inst-trade-submit-btn" style="padding: 11px; font-size: 12px;">
+                <button class="action-btn" id="inst-trade-submit-btn" style="padding: 12px; font-size: 12px;">
                     СОХРАНИТЬ ПОКУПКУ: 50 000.00 ₽
                 </button>
             </div>
@@ -5411,87 +5998,183 @@ function renderInstructionTabContent(tabKey) {
                 Центральный узел управления безопасностью банковских счетов, дроп-картами, кассовой наличностью и соблюдением суточных/месячных лимитов.
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ Мои карты                                      [ 🔄 Трансфер ] [ ➕ Создать ]│
-│ Контроль кассы, лимиты и авто-смены                                 [ ? ]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 💬 Шаблон реквизитов для сделок (Настроить ⚙️)                     [ ? ]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ ┌─────────────────────────────────────────────────────────────────────────┐ │
-│ │ ▌ Т-Банк 1 (Дроп Алексей)  📌              [ 184 200.00 ₽ ] 🟢 14 / 🔴 9 │ │
-│ │ ▌ 🟢 В работе                                                           │ │
-│ │ ▌ 💬 Сим-карта в модеме, лимит СБП 100к без комиссии                    │ │
-│ │                                                                         │ │
-│ │ СУТОЧНЫЙ ЛИМИТ                                135 000 / 150 000 ₽ (90%) │ │
-│ │ [████████████████████████████████████████░░░░] (Красная подсветка danger)│ │
-│ │                                                                         │ │
-│ │ МЕСЯЧНЫЙ ЛИМИТ                                420 000 / 1 000 000 ₽(42%)│ │
-│ │ [█████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░] (Зеленая полоска normal) │ │
-│ └─────────────────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 РЕЕСТРА КАРТ -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div>
+                        <span style="font-size: 13px; font-weight: 800; color: #fff;">Мои карты</span>
+                        <div style="font-size: 10px; color: var(--text-muted);">Контроль кассы, лимиты и смены</div>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-card-action" style="padding: 5px 8px; font-size: 10px;">🔄 Трансфер</button>
+                        <button class="btn-card-action" style="padding: 5px 8px; font-size: 10px;">➕ Создать</button>
+                    </div>
+                </div>
+
+                <div class="card-template-banner" style="padding: 8px 12px; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>💬</span>
+                        <span style="font-size: 11px; font-weight: 700;">Шаблон реквизитов для сделок</span>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 800; color: var(--bybit-yellow);">Настроить ⚙️</span>
+                </div>
+
+                <!-- КАРТА 1 -->
+                <div class="card-row-item" style="cursor: default; padding: 12px; margin-bottom: 8px;">
+                    <div class="card-stripe" style="background: var(--bybit-yellow);"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <span style="font-weight: 800; font-size: 13px;">Т-Банк 1 (Дроп Алексей)</span>
+                                <span style="font-size: 10px;">📌</span>
+                            </div>
+                            <div style="font-size: 10px; color: var(--bybit-green); font-weight: 800; margin-top: 1px;">🟢 В работе</div>
+                            <div style="font-size: 10px; color: var(--bybit-blue); font-weight: 600; margin-top: 2px;">💬 Сим-карта в модеме, лимит СБП 100к</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 15px; font-weight: 900;">184 200.00 ₽</div>
+                            <div style="font-size: 10px; font-weight: 800; color: var(--text-muted);">🟢 14 / 🔴 9</div>
+                        </div>
+                    </div>
+
+                    <div class="card-dual-bars-wrap" style="margin-top: 8px;">
+                        <div class="card-bar-block">
+                            <div class="card-bar-header">
+                                <span class="card-bar-tag" style="font-size: 9px;">Суточный лимит</span>
+                                <span class="card-bar-stat-text" style="font-size: 9px;">135 000 / 150 000 ₽ (90%)</span>
+                            </div>
+                            <div class="card-mini-bar">
+                                <div class="card-mini-bar-fill danger" style="width: 90%;"></div>
+                            </div>
+                        </div>
+                        <div class="card-bar-block">
+                            <div class="card-bar-header">
+                                <span class="card-bar-tag" style="font-size: 9px;">Месячный лимит</span>
+                                <span class="card-bar-stat-text" style="font-size: 9px;">420 000 / 1 000 000 ₽ (42%)</span>
+                            </div>
+                            <div class="card-mini-bar">
+                                <div class="card-mini-bar-fill" style="width: 42%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- КАРТА 2 -->
+                <div class="card-row-item" style="cursor: default; padding: 12px; margin-bottom: 0;">
+                    <div class="card-stripe" style="background: var(--bybit-green);"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-weight: 800; font-size: 13px;">Сбер Black 2</span>
+                            <div style="font-size: 10px; color: var(--bybit-purple); font-weight: 800; margin-top: 1px;">⏳ До 15 сен, 14:00 (осталось 18ч 20м)</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 15px; font-weight: 900;">45 000.00 ₽</div>
+                            <div style="font-size: 10px; font-weight: 800; color: var(--text-muted);">🟢 0 / 🔴 0</div>
+                        </div>
+                    </div>
+
+                    <div class="card-dual-bars-wrap" style="margin-top: 8px;">
+                        <div class="card-bar-block">
+                            <div class="card-bar-header">
+                                <span class="card-bar-tag" style="font-size: 9px;">Суточный лимит</span>
+                                <span class="card-bar-stat-text" style="font-size: 9px;">0 / 100 000 ₽ (0%)</span>
+                            </div>
+                            <div class="card-mini-bar">
+                                <div class="card-mini-bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="card-bar-block">
+                            <div class="card-bar-header">
+                                <span class="card-bar-tag" style="font-size: 9px;">Месячный лимит</span>
+                                <span class="card-bar-stat-text" style="font-size: 9px;">680 000 / 800 000 ₽ (85%)</span>
+                            </div>
+                            <div class="card-mini-bar">
+                                <div class="card-mini-bar-fill warning" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Анатомия плашки карты в реестре</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Цветной маркер банка (<code>.card-stripe</code>):</b> Вертикальная полоса слева (тинькофф-желтый, сбер-зеленый, альфа-красный и др.).<br>
-                • <b>Кнопки быстрой сортировки (▲ / ▼):</b> Ручное перемещение карточки вверх/вниз с сохранением порядка в памяти.<br>
-                • <b>Заметка к карте (💬):</b> Синий текст под статусом (имя дропа, банк, оператор связи, лимиты переводов).<br>
-                • <b>Баланс кассы:</b> Фактический остаток на счете с поддержкой размытия инкогнито.<br>
-                • <b>Счетчик активности:</b> Бейдж <code>🟢 Покупки / 🔴 Продажи</code> за текущие сутки.
+                • <b>Цветной маркер банка (<code>.card-stripe</code>):</b> Вертикальная полоса слева (тинькофф-желтый, сбер-зеленый, альфа-красный, райф-золотой, втб-синий).<br>
+                • <b>Кнопки быстрой сортировки (▲ / ▼):</b> Ручное перемещение карточки вверх или вниз по списку с сохранением пользовательского порядка в <code>localStorage('p2p_card_custom_order')</code>.<br>
+                • <b>Название и закрепление (📌):</b> Имя карты и бейдж закрепа. Закрепленные карты всегда выводятся в самом верху.<br>
+                • <b>Заметка к карте (💬):</b> Текст заметки выводится синим шрифтом под статусом (имя дропа, банк, привязанный оператор связи, лимиты переводов).<br>
+                • <b>Баланс кассы карты:</b> Фактический рублевый остаток на карте с поддержкой режима размытия инкогнито.<br>
+                • <b>Дневной счетчик активности:</b> Бейдж <code>🟢 Покупки / 🔴 Продажи</code> за текущие сутки.
             </p>
 
-            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Лимиты 115-ФЗ и автосброс в 00:00:00</div>
+            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Лимиты 115-ФЗ: Двойные прогресс-бары и автоматический сброс в 00:00:00</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Суточный и месячный прогресс-бары:</b> Показывают процент расхода лимита оборота.<br>
-                • <b>Что расходует лимит:</b> закупка крипты (покупка фиата) + снятия наличных в банкомате с включенным тумблером «В лимите».<br>
-                • <b>Что НЕ расходует лимит:</b> продажа крипты (прием рублей на карту), пополнение кассы, внутренний трансфер между своими картами.<br>
-                • <b>Цвета полосок:</b> 0–69% зеленый (normal), 70–89% желтый (warning), 90%+ красный (danger).<br>
-                • <b>Сброс лимитов:</b> суточный обнуляется ровно в <code>00:00:00</code> по вашему часовому поясу; месячный — 1-го числа месяца.
+                • <b>Суточный лимит:</b> Полноразмерный прогресс-бар, отслеживающий расходы текущих календарных суток.<br>
+                • <b>Месячный лимит:</b> Полноразмерный прогресс-бар, суммирующий расходы с 1-го числа текущего календарного месяца.<br>
+                • <b>Что уменьшает лимит:</b><br>
+                1. Сумма закупки фиата в ордерах <code>buy</code> и связках <code>is_cycle</code> (трата рублей на покупку крипты).<br>
+                2. Снятия наличности в банкоматах (<code>withdraw</code>) с включенным тумблером «Учитывать снятие в расходе лимита».<br>
+                • <b>Что НЕ уменьшает лимит:</b><br>
+                1. Продажа криптовалюты <code>sell</code> (прием денег на карту).<br>
+                2. Пополнение кассы карты наличными (<code>deposit</code>).<br>
+                3. Внутренний трансфер между своими картами.<br>
+                • <b>Цветовая индикация полосок:</b><br>
+                - От 0% до 69%: зеленый цвет (<code>normal</code>).<br>
+                - От 70% до 89%: желтый цвет предупреждения (<code>warning</code>).<br>
+                - От 90% до 100%+: красный цвет критической опасности (<code>danger</code>).<br>
+                • <b>Сброс лимитов:</b><br>
+                - <i>Суточный счетчик:</i> строго в <code>00:00:00</code> по часовому поясу профиля (<code>tz_offset</code>) счетчик покупок и снятий текущих суток обнуляется, полоска сбрасывается в 0%.<br>
+                - <i>Месячный счетчик:</i> обнуляется строго в <code>00:00:00</code> первого числа каждого нового месяца.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">3. Статусы карт</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <code>🟢 В работе</code>: штатный активный статус.<br>
-                • <code>⏳ На отлежке (по таймеру)</code>: пауза с запросом часов (например, 24ч). Отображается обратный отсчет: <code>⏳ До 15 сен, 14:00 (осталось 18ч 20м)</code>. По истечении таймера карта автоматически возвращается в работу со звуковым сигналом.<br>
-                • <code>🔥 115-ФЗ (в архив)</code>: заблокированная карта. Уходит в самый конец списка с прозрачностью 50%.<br>
-                • <code>⛔️ Лимит исчерпан</code>: назначается <b>только системой автоматически</b> при достижении 100% лимита. Ручной выбор исключен во избежание ошибок.
+                1. <b>🟢 В работе (<code>active</code>):</b> Карта активна, доступна для выбора в калькуляторе и при создании ордеров.<br>
+                2. <b>⏳ На отлежке (по таймеру) (<code>cooldown</code>):</b> Режим временной паузы для снятия антифрод-подозрений банка. При активации запрашивается срок (в часах). Карта отображает обратный отсчет: <code>⏳ До 15 сен, 14:00 (осталось 18ч 20м)</code>. Функция <code>checkCardCooldowns()</code> регулярно сверяет системное время. Как только таймер истекает, карта автоматически возвращается в статус 🟢 В работе, воспроизводится перезвон монет и подается виброотклик.<br>
+                3. <b>🔥 115-ФЗ (в архив) (<code>burned</code>):</b> Статус заблокированной банком карты. Карта приглушается прозрачностью (50%), обесцвечивается серым фильтром и автоматически отправляется в самый конец списка (<code>order: 999</code>).<br>
+                4. <b>⛔️ Лимит исчерпан (<code>limit_reached</code>):</b> Назначается исключительно системой автоматически, если суточный или месячный расход превысил 100%. Ручной выбор этого статуса заблокирован во избежание путаницы. При наступлении 00:00:00 статус автоматически сбрасывается обратно на «В работе».
             </p>
 
-            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">4. Шторка карты (4 вкладки управления)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">4. Шторка карты (CardBottomSheet): 4 вкладки управления</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                1. <b>«📊 Сводка»:</b> Баланс кассы, быстрый селектор статуса, кнопки внесения/снятия, плитки аналитики оборота и копирование реквизитов.<br>
-                2. <b>«💸 Касса»:</b> Журнал пополнений и снятий с редактированием (✏️) и удалением (🗑).<br>
-                3. <b>«⚙️ Настройки»:</b> Номер карты, ФИО, лимиты, дата отлежки, цвет банка, заметка, закреп (📌) и трансфер.<br>
-                4. <b>«📜 Сделки»:</b> Хронология всех арбитражных ордеров, проведенных через эту карту.
+                Клик по любой карте открывает шторку с 4 вкладками:<br>
+                • <b>Вкладка 1: «📊 Сводка»:</b> Крупный остаток кассы с поддержкой инкогнито, быстрый селектор статуса (<code>active</code>, <code>cooldown</code>, <code>burned</code>), кнопки быстрого ввода (<code>➕ Внести в кассу</code> и <code>➖ Снять наличные</code>), 4 аналитические плитки кассы (закуплено, принято, пополнено, снято) и кнопки копирования (шаблон чата и 16 цифр без пробелов).<br>
+                • <b>Вкладка 2: «💸 Касса»:</b> Журнал физических операций с наличностью по счету. Каждая запись содержит дату, сумму, комментарий и статус учета в лимите (<code>[В ЛИМИТЕ]</code>), с кнопками изменения суммы (✏️) и удаления (🗑).<br>
+                • <b>Вкладка 3: «⚙️ Настройки»:</b> Редактирование названия, 16-значного номера карты/СБП и ФИО получателя, поля изменения дневного и месячного лимита (значение 0 = режим <code>∞</code>), календарное поле дедлайна отлежки (<code>datetime-local</code>), выбор цвета маркера банка, текстовая заметка, закрепление (📌), клонирование (📑) и трансфер.<br>
+                • <b>Вкладка 4: «📜 Сделки»:</b> Хронологический перечень только тех ордеров и связок, которые были привязаны к этой карте, с указанием курсов, объемов и спреда.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">5. Межкассовый трансфер (🔄 Трансфер)</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                Перевод фиата между своими картами без влияния на торговую прибыль и без расхода лимитов 115-ФЗ (<code>count_in_limit: false</code>). В кассе фиксируются понятные имена: «Трансфер на Т-Банк 2» и «Трансфер с Сбер 1».
+                Позволяет переводить фиатные средства между своими картами (например, внутрибанковский перевод со счета на счет):<br>
+                • Трансфер не влияет на торговую прибыль и не изменяет спред.<br>
+                • Трансфер не расходует суточный лимит 115-ФЗ (создается с системным флагом <code>count_in_limit: false</code>).<br>
+                • В историю кассы обеих карт записываются связанные системные комментарии с реальными именами карт: <code>➖ СНЯТИЕ: 50 000 ₽ (Трансфер на «Т-Банк 2»)</code> и <code>➕ ПОПОЛНЕНИЕ: 50 000 ₽ (Трансфер с «Сбер 1»)</code>.
             </p>
 
-            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">6. Шаблоны реквизитов для биржевого чата</div>
+            <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">6. Шаблоны реквизитов для чата биржи</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
-                Универсальный текст с автотегами <code>{bank}</code>, <code>{number}</code>, <code>{holder}</code>. Кнопка «📋 Шаблон чата ордера» в шторке копирует готовый текст с подставленными данными в буфер обмена за один клик.
+                Глобальный шаблонизатор сообщений для отправки покупателям в P2P-чат биржи с тегами <code>{bank}</code>, <code>{number}</code>, <code>{holder}</code>. Клик по кнопке «📋 Шаблон чата ордера» в шторке моментально подставляет реальные реквизиты карты и копирует готовый текст в буфер обмена:
+                <br><code>{bank}: {number} ({holder})<br>Оплата строго со своего счета! Третьих лиц не принимаю. Чек в чат обязателен.</code>
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 5 -->
+            <!-- ИНТЕРАКТИВ 5 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
-                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">СИМУЛЯТОР КАРТЫ И ЛИМИТОВ 115-ФЗ</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">ПОЛНЫЙ ЦИКЛ УПРАВЛЕНИЯ КАРТАМИ</span>
                 </div>
 
                 <div class="card-row-item" style="cursor: default; margin-bottom: 12px;">
                     <div class="card-stripe" style="background: var(--bybit-yellow);"></div>
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                         <div>
-                            <span style="font-weight: 800; font-size: 14px;">Т-Банк Black Алексей</span>
+                            <span style="font-weight: 800; font-size: 14px;">Т-Банк Black Алексей 📌</span>
                             <div id="inst-card-status-badge" style="margin-top: 2px;">
                                 <span style="color: var(--bybit-green); font-weight: 800; font-size: 11px;">🟢 В работе</span>
                             </div>
                             <div style="font-size: 11px; color: var(--bybit-blue); margin-top: 2px;">💬 Дроп Алексей, Сбер Black</div>
                         </div>
-                        <div style="font-size: 15px; font-weight: 900;">145 000.00 ₽</div>
+                        <div style="font-size: 15px; font-weight: 900;">184 200.00 ₽</div>
                     </div>
 
                     <div class="card-dual-bars-wrap">
@@ -5508,14 +6191,14 @@ function renderInstructionTabContent(tabKey) {
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
-                    <button class="inst-action-btn" onclick="instSimulateCardStep('buy')">1. Покупка 135к (90%)</button>
+                    <button class="inst-action-btn" onclick="instSimulateCardStep('buy')">1. Закупка 135к (90%)</button>
                     <button class="inst-action-btn" onclick="instSimulateCardStep('withdraw')">2. Снятие 15к (100%)</button>
                     <button class="inst-action-btn" onclick="instSimulateCardStep('cooldown')">3. Отлежка на 24ч</button>
                     <button class="inst-action-btn" onclick="instSimulateCardStep('reset')">4. Сброс в 00:00:00</button>
                 </div>
 
                 <div id="inst-card-action-log" style="font-size: 11px; color: #cbd5e1; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.1);">
-                    Нажимайте шаги выше, чтобы симулировать расход лимита, автосмену статусов и сброс карты.
+                    Нажимайте шаги выше: будет смоделирован полный цикл расхода лимита, автоматическая смена статусов и сброс в 00:00:00.
                 </div>
             </div>
         `,
@@ -5531,44 +6214,78 @@ function renderInstructionTabContent(tabKey) {
                 Облачный реестр всех завершенных ордеров, связок и заметок с инструментами дублирования параметров.
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ История операций                                          [ 🗑 Очистить ]   │
-│ Синхронизированные сделки, круги и заметки                          [ ? ]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ ┌─────────────────────────────────────────────────────────────────────────┐ │
-│ │ КРУГ (₽) ⚡️  [ 💳 Т-Банк 1 ]                               14 сен, 13:42 │ │
-│ │ +2 882.48 ₽                                                             │ │
-│ │ 90.20 → 92.80 ₽ / Спред: +2.88%                                         │ │
-│ │ 📝 Закупка мейкером через Т-Банк, продажа тейкером на Сбер               │ │
-│ │                                               [ 🔁 ]   [ ✏️ ]   [ 🗑 ]  │ │
-│ └─────────────────────────────────────────────────────────────────────────┘ │
-│ ┌─────────────────────────────────────────────────────────────────────────┐ │
-│ │ ПОКУПКА 🟢  [ 💳 Сбер 2 ]                                  14 сен, 12:15 │ │
-│ │ 50 000.00 ₽                                                             │ │
-│ │ 552.48 USDT / 90.50 ₽                                                   │ │
-│ │                                               [ 🔁 ]   [ ✏️ ]   [ 🗑 ]  │ │
-│ └─────────────────────────────────────────────────────────────────────────┘ │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Пагинация:      [ 1 (АКТИВНА) ]     [ 2 ]     [ 3 ]     [ 4 ]               │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ЖУРНАЛА СДЕЛОК -->
+            <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <span style="font-size: 13px; font-weight: 800; color: #fff;">История операций</span>
+                        <div style="font-size: 10px; color: var(--text-muted);">Синхронизированные сделки</div>
+                    </div>
+                    <button class="btn-card-action" style="color: var(--bybit-red); padding: 5px 10px; font-size: 10px;">🗑 Очистить</button>
+                </div>
+
+                <div class="history-item" style="border-left: 4px solid var(--bybit-yellow); padding: 10px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 3px;">
+                        <span style="font-weight: 800; color: var(--bybit-yellow);">КРУГ (₽) ⚡️ <span class="card-pill">💳 Т-Банк 1</span></span>
+                        <span style="color: var(--text-muted);">14 сен, 13:42</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">+2 882.48 ₽</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">90.20 → 92.80 ₽ / Спред: +2.88%</div>
+                            <div style="font-size: 10px; color: var(--bybit-blue); margin-top: 2px;">📝 Закупка мейкером через Т-Банк, продажа тейкером</div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px;" onclick="instSimulateRepeat()">🔁</button>
+                            <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px;">✏️</button>
+                            <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px; color: var(--bybit-red);">🗑</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-item" style="border-left: 4px solid var(--bybit-green); padding: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 3px;">
+                        <span style="font-weight: 800; color: var(--bybit-green);">ПОКУПКА 🟢 <span class="card-pill">💳 Сбер 2</span></span>
+                        <span style="color: var(--text-muted);">14 сен, 12:15</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <div style="font-size: 16px; font-weight: 900;">50 000.00 ₽</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">552.48 USDT / 90.50 ₽</div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px;">🔁</button>
+                            <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px;">✏️</button>
+                            <button class="btn-card-action" style="padding: 5px 8px; font-size: 11px; color: var(--bybit-red);">🗑</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination-bar" style="margin-top: 4px; padding: 0;">
+                    <div class="page-btn active">1</div>
+                    <div class="page-btn">2</div>
+                    <div class="page-btn">3</div>
+                    <div class="page-btn">4</div>
+                </div>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Архитектура элементов записи</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Идентификатор типа:</b> <code>КРУГ (₽) ⚡️</code>, <code>КРУГ (USDT) ⚡️</code>, <code>ПОКУПКА 🟢</code> или <code>ПРОДАЖА 🔴</code>.<br>
-                • <b>Привязка к карте (<code>.card-pill</code>):</b> Золотистый бейдж с именем счета.<br>
-                • <b>Цветные метки:</b> Полоса по левому краю для разделения бирж (зеленый — Bybit, желтый — HTX и др.).
+                • <b>Идентификатор типа:</b> <code>КРУГ (₽) ⚡️</code> (фиксация профита в рублях), <code>КРУГ (USDT) ⚡️</code> (фиксация профита в крипте), <code>ПОКУПКА 🟢</code> или <code>ПРОДАЖА 🔴</code>.<br>
+                • <b>Привязка к карте (<code>.card-pill</code>):</b> Золотистый бейдж с именем задействованной карты.<br>
+                • <b>Цветные маркеры меток:</b> Тонкая цветная полоса по левому краю (<code>border-left</code>) для группировки сделок по биржам или сменам (зеленый, желтый, синий, фиолетовый, красный).
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Кнопки управления операцией</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
-                • <b>Кнопка быстрого повтора (🔁):</b> Копирует прайс, курсы покупки/продажи, режим фиксации и карту прямо в калькулятор связок и открывает главный экран.<br>
-                • <b>Кнопка редактирования (✏️):</b> Корректировка параметров сделки при ошибке ввода.<br>
-                • <b>Кнопка удаления (🗑):</b> Стирает операцию с автоматическим пересчетом баланса кассы и статистики.<br>
-                • <b>Пагинация:</b> Разделение записей по 25 штук на страницу (до 4 страниц) для плавности интерфейса.<br>
-                • <b>Очистка истории (🗑 Очистить):</b> Стирает сделки за сегодня, за текущий месяц или очищает реестр целиком.
+                • <b>Кнопка быстрого повтора (🔁):</b> Копирует сумму закупки, курсы покупки/продажи, режим прибыли и привязанную карту прямо в калькулятор связок и автоматически открывает главный экран.<br>
+                • <b>Кнопка редактирования (✏️):</b> Открывает модальное окно с возможностью исправить сумму, курс, тип операции, привязку к карте или комментарий.<br>
+                • <b>Кнопка удаления (🗑):</b> Стирает сделку из облачной базы с автоматическим пересчетом статистики.<br>
+                • <b>Пагинация:</b> Разбиение реестра страницами по 25 операций (до 4 страниц) для обеспечения максимального FPS интерфейса.<br>
+                • <b>Очистка истории (🗑 Очистить):</b> Меню удаления записей с фильтрацией «За сегодня», «За этот месяц» или «Удалить ВСЕ сделки».
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 6 -->
+            <!-- ИНТЕРАКТИВ 6 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
@@ -5590,7 +6307,7 @@ function renderInstructionTabContent(tabKey) {
                     </div>
                 </div>
                 <div id="inst-repeat-log" style="font-size: 11px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.1);">
-                    Нажмите кнопку [ 🔁 Повторить ] справа от сделки для симуляции копирования связки в калькулятор.
+                    Нажмите кнопку [ 🔁 Повторить ] справа от сделки: параметры связки будут скопированы в калькулятор.
                 </div>
             </div>
         `,
@@ -5606,75 +6323,115 @@ function renderInstructionTabContent(tabKey) {
                 Раздел персонализации рабочей среды, графического режима и монетизации через реферальную программу.
             </p>
 
-            <div class="inst-ascii-card">┌─────────────────────────────────────────────────────────────────────────────┐
-│ Настройки                                                                   │
-│ Конфигурация интерфейса, валюты и промокоды                         [ ? ]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ ВАШ TELEGRAM ID: 5172556128                           [ 💎 Подписка ]       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 🎁 Активация промокода                                                      │
-│ [ ВВЕДИТЕ ПРОМОКОД...                     ] [ Применить ]                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Звук монет / кассы                            [ ВКЛЮЧЕНО (ON)  🔘 ]         │
-│ Аудио-эффект при сохранении                                                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Визуальные спецэффекты (FX)                   [ ВКЛЮЧЕНО (ON)  🔘 ]         │
-│ Полный FX (3D эффекты и фон)                                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Режим общей ленты                             [ ВЫКЛЮЧЕНО (OFF) ⚪️ ]        │
-│ По раздельности (вкладки)                                                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Язык интерфейса:                                                            │
-│ [ 🇷🇺 Русский (Russian)                                                   ▼ ]│
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Базовая валюта:                                                             │
-│ [ RUB ₽ (Российский рубль)                                               ▼ ]│
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Часовой пояс (UTC):                                                         │
-│ [ UTC+3:00 (Москва / Санкт-Петербург / Минск)                            ▼ ]│
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 🤝 Партнерская сеть                                                         │
-│ Активных рефералов (с триалом): 14                                         │
-│ Ваша партнерская ссылка:                                                    │
-│ [ https://t.me/P2P_Rbot?start=5172556128                                  ] │
-│ [ 📋 Скопировать ]                                   [ 🚀 Отправить ]       │
-└─────────────────────────────────────────────────────────────────────────────┘</div>
+            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ПАНЕЛИ НАСТРОЕК -->
+            <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted);">ВАШ TELEGRAM ID</div>
+                        <div style="font-size: 14px; font-weight: 800;">5172556128</div>
+                    </div>
+                    <button class="btn-card-action" style="color: var(--bybit-yellow); padding: 5px 10px; font-size: 11px;">💎 Подписка</button>
+                </div>
+
+                <div style="margin-bottom: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <div style="font-size: 11px; font-weight: 800; margin-bottom: 6px;">🎁 Активация промокода</div>
+                    <div style="display: flex; gap: 6px;">
+                        <input type="text" class="styled-input" style="padding: 7px 10px; font-size: 12px;" placeholder="ВВЕДИТЕ КОД...">
+                        <button class="action-btn gold" style="width: auto; padding: 7px 12px; font-size: 11px;">Применить</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-size: 12px; font-weight: 800;">Звук монет / кассы</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Аудио-эффект при сохранении</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-size: 12px; font-weight: 800;">Визуальные спецэффекты (FX)</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Полный FX (3D эффекты и фон)</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-size: 12px; font-weight: 800;">Режим общей ленты</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">По раздельности (вкладки)</div>
+                    </div>
+                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                    <div>
+                        <span class="badge" style="margin-bottom: 2px;">Язык интерфейса</span>
+                        <select class="styled-input" style="padding: 7px 8px; font-size: 11px;"><option>🇷🇺 Русский</option></select>
+                    </div>
+                    <div>
+                        <span class="badge" style="margin-bottom: 2px;">Базовая валюта</span>
+                        <select class="styled-input" style="padding: 7px 8px; font-size: 11px;"><option>RUB ₽</option></select>
+                    </div>
+                </div>
+
+                <div class="input-wrap" style="margin-bottom: 10px;">
+                    <span class="badge" style="margin-bottom: 2px;">Часовой пояс (UTC)</span>
+                    <select class="styled-input" style="padding: 7px 8px; font-size: 11px;"><option>UTC+3:00 (Москва)</option></select>
+                </div>
+
+                <!-- РЕФЕРАЛКА -->
+                <div style="background: rgba(243, 166, 0, 0.08); border: 1px dashed rgba(243, 166, 0, 0.3); border-radius: 12px; padding: 10px;">
+                    <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">🤝 Партнерская сеть (+3 дня за триал)</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin: 2px 0 6px 0;">Активных рефералов (с триалом): <b style="color: var(--bybit-green);">14</b></div>
+                    <div class="styled-input" style="font-family: monospace; font-size: 10px; padding: 6px 8px; margin-bottom: 6px; word-break: break-all;">
+                        https://t.me/P2P_Rbot?start=5172556128
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                        <button class="action-btn" style="padding: 7px; font-size: 11px;">📋 Скопировать</button>
+                        <button class="action-btn gold" style="padding: 7px; font-size: 11px;">🚀 Отправить</button>
+                    </div>
+                </div>
+            </div>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">1. Системные переключатели</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>Тумблер звука монет/кассы (<code>#toggle-sound-mode</code>):</b> Синтезатор на Web Audio API. Воспроизводит перезвон трех монет (C6 1046.5Hz, E6 1318.5Hz, G6 1567.9Hz) при сохранении сделок и выходе карт из отлежки.<br>
+                • <b>Тумблер звука монет/кассы (<code>#toggle-sound-mode</code>):</b> Управляет аудиосинтезатором на базе Web Audio API. При сохранении ордеров, закрытии связок и выходе карт из отлежки генерирует перезвон трех золотых монет на частотах C6 ($1046.50$ Hz), E6 ($1318.51$ Hz) и G6 ($1567.98$ Hz) с фильтрацией низких частот.<br>
                 • <b>Тумблер визуальных спецэффектов (FX) (<code>#toggle-ui-mode</code>):</b><br>
-                - <code>mode-fx</code>: 3D-сферы освещения, неоновая сетка, размытие Glassmorphism.<br>
-                - <code>mode-simple</code>: фоновые скрипты отключены, глубокий черный энергосберегающий OLED-фон (<code>#05070a</code>).<br>
-                • <b>Тумблер режима общей ленты (<code>#toggle-layout-mode</code>):</b> Переключает интерфейс между вкладками и единой сплошной лентой. Нижний ползунок <code>#nav-slider</code> плавно сопровождает прокрутку, блокируясь на 1.2 секунды при клике во избежание дерганий.
+                - <i>Включен (<code>mode-fx</code>):</i> активирует фоновый 3D-холст частиц, радиальные градиенты освещения и стекломорфизм.<br>
+                - <i>Выключен (<code>mode-simple</code>):</i> отключает Canvas-скрипты, переводит фон в режим абсолютного черного энергосберегающего OLED (<code>#05070a</code>), исключая нагрузку на GPU смартфона.<br>
+                • <b>Тумблер режима общей ленты (<code>#toggle-layout-mode</code>):</b><br>
+                - <i>Вкладки (<code>pages</code>):</i> классический режим переключения между разделами.<br>
+                - <i>Лента (<code>feed</code>):</i> объединяет все экраны терминала в одну вертикальную страницу. Нижний навигационный ползунок (<code>#nav-slider</code>) плавно сопровождает скролл. При клике на кнопку навигации скролл блокирует слушатели на 1.2 секунды, исключая любые дергания.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">2. Локализация, валюта и время</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 8px 0;">
-                • <b>7 языков:</b> Мгновенный перевод на русский, английский, испанский, французский, немецкий, украинский или казахский.<br>
-                • <b>5 валют:</b> RUB (₽), KZT (₸), UAH (₴), BYN (Br), USD ($).<br>
-                • <b>Часовой пояс (UTC):</b> Определяет момент наступления <code>00:00:00</code> для сброса суточных лимитов банковских карт.
+                • <b>Выбор языка:</b> Мгновенный перевод всех текстов, подсказок и обучающего гида на 7 языков: Русский (ru), English (en), Español (es), Français (fr), Deutsch (de), Українська (uk), Қазақша (kk).<br>
+                • <b>Базовая валюта:</b> Переключение между RUB (₽), KZT (₸), UAH (₴), BYN (Br) и USD ($) с обновлением всех знаков валюты в интерфейсе.<br>
+                • <b>Часовой пояс (UTC):</b> Задает локальное время трейдера от UTC-12 до UTC+14. Именно по этому часовому поясу терминал определяет момент наступления <code>00:00:00</code> для сброса суточных лимитов по картам.
             </p>
 
             <div style="font-size: 13px; font-weight: 800; color: #fff; margin: 14px 0 6px 0;">3. Партнерская сеть (Реферальная программа)</div>
             <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0 0 10px 0;">
-                • <b>Бонусные дни:</b> За каждого трейдера, перешедшего по вашей ссылке <code>https://t.me/P2P_Rbot?start={tg_id}</code> и активировавшего бесплатный 24-часовой триал, вам начисляется <b>+3 дня Premium</b> к сроку подписки.<br>
-                • <b>Счетчик:</b> Отображает число активных рефералов с подтвержденным триалом.
+                • <b>Механика начисления:</b> За каждого трейдера, перешедшего по персональной ссылке <code>https://t.me/P2P_Rbot?start={tg_id}</code> и активировавшего бесплатный 24-часовой пробный период, система автоматически добавляет <b>+3 дня Premium</b> к текущему сроку подписки пригласившего.<br>
+                • <b>Индикатор активности:</b> Счетчик «Активных рефералов» показывает точное количество приглашенных пользователей, которые активировали триал в базе данных.
             </p>
 
-            <!-- ИНТЕРАКТИВ РАЗДЕЛА 7 -->
+            <!-- ИНТЕРАКТИВ 7 -->
             <div class="inst-interactive-container">
                 <div class="inst-interactive-header">
                     <span class="inst-tag-live">ИНТЕРАКТИВ 1:1</span>
-                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">ТЕСТ FX И РЕФЕРАЛЬНОЙ ССЫЛКИ</span>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ ИНТЕРФЕЙСА (FX / OLED)</span>
                 </div>
                 <div id="inst-fx-preview-box" style="background: linear-gradient(135deg, rgba(243, 166, 0, 0.15) 0%, rgba(46, 187, 154, 0.15) 100%); border: 1px solid var(--bybit-yellow); border-radius: 12px; padding: 12px; margin-bottom: 10px; transition: all 0.3s ease;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 12px; font-weight: 800;">Визуальные эффекты (FX)</span>
+                        <span style="font-size: 12px; font-weight: 800;">Визуальные спецэффекты (FX)</span>
                         <button class="inst-action-btn" onclick="instSimulateFxToggle()">Переключить FX / OLED</button>
                     </div>
                     <div id="inst-fx-status-text" style="font-size: 11px; color: #cbd5e1; margin-top: 6px;">
-                        Full FX Режим: 3D сферы, неоновые частицы, стекломорфизм (28px)
+                        Full FX: 3D сферы, неоновые частицы, стекломорфизм (28px)
                     </div>
                 </div>
                 <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); font-family: monospace; font-size: 11px; color: var(--bybit-yellow); word-break: break-all;">

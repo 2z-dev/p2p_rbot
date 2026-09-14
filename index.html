@@ -138,16 +138,17 @@
                     </div>
                 </div>
 
-                <!-- РАЗДЕЛЬНЫЙ ВЫВОД СЛЕВА + АККУРАТНАЯ ПЛАШКА С КУРСОВЫМ ЭКВИВАЛЕНТОМ СПРАВА -->
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px 0;">
-                    <div id="val-total-profit-split" class="profit-val privacy-blur" style="font-size: 21px; font-weight: 900; letter-spacing: -0.5px; line-height: 1.25;">
+                <!-- ПОЛНОРАЗМЕРНЫЙ РАЗДЕЛЬНЫЙ ВЫВОД НА ВСЮ ШИРИНУ -->
+                <div style="margin: 10px 0 6px 0; width: 100%;">
+                    <div id="val-total-profit-split" class="profit-val privacy-blur hero-split-profit">
                         +0.00 <span class="sym">₽</span> + 0.00 USDT
                     </div>
-                    <div class="approx-profit-badge privacy-blur">
-                        <div id="val-approx-fiat" style="color: var(--bybit-yellow); font-weight: 800; font-size: 13px;">≈ +0.00 ₽</div>
-                        <div id="val-approx-usd" style="color: var(--bybit-blue); font-weight: 700; font-size: 11px;">≈ +0.00 $</div>
+                    <div id="val-total-profit-approx" class="privacy-blur approx-profit-row">
+                        <span id="val-approx-fiat" style="color: var(--bybit-green);">(≈ +0.00 ₽)</span>
+                        <span id="val-approx-usd" style="color: var(--bybit-green);">(≈ +0.00 $)</span>
                     </div>
                 </div>
+
 
                 <!-- Скрытые узлы для сохранения совместимости -->
                 <div id="val-total-profit-rub" style="display: none;"></div>
@@ -1218,8 +1219,11 @@
 
             <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center;">
                 <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Прибыль дня (Фиат + USDT)</div>
-                <div id="day-modal-profit-val" style="font-size: 20px; font-weight: 900; margin: 6px 0;">+0.00 ₽ + 0.00 USDT</div>
-                <div id="day-modal-profit-approx" style="font-size: 12px; color: var(--text-muted); font-weight: 700; margin-top: 2px;">≈ +0.00 ₽ (≈ +0.00 $)</div>
+                <div id="day-modal-profit-val" style="font-size: 22px; font-weight: 900; margin: 6px 0; word-break: break-word;">+0.00 ₽ + 0.00 USDT</div>
+                <div id="day-modal-profit-approx" style="font-size: 13px; font-weight: 800; margin-top: 4px; display: flex; justify-content: center; gap: 8px;">
+                    <span id="day-modal-approx-fiat" style="color: var(--bybit-green);">(≈ +0.00 ₽)</span>
+                    <span id="day-modal-approx-usd" style="color: var(--bybit-green);">(≈ +0.00 $)</span>
+                </div>
             </div>
 
 
