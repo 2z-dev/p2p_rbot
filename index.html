@@ -138,24 +138,25 @@
                     </div>
                 </div>
 
-                <!-- ПОЛНОРАЗМЕРНЫЙ РАЗДЕЛЬНЫЙ ВЫВОД НА ВСЮ ШИРИНУ -->
+                <!-- РАЗДЕЛЬНЫЙ ВЫВОД С НЕЗАВИСИМЫМИ ЦВЕТАМИ И ЗНАКАМИ -->
                 <div style="margin: 10px 0 6px 0; width: 100%;">
-                    <div id="val-total-profit-split" class="profit-val privacy-blur hero-split-profit">
-                        +0.00 <span class="sym">₽</span> + 0.00 USDT
+                    <div id="val-total-profit-split" class="profit-val privacy-blur hero-split-profit" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span id="part-fiat-profit" style="color: var(--bybit-green);">+0.00 <span class="sym">₽</span></span>
+                        <span id="part-usdt-profit" style="color: var(--bybit-green);">+0.00 USDT</span>
                     </div>
                     <div id="val-total-profit-approx" class="privacy-blur approx-profit-row">
-                        <span id="val-approx-fiat" style="color: var(--bybit-green);">(≈ +0.00 ₽)</span>
-                        <span id="val-approx-usd" style="color: var(--bybit-green);">(≈ +0.00 $)</span>
+                        <span id="val-approx-fiat" style="color: var(--bybit-yellow); font-weight: 800; font-size: 13px;">≈ 0.00 ₽</span>
+                        <span id="val-approx-usd" style="color: var(--bybit-blue); font-weight: 700; font-size: 11px;">≈ 0.00 USDT</span>
                     </div>
                 </div>
 
 
-                <!-- Скрытые узлы для сохранения совместимости -->
+                <!-- Скрытые узлы для совместимости -->
                 <div id="val-total-profit-rub" style="display: none;"></div>
                 <div id="val-total-profit-usdt" style="display: none;"></div>
 
                 <div style="font-size: 10.5px; color: var(--text-muted); margin: 4px 0 8px 0; line-height: 1.35;">
-                    💡 Раздельный профит в фиате и USDT. Справа рассчитан общий эквивалент по курсу Mid Price.
+                    💡 Чистый фиат и чистые USDT имеют независимые знаки и цвета. Справа — общий эквивалент по Mid Price.
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 6px;">

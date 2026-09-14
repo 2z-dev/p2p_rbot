@@ -1340,26 +1340,26 @@ body.locked-no-sub .bottom-nav {
     font-family: 'Fira Code', monospace;
     font-size: 12px;
 }
-/* КРУПНЫЙ ВЫВОД РАЗДЕЛЬНОЙ ПРИБЫЛИ И СТРОКА ЭКВИВАЛЕНТОВ */
+/* КРУПНЫЙ ВЫВОД РАЗДЕЛЬНОЙ ПРИБЫЛИ И НОВАЯ СТРОКА ЭКВИВАЛЕНТОВ */
 .hero-split-profit {
-    font-size: clamp(20px, 6vw, 27px) !important;
+    font-size: clamp(22px, 6vw, 28px) !important;
     font-weight: 900 !important;
     letter-spacing: -0.6px !important;
     line-height: 1.2 !important;
     width: 100%;
     word-break: break-word;
-    display: block;
 }
 
 .approx-profit-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 5px;
-    font-size: 13px;
+    gap: 12px;
+    margin-top: 6px;
+    font-size: 12px;
     font-weight: 800;
     flex-wrap: wrap;
 }
+
 /* ====================================================
    ИНТЕРАКТИВНЫЕ ВИДЖЕТЫ И СХЕМЫ РУКОВОДСТВА ПОЛЬЗОВАТЕЛЯ
 ==================================================== */
