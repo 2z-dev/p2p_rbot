@@ -27,7 +27,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v1.0.0</div>                <div style="font-size: 10px; color: var(--bybit-green); font-weight: 700;">SYNCED</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v1.1.2</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
             <div class="progress-box" style="padding: 10px 16px 14px 16px;">
@@ -60,20 +60,33 @@
         <!-- 1. СВОДКА -->
         <section id="dashboard" class="page-section revealed">
 
-            <!-- ПЛАШКА ПОДПИСКИ И ИНКОГНИТО -->
-            <div class="tier-badge-row">
-                <div id="disp-tier-badge" class="sub-tier-badge tier-vip" style="margin-bottom: 0;" onclick="openSubModal()" title="Управление доступом">
-                    Загрузка статуса...
-                </div>
-                <div class="incognito-toggle-btn" id="btn-incognito" onclick="toggleIncognitoMode()" title="Режим инкогнито">
-                    👁
-                </div>
+        <!-- ПЛАШКА ПОДПИСКИ И ИНКОГНИТО -->
+        <div class="tier-badge-row">
+            <div id="disp-tier-badge" class="sub-tier-badge tier-vip" style="margin-bottom: 0;" onclick="openSubModal()" title="Управление доступом">
+                Загрузка статуса...
             </div>
+            <div class="incognito-toggle-btn" id="btn-incognito" onclick="toggleIncognitoMode()" title="Режим инкогнито">
+                👁
+            </div>
+        </div>
 
-            <!-- ПЛАШКА БАННЕРА-ОБЪЯВЛЕНИЯ -->
-            <div id="site-live-banner" class="banner-empty">
-                <div class="banner-desc" id="site-live-banner-text"></div>
+        <!-- ПЛАШКА-КНОПКА ИНСТРУКЦИИ (ВЫШЕ БАННЕРА, НИЖЕ ПОДПИСКИ) -->
+        <div id="btn-open-instruction" class="instruction-banner-btn" onclick="openInstructionModal()">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">📖</span>
+                <div>
+                    <div class="inst-title" data-i18n="instBannerTitle">ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ</div>
+                    <div class="inst-sub" data-i18n="instBannerSubtitle">Интерактивный гид по каждой кнопке и разделу</div>
+                </div>
             </div>
+            <span class="inst-arrow">➔</span>
+        </div>
+
+        <!-- ПЛАШКА БАННЕРА-ОБЪЯВЛЕНИЯ -->
+        <div id="site-live-banner" class="banner-empty">
+            <div class="banner-desc" id="site-live-banner-text"></div>
+        </div>
+
 
 
             <!-- ПЕРИОДЫ -->
@@ -132,6 +145,9 @@
                     <div id="val-total-profit-usdt" class="privacy-blur" style="font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);">
                         0.00 USDT
                     </div>
+                </div>
+                <div style="font-size: 10.5px; color: var(--text-muted); margin: 3px 0 8px 0; line-height: 1.35;" data-i18n="formulaHeroHint">
+                    💡 Чистая в <span class="sym">₽</span> и чистая в USDT суммируются по курсу Mid Price и дают единую общую прибыль.
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 6px;">
@@ -810,6 +826,11 @@
                 </button>
             </div>
         </div>
+
+        <!-- ГРАНИЦА ОКОНЧАНИЯ ЛЕНТЫ ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ (ЧТОБЫ НЕ СКРОЛЛИЛИ В ПУСТОТУ) -->
+        <div class="feed-terminal-boundary" id="feed-boundary">
+            — P2P TERMINAL PRO v1.1.2 • СИНХРОНИЗИРОВАНО —
+        </div>
     </div>
 
     <!-- ШТОРКА КАРТЫ (БЕЗ ПРИБЫЛИ — ТОЛЬКО КАССА, ЗАКУПКА, ПРОДАЖА И ЛИМИТЫ) -->
@@ -930,9 +951,9 @@
                     <select id="sheet-set-status" class="styled-input" onchange="toggleCooldownDateInput(this.value)">
                         <option value="active">🟢 В работе</option>
                         <option value="cooldown">⏳ На отлежке (по таймеру)</option>
-                        <option value="limit_reached">⛔️ Лимит исчерпан</option>
                         <option value="burned">🔥 115-ФЗ (в архив)</option>
                     </select>
+
                 </div>
 
 
@@ -1237,19 +1258,55 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПОДПИСКИ -->
+    <!-- МОДАЛЬНОЕ ОКНО ПОДПИСКИ (ДЛЯ ПОДПИСЧИКОВ И ДЛЯ ПОКУПКИ) -->
     <div id="modal-sub-info" class="modal-overlay" onclick="closeModals()">
-        <div class="glass-card modal-box" onclick="event.stopPropagation()" style="text-align: center;">
-            <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
-            <h2 style="font-size: 19px; margin: 0 0 10px 0;">Оформление в Telegram-боте</h2>
-            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
-                Без активной подписки терминал работает только в режиме просмотра.<br><br>
-                Активируйте <b>пробный период</b> или оплатите подписку внутри бота для продолжения работы.
-            </p>
-            <div class="analytics-grid">
-                <button class="action-btn-secondary" onclick="closeModals()">Назад</button>
-                <button class="action-btn gold" onclick="openSupport()">🚀 Открыть бота</button>
+        <div class="glass-card modal-box" onclick="event.stopPropagation()" style="text-align: center;" id="modal-sub-content">
+            <!-- Динамически заполняется функцией openSubModal() -->
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ИНСТРУКЦИИ И ФУНКЦИЙ (ИНТЕРАКТИВНОЕ) -->
+    <div id="modal-instruction" class="modal-overlay" onclick="closeInstructionModal()">
+        <div class="glass-card modal-box" onclick="event.stopPropagation()" style="max-width: 540px; max-height: 88vh; text-align: left; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 18px; color: var(--bybit-green);" data-i18n="instModalHeader">📖 Инструкция и все функции</h2>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Terminal Pro v1.1.2 • Интерактивный гид</div>
+                </div>
+                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeInstructionModal()">✕</button>
             </div>
+
+            <!-- ВЫБОР ЯЗЫКА ВНУТРИ ИНСТРУКЦИИ -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: rgba(0,0,0,0.35); padding: 8px 12px; border-radius: 12px;">
+                <span style="font-size: 11px; font-weight: 800;" data-i18n="instLangLabel">🌍 Язык руководства:</span>
+                <select id="inst-lang-sel" class="styled-input" style="width: auto; padding: 6px 10px; font-size: 12px;" onchange="changeLanguage(this.value)">
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="uk">🇺🇦 Українська</option>
+                    <option value="kk">🇰🇿 Қазақша</option>
+                </select>
+            </div>
+
+            <!-- ОГЛАВЛЕНИЕ С ПЕРЕХОДОМ ПО РАЗДЕЛАМ -->
+            <div class="inst-nav-chips">
+                <div class="inst-chip active" onclick="switchInstSection('dashboard', this)">📊 1. Сводка & PnL</div>
+                <div class="inst-chip" onclick="switchInstSection('calc', this)">⚡️ 2. Калькулятор</div>
+                <div class="inst-chip" onclick="switchInstSection('calendar', this)">📅 3. Календарь</div>
+                <div class="inst-chip" onclick="switchInstSection('trade', this)">⚡️ 4. Сделка</div>
+                <div class="inst-chip" onclick="switchInstSection('cards', this)">💳 5. Карты и касса</div>
+                <div class="inst-chip" onclick="switchInstSection('history', this)">📜 6. История</div>
+                <div class="inst-chip" onclick="switchInstSection('settings', this)">⚙️ 7. Настройки</div>
+            </div>
+
+            <!-- КОНТЕЙНЕР ДИНАМИЧЕСКОГО РУКОВОДСТВА С ИНТЕРАКТИВНЫМИ ФРАГМЕНТАМИ -->
+            <div id="inst-content-body" style="max-height: 58vh; overflow-y: auto; padding-right: 4px;"></div>
+
+            <button class="action-btn gold" style="margin-top: 14px; padding: 12px;" onclick="closeInstructionModal()" data-i18n="instCloseBtn">
+                Всё понятно, перейти к торговле 🚀
+            </button>
         </div>
     </div>
 
@@ -1312,7 +1369,8 @@
 
     <!-- НАВИГАЦИЯ -->
 
-    <div class="bottom-nav">
+    <div class="bottom-nav" id="main-bottom-nav">
+        <div class="nav-slider-indicator" id="nav-slider"></div>
 
         <div class="nav-btn active" data-target="dashboard" onclick="handleNavClick('dashboard', this)">
             <i>📊</i><span data-i18n="navDashboard">Сводка</span>

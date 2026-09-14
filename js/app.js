@@ -43,12 +43,21 @@ let adminIds = [SUPER_ADMIN_ID];
 /* ====================================================
    МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ (7 ЯЗЫКОВ)
 ==================================================== */
+/* ====================================================
+   МУЛЬТИЯЗЫЧНЫЙ СЛОВАРЬ UI (7 ЯЗЫКОВ)
+==================================================== */
 const I18N = {
     ru: {
         accessDenied: "Доступ ограничен",
         accessDeniedDesc: "Терминал защищен и запускается исключительно через Telegram Mini App.",
         openBotBtn: "🚀 Открыть бота",
         bannerTag: "ОБЪЯВЛЕНИЕ АДМИНИСТРАЦИИ",
+        instBannerTitle: "ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ",
+        instBannerSubtitle: "Интерактивный гид по каждой кнопке и разделу",
+        instModalHeader: "📖 Инструкция и все функции",
+        instLangLabel: "🌍 Язык руководства:",
+        instCloseBtn: "Всё понятно, перейти к торговле 🚀",
+        formulaHeroHint: "💡 Чистая в ₽ и чистая в USDT суммируются по курсу Mid Price и дают единую общую прибыль.",
         tabToday: "За сегодня",
         tabMonth: "За месяц",
         tabAll: "Все время",
@@ -69,9 +78,9 @@ const I18N = {
         showSecondary: "📊 Развернуть подробную статистику",
         hideSecondary: "📊 Скрыть подробную статистику",
         netIn: "Чистая в",
-        formulaFiat: "Фиатный остаток: разница поступивших и отданных рублей на картах",
+        formulaFiat: "Фиатный остаток: чистая разница рублей на картах (все поступления с продаж минус расходы на USDT).",
         netInUsdt: "Чистая в USDT",
-        formulaUsdt: "Крипто-остаток: чистая прибыль в USDT на бирже сверх депозита",
+        formulaUsdt: "Крипто-остаток: чистый объем монет USDT на бирже сверх возвращенного депозита.",
         midPriceHint: "⚖️ Средняя цена (Mid Price):",
         turnCombinedTitle: "💸 Оборот (Фиат / USDT)",
         statWac: "🛒 WAC Закупка",
@@ -80,7 +89,7 @@ const I18N = {
         statOps: "🔢 Сделок / Покупок / Продаж",
         calcTitle: "⚡️ КАЛЬКУЛЯТОР КРУГА",
         calcBindCard: "Привязать карту к кругу",
-        calcDealPrice: "Прайс сделки",
+        calcDealPrice: "Прайс сделки (Сумма закупки)",
         calcBuyHeader: "ПОКУПКА 🟢",
         calcBuyRate: "Курс USDT",
         calcSellHeader: "ПРОДАЖА 🔴",
@@ -101,7 +110,7 @@ const I18N = {
         bankCardOptionalLabel: "Банковская карта (Опционально)",
         saveTradeBtn: "СОХРАНИТЬ СДЕЛКУ",
         cardsTitle: "Мои карты",
-        cardsSubtitle: "Контроль кассы, лимитов и смен",
+        cardsSubtitle: "Контроль кассы, лимиты и смены",
         btnTransfer: "🔄 Трансфер",
         btnCreateCard: "➕ Создать",
         historyTitle: "История операций",
@@ -122,7 +131,7 @@ const I18N = {
         btnSupport: "👨‍💻 Служба поддержки",
         refTitle: "Партнерская сеть",
         refSubtitle: "Бонусные дни за приглашения",
-        refCountLabel: "Приглашено пользователей",
+        refCountLabel: "Активных рефералов (с триалом):",
         refWhyTitle: "В чем польза звать трейдеров:",
         refWhy1: "• +3 дня Premium начисляются автоматически за каждого активного приглашенного.",
         refWhy2: "• Ваши рефералы навсегда закрепляются за вашим Telegram ID.",
@@ -152,6 +161,12 @@ const I18N = {
         accessDeniedDesc: "Terminal is protected and only opens inside Telegram Mini App.",
         openBotBtn: "🚀 Open Telegram Bot",
         bannerTag: "ADMIN ANNOUNCEMENT",
+        instBannerTitle: "GUIDE & ALL FEATURES",
+        instBannerSubtitle: "Interactive walkthrough for every button and section",
+        instModalHeader: "📖 Guide & All Features",
+        instLangLabel: "🌍 Guide Language:",
+        instCloseBtn: "Got it, back to trading 🚀",
+        formulaHeroHint: "💡 Net Fiat and Net USDT are summed at Mid Price into Consolidated Total Profit.",
         tabToday: "Today",
         tabMonth: "This Month",
         tabAll: "All Time",
@@ -172,9 +187,9 @@ const I18N = {
         showSecondary: "📊 Expand Detailed Stats",
         hideSecondary: "📊 Hide Detailed Stats",
         netIn: "Net in",
-        formulaFiat: "Sell − Buy",
+        formulaFiat: "Fiat balance: net difference of fiat on cards (sales receipts minus buy costs).",
         netInUsdt: "Net in USDT",
-        formulaUsdt: "Buy − Sell",
+        formulaUsdt: "Crypto balance: net USDT earned on exchange above returned deposit.",
         midPriceHint: "⚖️ Mid Price:",
         turnCombinedTitle: "💸 Turnover (Fiat / USDT)",
         statWac: "🛒 WAC Buy Price",
@@ -183,7 +198,7 @@ const I18N = {
         statOps: "🔢 Total / Buys / Sells",
         calcTitle: "⚡️ CYCLE CALCULATOR",
         calcBindCard: "Bind card to cycle",
-        calcDealPrice: "Deal Budget",
+        calcDealPrice: "Deal Budget (Buy Amount)",
         calcBuyHeader: "BUY 🟢",
         calcBuyRate: "USDT Rate",
         calcSellHeader: "SELL 🔴",
@@ -225,7 +240,7 @@ const I18N = {
         btnSupport: "👨‍💻 Support Center",
         refTitle: "Affiliate Network",
         refSubtitle: "Bonus days for invitations",
-        refCountLabel: "Invited Traders",
+        refCountLabel: "Active referrals (with trial):",
         refWhyTitle: "Why invite traders:",
         refWhy1: "• +3 days Premium automatically added per active invitee.",
         refWhy2: "• Referrals permanently bound to your Telegram ID.",
@@ -255,6 +270,12 @@ const I18N = {
         accessDeniedDesc: "El terminal está protegido y sólo se abre en Telegram Mini App.",
         openBotBtn: "🚀 Abrir Bot de Telegram",
         bannerTag: "AVISO DE ADMINISTRACIÓN",
+        instBannerTitle: "GUÍA Y TODAS LAS FUNCIONES",
+        instBannerSubtitle: "Recorrido interactivo por cada botón y sección",
+        instModalHeader: "📖 Guía y Todas las Funciones",
+        instLangLabel: "🌍 Idioma de la guía:",
+        instCloseBtn: "Entendido, ir a operar 🚀",
+        formulaHeroHint: "💡 El beneficio neto en Fiat y USDT se suma según el Mid Price para formar el beneficio consolidado.",
         tabToday: "Hoy",
         tabMonth: "Este Mes",
         tabAll: "Todo el tiempo",
@@ -275,9 +296,9 @@ const I18N = {
         showSecondary: "📊 Ver estadísticas detalladas",
         hideSecondary: "📊 Ocultar estadísticas",
         netIn: "Neto en",
-        formulaFiat: "Venta − Compra",
+        formulaFiat: "Saldo Fiat: diferencia neta de dinero en cuentas bancarias.",
         netInUsdt: "Neto en USDT",
-        formulaUsdt: "Compra − Venta",
+        formulaUsdt: "Saldo Cripto: USDT acumulado en el exchange sobre el capital devuelto.",
         midPriceHint: "⚖️ Precio Medio (Mid Price):",
         turnCombinedTitle: "💸 Volumen (Fiat / USDT)",
         statWac: "🛒 WAC Compra",
@@ -286,7 +307,7 @@ const I18N = {
         statOps: "🔢 Total / Compras / Ventas",
         calcTitle: "⚡️ CALCULADORA DE CICLO",
         calcBindCard: "Vincular tarjeta al ciclo",
-        calcDealPrice: "Monto de operación",
+        calcDealPrice: "Presupuesto (Monto compra)",
         calcBuyHeader: "COMPRA 🟢",
         calcBuyRate: "Tasa USDT",
         calcSellHeader: "VENTA 🔴",
@@ -328,9 +349,9 @@ const I18N = {
         btnSupport: "👨‍💻 Soporte Técnico",
         refTitle: "Red de Afiliados",
         refSubtitle: "Días extra por invitar",
-        refCountLabel: "Traders Invitados",
+        refCountLabel: "Referidos activos (con prueba):",
         refWhyTitle: "Por qué invitar traders:",
-        refWhy1: "• +3 días Premium otorgados por cada invitado.",
+        refWhy1: "• +3 días Premium otorgados por cada invitado activo.",
         refWhy2: "• Referidos vinculados de por vida a tu ID.",
         refWhy3: "• Análisis completo, calculadora y sincronización.",
         refLinkBadge: "Tu Enlace de Afiliado",
@@ -358,6 +379,12 @@ const I18N = {
         accessDeniedDesc: "Le terminal fonctionne uniquement via Telegram Mini App.",
         openBotBtn: "🚀 Ouvrir le Bot",
         bannerTag: "ANNONCE OFFICIELLE",
+        instBannerTitle: "GUIDE ET TOUTES LES FONCTIONS",
+        instBannerSubtitle: "Visite interactive de chaque bouton et section",
+        instModalHeader: "📖 Guide et Toutes les Fonctions",
+        instLangLabel: "🌍 Langue du guide:",
+        instCloseBtn: "Compris, retour au trading 🚀",
+        formulaHeroHint: "💡 Les profits net Fiat et USDT s'additionnent au Mid Price en profit consolidé.",
         tabToday: "Aujourd'hui",
         tabMonth: "Ce Mois",
         tabAll: "Tout le temps",
@@ -378,9 +405,9 @@ const I18N = {
         showSecondary: "📊 Voir détails avancés",
         hideSecondary: "📊 Masquer les détails",
         netIn: "Net en",
-        formulaFiat: "Vente − Achat",
+        formulaFiat: "Solde Fiat : différence nette de liquidités bancaires.",
         netInUsdt: "Net en USDT",
-        formulaUsdt: "Achat − Vente",
+        formulaUsdt: "Solde Crypto : volume USDT net accumulé au-delà du dépôt.",
         midPriceHint: "⚖️ Prix Moyen (Mid Price):",
         turnCombinedTitle: "💸 Volume (Fiat / USDT)",
         statWac: "🛒 WAC Achat",
@@ -389,7 +416,7 @@ const I18N = {
         statOps: "🔢 Total / Achats / Ventes",
         calcTitle: "⚡️ CALCULATEUR DE CYCLE",
         calcBindCard: "Lier la carte au cycle",
-        calcDealPrice: "Budget de l'ordre",
+        calcDealPrice: "Budget de l'ordre (Montant)",
         calcBuyHeader: "ACHAT 🟢",
         calcBuyRate: "Taux USDT",
         calcSellHeader: "VENTE 🔴",
@@ -431,7 +458,7 @@ const I18N = {
         btnSupport: "👨‍💻 Assistance",
         refTitle: "Parrainage",
         refSubtitle: "Jours bonus par invitation",
-        refCountLabel: "Traders Parrainés",
+        refCountLabel: "Filleuls actifs (avec essai):",
         refWhyTitle: "Pourquoi parrainer :",
         refWhy1: "• +3 jours Premium offerts par filleul actif.",
         refWhy2: "• Filleuls liés à vie à votre ID.",
@@ -461,6 +488,12 @@ const I18N = {
         accessDeniedDesc: "Das Terminal funktioniert ausschließlich über Telegram Mini App.",
         openBotBtn: "🚀 Bot Öffnen",
         bannerTag: "ADMIN-ANKÜNDIGUNG",
+        instBannerTitle: "ANLEITUNG & ALLE FUNKTIONEN",
+        instBannerSubtitle: "Interaktiver Rundgang zu jeder Taste und jedem Bereich",
+        instModalHeader: "📖 Anleitung & Alle Funktionen",
+        instLangLabel: "🌍 Anleitungssprache:",
+        instCloseBtn: "Verstanden, zum Trading 🚀",
+        formulaHeroHint: "💡 Netto Fiat und Netto USDT werden zum Mid Price summiert.",
         tabToday: "Heute",
         tabMonth: "Dieser Monat",
         tabAll: "Gesamt",
@@ -481,9 +514,9 @@ const I18N = {
         showSecondary: "📊 Detaillierte Statistiken",
         hideSecondary: "📊 Statistiken ausblenden",
         netIn: "Netto in",
-        formulaFiat: "Verkauf − Einkauf",
+        formulaFiat: "Fiat-Saldo: Nettodifferenz auf Bankkarten (Verkaufserlöse minus Einkauf).",
         netInUsdt: "Netto in USDT",
-        formulaUsdt: "Einkauf − Verkauf",
+        formulaUsdt: "Krypto-Saldo: Auf Börse verbliebene USDT über Einzahlungskapital.",
         midPriceHint: "⚖️ Mid Price:",
         turnCombinedTitle: "💸 Umsatz (Fiat / USDT)",
         statWac: "🛒 WAC Einkauf",
@@ -492,7 +525,7 @@ const I18N = {
         statOps: "🔢 Gesamt / Kauf / Verkauf",
         calcTitle: "⚡️ ZYKLUS-RECHNER",
         calcBindCard: "Karte mit Zyklus verknüpfen",
-        calcDealPrice: "Einsatzbetrag",
+        calcDealPrice: "Einsatzbetrag (Kaufpreis)",
         calcBuyHeader: "KAUF 🟢",
         calcBuyRate: "USDT Kurs",
         calcSellHeader: "VERKAUF 🔴",
@@ -534,7 +567,7 @@ const I18N = {
         btnSupport: "👨‍💻 Support",
         refTitle: "Partnerprogramm",
         refSubtitle: "Bonus-Tage für Empfehlungen",
-        refCountLabel: "Eingeladene Trader",
+        refCountLabel: "Aktive Empfehlungen (mit Test):",
         refWhyTitle: "Vorteile beim Empfehlen:",
         refWhy1: "• +3 Tage Premium für jeden eingeladenen Trader.",
         refWhy2: "• Empfehlungen dauerhaft mit ID verknüpft.",
@@ -564,6 +597,12 @@ const I18N = {
         accessDeniedDesc: "Термінал захищений і запускається виключно через Telegram Mini App.",
         openBotBtn: "🚀 Відкрити бота",
         bannerTag: "ОГОЛОШЕННЯ АДМІНІСТРАЦІЇ",
+        instBannerTitle: "ІНСТРУКЦІЯ ТА ВСІ ФУНКЦІЇ",
+        instBannerSubtitle: "Інтерактивний гід по кожній кнопці та розділу",
+        instModalHeader: "📖 Інструкція та всі функції",
+        instLangLabel: "🌍 Мова посібника:",
+        instCloseBtn: "Все зрозуміло, перейти до угод 🚀",
+        formulaHeroHint: "💡 Чистий прибуток у фіаті та в USDT підсумовуються за курсом Mid Price.",
         tabToday: "За сьогодні",
         tabMonth: "За місяць",
         tabAll: "Весь час",
@@ -584,9 +623,9 @@ const I18N = {
         showSecondary: "📊 Розгорнути детальну статистику",
         hideSecondary: "📊 Приховати детальну статистику",
         netIn: "Чистий у",
-        formulaFiat: "Продаж − Купівля",
+        formulaFiat: "Фіатний залишок: чиста різниця коштів на картках (продаж мінус купівля USDT).",
         netInUsdt: "Чистий в USDT",
-        formulaUsdt: "Купівля − Продаж",
+        formulaUsdt: "Крипто-залишок: зароблений обсяг USDT на біржі понад повернений депозит.",
         midPriceHint: "⚖️ Середня ціна (Mid Price):",
         turnCombinedTitle: "💸 Оборот (Фіат / USDT)",
         statWac: "🛒 WAC Закупівля",
@@ -595,7 +634,7 @@ const I18N = {
         statOps: "🔢 Угод / Купівель / Продажів",
         calcTitle: "⚡️ КАЛЬКУЛЯТОР КРУГА",
         calcBindCard: "Прив'язати картку до круга",
-        calcDealPrice: "Прайс угоди",
+        calcDealPrice: "Прайс угоди (Сума закупівлі)",
         calcBuyHeader: "КУПІВЛЯ 🟢",
         calcBuyRate: "Курс USDT",
         calcSellHeader: "ПРОДАЖ 🔴",
@@ -637,7 +676,7 @@ const I18N = {
         btnSupport: "👨‍💻 Служба підтримки",
         refTitle: "Партнерська мережа",
         refSubtitle: "Бонусні дні за запрошення",
-        refCountLabel: "Запрошено користувачів",
+        refCountLabel: "Активних рефералів (з тріалом):",
         refWhyTitle: "У чому користь запрошувати трейдерів:",
         refWhy1: "• +3 дні Premium нараховуються автоматично за кожного активного запрошеного.",
         refWhy2: "• Ваші реферали назавжди закріплюються за вашим Telegram ID.",
@@ -667,6 +706,12 @@ const I18N = {
         accessDeniedDesc: "Терминал қорғалған және тек Telegram Mini App арқылы жұмыс істейді.",
         openBotBtn: "🚀 Ботты ашу",
         bannerTag: "ӘКІМШІЛІК ХАБАРЛАНДЫРУЫ",
+        instBannerTitle: "НҰСҚАУЛЫҚ ЖӘНЕ БАРЛЫҚ МҮМКІНДІКТЕР",
+        instBannerSubtitle: "Әрбір батырма мен бөлім бойынша интерактивті гид",
+        instModalHeader: "📖 Нұсқаулық және барлық мүмкіндіктер",
+        instLangLabel: "🌍 Нұсқаулық тілі:",
+        instCloseBtn: "Түсінікті, саудаға өту 🚀",
+        formulaHeroHint: "💡 Фиаттағы және USDT-дегі таза пайда Mid Price бағамы бойынша біріктіріледі.",
         tabToday: "Бүгін",
         tabMonth: "Осы айда",
         tabAll: "Барлық уақыт",
@@ -687,9 +732,9 @@ const I18N = {
         showSecondary: "📊 Толық статистиканы ашу",
         hideSecondary: "📊 Статистиканы жасыру",
         netIn: "Таза пайда",
-        formulaFiat: "Сату − Сатып алу",
+        formulaFiat: "Фиат қалдығы: карталардағы кірістер мен шығыстар арасындағы таза айырма.",
         netInUsdt: "Таза USDT",
-        formulaUsdt: "Сатып алу − Сату",
+        formulaUsdt: "Крипто қалдығы: депозитті қайтарғаннан кейін биржада қалған USDT табысы.",
         midPriceHint: "⚖️ Орташа баға (Mid Price):",
         turnCombinedTitle: "💸 Айналым (Фиат / USDT)",
         statWac: "🛒 WAC Сатып алу",
@@ -698,7 +743,7 @@ const I18N = {
         statOps: "🔢 Барлығы / Сатып алу / Сату",
         calcTitle: "⚡️ АЙНАЛЫМ КАЛЬКУЛЯТОРЫ",
         calcBindCard: "Картаны айналымға байлау",
-        calcDealPrice: "Мәміле сомасы",
+        calcDealPrice: "Мәміле сомасы (Сатып алу)",
         calcBuyHeader: "САТЫП АЛУ 🟢",
         calcBuyRate: "USDT бағамы",
         calcSellHeader: "САТУ 🔴",
@@ -740,7 +785,7 @@ const I18N = {
         btnSupport: "👨‍💻 Қолдау қызметі",
         refTitle: "Серіктестік желі",
         refSubtitle: "Шақыртулар үшін бонустық күндер",
-        refCountLabel: "Шақырылған трейдерлер",
+        refCountLabel: "Белсенді рефералдар (триалы бар):",
         refWhyTitle: "Трейдерлерді шақырудың пайдасы:",
         refWhy1: "• Әр белсенді шақырылған адам үшін автоматты түрде +3 күн Premium.",
         refWhy2: "• Рефералдарыңыз сіздің Telegram ID-ге мәңгілікке бекітіледі.",
@@ -764,6 +809,229 @@ const I18N = {
         navHistory: "Тарих",
         navSettings: "Баптаулар",
         navAdmin: "Админ"
+    }
+};
+
+/* ====================================================
+   МУЛЬТИЯЗЫЧНЫЕ ПОДСКАЗКИ СПРАВКИ (?) ДЛЯ ВСЕХ 7 ЯЗЫКОВ
+==================================================== */
+const HELP_DATA = {
+    ru: {
+        total_profit: { title: "💰 ОБЩАЯ ПРИБЫЛЬ", text: "<b>Консолидированный доход в арбитраже:</b><br><br><code>Общая прибыль = Чистая в фиате + (Чистая в USDT × Mid Price)</code><br><br>Складывает заработок рублей на счетах и стоимость оставшихся монет USDT по фактическому курсу." },
+        period_compare: { title: "📈 СРАВНЕНИЕ С ПРОШЛЫМ ПЕРИОДОМ", text: "Показывает прирост или спад прибыли по отношению к аналогичному отрезку времени в прошлом (вчера, прошлый месяц или предыдущие N дней)." },
+        net_fiat: { title: "💵 ЧИСТАЯ В ФИАТЕ", text: "<b>Движение рублей на картах:</b><br><br><code>Поступления от продажи USDT − Расходы на закупку USDT</code><br><br>• <b>Плюс (+):</b> доход зафиксирован на карте.<br>• <b>Минус (−):</b> часть фиата ушла в монеты на биржу." },
+        net_usdt: { title: "🪙 ЧИСТАЯ В USDT", text: "<b>Движение крипты на бирже:</b><br><br><code>Купленный объем USDT − Проданный объем USDT</code><br><br>• <b>Плюс (+):</b> депозит возвращен, прибыль оставлена в USDT.<br>• <b>Минус (−):</b> распродан старый склад монет." },
+        spread: { title: "📊 СПРЕД", text: "Процент маржи с круга: ((Продажа − Покупка) / Покупка) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Средневзвешенная цена доллара за выбранный период для справедливой оценки остатка USDT." },
+        turnover: { title: "💸 ОБОРОТ", text: "Сумма всех прокрученных фиатных средств и монет за выбранный период." },
+        wac: { title: "🛒 WAC ЗАКУПКА", text: "Фактическая средневзвешенная себестоимость закупки одного USDT с учетом объемов." },
+        avg_sell: { title: "🏷 СРЕДНЯЯ ПРОДАЖА", text: "Фактический средний курс продажи монет покупателям." },
+        roi: { title: "📈 ROI ОТ ОБОРОТА", text: "Процент чистой прибыли от общего прокрученного объема фиата." },
+        calculator: { title: "⚡️ КАЛЬКУЛЯТОР КРУГА", text: "Расчет полного цикла связки (закупка + продажа) с мгновенным сохранением в базу." },
+        calc_deal_budget: { title: "💵 СУММА КРУГА", text: "Сумма фиата в рублях, на которую вы совершаете закупку партии USDT." },
+        calc_profit_mode: { title: "⚡️ РЕЖИМ ПРИБЫЛИ", text: "• <b>В фиате:</b> весь доход фиксируется в рублях на карте.<br>• <b>В USDT:</b> тело депозита возвращается на карту, прибыль остается в крипте." },
+        calc_rates: { title: "📈 КУРСЫ КРУГА", text: "Курс закупки USDT и курс продажи покупателю на бирже." },
+        calc_card: { title: "💳 КАРТА КРУГА", text: "Привязка связки к карте для автоматического учета кассы и расхода лимита 115-ФЗ." },
+        calendar: { title: "📅 КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ", text: "Тепловая карта доходности каждого дня. Зажмите палец на ячейке для быстрого просмотра сводки." },
+        single_order_type: { title: "⚡️ ТИП ОРДЕРА", text: "Покупка 🟢 (тратим фиат, получаем USDT) или Продажа 🔴 (отдаем USDT, получаем фиат)." },
+        trade_input_mode: { title: "🔄 РЕЖИМ ВВОДА", text: "Расчет от суммы фиата или от точного количества монет USDT." },
+        trade_card_bind: { title: "💳 ПРИВЯЗКА КАРТЫ", text: "Связывает сделку с картой: баланс и лимиты обновляются автоматически." },
+        cards_overview: { title: "💳 МОДУЛЬ КАРТ", text: "Учет кассы, остатка денег на счетах и суточных/месячных лимитов 115-ФЗ." },
+        cards_actions_help: { title: "💳 УПРАВЛЕНИЕ КАРТАМИ", text: "• <b>Трансфер:</b> перемещение денег между своими картами.<br>• <b>Создать:</b> добавление новой карты с суточным и месячным лимитом." },
+        template_chat_help: { title: "💬 ШАБЛОН ЧАТА", text: "Настройте текст с тегами {bank}, {number}, {holder}. При нажатии кнопки терминал сам подставит реальные реквизиты." },
+        card_limits_help: { title: "🛡 ЛИМИТЫ 115-ФЗ", text: "Суточный и месячный объем оборота. При превышении статус 'Лимит исчерпан' ставится автоматически." },
+        card_status_help: { title: "⏳ СТАТУСЫ КАРТ", text: "• <b>В работе 🟢:</b> активна.<br>• <b>На отлежке ⏳:</b> пауза с обратным отсчетом.<br>• <b>115-ФЗ 🔥:</b> заблокирована, уходит в архив." },
+        history_info: { title: "📜 ИСТОРИЯ ОПЕРАЦИЙ", text: "Реестр всех ваших сделок и кругов. Кнопка 🔁 копирует все параметры сделки в калькулятор." },
+        history_delete_help: { title: "🗑 ОЧИСТКА ИСТОРИИ", text: "Безопасное удаление сделок за сегодня, за текущий месяц или полное очищение базы." },
+        admin_banner_help: { title: "📢 ЖИВОЙ БАННЕР", text: "Текст объявления, который в реальном времени появляется вверху экрана у всех пользователей." },
+        admin_promo_help: { title: "🎟 ПРОМОКОДЫ", text: "Выпуск бонусных промокодов на дни подписки." },
+        admin_broadcast_help: { title: "🤖 РАССЫЛКА", text: "Отправка сообщения через Telegram-бота всем пользователям базы." }
+    },
+    en: {
+        total_profit: { title: "💰 TOTAL PROFIT", text: "<b>Consolidated arbitrage profit:</b><br><br><code>Total Profit = Net Fiat + (Net USDT × Mid Price)</code><br><br>Combines bank earnings and remaining USDT inventory valued at market rate." },
+        period_compare: { title: "📈 PERIOD COMPARISON", text: "Shows percentage profit growth or drop compared to the equivalent previous time range." },
+        net_fiat: { title: "💵 NET FIAT", text: "<b>Bank account flow:</b><br><br><code>USDT Sale Revenue − USDT Buy Expenses</code><br><br>• <b>Positive (+):</b> Profit locked in fiat.<br>• <b>Negative (−):</b> Fiat converted into crypto." },
+        net_usdt: { title: "🪙 NET USDT", text: "<b>Exchange crypto flow:</b><br><br><code>Bought USDT Volume − Sold USDT Volume</code><br><br>• <b>Positive (+):</b> Capital returned, profit left in USDT.<br>• <b>Negative (−):</b> Old stock sold off." },
+        spread: { title: "📊 SPREAD", text: "Cycle margin percentage: ((Sell − Buy) / Buy) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Weighted average dollar price for the selected timeframe to fairly value USDT balance." },
+        turnover: { title: "💸 TURNOVER", text: "Total sum of all fiat and crypto volume transacted." },
+        wac: { title: "🛒 WAC BUY PRICE", text: "Weighted average cost of purchasing 1 USDT across all your fills." },
+        avg_sell: { title: "🏷 AVG SELL PRICE", text: "Effective average selling rate to counterparties." },
+        roi: { title: "📈 TURNOVER ROI", text: "Net profit earned per unit of total fiat volume." },
+        calculator: { title: "⚡️ CYCLE CALCULATOR", text: "Full arbitrage cycle calculator (buy + sell) with one-click database saving." },
+        calc_deal_budget: { title: "💵 DEAL BUDGET", text: "Fiat capital allocated to purchase a batch of USDT." },
+        calc_profit_mode: { title: "⚡️ PROFIT MODE", text: "• <b>In Fiat:</b> All crypto is sold; profit is captured on card.<br>• <b>In USDT:</b> Initial capital returned; profit remains in crypto." },
+        calc_rates: { title: "📈 CYCLE RATES", text: "Buy and sell rates executed on the P2P orderbook." },
+        calc_card: { title: "💳 CYCLE CARD", text: "Binds transaction to a specific bank card for cashflow and AML limits." },
+        calendar: { title: "📅 PROFIT CALENDAR", text: "Daily heatmap of net profit. Press and drag to inspect daily returns." },
+        single_order_type: { title: "⚡️ ORDER TYPE", text: "Buy 🟢 (spend fiat, get USDT) or Sell 🔴 (send USDT, receive fiat)." },
+        trade_input_mode: { title: "🔄 INPUT MODE", text: "Enter deal parameters by fiat amount or exact USDT units." },
+        trade_card_bind: { title: "💳 CARD BINDING", text: "Links deal to a card: automatically adjusts cash balances and limits." },
+        cards_overview: { title: "💳 CARDS MODULE", text: "Tracks card balances, daily/monthly turnover limits, and cooldowns." },
+        cards_actions_help: { title: "💳 CARD CONTROLS", text: "• <b>Transfer:</b> internal funds reallocation.<br>• <b>Create:</b> register a card with custom turnover limits." },
+        template_chat_help: { title: "💬 CHAT TEMPLATE", text: "Configure a message with {bank}, {number}, {holder}. Terminal auto-replaces tags on copy." },
+        card_limits_help: { title: "🛡 TURNOVER LIMITS", text: "Daily and monthly card volume. The status switches to 'Limit Reached' automatically." },
+        card_status_help: { title: "⏳ CARD STATUSES", text: "• <b>Active 🟢:</b> ready.<br>• <b>Cooldown ⏳:</b> resting timer.<br>• <b>Burned 🔥:</b> blocked or archived." },
+        history_info: { title: "📜 HISTORY LEDGER", text: "All recorded trades. The 🔁 button copies deal parameters directly into the calculator." },
+        history_delete_help: { title: "🗑 PURGE HISTORY", text: "Safely erase records for today, the current month, or all cloud trades." },
+        admin_banner_help: { title: "📢 LIVE BANNER", text: "Broadcast a real-time banner shown at the top of all terminal sessions." },
+        admin_promo_help: { title: "🎟 PROMOCODES", text: "Generate activation codes granting bonus subscription days." },
+        admin_broadcast_help: { title: "🤖 BOT BROADCAST", text: "Push messages to all registered users via the Telegram Bot." }
+    },
+    es: {
+        total_profit: { title: "💰 BENEFICIO TOTAL", text: "<b>Beneficio consolidado:</b><br><br><code>Total = Neto Fiat + (Neto USDT × Mid Price)</code><br><br>Suma las ganancias en cuentas bancarias y el valor del USDT restante." },
+        period_compare: { title: "📈 COMPARACIÓN", text: "Muestra la variación porcentual respecto al mismo lapso anterior." },
+        net_fiat: { title: "💵 NETO FIAT", text: "<b>Flujo bancario:</b> Ventas de USDT menos compras de USDT." },
+        net_usdt: { title: "🪙 NETO USDT", text: "<b>Flujo cripto:</b> USDT comprados menos USDT vendidos." },
+        spread: { title: "📊 SPREAD", text: "Margen porcentual del ciclo: ((Venta − Compra) / Compra) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Precio medio ponderado del dólar para valorar el inventario USDT." },
+        turnover: { title: "💸 VOLUMEN", text: "Monto total de dinero y cripto operado en el periodo." },
+        wac: { title: "🛒 WAC COMPRA", text: "Costo promedio ponderado de compra de 1 USDT." },
+        avg_sell: { title: "🏷 VENTA MEDIA", text: "Tasa media efectiva de venta de USDT." },
+        roi: { title: "📈 ROI", text: "Rendimiento neto sobre el volumen fiat total." },
+        calculator: { title: "⚡️ CALCULADORA", text: "Cálculo completo de ciclo con guardado instantáneo en la base." },
+        calc_deal_budget: { title: "💵 PRESUPUESTO", text: "Capital en dinero fiat para la compra de USDT." },
+        calc_profit_mode: { title: "⚡️ MODO BENEFICIO", text: "Fijar ganancias en dinero en cuenta o en saldo USDT." },
+        calc_rates: { title: "📈 TASAS", text: "Precios de compra y venta fijados en la orden." },
+        calc_card: { title: "💳 VINCULAR TARJETA", text: "Asigna la operación a la tarjeta para actualizar límites y caja." },
+        calendar: { title: "📅 CALENDARIO", text: "Mapa de calor diario de beneficios. Deslice el dedo para ver detalles." },
+        single_order_type: { title: "⚡️ TIPO DE ORDEN", text: "Compra 🟢 (entrega fiat, recibe USDT) o Venta 🔴." },
+        trade_input_mode: { title: "🔄 MODO INGRESO", text: "Ingrese por monto fiat o por cantidad exacta de USDT." },
+        trade_card_bind: { title: "💳 ASIGNAR TARJETA", text: "Actualiza el saldo de la caja bancaria y los límites." },
+        cards_overview: { title: "💳 GESTIÓN DE TARJETAS", text: "Control de balances bancarios, descansos y límites de rotación." },
+        cards_actions_help: { title: "💳 ACCIONES", text: "Transferencias entre cuentas y creación de nuevas tarjetas." },
+        template_chat_help: { title: "💬 PLANTILLA DE CHAT", text: "Configura mensajes de pago con etiquetas automáticas." },
+        card_limits_help: { title: "🛡 LÍMITES", text: "Límites diarios y mensuales. El estado cambia automáticamente." },
+        card_status_help: { title: "⏳ ESTADOS", text: "Activa 🟢, en descanso con cuenta regresiva ⏳ o bloqueada 🔥." },
+        history_info: { title: "📜 HISTORIAL", text: "Registro de operaciones. El botón 🔁 copia los datos a la calculadora." },
+        history_delete_help: { title: "🗑 BORRAR", text: "Eliminación segura de operaciones por periodo." },
+        admin_banner_help: { title: "📢 AVISO EN VIVO", text: "Muestra un mensaje para todos los usuarios." },
+        admin_promo_help: { title: "🎟 CÓDIGOS PROMO", text: "Emisión de códigos para días gratis." },
+        admin_broadcast_help: { title: "🤖 DIFUSIÓN", text: "Envío masivo de mensajes a través del bot." }
+    },
+    fr: {
+        total_profit: { title: "💰 PROFIT TOTAL", text: "<b>Profit consolidé :</b><br><br><code>Total = Net Fiat + (Net USDT × Mid Price)</code><br><br>Additionne les gains bancaires et la valeur du stock USDT restant." },
+        period_compare: { title: "📈 COMPARAISON", text: "Indique la hausse ou la baisse par rapport à la période précédente." },
+        net_fiat: { title: "💵 NET FIAT", text: "<b>Flux bancaire :</b> Recettes des ventes USDT moins dépenses d'achat." },
+        net_usdt: { title: "🪙 NET USDT", text: "<b>Flux crypto :</b> USDT achetés moins USDT vendus." },
+        spread: { title: "📊 SPREAD", text: "Marge brute du cycle : ((Vente − Achat) / Achat) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Prix moyen pondéré pour valoriser l'inventaire USDT." },
+        turnover: { title: "💸 VOLUME", text: "Somme de tous les montants traités sur la période." },
+        wac: { title: "🛒 WAC ACHAT", text: "Coût moyen pondéré d'acquisition d'un USDT." },
+        avg_sell: { title: "🏷 VENTE MOYENNE", text: "Taux moyen effectif lors des ventes." },
+        roi: { title: "📈 ROI", text: "Rendement net calculé sur le volume total traité." },
+        calculator: { title: "⚡️ CALCULATEUR", text: "Simulation de cycle avec enregistrement direct dans la base." },
+        calc_deal_budget: { title: "💵 MONTANT DU CYCLE", text: "Budget fiat mobilisé pour acheter des USDT." },
+        calc_profit_mode: { title: "⚡️ TYPE DE PROFIT", text: "Fixer les bénéfices sur le compte bancaire ou en USDT." },
+        calc_rates: { title: "📈 COURS DU CYCLE", text: "Taux d'achat et taux de revente de l'ordre." },
+        calc_card: { title: "💳 CARTE LIÉE", text: "Associe l'ordre à une carte pour ajuster caisse et plafonds." },
+        calendar: { title: "📅 CALENDRIER", text: "Carte thermique des profits quotidiens. Glissez le doigt pour inspecter." },
+        single_order_type: { title: "⚡️ TYPE D'ORDRE", text: "Achat 🟢 ou Vente 🔴." },
+        trade_input_mode: { title: "🔄 SAISIE", text: "Calcul basé sur le montant fiat ou sur le volume USDT." },
+        trade_card_bind: { title: "💳 LIEN CARTE", text: "Met à jour automatiquement la trésorerie et les limites." },
+        cards_overview: { title: "💳 MODULE CARTES", text: "Gestion des caisses bancaires, plafonds et temps de repos." },
+        cards_actions_help: { title: "💳 ACTIONS CARTES", text: "Virements internes et création de nouvelles cartes." },
+        template_chat_help: { title: "💬 MODÈLE DE CHAT", text: "Génération automatique des coordonnées de paiement." },
+        card_limits_help: { title: "🛡 LIMITES", text: "Plafonds jour et mois. Le statut 'Limite atteinte' est automatique." },
+        card_status_help: { title: "⏳ STATUTS", text: "En service 🟢, en repos avec compte à rebours ⏳ ou bloquée 🔥." },
+        history_info: { title: "📜 HISTORIQUE", text: "Journal des transactions. Le bouton 🔁 recharge l'ordre dans le calculateur." },
+        history_delete_help: { title: "🗑 PURGE", text: "Effacement sélectif de l'historique par période." },
+        admin_banner_help: { title: "📢 BANNIÈRE LIVE", text: "Message en temps réel diffusé à tous les utilisateurs." },
+        admin_promo_help: { title: "🎟 CODES PROMO", text: "Création de codes d'accès bonus." },
+        admin_broadcast_help: { title: "🤖 NOTIFICATIONS", text: "Envoi de messages groupés via le bot Telegram." }
+    },
+    de: {
+        total_profit: { title: "💰 GESAMTGEWINN", text: "<b>Konsolidierter Gewinn:</b><br><br><code>Gesamt = Netto Fiat + (Netto USDT × Mid Price)</code><br><br>Kombiniert Bankeinnahmen und verbleibende USDT-Bestände zum Marktwert." },
+        period_compare: { title: "📈 PERIODENVERGLEICH", text: "Zeigt den prozentualen Zuwachs oder Rückgang im Vergleich zum vorherigen Zeitraum." },
+        net_fiat: { title: "💵 NETTO FIAT", text: "<b>Bankguthaben:</b> USDT-Verkaufserlöse minus USDT-Einkaufskosten." },
+        net_usdt: { title: "🪙 NETTO USDT", text: "<b>Kryptoguthaben:</b> Gekaufte USDT minus verkaufte USDT." },
+        spread: { title: "📊 SPREAD", text: "Zyklusmarge in Prozent: ((Verkauf − Einkauf) / Einkauf) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Gewichteter Durchschnittspreis zur fairen Bewertung der USDT-Bestände." },
+        turnover: { title: "💸 UMSATZ", text: "Summe aller getätigten Fiat- und Krypto-Transaktionen." },
+        wac: { title: "🛒 WAC EINKAUF", text: "Effektiver gewichteter Durchschnittspreis pro USDT." },
+        avg_sell: { title: "🏷 Ø VERKAUF", text: "Effektiver durchschnittlicher Verkaufskurs." },
+        roi: { title: "📈 ROI", text: "Nettorendite bezogen auf das gesamte Fiat-Volumen." },
+        calculator: { title: "⚡️ ZYKLUS-RECHNER", text: "Kalkulation von P2P-Zyklen mit direkter Speicherung." },
+        calc_deal_budget: { title: "💵 EINSATZ", text: "Kapitalbetrag für den Ankauf einer USDT-Tranche." },
+        calc_profit_mode: { title: "⚡️ GEWINNART", text: "Gewinn auf das Bankkonto buchen oder in USDT belassen." },
+        calc_rates: { title: "📈 KURSE", text: "Einkaufs- und Verkaufskurse der Transaktion." },
+        calc_card: { title: "💳 KARTENZUWEISUNG", text: "Verknüpft den Zyklus mit einer Karte für Limits und Kasse." },
+        calendar: { title: "📅 KALENDER", text: "Tägliche Heatmap der Gewinne. Finger gedrückt halten zur Ansicht." },
+        single_order_type: { title: "⚡️ TRANSAKTIONSTYP", text: "Kauf 🟢 oder Verkauf 🔴." },
+        trade_input_mode: { title: "🔄 EINGABEMODUS", text: "Eingabe nach Fiat-Betrag oder nach USDT-Menge." },
+        trade_card_bind: { title: "💳 KARTE BINDEN", text: "Aktualisiert automatisch Guthaben und Umsatzlimits." },
+        cards_overview: { title: "💳 KARTENMANAGER", text: "Überwachung von Kassenbeständen, Ruhezeiten und Umsatzlimits." },
+        cards_actions_help: { title: "💳 AKTIONEN", text: "Interne Transfers und Neuanlage von Karten." },
+        template_chat_help: { title: "💬 CHAT-VORLAGE", text: "Automatische Zahlungsdaten für den P2P-Chat." },
+        card_limits_help: { title: "🛡 LIMITS", text: "Tages- und Monatsgrenzen. 'Limit erreicht' schaltet automatisch um." },
+        card_status_help: { title: "⏳ STATUS", text: "Aktiv 🟢, in Ruhezeit mit Countdown ⏳ oder gesperrt 🔥." },
+        history_info: { title: "📜 HISTORIE", text: "Aufzeichnung aller Trades. Die 🔁-Taste kopiert Daten in den Rechner." },
+        history_delete_help: { title: "🗑 LÖSCHEN", text: "Sicheres Bereinigen der Trade-Historie nach Zeitraum." },
+        admin_banner_help: { title: "📢 LIVE-BANNER", text: "Blendet eine Ankündigung für alle Nutzer ein." },
+        admin_promo_help: { title: "🎟 PROMOCODES", text: "Erstellung von Codes für kostenlose Tage." },
+        admin_broadcast_help: { title: "🤖 BROADCAST", text: "Massenversand von Nachrichten über den Bot." }
+    },
+    uk: {
+        total_profit: { title: "💰 ЗАГАЛЬНИЙ ПРИБУТОК", text: "<b>Консолідований прибуток в арбітражі:</b><br><br><code>Загальний = Чистий у фіаті + (Чистий в USDT × Mid Price)</code><br><br>Підсумовує заробіток на картках і вартість залишку USDT за ринковим курсом." },
+        period_compare: { title: "📈 ПОРІВНЯННЯ З МИНУЛИМ ПЕРІОДОМ", text: "Показує приріст або спад прибутку щодо аналогічного відрізка часу в минулому." },
+        net_fiat: { title: "💵 ЧИСТИЙ У ФІАТІ", text: "<b>Рух коштів на картках:</b> Надходження від продажу USDT мінус витрати на купівлю USDT." },
+        net_usdt: { title: "🪙 ЧИСТИЙ В USDT", text: "<b>Рух крипти на біржі:</b> Куплений обсяг USDT мінус проданий обсяг USDT." },
+        spread: { title: "📊 СПРЕД", text: "Відсоток маржі з круга: ((Продаж − Купівля) / Купівля) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Середньозважений курс долара для справедливої оцінки крипто-залишку." },
+        turnover: { title: "💸 ОБОРОТ", text: "Сума всіх прокручених фіатних коштів і криптовалюти." },
+        wac: { title: "🛒 WAC ЗАКУПІВЛЯ", text: "Фактична середньозважена собівартість купівлі одного USDT." },
+        avg_sell: { title: "🏷 СЕРЕДНІЙ ПРОДАЖ", text: "Фактичний середній курс продажу монет покупцям." },
+        roi: { title: "📈 ROI ВІД ОБОРОТУ", text: "Відсоток чистого прибутку від загального обороту фіату." },
+        calculator: { title: "⚡️ КАЛЬКУЛЯТОР КРУГА", text: "Розрахунок повного циклу зв'язки з миттєвим збереженням у базу." },
+        calc_deal_budget: { title: "💵 СУМА КРУГА", text: "Сума фіату, на яку здійснюється купівля партії USDT." },
+        calc_profit_mode: { title: "⚡️ РЕЖИМ ПРИБУТКУ", text: "Фіксація прибутку на банківську картку або в накопичення USDT." },
+        calc_rates: { title: "📈 КУРСИ КРУГА", text: "Курси купівлі та продажу USDT у зв'язці." },
+        calc_card: { title: "💳 КАРТКА КРУГА", text: "Прив'язка зв'язки до картки для обліку каси та лімітів." },
+        calendar: { title: "📅 КАЛЕНДАР ЗАГАЛЬНОГО ПРИБУТКУ", text: "Теплова карта дохідності за днями. Затисніть палець на клітинці для деталей." },
+        single_order_type: { title: "⚡️ ТИП ОРДЕРА", text: "Купівля 🟢 або Продаж 🔴." },
+        trade_input_mode: { title: "🔄 РЕЖИМ ВВЕДЕННЯ", text: "Введення від суми фіату або від кількості монет USDT." },
+        trade_card_bind: { title: "💳 ПРИВ'ЯЗКА КАРТКИ", text: "Автоматично коригує касу та витрати лімітів." },
+        cards_overview: { title: "💳 МОДУЛЬ КАРТОК", text: "Контроль каси, залишків на рахунках і добових/місячних лімітів." },
+        cards_actions_help: { title: "💳 КЕРУВАННЯ КАРТКАМИ", text: "Внутрішні перекази та реєстрація нових карток." },
+        template_chat_help: { title: "💬 ШАБЛОН ЧАТУ", text: "Генерація реквізитів з автопідстановкою даних картки." },
+        card_limits_help: { title: "🛡 ЛІМІТИ", text: "Контроль лімітів. Статус 'Ліміт вичерпано' встановлюється автоматично." },
+        card_status_help: { title: "⏳ СТАТУСИ КАРТОК", text: "В роботі 🟢, на відлежці з таймером ⏳ або 115-ФЗ 🔥." },
+        history_info: { title: "📜 ІСТОРІЯ ОПЕРАЦІЙ", text: "Реєстр усіх угод. Кнопка 🔁 копіює параметри угоди в калькулятор." },
+        history_delete_help: { title: "🗑 ОЧИЩЕННЯ ІСТОРІЇ", text: "Безпечне видалення угод за вибраний період." },
+        admin_banner_help: { title: "📢 ЖИВИЙ БАНЕР", text: "Оголошення, яке відображається всім користувачам." },
+        admin_promo_help: { title: "🎟 ПРОМОКОДИ", text: "Створення промокодів на безкоштовні дні доступу." },
+        admin_broadcast_help: { title: "🤖 РОЗСИЛКА", text: "Відправка повідомлень користувачам через бота." }
+    },
+    kk: {
+        total_profit: { title: "💰 ЖАЛПЫ ПАЙДА", text: "<b>Арбитраждағы жиынтық пайда:</b><br><br><code>Жалпы пайда = Фиат пайдасы + (Таза USDT × Mid Price)</code><br><br>Шоттағы кірістер мен қалған USDT көлемін нарықтық бағаммен біріктіреді." },
+        period_compare: { title: "📈 ӨТКЕН КЕЗЕҢМЕН САЛЫСТЫРУ", text: "Өткен ұқсас уақыт аралығымен салыстырғандағы пайданың өсуін немесе кемуін көрсетеді." },
+        net_fiat: { title: "💵 ТАЗА ФИАТ", text: "<b>Банк карталарындағы қозғалыс:</b> USDT сатудан түскен қаражат минус USDT сатып алу шығындары." },
+        net_usdt: { title: "🪙 ТАЗА USDT", text: "<b>Биржадағы крипто қозғалысы:</b> Сатып алынған USDT көлемі минус сатылған USDT көлемі." },
+        spread: { title: "📊 СПРЕД", text: "Айналымның таза маржасы: ((Сату − Сатып алу) / Сатып алу) × 100%." },
+        mid_price: { title: "⚖️ MID PRICE", text: "Крипто қалдығын әділ бағалау үшін таңдалған кезеңдегі доллардың орташа бағамы." },
+        turnover: { title: "💸 АЙНАЛЫМ", text: "Айналымға салынған барлық фиат қаражаты мен крипто сомасы." },
+        wac: { title: "🛒 WAC САТЫП АЛУ", text: "Көлемдерді ескере отырып, 1 USDT сатып алудың орташа өзіндік құны." },
+        avg_sell: { title: "🏷 ОРТАША САТУ", text: "Сатып алушыларға USDT сатудың орташа бағамы." },
+        roi: { title: "📈 АЙНАЛЫМНАН ROI", text: "Жалпы фиат айналымынан түскен таза пайданың пайыздық үлесі." },
+        calculator: { title: "⚡️ АЙНАЛЫМ КАЛЬКУЛЯТОРЫ", text: "Мәмілені бірден базаға сақтай отырып толық циклді есептеу." },
+        calc_deal_budget: { title: "💵 АЙНАЛЫМ СОМАСЫ", text: "USDT партиясын сатып алуға бөлінген фиат сомасы." },
+        calc_profit_mode: { title: "⚡️ ПАЙДА РЕЖИМІ", text: "Пайданы картаға фиатпен түсіру немесе USDT түрінде жинақтау." },
+        calc_rates: { title: "📈 АЙНАЛЫМ БАҒАМДАРЫ", text: "USDT сатып алу және сату кезіндегі бағамдар." },
+        calc_card: { title: "💳 КАРТАНЫ БАЙЛАУ", text: "Кассаны және айналым лимиттерін есепке алу үшін картаны бекіту." },
+        calendar: { title: "📅 ЖАЛПЫ ПАЙДА КҮНТІЗБЕСІ", text: "Күнделікті табыстың жылу картасы. Мәліметті көру үшін ұяшықты басып тұрыңыз." },
+        single_order_type: { title: "⚡️ ОРДЕР ТҮРІ", text: "Сатып алу 🟢 немесе Сату 🔴." },
+        trade_input_mode: { title: "🔄 ЕНГІЗУ РЕЖИМІ", text: "Фиат сомасы бойынша немесе USDT нақты саны бойынша есептеу." },
+        trade_card_bind: { title: "💳 КАРТАҒА БАЙЛАУ", text: "Касса балансы мен лимиттер шығынын автоматты түрде жаңартады." },
+        cards_overview: { title: "💳 КАРТАЛАР БӨЛІМІ", text: "Кассаны, шоттағы қалдықты және тәуліктік/айлық лимиттерді бақылау." },
+        cards_actions_help: { title: "💳 КАРТАЛАРДЫ БАСҚАРУ", text: "Ішкі аударымдар мен жаңа карталарды қосу." },
+        template_chat_help: { title: "💬 ЧАТ ҮЛГІСІ", text: "Төлем деректерін карта мәліметтерімен автоматты түрде құрастыру." },
+        card_limits_help: { title: "🛡 ЛИМИТТЕР", text: "Тәуліктік және айлық лимиттер. 'Лимит таусылды' күйі автоматты қойылады." },
+        card_status_help: { title: "⏳ КАРТА КҮЙІ", text: "Жұмыста 🟢, таймері бар үзілісте ⏳ немесе бұғатталған 🔥." },
+        history_info: { title: "📜 ОПЕРАЦИЯЛАР ТАРИХЫ", text: "Барлық мәмілелер жазбасы. 🔁 түймесі деректерді калькуляторға көшіреді." },
+        history_delete_help: { title: "🗑 ТАРИХТЫ ТАЗАРТУ", text: "Мәмілелерді таңдалған кезең бойынша қауіпсіз жою." },
+        admin_banner_help: { title: "📢 ЖАНДЫ БАННЕР", text: "Барлық қолданушылардың экранында көрсетілетін хабарландыру." },
+        admin_promo_help: { title: "🎟 ПРОМОКОДТАР", text: "Тегін күндер беретін промокодтар шығару." },
+        admin_broadcast_help: { title: "🤖 ХАБАРЛАМА ТАРАТУ", text: "Бот арқылы барлық қолданушыларға хабарлама жіберу." }
     }
 };
 
@@ -966,10 +1234,10 @@ let adminDbFilterOnlySub = true;
 
 // НАСТРОЙКИ
 let currentLang = localStorage.getItem('p2p_terminal_lang') || 'ru';
-let uiMode = localStorage.getItem('p2p_ui_mode') || 'simple';
-let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages';
+let uiMode = localStorage.getItem('p2p_ui_mode') || 'fx'; // По умолчанию ЭФФЕКТЫ ВКЛЮЧЕНЫ
+let layoutMode = localStorage.getItem('p2p_layout_mode') || 'pages'; // По умолчанию ОБЩАЯ ЛЕНТА ВЫКЛЮЧЕНА
 let isIncognito = localStorage.getItem('p2p_incognito') === 'true';
-let soundEnabled = localStorage.getItem('p2p_sound_enabled') !== 'false';
+let soundEnabled = localStorage.getItem('p2p_sound_enabled') !== 'false'; // По умолчанию ЗВУК ВКЛЮЧЕН
 
 /* ====================================================
    СЕТЕВОЙ МОДУЛЬ (SUPABASE REST)
@@ -1019,31 +1287,33 @@ function playCashSound() {
     try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return;
-        const audioCtx = new AudioContextClass();
-        const now = audioCtx.currentTime;
+        const ctx = new AudioContextClass();
+        const now = ctx.currentTime;
 
-        const osc1 = audioCtx.createOscillator();
-        const gain1 = audioCtx.createGain();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(987.77, now);
-        osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.08);
-        gain1.gain.setValueAtTime(0.22, now);
-        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-        osc1.connect(gain1);
-        gain1.connect(audioCtx.destination);
-        osc1.start(now);
-        osc1.stop(now + 0.35);
+        // Теплый мягкий перезвон двух золотых монет (без резких частот и щелчков)
+        const freqs = [1046.50, 1318.51, 1567.98]; // C6, E6, G6
+        freqs.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
 
-        const osc2 = audioCtx.createOscillator();
-        const gain2 = audioCtx.createGain();
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(1567.98, now + 0.06);
-        gain2.gain.setValueAtTime(0.2, now + 0.06);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
-        osc2.connect(gain2);
-        gain2.connect(audioCtx.destination);
-        osc2.start(now + 0.06);
-        osc2.stop(now + 0.42);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + (idx * 0.05));
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(2400, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.exponentialRampToValueAtTime(0.09, now + (idx * 0.05) + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + (idx * 0.05) + 0.45);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now + (idx * 0.05));
+            osc.stop(now + (idx * 0.05) + 0.46);
+        });
     } catch(e) {}
 }
 
@@ -1304,8 +1574,8 @@ async function saveCalculatedCycle() {
                 cycle_profit_usdt: profitUsdt,
                 card_id: cardId ? parseInt(cardId) : null,
                 tag_color: 'default',
-                note: cycleProfitMode === 'crypto' ? 'Прибыль в USDT' : 'Прибыль в фиате'
-            })
+                note: '', // Чистая заметка, без принудительного "(Фиат)"
+                cycle_mode: cycleProfitMode            })
         });
 
         playCashSound();
@@ -1983,6 +2253,7 @@ function renderCards() {
             const isLimitHit = (dayLimitVal > 0 && totalSpentToday >= dayLimitVal) || (monthLimitVal > 0 && totalSpentMonth >= monthLimitVal);
             currentStatus = isLimitHit ? 'limit_reached' : 'active';
         }
+        const cardNote = c.note || extra.note || '';
 
         let statusBadgeHtml = '<span style="font-size: 10px; color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
         if (currentStatus === 'cooldown') {
@@ -1994,7 +2265,8 @@ function renderCards() {
                     const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
                     const totalMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
                     const dObj = new Date(coolUntil);
-                    const timeStr = `${dObj.getDate()} ${dObj.toLocaleDateString('ru-RU', { month: 'short' })}, ${String(dObj.getHours()).padStart(2, '0')}:${String(dObj.getMinutes()).padStart(2, '0')}`;
+                    const pad = n => String(n).padStart(2, '0');
+                    const timeStr = `${dObj.getDate()} ${dObj.toLocaleDateString('ru-RU', { month: 'short' })}, ${pad(dObj.getHours())}:${pad(dObj.getMinutes())}`;
                     coolText = `⏳ До ${timeStr} (осталось ${totalHours}ч ${totalMins}м)`;
                 } else {
                     coolText = '⏳ Отлежка завершена';
@@ -2039,6 +2311,7 @@ function renderCards() {
                                 ${isPinned ? '<span style="font-size: 11px;">📌</span>' : ''}
                             </div>
                             <div style="margin-top: 2px;">${statusBadgeHtml}</div>
+                            ${cardNote ? `<div style="font-size: 11px; color: var(--bybit-blue); margin-top: 3px; font-weight: 600;">💬 ${cardNote}</div>` : ''}
                         </div>
                     </div>
 
@@ -2143,13 +2416,34 @@ function openCardBottomSheet(cardId) {
     const elWdrs = document.getElementById('csheet-val-wdrs-fiat');
     if (elWdrs) elWdrs.innerText = `${wdrsAll.toLocaleString(undefined, { minimumFractionDigits: 0 })} ${sym}`;
 
-    // Статус бейдж
+    const extra = JSON.parse(localStorage.getItem(`p2p_card_extra_${card.id}`) || '{}');
+    const coolUntil = card.cooldown_until || extra.cooldown_until;
+
+    // Статус бейдж с точным отсчетом времени
     const badgeContainer = document.getElementById('sheet-status-quick-badge');
     if (badgeContainer) {
         let badgeHtml = '<span style="font-size: 11px; color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
-        if (card.status === 'cooldown') badgeHtml = '<span style="font-size: 11px; color: var(--bybit-purple); font-weight: 800;">⏳ Отлежка</span>';
-        else if (card.status === 'limit_reached') badgeHtml = '<span style="font-size: 11px; color: var(--bybit-yellow); font-weight: 800;">⛔️ Лимит исчерпан</span>';
-        else if (card.status === 'burned') badgeHtml = '<span style="font-size: 11px; color: var(--bybit-red); font-weight: 800;">🔥 115-ФЗ</span>';
+        if (card.status === 'cooldown') {
+            if (coolUntil) {
+                const diffMs = new Date(coolUntil).getTime() - now.getTime();
+                if (diffMs > 0) {
+                    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const totalMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const dObj = new Date(coolUntil);
+                    const pad = n => String(n).padStart(2, '0');
+                    const timeStr = `${dObj.getDate()} ${dObj.toLocaleDateString('ru-RU', { month: 'short' })}, ${pad(dObj.getHours())}:${pad(dObj.getMinutes())}`;
+                    badgeHtml = `<span style="font-size: 11px; color: var(--bybit-purple); font-weight: 800;">⏳ До ${timeStr} (осталось ${totalHours}ч ${totalMins}м)</span>`;
+                } else {
+                    badgeHtml = '<span style="font-size: 11px; color: var(--bybit-purple); font-weight: 800;">⏳ Отлежка завершена</span>';
+                }
+            } else {
+                badgeHtml = '<span style="font-size: 11px; color: var(--bybit-purple); font-weight: 800;">⏳ На отлежке</span>';
+            }
+        } else if (card.status === 'limit_reached') {
+            badgeHtml = '<span style="font-size: 11px; color: var(--bybit-yellow); font-weight: 800;">⛔️ Лимит исчерпан</span>';
+        } else if (card.status === 'burned') {
+            badgeHtml = '<span style="font-size: 11px; color: var(--bybit-red); font-weight: 800;">🔥 115-ФЗ</span>';
+        }
         badgeContainer.innerHTML = badgeHtml;
     }
 
@@ -2170,13 +2464,25 @@ function openCardBottomSheet(cardId) {
     if (inpDayLimit) inpDayLimit.value = card.buy_limit || '';
 
     const inpMonthLimit = document.getElementById('csheet-inp-month-limit');
-    if (inpMonthLimit) inpMonthLimit.value = card.month_limit || '';
+    if (inpMonthLimit) inpMonthLimit.value = card.month_limit || extra.month_limit || '';
 
     const setStatusSel = document.getElementById('sheet-set-status');
     if (setStatusSel) setStatusSel.value = card.status || 'active';
 
     const inpNotes = document.getElementById('csheet-inp-notes');
-    if (inpNotes) inpNotes.value = card.note || '';
+    if (inpNotes) inpNotes.value = card.note || extra.note || '';
+
+    // Предзаполнение поля datetime-local
+    const inpCool = document.getElementById('csheet-inp-cooldown-until');
+    if (inpCool) {
+        if (coolUntil) {
+            const d = new Date(coolUntil);
+            const pad = n => String(n).padStart(2, '0');
+            inpCool.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        } else {
+            inpCool.value = '';
+        }
+    }
 
     activeSelectedCardColor = card.color_accent || '#f3a600';
     document.querySelectorAll('#sheet-card-colors .color-swatch-dot').forEach(d => {
@@ -2598,6 +2904,12 @@ async function submitCardTransfer() {
     if (fromId === toId) return showToast("⚠️ Выберите разные карты!");
 
     haptic('medium');
+
+    const fromCard = userCards.find(c => c.id === fromId);
+    const toCard = userCards.find(c => c.id === toId);
+    const fromName = fromCard ? fromCard.card_name : `Карта #${fromId}`;
+    const toName = toCard ? toCard.card_name : `Карта #${toId}`;
+
     try {
         await Promise.all([
             db('card_operations', {
@@ -2607,7 +2919,7 @@ async function submitCardTransfer() {
                     tg_id: currentUser.tg_id,
                     type: 'withdraw',
                     amount: amt,
-                    comment: `Трансфер на карту #${toId}`,
+                    comment: `Трансфер на «${toName}»`,
                     count_in_limit: false
                 })
             }),
@@ -2618,7 +2930,7 @@ async function submitCardTransfer() {
                     tg_id: currentUser.tg_id,
                     type: 'deposit',
                     amount: amt,
-                    comment: `Трансфер с карты #${fromId}`,
+                    comment: `Трансфер с «${fromName}»`,
                     count_in_limit: false
                 })
             })
@@ -2626,7 +2938,7 @@ async function submitCardTransfer() {
 
         closeModals();
         playCashSound();
-        showToast("🔄 Трансфер выполнен!");
+        showToast(`🔄 Переведено с «${fromName}» на «${toName}»`);
         await refreshData();
         renderCards();
     } catch(e) {
@@ -2685,24 +2997,40 @@ function renderHistory() {
         const borderCol = colorBorderMap[t.tag_color] || 'transparent';
 
         if (t.is_cycle) {
-            const pVal = parseFloat(t.cycle_profit_rub || 0);
-            const pColor = pVal < 0 ? 'var(--bybit-red)' : (pVal > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
-            const formattedCycleProfit = formatSignedMoney(pVal, 2);
+            const isCryptoCycle = (t.cycle_mode === 'crypto') || (parseFloat(t.cycle_profit_usdt || 0) !== 0);
+            const sym = getCurrencySymbol();
+
+            let cycleTitleText = `КРУГ (${sym}) ⚡️`;
+            let cycleProfitHtml = '';
+
+            if (isCryptoCycle) {
+                cycleTitleText = `КРУГ (USDT) ⚡️`;
+                const pValUsdt = parseFloat(t.cycle_profit_usdt || 0);
+                const pColor = pValUsdt < 0 ? 'var(--bybit-red)' : (pValUsdt > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+                cycleProfitHtml = `<div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: ${pColor};">
+                    ${formatSignedMoney(pValUsdt, 2)} USDT
+                </div>`;
+            } else {
+                cycleTitleText = `КРУГ (${sym}) ⚡️`;
+                const pValFiat = parseFloat(t.cycle_profit_rub || 0);
+                const pColor = pValFiat < 0 ? 'var(--bybit-red)' : (pValFiat > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+                cycleProfitHtml = `<div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: ${pColor};">
+                    ${formatSignedMoney(pValFiat, 2)} ${sym}
+                </div>`;
+            }
 
             container.innerHTML += `
                 <div class="history-item" style="border-left-color: ${borderCol};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div style="display: flex; gap: 6px; align-items: center;">
-                            <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">КРУГ ⚡️</span>
+                            <span style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow);">${cycleTitleText}</span>
                             ${cardBadge}
                         </div>
                         <span style="font-size: 11px; color: var(--text-muted);">${dateStr}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            <div class="privacy-blur" style="font-size: 17px; font-weight: 800; color: ${pColor};">
-                                ${formattedCycleProfit} ${sym}
-                            </div>
+                            ${cycleProfitHtml}
                             <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
                                 ${t.buy_rate} → ${t.sell_rate} ${sym} / Спред: ${formatSignedMoney(t.cycle_spread, 2)}%
                             </div>
@@ -2765,18 +3093,24 @@ function repeatTradeInCalc(tradeId) {
 
     if (tr.is_cycle) {
         document.getElementById('calc-fiat-amt').value = tr.fiat_amount;
-        document.getElementById('calc-buy-rate').value = tr.buy_rate;
+        document.getElementById('calc-buy-rate').value = tr.buy_rate || tr.rate;
         document.getElementById('calc-sell-rate').value = tr.sell_rate;
         if (tr.card_id) document.getElementById('calc-card-sel').value = tr.card_id;
+
+        // Точное определение и переключение режима прибыли
+        const isCryptoProfit = (tr.cycle_mode === 'crypto') || (parseFloat(tr.cycle_profit_usdt || 0) !== 0);
+        setCycleProfitMode(isCryptoProfit ? 'crypto' : 'fiat');
+
         runCalculator();
         handleNavClick('dashboard', document.querySelector('.nav-btn[data-target="dashboard"]'));
-        showToast("🔁 Круг скопирован в калькулятор!");
+        showToast("🔁 Все параметры круга скопированы!");
     } else {
         document.getElementById('inp-amount').value = tr.fiat_amount;
         document.getElementById('inp-rate').value = tr.rate;
+        if (tr.card_id) document.getElementById('inp-card-sel').value = tr.card_id;
         setTradeType(tr.type);
         handleNavClick('trade', document.querySelector('.nav-btn[data-target="trade"]'));
-        showToast("🔁 Сделка подставлена!");
+        showToast("🔁 Параметры ордера скопированы!");
     }
 }
 
@@ -2889,11 +3223,13 @@ async function submitEditTrade() {
         if (editCycleProfitMode === 'fiat') {
             payload.cycle_profit_rub = sellR > 0 ? parseFloat(((crypto * sellR) - fiat).toFixed(2)) : 0;
             payload.cycle_profit_usdt = 0;
-            payload.note = note ? `${note} (Фиат)` : 'Прибыль в фиате';
+            payload.note = note; // Без добавления "(Фиат)" или "(USDT)"
+            payload.cycle_mode = editCycleProfitMode;
         } else {
             payload.cycle_profit_rub = 0;
             payload.cycle_profit_usdt = sellR > 0 ? parseFloat((crypto - (fiat / sellR)).toFixed(2)) : 0;
-            payload.note = note ? `${note} (USDT)` : 'Прибыль в USDT';
+            payload.note = note; // Без добавления "(Фиат)" или "(USDT)"
+            payload.cycle_mode = editCycleProfitMode;
         }
     } else {
         payload.is_cycle = false;
@@ -3828,24 +4164,67 @@ async function submitCreateCard() {
     const name = document.getElementById('new-card-name').value.trim();
     const num = document.getElementById('new-card-num').value.trim();
     const holder = document.getElementById('new-card-holder').value.trim();
-    const limit = parseFloat(document.getElementById('new-card-limit').value) || null;
+    const dayLimit = parseFloat(document.getElementById('new-card-limit').value) || 0;
+    const monthLimit = parseFloat(document.getElementById('new-card-month-limit').value) || 0;
 
     if (!name) return showToast("⚠️ Введите название карты!");
 
-    await db(`cards`, {
-        method: 'POST',
-        body: JSON.stringify({
-            tg_id: currentUser.tg_id,
-            card_name: name,
-            card_number: num,
-            holder_name: holder,
-            buy_limit: limit,
-            color_accent: '#f3a600',
-            status: 'active'
-        })
-    });
+    haptic('medium');
+
+    try {
+        const res = await db(`cards`, {
+            method: 'POST',
+            body: JSON.stringify({
+                tg_id: currentUser.tg_id,
+                card_name: name,
+                card_number: num,
+                holder_name: holder,
+                buy_limit: dayLimit,
+                month_limit: monthLimit,
+                color_accent: '#f3a600',
+                status: 'active'
+            })
+        });
+
+        const createdCard = (res && res[0]) ? res[0] : null;
+        if (createdCard) {
+            localStorage.setItem(`p2p_card_extra_${createdCard.id}`, JSON.stringify({
+                month_limit: monthLimit,
+                buy_limit: dayLimit
+            }));
+        }
+    } catch(err) {
+        // Запасной вариант на случай отсутствия поля month_limit в таблице БД
+        const res = await db(`cards`, {
+            method: 'POST',
+            body: JSON.stringify({
+                tg_id: currentUser.tg_id,
+                card_name: name,
+                card_number: num,
+                holder_name: holder,
+                buy_limit: dayLimit,
+                color_accent: '#f3a600',
+                status: 'active'
+            })
+        });
+        if (res && res[0]) {
+            localStorage.setItem(`p2p_card_extra_${res[0].id}`, JSON.stringify({
+                month_limit: monthLimit,
+                buy_limit: dayLimit
+            }));
+        }
+    }
+
+    // Очистка полей
+    document.getElementById('new-card-name').value = '';
+    document.getElementById('new-card-num').value = '';
+    document.getElementById('new-card-holder').value = '';
+    document.getElementById('new-card-limit').value = '';
+    document.getElementById('new-card-month-limit').value = '';
+
     closeModals();
-    showToast("✅ Карта успешно создана!");
+    playCashSound();
+    showToast("✅ Карта с лимитами создана!");
     await refreshData();
     renderAll();
 }
@@ -3900,15 +4279,58 @@ function populateCardSelects() {
 function openHelpModal(key, event) {
     if (event) event.stopPropagation();
     haptic('light');
-    const item = HELP_DATA[key];
+    const langObj = HELP_DATA[currentLang] || HELP_DATA.ru;
+    const item = langObj[key] || HELP_DATA.ru[key];
     if (!item) return;
     document.getElementById('info-modal-title').innerText = item.title;
     document.getElementById('info-modal-content').innerHTML = item.text;
     document.getElementById('modal-info').classList.add('show');
 }
 
+
 function openSubModal() {
     haptic('light');
+    const container = document.getElementById('modal-sub-content');
+    if (!container) return;
+
+    const now = new Date();
+    const hasSub = currentUser && currentUser.sub_end && new Date(currentUser.sub_end) > now;
+    const isVip = hasSub && new Date(currentUser.sub_end).getFullYear() > 2099;
+
+    if (hasSub) {
+        const subDateStr = isVip ? "Бессрочно (VIP)" : new Date(currentUser.sub_end).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        const tierName = isVip ? "💎 VIP Навсегда" : "⚡️ Премиум доступ";
+
+        container.innerHTML = `
+            <div style="font-size: 44px; margin-bottom: 6px;">💎</div>
+            <h2 style="font-size: 19px; margin: 0 0 6px 0; color: var(--bybit-yellow);">Ваша подписка активна</h2>
+            <div style="display: inline-block; padding: 4px 12px; border-radius: 12px; background: rgba(243, 166, 0, 0.15); border: 1px solid var(--bybit-yellow); font-size: 12px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 12px;">
+                ${tierName}
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin: 0 0 16px 0;">
+                Действует до: <b style="color: #fff;">${subDateStr}</b>.<br><br>
+                Продлить срок действия или изменить тарифный план можно исключительно внутри нашего Telegram-бота.
+            </p>
+            <div class="analytics-grid">
+                <button class="action-btn-secondary" onclick="closeModals()">Закрыть</button>
+                <button class="action-btn gold" onclick="openSupport()">🚀 Перейти в бота</button>
+            </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <div style="font-size: 40px; margin-bottom: 8px;">🔒</div>
+            <h2 style="font-size: 19px; margin: 0 0 10px 0;">Оформление в Telegram-боте</h2>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                Без активной подписки терминал работает только в режиме просмотра.<br><br>
+                Активируйте <b>бесплатный триал на 24 часа</b> или оплатите подписку через Bybit внутри бота.
+            </p>
+            <div class="analytics-grid">
+                <button class="action-btn-secondary" onclick="closeModals()">Назад</button>
+                <button class="action-btn gold" onclick="openSupport()">🚀 Открыть бота</button>
+            </div>
+        `;
+    }
+
     document.getElementById('modal-sub-info').classList.add('show');
 }
 
@@ -3957,26 +4379,20 @@ function openSupport() {
 /* ====================================================
    РЕЖИМЫ ИНТЕРФЕЙСА И НАВИГАЦИЯ
 ==================================================== */
-function switchLayoutMode(isChecked) {
-    haptic('medium');
-    layoutMode = isChecked ? 'feed' : 'pages';
-    localStorage.setItem('p2p_layout_mode', layoutMode);
+function updateNavSlider(targetId) {
+    const nav = document.getElementById('main-bottom-nav');
+    const slider = document.getElementById('nav-slider');
+    if (!nav || !slider) return;
 
-    const desc = document.getElementById('layout-mode-desc');
-    if (desc) desc.innerText = isChecked ? "Сплошная лента (скролл)" : "По раздельности (вкладки)";
+    const activeBtn = nav.querySelector(`.nav-btn[data-target="${targetId}"]`);
+    if (!activeBtn) return;
 
-    document.querySelectorAll('.page-section').forEach(sec => {
-        if (sec.id !== 'admin-panel' && sec.id !== 'paywall') {
-            sec.style.display = layoutMode === 'feed' ? 'block' : 'none';
-        }
-    });
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
 
-    if (layoutMode !== 'feed') {
-        document.getElementById('dashboard').style.display = 'block';
-    }
-    //showToast(isChecked ? "📜 Режим ленты включен" : "📱 Режим вкладок включен");
+    slider.style.left = `${btnRect.left - navRect.left}px`;
+    slider.style.width = `${btnRect.width}px`;
 }
-
 function switchUiMode(isChecked) {
     haptic('medium');
     uiMode = isChecked ? 'fx' : 'simple';
@@ -3995,7 +4411,6 @@ function handleNavClick(targetId, el) {
     if (layoutMode === 'feed') {
         const target = document.getElementById(targetId);
         if (target) {
-            target.classList.add('revealed');
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     } else {
@@ -4009,7 +4424,65 @@ function handleNavClick(targetId, el) {
     }
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     if (el) el.classList.add('active');
+    updateNavSlider(targetId);
 }
+
+function switchLayoutMode(isChecked) {
+    haptic('medium');
+    layoutMode = isChecked ? 'feed' : 'pages';
+    localStorage.setItem('p2p_layout_mode', layoutMode);
+
+    const desc = document.getElementById('layout-mode-desc');
+    if (desc) desc.innerText = isChecked ? "Сплошная лента (скролл)" : "По раздельности (вкладки)";
+
+    const isAdmin = adminIds.includes(currentUser?.tg_id);
+    const boundary = document.getElementById('feed-boundary');
+
+    document.querySelectorAll('.page-section').forEach(sec => {
+        if (sec.id === 'admin-panel') {
+            sec.style.display = (layoutMode === 'feed' && isAdmin) ? 'block' : 'none';
+        } else if (sec.id !== 'paywall') {
+            sec.style.display = (layoutMode === 'feed') ? 'block' : 'none';
+        }
+    });
+
+    if (boundary) {
+        boundary.style.display = (layoutMode === 'feed' && !isAdmin) ? 'block' : 'none';
+    }
+
+    if (layoutMode !== 'feed') {
+        document.getElementById('dashboard').style.display = 'block';
+    }
+
+    setTimeout(() => updateNavSlider('dashboard'), 50);
+}
+
+// Отслеживание параллельного скролла ленты для перемещения ползунка
+window.addEventListener('scroll', () => {
+    if (layoutMode !== 'feed') return;
+
+    const sections = ['dashboard', 'trade', 'cards', 'history', 'profile'];
+    if (adminIds.includes(currentUser?.tg_id)) sections.push('admin-panel');
+
+    const scrollPos = window.scrollY + 180;
+
+    for (let id of sections) {
+        const el = document.getElementById(id);
+        if (el) {
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPos >= top && scrollPos < top + height) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector(`.nav-btn[data-target="${id}"]`);
+                if (btn) {
+                    btn.classList.add('active');
+                    updateNavSlider(id);
+                }
+                break;
+            }
+        }
+    }
+}, { passive: true });
 
 function toggleSecondaryStats() {
     haptic('light');
@@ -4153,7 +4626,7 @@ function runTerminalBootSequence(onComplete) {
         "<span class='c-gold'>[AUTH]</span> Verifying Telegram Mini App Handshake...",
         "<span class='c-blue'>[DB]</span> Connecting to Encrypted Supabase Node...",
         "<span class='c-green'>[LEDGER]</span> Synchronizing WAC Engine & Cards...",
-        "<span class='c-gold'>[READY]</span> Terminal Pro v1.0.0 Ready."
+        "<span class='c-gold'>[READY]</span> Terminal Pro v1.1.2 Ready."
     ];
 
     let step = 0;
@@ -4294,4 +4767,139 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
+}
+
+/* ====================================================
+   ИНТЕРАКТИВНАЯ БАЗА ЗНАНИЙ 2.0 (ИНСТРУКЦИЯ)
+==================================================== */
+function openInstructionModal() {
+    // Доступ строго только для пользователей с активной подпиской
+    if (!requireSubscription()) return;
+
+    haptic('medium');
+    document.getElementById('inst-lang-sel').value = currentLang;
+    renderInstructionSection('dashboard');
+    document.getElementById('modal-instruction').classList.add('show');
+}
+
+function closeInstructionModal() {
+    haptic('light');
+    document.getElementById('modal-instruction').classList.remove('show');
+}
+
+function switchInstSection(secId, el) {
+    haptic('light');
+    document.querySelectorAll('.inst-chip').forEach(c => c.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderInstructionSection(secId);
+}
+
+function renderInstructionSection(secId) {
+    const container = document.getElementById('inst-content-body');
+    if (!container) return;
+    const sym = getCurrencySymbol();
+
+    const sectionsData = {
+        dashboard: {
+            title: "📊 1. Сводка, Общая прибыль и Инкогнито",
+            desc: "Главный экран финансовой аналитики арбитража. Собирает данные со всех бирж и карт в режиме реального времени.",
+            widgets: `
+                <div class="inst-interactive-box">
+                    <span class="inst-badge-step">ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР</span>
+                    <div style="font-size: 12px; font-weight: 800; margin: 8px 0 4px 0;">Попробуйте режим скрытия балансов (Инкогнито):</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px;">
+                        <span class="privacy-blur" style="font-size: 18px; font-weight: 900; color: var(--bybit-green);">+14 850.00 ${sym}</span>
+                        <button class="btn-card-action" style="padding: 6px 12px;" onclick="toggleIncognitoMode()">Нажать 👁 / 🕶</button>
+                    </div>
+                </div>
+                <div style="font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                    • <b>Формула общей прибыли:</b> Чистая прибыль в фиате складывается с прибылью в USDT по среднему курсу <code>Mid Price</code>.<br>
+                    • <b>📸 Кнопка PnL:</b> Генерирует отчетное фото для соцсетей или Telegram-канала и моментально отправляет вам в личку бота.<br>
+                    • <b>WAC закупка:</b> Средневзвешенная себестоимость доллара. Учитывает объемы каждой партии.
+                </div>
+            `
+        },
+        calc: {
+            title: "⚡️ 2. Калькулятор круга (Фиат vs USDT)",
+            desc: "Универсальный инструмент связок. Позволяет мгновенно просчитать маржу до входа в сделку и сохранить ее в один клик.",
+            widgets: `
+                <div class="inst-interactive-box">
+                    <span class="inst-badge-step">ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР</span>
+                    <div style="font-size: 12px; font-weight: 800; margin: 8px 0;">Тестовый расчет связки:</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
+                        <div style="background: rgba(46,187,154,0.1); padding: 8px; border-radius: 8px; border: 1px solid var(--bybit-green);">Закуп: 90.00</div>
+                        <div style="background: rgba(242,54,69,0.1); padding: 8px; border-radius: 8px; border: 1px solid var(--bybit-red);">Продажа: 92.50</div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--bybit-yellow); font-weight: 800; margin-top: 8px;">Спред: +2.78% (Чистая: +2 777.78 ${sym} со 100k)</div>
+                </div>
+                <div style="font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                    • <b>Прибыль в фиате:</b> Вы распродаете весь объем монет, профит фиксируется на карте.<br>
+                    • <b>Прибыль в USDT:</b> Вы возвращаете на карту только тело закупки, а заработанные монеты остаются в крипто-капитале.
+                </div>
+            `
+        },
+        calendar: {
+            title: "📅 3. Календарь общей прибыли",
+            desc: "Интерактивная тепловая карта доходности каждого торгового дня с авто-конвертацией по курсу дня.",
+            widgets: `
+                <div style="font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                    • <b>Управление:</b> Нажмите и ведите пальцем по ячейкам — всплывающий бейдж покажет прибыль и спред любого дня без лишних кликов.<br>
+                    • <b>Цветовая шкала:</b> Зеленый — профит, насыщенный изумрудный — дни с доходом выше нормы, красный — фиксация просадки.<br>
+                    • <b>Клик по дню:</b> Открывает полную детализированную сводку дня с оборотом и числом операций.
+                </div>
+            `
+        },
+        trade: {
+            title: "⚡️ 4. Одиночные ордера",
+            desc: "Внесение единичных сделок покупки или продажи при раздельной торговле без жесткого связывания в круг.",
+            widgets: `
+                <div style="font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                    • <b>Калькулятор сумм:</b> Возможность вводить сделку от суммы фиата либо от точного объема полученных монет USDT.<br>
+                    • <b>Привязка к карте:</b> При выборе карты баланс кассы и расход лимита 115-ФЗ обновляются автоматически.
+                </div>
+            `
+        },
+        cards: {
+            title: "💳 5. Модуль карт, Лимиты 115-ФЗ и Таймер",
+            desc: "Автоматизированный контроль банковских счетов, кассы, инкассаций и отлежки.",
+            widgets: `
+                <div class="inst-interactive-box">
+                    <span class="inst-badge-step">КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+                    <div style="font-size: 12px; line-height: 1.6; margin-top: 6px;">
+                        • <b>Лимиты 115-ФЗ:</b> Суточный и месячный лимиты отображаются на прогресс-барах. При исчерпании статус ставится автоматически.<br>
+                        • <b>Таймер отлежки:</b> Вы задаете время, и карта сама вернется в статус «В работе» с точностью до минуты.<br>
+                        • <b>Шаблон ордера:</b> Нажмите одну кнопку, и терминал скопирует идеальный текст реквизитов для отправки покупателю на Bybit.
+                    </div>
+                </div>
+            `
+        },
+        history: {
+            title: "📜 6. История операций и облачный синхрон",
+            desc: "Полная летопись торговли с возможностью повтора параметров и экспорта.",
+            widgets: `
+                <div style="font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                    • <b>Кнопка 🔁 (Повтор):</b> Переносит все курсы, сумму, карту и режим прибыли прямо в калькулятор для моментального запуска следующего круга.<br>
+                    • <b>Цветовые метки:</b> Позволяют маркировать сделки цветом (например, для разделения бирж или дропов).
+                </div>
+            `
+        },
+        settings: {
+            title: "⚙️ 7. Настройки, FX и Реферальная сеть",
+            desc: "Персонализация рабочей среды и управление бонусами.",
+            widgets: `
+                <div style="font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                    • <b>Визуальные эффекты (FX):</b> Переключение между глубоким неоновым стилем с частицами и энергосберегающим черным OLED-режимом.<br>
+                    • <b>Партнерская сеть:</b> +3 дня Premium автоматически начисляются за каждого трейдера, активировавшего триал по вашей ссылке.
+                </div>
+            `
+        }
+    };
+
+    const cur = sectionsData[secId] || sectionsData.dashboard;
+
+    container.innerHTML = `
+        <h3 style="font-size: 15px; margin: 0 0 6px 0; color: var(--bybit-yellow);">${cur.title}</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 10px 0; line-height: 1.4;">${cur.desc}</p>
+        ${cur.widgets}
+    `;
 }
