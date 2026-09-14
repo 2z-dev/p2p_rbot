@@ -1353,3 +1353,68 @@ body.locked-no-sub .bottom-nav {
     gap: 1px;
     box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.04);
 }
+/* ====================================================
+   ИНТЕРАКТИВНЫЕ ВИДЖЕТЫ И СХЕМЫ РУКОВОДСТВА ПОЛЬЗОВАТЕЛЯ
+==================================================== */
+.inst-ascii-card {
+    background: #080b11;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #94a3b8;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 12px 0 16px 0;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.inst-interactive-container {
+    background: rgba(12, 16, 24, 0.95);
+    border: 1.5px solid rgba(243, 166, 0, 0.4);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(243, 166, 0, 0.15);
+}
+
+.inst-interactive-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.inst-tag-live {
+    background: rgba(46, 187, 154, 0.15);
+    color: var(--bybit-green);
+    border: 1px solid var(--bybit-green);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inst-action-btn {
+    background: rgba(243, 166, 0, 0.12);
+    border: 1px solid var(--bybit-yellow);
+    color: var(--bybit-yellow);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.inst-action-btn:active {
+    transform: scale(0.95);
+    background: var(--bybit-yellow);
+    color: #000;
+}
