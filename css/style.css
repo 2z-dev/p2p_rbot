@@ -893,7 +893,11 @@ input:checked + .slider:before { transform: translateX(22px); background-color: 
     border-radius: 12px;
 }
 .nav-btn:active { transform: scale(0.88); }
-.nav-btn.active { color: var(--bybit-yellow); background: rgba(243, 166, 0, 0.1); }
+/* Убираем лишний фоновый прямоугольник кнопки, чтобы не двоился фон внутри обводки */
+.nav-btn.active {
+    color: var(--bybit-yellow);
+    background: transparent !important;
+}
 .nav-btn i { font-size: 17px; font-style: normal; }
 .nav-btn.active i { transform: scale(1.15); }
 
@@ -1092,17 +1096,19 @@ body.locked-no-sub .bottom-nav {
     box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8);
 }
 
+/* Ползунок изначально скрыт (opacity: 0) — никакой палки слева при загрузке нет */
 .nav-slider-indicator {
     position: absolute;
-    top: 6px;
-    bottom: 6px;
-    border-radius: 16px;
+    top: 4px;
+    bottom: 4px;
+    border-radius: 14px;
     background: rgba(243, 166, 0, 0.16);
-    border: 1px solid rgba(243, 166, 0, 0.5);
-    box-shadow: 0 0 16px rgba(243, 166, 0, 0.25);
+    border: 1.5px solid var(--bybit-yellow);
+    box-shadow: 0 0 16px rgba(243, 166, 0, 0.3);
     pointer-events: none;
-    transition: left 0.28s cubic-bezier(0.16, 1, 0.3, 1), width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: left, width;
+    opacity: 0;
+    transition: opacity 0.2s ease, left 0.26s cubic-bezier(0.16, 1, 0.3, 1), width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: left, width, opacity;
     z-index: 1;
 }
 

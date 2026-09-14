@@ -27,7 +27,7 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <div class="terminal-title">p2p_ledger@cloud: ~ /v1.1.2</div>
+                <div class="terminal-title">p2p_ledger@cloud: ~ /v1.2.7</div>
             </div>
             <div class="terminal-body" id="console-stream"></div>
             <div class="progress-box" style="padding: 10px 16px 14px 16px;">
@@ -202,7 +202,7 @@
             <div id="secondary-stats-wrap">
                 <div class="glass-card unified-stats-block" style="padding: 18px; margin-bottom: 12px;">
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
                         <div class="stat-inner-box">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
@@ -222,6 +222,11 @@
                             <div id="val-profit-usdt" class="privacy-blur" style="font-size: 16px; font-weight: 800; margin: 4px 0;">0.00 USDT</div>
                             <div style="font-size: 10px; color: #cbd5e1; line-height: 1.35;" data-i18n="formulaUsdt"><b>Крипто-остаток:</b> чистый объем монет USDT на бирже, заработанный вами сверх возвращенного фиатного депозита.</div>
                         </div>
+                    </div>
+
+                    <!-- ПОЯСНЯЮЩИЙ ТЕКСТ СТРОГО ПОД ДВУМЯ ПЛАШКАМИ -->
+                    <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 0 0 14px 0; line-height: 1.4; padding: 0 4px;" data-i18n="formulaHeroHint">
+                        💡 Чистая в рублях и чистая в USDT складываются по курсу Mid Price, и получается общая прибыль.
                     </div>
 
                     <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px; text-align: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 10px; display: flex; justify-content: center; align-items: center; gap: 4px;">
@@ -830,7 +835,7 @@
 
         <!-- ГРАНИЦА ОКОНЧАНИЯ ЛЕНТЫ ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ (ЧТОБЫ НЕ СКРОЛЛИЛИ В ПУСТОТУ) -->
         <div class="feed-terminal-boundary" id="feed-boundary">
-            — P2P TERMINAL PRO v1.1.2 • СИНХРОНИЗИРОВАНО —
+            — P2P TERMINAL PRO v1.2.7 • СИНХРОНИЗИРОВАНО —
         </div>
     </div>
 
@@ -1069,6 +1074,10 @@
                     <input type="number" id="new-card-month-limit" class="styled-input" placeholder="1000000">
                 </div>
             </div>
+            <div class="input-wrap">
+                <span class="badge">Заметка / Комментарий к карте (Дроп, сим-карта, отделение)</span>
+                <input type="text" id="new-card-notes" class="styled-input" placeholder="Дроп Иван, Т-Банк Black, SIM МТС...">
+            </div>
             <div class="analytics-grid">
                 <button class="action-btn-secondary" onclick="closeModals()">Отмена</button>
                 <button class="action-btn" onclick="submitCreateCard()">Создать</button>
@@ -1274,7 +1283,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div>
                     <h2 style="margin: 0; font-size: 18px; color: var(--bybit-green);" data-i18n="instModalHeader">📖 Инструкция и все функции</h2>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Terminal Pro v1.1.2 • Полный разбор системы</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Terminal Pro v1.2.7 • Полный разбор системы</div>
                 </div>
                 <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeInstructionSheet()">✕</button>
             </div>
