@@ -1566,7 +1566,7 @@ function calculateStats() {
     const profitUsdt = bC - sC;
 
     const totalProfitFiat = profitFiat + (profitUsdt * midPrice);
-    const totalProfitUsdt = profitUsdt + (midPrice > 0 ? profitFiat / midPrice : 0);
+    const totalProfitUsdt = midPrice > 0 ? (totalProfitFiat / midPrice) : profitUsdt;
 
     const avgPeriodSpread = (wac > 0 && avgSell > 0) ? ((avgSell / wac) - 1) * 100 : 0;
     const fiatTurn = bF + sF;
@@ -1579,17 +1579,35 @@ function calculateStats() {
         el.style.color = val < 0 ? 'var(--bybit-red)' : (val > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
     }
 
-    const elTotalFiat = document.getElementById('val-total-profit-rub');
-    updateMetricColor(elTotalFiat, totalProfitFiat);
-    if (elTotalFiat) {
-        elTotalFiat.innerHTML = `${formatSignedMoney(totalProfitFiat, 2)} <span style="font-size: 18px; color: var(--text-muted);">${sym}</span>`;
+    // 1. РАЗДЕЛЬНЫЙ ВЫВОД (+1000 ₽ + 15 USDT) СЛЕВА
+    const elSplit = document.getElementById('val-total-profit-split');
+    if (elSplit) {
+        const fiatStr = formatSignedMoney(profitFiat, 2);
+        const usdtSign = profitUsdt >= 0 ? '+' : '-';
+        const usdtStr = `${usdtSign} ${Math.abs(profitUsdt).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        elSplit.style.color = totalProfitFiat < 0 ? 'var(--bybit-red)' : (totalProfitFiat > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+        elSplit.innerHTML = `<span>${fiatStr} <span style="font-size: 14px; color: var(--text-muted);">${sym}</span></span> <span style="font-size: 14px; color: var(--text-muted); margin: 0 1px;">+</span> <span>${usdtStr} <span style="font-size: 12px; color: var(--text-muted);">USDT</span></span>`;
     }
 
-    const elTotalUsdt = document.getElementById('val-total-profit-usdt');
-    updateMetricColor(elTotalUsdt, totalProfitUsdt);
-    if (elTotalUsdt) {
-        elTotalUsdt.innerText = `${formatSignedMoney(totalProfitUsdt, 2)} USDT`;
+    // 2. ПРИБЛИЗИТЕЛЬНО В ФИАТЕ И В ДОЛЛАРАХ СПРАВА
+    const elApproxFiat = document.getElementById('val-approx-fiat');
+    if (elApproxFiat) {
+        elApproxFiat.innerText = `≈ ${formatSignedMoney(totalProfitFiat, 2)} ${sym}`;
+        elApproxFiat.style.color = totalProfitFiat < 0 ? 'var(--bybit-red)' : (totalProfitFiat > 0 ? 'var(--bybit-yellow)' : 'var(--text-muted)');
     }
+
+    const elApproxUsd = document.getElementById('val-approx-usd');
+    if (elApproxUsd) {
+        elApproxUsd.innerText = `≈ ${formatSignedMoney(totalProfitUsdt, 2)} $`;
+        elApproxUsd.style.color = totalProfitUsdt < 0 ? 'var(--bybit-red)' : (totalProfitUsdt > 0 ? 'var(--bybit-blue)' : 'var(--text-muted)');
+    }
+
+    // Сохраняем скрытые элементы для совместимости со сторонними обработчиками
+    const elTotalFiat = document.getElementById('val-total-profit-rub');
+    if (elTotalFiat) elTotalFiat.innerText = `${formatSignedMoney(totalProfitFiat, 2)} ${sym}`;
+    const elTotalUsdt = document.getElementById('val-total-profit-usdt');
+    if (elTotalUsdt) elTotalUsdt.innerText = `${formatSignedMoney(totalProfitUsdt, 2)} USDT`;
 
     const elProfitFiat = document.getElementById('val-profit-rub');
     updateMetricColor(elProfitFiat, profitFiat);
@@ -1859,10 +1877,13 @@ function renderHeatmap() {
             }
         });
 
-        // Честный расчет общей прибыли дня: фиатный профит + (крипто-профит * MidPrice)
+        // 1. Фиатный и крипто остаток дня считаются раздельно
         const dayProfitFiat = dSF - dBF;
         const dayProfitUsdt = dBC - dSC;
+
+        // 2. Дни календаря окрашиваются строго по ПЕРЕВЕДЕННОЙ ОБЩЕЙ ПРИБЫЛИ
         const totalDayProfit = dayProfitFiat + (dayProfitUsdt * calendarMonthMidPrice);
+        const totalDayProfitUsdt = calendarMonthMidPrice > 0 ? (totalDayProfit / calendarMonthMidPrice) : dayProfitUsdt;
 
         let colorClass = '';
         if (dayTrades.length > 0) {
@@ -1874,7 +1895,10 @@ function renderHeatmap() {
 
         dayCellsData[day] = {
             day,
-            profit: totalDayProfit,
+            profitFiat: dayProfitFiat,
+            profitUsdt: dayProfitUsdt,
+            totalProfit: totalDayProfit,
+            totalProfitUsdt: totalDayProfitUsdt,
             count: dayTrades.length,
             turnover: dayTurnover
         };
@@ -1897,11 +1921,14 @@ function renderHeatmap() {
 
         document.getElementById('pop-date').innerText = `${data.day} ${monthTitle ? monthTitle.innerText : ''}`;
         const pVal = document.getElementById('pop-profit');
-        pVal.innerText = `${formatSignedMoney(data.profit, 2)} ${sym}`;
-        pVal.style.color = data.profit < 0 ? 'var(--bybit-red)' : (data.profit > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
 
-        const spreadCalc = data.turnover > 0 ? ((data.profit / data.turnover) * 100).toFixed(2) : "0.00";
-        document.getElementById('pop-extra').innerText = `${data.count} сдел. • Спред: ${spreadCalc}%`;
+        // Всплывашка показывает раздельно: +1000 ₽ + 15 USDT, а снизу приблизительный общий эквивалент
+        const usdtSign = data.profitUsdt >= 0 ? '+' : '-';
+        pVal.innerHTML = `${formatSignedMoney(data.profitFiat, 0)} ${sym} <span style="font-size: 11px; opacity: 0.85;">${usdtSign}${Math.abs(data.profitUsdt).toFixed(1)} USDT</span>`;
+        pVal.style.color = data.totalProfit < 0 ? 'var(--bybit-red)' : (data.totalProfit > 0 ? 'var(--bybit-green)' : 'var(--text-main)');
+
+        const spreadCalc = data.turnover > 0 ? ((data.totalProfit / data.turnover) * 100).toFixed(2) : "0.00";
+        document.getElementById('pop-extra').innerText = `≈ ${formatSignedMoney(data.totalProfit, 0)} ${sym} • ${data.count} сдел. • Спред: ${spreadCalc}%`;
 
         popup.classList.add('show');
     }
@@ -1947,23 +1974,29 @@ function renderHeatmap() {
         const d = parseInt(cell.dataset.day);
         const data = dayCellsData[d];
         if (data) {
-            openDayDetailsModal(d, data.profit, data.count, data.turnover);
+            openDayDetailsModal(d, data.profitFiat, data.profitUsdt, data.totalProfit, data.totalProfitUsdt, data.count, data.turnover);
         }
     };
 }
 
-
-function openDayDetailsModal(day, profit, count, turnover) {
+function openDayDetailsModal(day, profitFiat, profitUsdt, totalProfit, totalProfitUsdt, count, turnover) {
     const sym = getCurrencySymbol();
     document.getElementById('day-modal-title').innerText = `📅 Сводка за ${day} число`;
+
     const profitEl = document.getElementById('day-modal-profit-val');
-    profitEl.innerText = `${(profit >= 0 ? '+' : '')}${profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
-    profitEl.style.color = profit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+    const usdtSign = profitUsdt >= 0 ? '+' : '-';
+    profitEl.innerHTML = `<span>${formatSignedMoney(profitFiat, 2)} ${sym}</span> <span style="color: var(--text-muted); font-size: 15px;">+</span> <span>${usdtSign} ${Math.abs(profitUsdt).toFixed(2)} USDT</span>`;
+    profitEl.style.color = totalProfit >= 0 ? 'var(--bybit-green)' : 'var(--bybit-red)';
+
+    const approxEl = document.getElementById('day-modal-profit-approx');
+    if (approxEl) {
+        approxEl.innerText = `≈ ${formatSignedMoney(totalProfit, 2)} ${sym}  (≈ ${formatSignedMoney(totalProfitUsdt, 2)} $)`;
+    }
 
     document.getElementById('day-modal-trades-cnt').innerText = `${count} сделок`;
     document.getElementById('day-modal-turnover-val').innerText = `${turnover.toLocaleString(undefined, { minimumFractionDigits: 2 })} ${sym}`;
 
-    const spreadAvg = count > 0 ? (turnover > 0 ? ((profit / turnover) * 100).toFixed(2) : "0.00") : "0.00";
+    const spreadAvg = count > 0 ? (turnover > 0 ? ((totalProfit / turnover) * 100).toFixed(2) : "0.00") : "0.00";
     document.getElementById('day-modal-spread-val').innerText = `${spreadAvg}%`;
 
     document.getElementById('modal-day-details').classList.add('show');
@@ -3280,17 +3313,11 @@ function openPnlPage() {
     ctx.font = '800 20px Inter, sans-serif';
     ctx.fillText(`👤 ${userTag}`, 70, 126);
 
-    // Бейдж таймфрейма
+    // ТАЙМФРЕЙМ (ПРЯМОУГОЛЬНИК УБРАН — ТЕПЕРЬ АККУРАТНЫЙ ТЕКСТ)
     const tf = `🗓 ${getPnlTimeframeLabel()}`;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.fillRect(70, 142, 260, 34);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(70, 142, 260, 34);
-
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = '800 14px Inter, sans-serif';
-    ctx.fillText(tf, 86, 164);
+    ctx.fillStyle = '#f3a600';
+    ctx.font = '800 17px Inter, sans-serif';
+    ctx.fillText(tf, 70, 166);
 
     // Дата справа
     const dateStr = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -3300,22 +3327,79 @@ function openPnlPage() {
     ctx.fillText(dateStr, 1120, 92);
     ctx.textAlign = 'left';
 
-    // 5. Показатель прибыли
-    const totalRub = document.getElementById('val-total-profit-rub')?.innerText || "0.00 ₽";
-    const totalUsdt = document.getElementById('val-total-profit-usdt')?.innerText || "0.00 USDT";
-    const isNeg = totalRub.includes('-');
+    // ПЕРЕСЧЕТ РАЗДЕЛЬНОЙ ПРИБЫЛИ СПЕЦИАЛЬНО ДЛЯ PNL ХОЛСТА
+    const tz = parseInt(currentUser?.tz_offset) !== undefined ? parseInt(currentUser.tz_offset) : 3;
+    const nowUtc = new Date();
+    const userNow = new Date(nowUtc.getTime() + (tz * 3600 * 1000));
+
+    const filtered = userTrades.filter(t => {
+        const dUtc = new Date(t.date);
+        const dUser = new Date(dUtc.getTime() + (tz * 3600 * 1000));
+        if (currentPeriod === 'today') {
+            return dUser.getUTCFullYear() === userNow.getUTCFullYear() &&
+                   dUser.getUTCMonth() === userNow.getUTCMonth() &&
+                   dUser.getUTCDate() === userNow.getUTCDate();
+        }
+        if (currentPeriod === 'month') {
+            return dUser.getUTCFullYear() === userNow.getUTCFullYear() &&
+                   dUser.getUTCMonth() === userNow.getUTCMonth();
+        }
+        if (currentPeriod === 'custom' && customStartDate && customEndDate) {
+            const tradeTime = dUser.getTime();
+            return tradeTime >= customStartDate.getTime() && tradeTime <= customEndDate.getTime();
+        }
+        return true;
+    });
+
+    let bF = 0, bC = 0, sF = 0, sC = 0;
+    filtered.forEach(t => {
+        const f = parseFloat(t.fiat_amount || 0);
+        const c = parseFloat(t.crypto_amount || 0);
+        if (t.is_cycle) {
+            bF += f; bC += c;
+            const cProfitRub = parseFloat(t.cycle_profit_rub || 0);
+            const cProfitUsdt = parseFloat(t.cycle_profit_usdt || 0);
+            if (t.cycle_mode === 'crypto' || cProfitUsdt !== 0) {
+                sF += f; sC += (c - cProfitUsdt);
+            } else {
+                sF += (f + cProfitRub); sC += c;
+            }
+        } else if (t.type === 'buy') {
+            bF += f; bC += c;
+        } else {
+            sF += f; sC += c;
+        }
+    });
+
+    const pWac = bC > 0 ? bF / bC : 0;
+    const pAvgSell = sC > 0 ? sF / sC : 0;
+    const pMid = (pWac > 0 && pAvgSell > 0) ? (pWac + pAvgSell) / 2 : (pWac || pAvgSell || 0);
+
+    const pFiat = sF - bF;
+    const pUsdt = bC - sC;
+    const pTotalFiat = pFiat + (pUsdt * pMid);
+    const pTotalUsdt = pMid > 0 ? (pTotalFiat / pMid) : pUsdt;
+    const sym = getCurrencySymbol();
 
     ctx.fillStyle = '#64748b';
-    ctx.font = '800 18px Inter, sans-serif';
-    ctx.fillText('ОБЩАЯ ЧИСТАЯ ПРИБЫЛЬ ЗА ПЕРИОД', 70, 235);
+    ctx.font = '800 16px Inter, sans-serif';
+    ctx.fillText('ЧИСТАЯ ПРИБЫЛЬ ЗА ПЕРИОД (ФИАТ + USDT)', 70, 230);
 
-    ctx.fillStyle = isNeg ? '#f23645' : '#2ebb9a';
-    ctx.font = '900 76px Inter, sans-serif';
-    ctx.fillText(totalRub, 70, 315);
+    // РАЗДЕЛЬНАЯ СТРОКА НА ХОЛСТЕ: +1 000.00 ₽  +  15.00 USDT
+    const pFiatStr = `${formatSignedMoney(pFiat, 2)} ${sym}`;
+    const usdtSign = pUsdt >= 0 ? '+' : '-';
+    const pUsdtStr = `${usdtSign} ${Math.abs(pUsdt).toFixed(2)} USDT`;
+    const splitMainText = `${pFiatStr}  +  ${pUsdtStr}`;
 
+    ctx.fillStyle = pTotalFiat < 0 ? '#f23645' : '#2ebb9a';
+    ctx.font = '900 50px Inter, sans-serif';
+    ctx.fillText(splitMainText, 70, 295);
+
+    // ПРИБЛИЗИТЕЛЬНО В ФИАТЕ И В ДОЛЛАРАХ МЕНЬШИМ ШРИФТОМ ПОД НИМ
+    const approxLine = `≈ ${formatSignedMoney(pTotalFiat, 2)} ${sym}   (≈ ${formatSignedMoney(pTotalUsdt, 2)} $)`;
     ctx.fillStyle = '#38bdf8';
-    ctx.font = '800 28px Inter, sans-serif';
-    ctx.fillText(`≈ ${totalUsdt}`, 70, 365);
+    ctx.font = '800 24px Inter, sans-serif';
+    ctx.fillText(approxLine, 70, 345);
 
     // 6. Плитки статистики
     const stats = [
@@ -3399,7 +3483,9 @@ async function sendPnlToTelegramChat() {
         const formData = new FormData();
         formData.append('chat_id', currentUser.tg_id);
         formData.append('photo', currentPnlBlob, `pnl_${new Date().getTime()}.png`);
-        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: ${document.getElementById('val-total-profit-rub')?.innerText || ''}\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража`);
+        const splitText = document.getElementById('val-total-profit-split')?.innerText?.replace(/\s+/g, ' ') || '';
+        const approxText = document.getElementById('val-approx-fiat')?.innerText || '';
+        formData.append('caption', `📊 <b>Ваш PnL-отчет (${getPnlTimeframeLabel()})</b>\n💰 Прибыль: <b>${splitText}</b> (${approxText})\n📈 Ср. спред: ${document.getElementById('val-avg-spread')?.innerText || ''}\n\n🤖 @P2P_Rbot — Терминал арбитража`);
         formData.append('parse_mode', 'HTML');
 
         const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {

@@ -138,17 +138,23 @@
                     </div>
                 </div>
 
-
-                <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 8px 0 6px 0;">
-                    <div id="val-total-profit-rub" class="profit-val privacy-blur">
-                        0.00 <span style="font-size: 18px; color: var(--text-muted);" class="sym">₽</span>
+                <!-- РАЗДЕЛЬНЫЙ ВЫВОД СЛЕВА + АККУРАТНАЯ ПЛАШКА С КУРСОВЫМ ЭКВИВАЛЕНТОМ СПРАВА -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px 0;">
+                    <div id="val-total-profit-split" class="profit-val privacy-blur" style="font-size: 21px; font-weight: 900; letter-spacing: -0.5px; line-height: 1.25;">
+                        +0.00 <span class="sym">₽</span> + 0.00 USDT
                     </div>
-                    <div id="val-total-profit-usdt" class="privacy-blur" style="font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);">
-                        0.00 USDT
+                    <div class="approx-profit-badge privacy-blur">
+                        <div id="val-approx-fiat" style="color: var(--bybit-yellow); font-weight: 800; font-size: 13px;">≈ +0.00 ₽</div>
+                        <div id="val-approx-usd" style="color: var(--bybit-blue); font-weight: 700; font-size: 11px;">≈ +0.00 $</div>
                     </div>
                 </div>
-                <div style="font-size: 10.5px; color: var(--text-muted); margin: 3px 0 8px 0; line-height: 1.35;" data-i18n="formulaHeroHint">
-                    💡 Чистая в <span class="sym">₽</span> и чистая в USDT суммируются по курсу Mid Price и дают единую общую прибыль.
+
+                <!-- Скрытые узлы для сохранения совместимости -->
+                <div id="val-total-profit-rub" style="display: none;"></div>
+                <div id="val-total-profit-usdt" style="display: none;"></div>
+
+                <div style="font-size: 10.5px; color: var(--text-muted); margin: 4px 0 8px 0; line-height: 1.35;">
+                    💡 Раздельный профит в фиате и USDT. Справа рассчитан общий эквивалент по курсу Mid Price.
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 6px;">
@@ -1205,15 +1211,17 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
                 <div>
                     <h3 style="margin: 0; font-size: 17px; color: var(--bybit-yellow);" id="day-modal-title">📅 Сводка за день</h3>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Полная чистая прибыль дня (Фиат + USDT)</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Раздельная прибыль фиата и USDT</div>
                 </div>
                 <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeModals()">✕</button>
             </div>
 
             <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center;">
-                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Общая прибыль дня</div>
-                <div id="day-modal-profit-val" style="font-size: 26px; font-weight: 900; margin: 6px 0;">0.00 ₽</div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Прибыль дня (Фиат + USDT)</div>
+                <div id="day-modal-profit-val" style="font-size: 20px; font-weight: 900; margin: 6px 0;">+0.00 ₽ + 0.00 USDT</div>
+                <div id="day-modal-profit-approx" style="font-size: 12px; color: var(--text-muted); font-weight: 700; margin-top: 2px;">≈ +0.00 ₽ (≈ +0.00 $)</div>
             </div>
+
 
             <div class="analytics-grid" style="margin-bottom: 14px;">
                 <div class="stat-card">
