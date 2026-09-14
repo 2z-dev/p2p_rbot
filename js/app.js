@@ -48,6 +48,7 @@ let adminIds = [SUPER_ADMIN_ID];
 ==================================================== */
 const I18N = {
     ru: {
+        guideBackBtn: "В терминал",
         accessDenied: "Доступ ограничен",
         accessDeniedDesc: "Терминал защищен и запускается исключительно через Telegram Mini App.",
         openBotBtn: "🚀 Открыть бота",
@@ -157,6 +158,7 @@ const I18N = {
         navAdmin: "Админ"
     },
     en: {
+        guideBackBtn: "To Terminal",
         accessDenied: "Access Restricted",
         accessDeniedDesc: "Terminal is protected and only opens inside Telegram Mini App.",
         openBotBtn: "🚀 Open Telegram Bot",
@@ -266,6 +268,7 @@ const I18N = {
         navAdmin: "Admin"
     },
     es: {
+        guideBackBtn: "Al Terminal",
         accessDenied: "Acceso Restringido",
         accessDeniedDesc: "El terminal está protegido y sólo se abre en Telegram Mini App.",
         openBotBtn: "🚀 Abrir Bot de Telegram",
@@ -375,6 +378,7 @@ const I18N = {
         navAdmin: "Admin"
     },
     fr: {
+        guideBackBtn: "Au Terminal",
         accessDenied: "Accès Restreint",
         accessDeniedDesc: "Le terminal fonctionne uniquement via Telegram Mini App.",
         openBotBtn: "🚀 Ouvrir le Bot",
@@ -484,6 +488,7 @@ const I18N = {
         navAdmin: "Admin"
     },
     de: {
+        guideBackBtn: "Zum Terminal",
         accessDenied: "Zugriff Verweigert",
         accessDeniedDesc: "Das Terminal funktioniert ausschließlich über Telegram Mini App.",
         openBotBtn: "🚀 Bot Öffnen",
@@ -593,6 +598,7 @@ const I18N = {
         navAdmin: "Admin"
     },
     uk: {
+        guideBackBtn: "В термінал",
         accessDenied: "Доступ обмежено",
         accessDeniedDesc: "Термінал захищений і запускається виключно через Telegram Mini App.",
         openBotBtn: "🚀 Відкрити бота",
@@ -702,6 +708,7 @@ const I18N = {
         navAdmin: "Адмін"
     },
     kk: {
+        guideBackBtn: "Терминалға",
         accessDenied: "Қолжетімділік шектелген",
         accessDeniedDesc: "Терминал қорғалған және тек Telegram Mini App арқылы жұмыс істейді.",
         openBotBtn: "🚀 Ботты ашу",
@@ -4250,6 +4257,9 @@ function openSupport() {
 /* ====================================================
    РЕЖИМЫ ИНТЕРФЕЙСА И НАВИГАЦИЯ
 ==================================================== */
+let isNavClickScrolling = false;
+let navScrollTimeout = null;
+
 function updateNavSlider(targetId) {
     const nav = document.getElementById('main-bottom-nav');
     const slider = document.getElementById('nav-slider');
@@ -4279,10 +4289,25 @@ function switchUiMode(isChecked) {
 
 function handleNavClick(targetId, el) {
     haptic('light');
+
     if (layoutMode === 'feed') {
         const target = document.getElementById(targetId);
         if (target) {
+            // Блокируем слушатель скролла на время плавного перемещения страницы
+            isNavClickScrolling = true;
+            clearTimeout(navScrollTimeout);
+
+            // Моментально ставим ползунок на нажатую кнопку без дерганий
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if (el) el.classList.add('active');
+            updateNavSlider(targetId);
+
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Снимаем блокировку после завершения плавного скролла
+            navScrollTimeout = setTimeout(() => {
+                isNavClickScrolling = false;
+            }, 850);
         }
     } else {
         document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
@@ -4292,10 +4317,10 @@ function handleNavClick(targetId, el) {
             target.classList.add('revealed');
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        if (el) el.classList.add('active');
+        updateNavSlider(targetId);
     }
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    if (el) el.classList.add('active');
-    updateNavSlider(targetId);
 }
 
 function switchLayoutMode(isChecked) {
@@ -4325,12 +4350,12 @@ function switchLayoutMode(isChecked) {
         document.getElementById('dashboard').style.display = 'block';
     }
 
-    setTimeout(() => updateNavSlider('dashboard'), 50);
+    setTimeout(() => updateNavSlider('dashboard'), 60);
 }
 
-// Отслеживание параллельного скролла ленты для перемещения ползунка
+// Отслеживание естественного скролла пальцем (только когда пользователь листает сам)
 window.addEventListener('scroll', () => {
-    if (layoutMode !== 'feed') return;
+    if (layoutMode !== 'feed' || isNavClickScrolling) return;
 
     const sections = ['dashboard', 'trade', 'cards', 'history', 'profile'];
     if (adminIds.includes(currentUser?.tg_id)) sections.push('admin-panel');
@@ -4345,7 +4370,7 @@ window.addEventListener('scroll', () => {
             if (scrollPos >= top && scrollPos < top + height) {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 const btn = document.querySelector(`.nav-btn[data-target="${id}"]`);
-                if (btn) {
+                if (btn && !btn.classList.contains('active')) {
                     btn.classList.add('active');
                     updateNavSlider(id);
                 }
@@ -4354,6 +4379,7 @@ window.addEventListener('scroll', () => {
         }
     }
 }, { passive: true });
+
 
 function toggleSecondaryStats() {
     haptic('light');
@@ -4643,20 +4669,59 @@ if (document.readyState === 'loading') {
 /* ====================================================
    ИНТЕРАКТИВНАЯ БАЗА ЗНАНИЙ 2.0 (ИНСТРУКЦИЯ)
 ==================================================== */
-function openInstructionModal() {
-    // Доступ строго только для пользователей с активной подпиской
+/* ====================================================
+   ПОЛНОЭКРАННАЯ СТРАНИЦА: ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ
+==================================================== */
+function openInstructionPage() {
+    // Просмотр разрешен строго пользователям с активной подпиской
     if (!requireSubscription()) return;
 
     haptic('medium');
-    document.getElementById('inst-lang-sel').value = currentLang;
-    renderInstructionSection('dashboard');
-    document.getElementById('modal-instruction').classList.add('show');
+    const langSel = document.getElementById('guide-lang-sel');
+    if (langSel) langSel.value = currentLang;
+
+    const page = document.getElementById('page-instruction');
+    if (page) {
+        page.classList.add('active-guide');
+        page.scrollTop = 0;
+    }
 }
 
-function closeInstructionModal() {
+function closeInstructionPage() {
     haptic('light');
-    document.getElementById('modal-instruction').classList.remove('show');
+    const page = document.getElementById('page-instruction');
+    if (page) page.classList.remove('active-guide');
 }
+
+function scrollGuideTo(targetElemId) {
+    haptic('light');
+    const target = document.getElementById(targetElemId);
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function demoSwitchMode(mode) {
+    haptic('light');
+    const btnFiat = document.getElementById('demo-mode-fiat');
+    const btnCrypto = document.getElementById('demo-mode-crypto');
+    const resBox = document.getElementById('demo-calc-res');
+
+    if (mode === 'fiat') {
+        if (btnFiat) btnFiat.classList.add('active');
+        if (btnCrypto) btnCrypto.classList.remove('active');
+        if (resBox) {
+            resBox.innerHTML = `<b>Режим «В фиате»:</b> При закупке 100 000 ₽ по 90.00 и продаже по 92.50 чистая прибыль составит <span style="color: var(--bybit-green); font-weight: 900;">+2 777.78 ₽</span> на карте.`;
+        }
+    } else {
+        if (btnFiat) btnFiat.classList.remove('active');
+        if (btnCrypto) btnCrypto.classList.add('active');
+        if (resBox) {
+            resBox.innerHTML = `<b>Режим «В USDT»:</b> Депозит 100 000 ₽ возвращается на карту, а прибыль <span style="color: var(--bybit-green); font-weight: 900;">+30.03 USDT</span> остается в монетах на бирже.`;
+        }
+    }
+}
+
 
 function switchInstSection(secId, el) {
     haptic('light');

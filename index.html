@@ -71,9 +71,9 @@
         </div>
 
         <!-- ПЛАШКА-КНОПКА ИНСТРУКЦИИ (ВЫШЕ БАННЕРА, НИЖЕ ПОДПИСКИ) -->
-        <div id="btn-open-instruction" class="instruction-banner-btn" onclick="openInstructionModal()">
+        <div id="btn-open-instruction" class="instruction-banner-btn" onclick="openInstructionPage()">
             <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 20px;">📖</span>
+                <span style="font-size: 22px;">📖</span>
                 <div>
                     <div class="inst-title" data-i18n="instBannerTitle">ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ</div>
                     <div class="inst-sub" data-i18n="instBannerSubtitle">Интерактивный гид по каждой кнопке и разделу</div>
@@ -1265,47 +1265,158 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ИНСТРУКЦИИ И ФУНКЦИЙ (ИНТЕРАКТИВНОЕ) -->
-    <div id="modal-instruction" class="modal-overlay" onclick="closeInstructionModal()">
-        <div class="glass-card modal-box" onclick="event.stopPropagation()" style="max-width: 540px; max-height: 88vh; text-align: left; padding: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
-                <div>
-                    <h2 style="margin: 0; font-size: 18px; color: var(--bybit-green);" data-i18n="instModalHeader">📖 Инструкция и все функции</h2>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Terminal Pro v1.1.2 • Интерактивный гид</div>
+    <!-- ОТДЕЛЬНАЯ ПОЛНОЭКРАННАЯ СТРАНИЦА: ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ -->
+    <div id="page-instruction">
+        <div class="guide-header-sticky">
+            <button class="btn-guide-back" onclick="closeInstructionPage()">
+                <span>←</span> <span data-i18n="guideBackBtn">В терминал</span>
+            </button>
+            <div style="font-size: 13px; font-weight: 800; color: var(--bybit-yellow);">Terminal Pro v1.1.2</div>
+            <select id="guide-lang-sel" class="styled-input" style="width: auto; padding: 6px 10px; font-size: 12px;" onchange="changeLanguage(this.value)">
+                <option value="ru">🇷🇺 RU</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="es">🇪🇸 ES</option>
+                <option value="fr">🇫🇷 FR</option>
+                <option value="de">🇩🇪 DE</option>
+                <option value="uk">🇺🇦 UK</option>
+                <option value="kk">🇰🇿 KK</option>
+            </select>
+        </div>
+
+        <div class="guide-container">
+            <!-- ОГЛАВЛЕНИЕ С ПЕРЕХОДОМ -->
+            <div class="guide-toc-chips">
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-dash')">📊 Сводка & PnL</div>
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-calc')">⚡️ Калькулятор</div>
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-cal')">📅 Календарь</div>
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-trade')">⚡️ Сделки</div>
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-cards')">💳 Карты & 115-ФЗ</div>
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-history')">📜 История</div>
+                <div class="guide-toc-chip" onclick="scrollGuideTo('g-profile')">⚙️ Настройки</div>
+            </div>
+
+            <!-- 1. СВОДКА, ОБЩАЯ ПРИБЫЛЬ И ИНКОГНИТО -->
+            <div class="guide-section-card" id="g-dash">
+                <span class="guide-tag">Раздел 1</span>
+                <h3>📊 Главная сводка, Общая прибыль и Инкогнито</h3>
+                <div class="guide-text-block">
+                    Главный аналитический экран объединяет ваши фиатные средства на картах и криптовалютные активы на бирже в реальном времени.
                 </div>
-                <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeInstructionModal()">✕</button>
+
+                <div class="guide-sandbox-box">
+                    <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 6px;">
+                        ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР: РЕЖИМ ИНКОГНИТО (ГЛАЗИК / ОЧКИ)
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 14px;">
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted);">ОБЩАЯ ПРИБЫЛЬ</div>
+                            <div class="profit-val privacy-blur" style="font-size: 20px; font-weight: 900; color: var(--bybit-green);">
+                                +18 450.00 <span class="sym">₽</span>
+                            </div>
+                        </div>
+                        <button class="btn-card-action" style="padding: 8px 14px; font-size: 14px;" onclick="toggleIncognitoMode()">
+                            👁 / 🕶 Проверить
+                        </button>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+                        Нажмите кнопку справа — баланс плавно скроется без скачков и деформации блоков.
+                    </div>
+                </div>
+
+                <div class="guide-text-block">
+                    • <b>Формула общей прибыли:</b> <code>Общая прибыль = Чистая в фиате + (Чистая в USDT × Mid Price)</code>. Терминал справедливо пересчитывает оставшийся на бирже крипто-остаток по средневзвешенному курсу.<br>
+                    • <b>Кнопка 📸 PnL:</b> Генерирует отчетное изображение с вашим ником, датой, прибылью и оборотом для отправки в личку Telegram-бота.<br>
+                    • <b>WAC Закупка:</b> Средневзвешенная себестоимость доллара с учетом объемов каждой закупленной партии.
+                </div>
             </div>
 
-            <!-- ВЫБОР ЯЗЫКА ВНУТРИ ИНСТРУКЦИИ -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: rgba(0,0,0,0.35); padding: 8px 12px; border-radius: 12px;">
-                <span style="font-size: 11px; font-weight: 800;" data-i18n="instLangLabel">🌍 Язык руководства:</span>
-                <select id="inst-lang-sel" class="styled-input" style="width: auto; padding: 6px 10px; font-size: 12px;" onchange="changeLanguage(this.value)">
-                    <option value="ru">🇷🇺 Русский</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                    <option value="uk">🇺🇦 Українська</option>
-                    <option value="kk">🇰🇿 Қазақша</option>
-                </select>
+            <!-- 2. КАЛЬКУЛЯТОР СВЯЗОК -->
+            <div class="guide-section-card" id="g-calc">
+                <span class="guide-tag">Раздел 2</span>
+                <h3>⚡️ Калькулятор круга (Фиат vs USDT)</h3>
+                <div class="guide-text-block">
+                    Позволяет до копейки просчитать чистую прибыль и спред арбитражного круга еще до входа в сделку.
+                </div>
+
+                <div class="guide-sandbox-box">
+                    <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 8px;">
+                        ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР: ПЕРЕКЛЮЧЕНИЕ ТИПА ПРИБЫЛИ
+                    </div>
+                    <div class="period-tabs" style="margin-bottom: 10px;">
+                        <div class="p-tab active" id="demo-mode-fiat" onclick="demoSwitchMode('fiat')">💰 Прибыль в фиате</div>
+                        <div class="p-tab" id="demo-mode-crypto" onclick="demoSwitchMode('crypto')">🪙 Прибыль в USDT</div>
+                    </div>
+                    <div id="demo-calc-res" style="background: rgba(0,0,0,0.35); padding: 12px; border-radius: 12px; font-size: 12px; line-height: 1.5;">
+                        <b>Режим «В фиате»:</b> При закупке 100 000 ₽ по 90.00 и продаже по 92.50 чистая прибыль составит <span style="color: var(--bybit-green); font-weight: 900;">+2 777.78 ₽</span> на карте.
+                    </div>
+                </div>
+
+                <div class="guide-text-block">
+                    • <b>Прибыль в фиате:</b> Вы продаете весь закупленный объем монет. Депозит вместе с прибылью падает на карту.<br>
+                    • <b>Прибыль в USDT:</b> Вы продаете монет ровно столько, чтобы вернуть тело депозита (100 000 ₽), а заработанные USDT остаются в крипте.<br>
+                    • <b>Привязка к карте:</b> Автоматически списывает или пополняет кассу выбранной карты и считает суточный расход лимита.
+                </div>
             </div>
 
-            <!-- ОГЛАВЛЕНИЕ С ПЕРЕХОДОМ ПО РАЗДЕЛАМ -->
-            <div class="inst-nav-chips">
-                <div class="inst-chip active" onclick="switchInstSection('dashboard', this)">📊 1. Сводка & PnL</div>
-                <div class="inst-chip" onclick="switchInstSection('calc', this)">⚡️ 2. Калькулятор</div>
-                <div class="inst-chip" onclick="switchInstSection('calendar', this)">📅 3. Календарь</div>
-                <div class="inst-chip" onclick="switchInstSection('trade', this)">⚡️ 4. Сделка</div>
-                <div class="inst-chip" onclick="switchInstSection('cards', this)">💳 5. Карты и касса</div>
-                <div class="inst-chip" onclick="switchInstSection('history', this)">📜 6. История</div>
-                <div class="inst-chip" onclick="switchInstSection('settings', this)">⚙️ 7. Настройки</div>
+            <!-- 3. КАЛЕНДАРЬ ОБЩЕЙ ПРИБЫЛИ -->
+            <div class="guide-section-card" id="g-cal">
+                <span class="guide-tag">Раздел 3</span>
+                <h3>📅 Календарь общей прибыли</h3>
+                <div class="guide-text-block">
+                    • <b>Плавное скольжение:</b> Зажмите палец на сетке дней и ведите по экрану — бейдж покажет прибыль и спред каждого дня без лишних нажатий.<br>
+                    • <b>Клик по ячейке дня:</b> Открывает детализированную сводку дня с оборотом и количеством завершенных кругов.<br>
+                    • <b>Цвета:</b> Зеленый — стандартный профит, изумрудный — дни с доходом от 10 000 ₽, красный — фиксация минуса.
+                </div>
             </div>
 
-            <!-- КОНТЕЙНЕР ДИНАМИЧЕСКОГО РУКОВОДСТВА С ИНТЕРАКТИВНЫМИ ФРАГМЕНТАМИ -->
-            <div id="inst-content-body" style="max-height: 58vh; overflow-y: auto; padding-right: 4px;"></div>
+            <!-- 4. ОДИНОЧНЫЕ СДЕЛКИ -->
+            <div class="guide-section-card" id="g-trade">
+                <span class="guide-tag">Раздел 4</span>
+                <h3>⚡️ Внесение единичных сделок</h3>
+                <div class="guide-text-block">
+                    Используется при раздельной торговле, когда закупка монет идет утром, а распродажа частями продолжается весь день:<br><br>
+                    • <b>Покупка 🟢 / Продажа 🔴:</b> Переключает направление ордера.<br>
+                    • <b>Режим ввода:</b> Ввод от суммы в фиате или от точного объема монет USDT.<br>
+                    • <b>Звуковой отклик:</b> При сохранении звучит приятный перезвон монет, подтверждающий синхронизацию с облачной базой данных.
+                </div>
+            </div>
 
-            <button class="action-btn gold" style="margin-top: 14px; padding: 12px;" onclick="closeInstructionModal()" data-i18n="instCloseBtn">
-                Всё понятно, перейти к торговле 🚀
+            <!-- 5. КАРТЫ, КАССА И 115-ФЗ -->
+            <div class="guide-section-card" id="g-cards">
+                <span class="guide-tag">Раздел 5</span>
+                <h3>💳 Карты, Учет кассы и Контроль 115-ФЗ</h3>
+                <div class="guide-text-block">
+                    • <b>Суточный и месячный лимиты:</b> Показываются на цветных прогресс-барах. При исчерпании лимита статус меняется на <code>⛔️ Лимит исчерпан</code> автоматически.<br>
+                    • <b>Таймер отлежки:</b> Вы задаете время, и карта отображает точный обратный отсчет <code>⏳ До 15 сен, 14:00 (осталось 18ч 20м)</code>, возвращаясь в статус «В работе» сама.<br>
+                    • <b>Трансфер:</b> Перевод между своими картами без влияния на торговую прибыль с записью понятных названий карт в истории.<br>
+                    • <b>Шаблон реквизитов для чата:</b> Одна кнопка копирует готовое вежливое сообщение с вашим банком, номером карты и ФИО для покупателя на Bybit.
+                </div>
+            </div>
+
+            <!-- 6. ИСТОРИЯ И ПОВТОР -->
+            <div class="guide-section-card" id="g-history">
+                <span class="guide-tag">Раздел 6</span>
+                <h3>📜 История операций и быстрый повтор</h3>
+                <div class="guide-text-block">
+                    • <b>Кнопка 🔁 (Повтор):</b> Копирует прайс, курсы покупки/продажи, привязанную карту и режим прибыли (фиат/USDT) прямо в калькулятор за 1 клик.<br>
+                    • <b>Кнопка ✏️:</b> Редактирование параметров ордера при опечатке.<br>
+                    • <b>Цветные метки:</b> Маркировка сделок по биржам или дропам.
+                </div>
+            </div>
+
+            <!-- 7. НАСТРОЙКИ И БОНУСЫ -->
+            <div class="guide-section-card" id="g-profile">
+                <span class="guide-tag">Раздел 7</span>
+                <h3>⚙️ Настройки, Визуальные эффекты и Партнерская сеть</h3>
+                <div class="guide-text-block">
+                    • <b>Визуальные эффекты (FX):</b> Включение 3D-частиц и неонового фона или переход в строгий OLED-черный минимализм.<br>
+                    • <b>Режим общей ленты:</b> Единый сплошной экран с плавно следующим за скроллом ползунком навигации.<br>
+                    • <b>Партнерская сеть:</b> За каждого приглашенного трейдера, активировавшего бесплатный триал, вы получаете <b>+3 дня Premium</b> к своей подписке.
+                </div>
+            </div>
+
+            <button class="action-btn gold" style="padding: 15px; font-size: 13px;" onclick="closeInstructionPage()">
+                Вернуться к торговле ⚡️
             </button>
         </div>
     </div>
