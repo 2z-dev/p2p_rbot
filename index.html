@@ -1275,21 +1275,21 @@
         </div>
     </div>
 
-    <!-- ШТОРКА: ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ (В ТОЧНО ТАКОМ ЖЕ СТИЛЕ, КАК МЕНЮ КАРТЫ) -->
+    <!-- ШТОРКА: ИНСТРУКЦИЯ И ВСЕ ФУНКЦИИ (ПОЛНОЕ РУКОВОДСТВО С ТРЕНАЖЕРАМИ) -->
     <div id="instruction-sheet-modal" class="bottom-sheet-overlay" onclick="closeInstructionSheet(event)">
-        <div class="bottom-sheet-content" onclick="event.stopPropagation()" style="max-height: 90vh;">
+        <div class="bottom-sheet-content" onclick="event.stopPropagation()" style="max-height: 94vh;">
             <div class="sheet-grabber"></div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div>
                     <h2 style="margin: 0; font-size: 18px; color: var(--bybit-green);" data-i18n="instModalHeader">📖 Инструкция и все функции</h2>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Terminal Pro v1.2.7 • Полный разбор системы</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Terminal Pro v1.2.7 • Детальный гид с тренажерами</div>
                 </div>
                 <button class="btn-card-action" style="padding: 4px 10px;" onclick="closeInstructionSheet()">✕</button>
             </div>
 
             <!-- ВЫБОР ЯЗЫКА РУКОВОДСТВА -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.35); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.35); padding: 8px 12px; border-radius: 12px; border: 1.5px solid var(--glass-border);">
                 <span style="font-size: 11px; font-weight: 800;" data-i18n="instLangLabel">🌍 Язык руководства:</span>
                 <select id="inst-sheet-lang" class="styled-input" style="width: auto; padding: 5px 10px; font-size: 12px;" onchange="changeLanguage(this.value)">
                     <option value="ru">🇷🇺 Русский</option>
@@ -1313,14 +1313,15 @@
                 <div class="p-tab" id="tab-inst-profile" onclick="switchInstTab('profile')">⚙️ Настройки</div>
             </div>
 
-            <!-- ДИНАМИЧЕСКИЙ КОНТЕНТ ВЫБРАННОГО РАЗДЕЛА С ЖИВЫМИ ПРИМЕРАМИ -->
-            <div id="inst-sheet-body" style="max-height: 52vh; overflow-y: auto; padding-right: 4px;"></div>
+            <!-- ДИНАМИЧЕСКИЙ КОНТЕНТ ВЫБРАННОГО РАЗДЕЛА С ТРЕНАЖЕРАМИ И ОТСТУПАМИ -->
+            <div id="inst-sheet-body" style="max-height: 56vh; overflow-y: auto; padding-right: 4px;"></div>
 
-            <button class="action-btn gold" style="margin-top: 14px; padding: 13px; font-size: 13px;" onclick="closeInstructionSheet()" data-i18n="instCloseBtn">
+            <button class="action-btn gold" style="margin-top: 16px; padding: 13px; font-size: 13px;" onclick="closeInstructionSheet()" data-i18n="instCloseBtn">
                 Всё понятно, перейти к торговле 🚀
             </button>
         </div>
     </div>
+
 
     <!-- МОДАЛЬНОЕ ОКНО ОЧИСТКИ ИСТОРИИ -->
     <div id="modal-history-delete" class="modal-overlay" onclick="closeModals()">
