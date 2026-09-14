@@ -1069,8 +1069,9 @@ body.locked-no-sub .bottom-nav {
     border-radius: 14px;
     padding: 12px;
 }
+
 /* ====================================================
-   ПЛАВНЫЙ БЕЗ ДЕРГАНИЙ ПОЛЗУНОК НАВИГАЦИИ
+   ПОЛЗУНОК НАВИГАЦИИ БЕЗ ДЕРГАНИЙ
 ==================================================== */
 .bottom-nav {
     position: fixed;
@@ -1098,12 +1099,41 @@ body.locked-no-sub .bottom-nav {
     border-radius: 16px;
     background: rgba(243, 166, 0, 0.16);
     border: 1px solid rgba(243, 166, 0, 0.5);
-    box-shadow: 0 0 18px rgba(243, 166, 0, 0.3);
+    box-shadow: 0 0 16px rgba(243, 166, 0, 0.25);
     pointer-events: none;
     transition: left 0.28s cubic-bezier(0.16, 1, 0.3, 1), width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: left, width;
     z-index: 1;
 }
+
+.nav-btn {
+    position: relative;
+    z-index: 2;
+    transition: color 0.2s ease;
+}
+
+/* ИНТЕРАКТИВНЫЕ БЛОКИ ВНУТРИ ШТОРКИ ИНСТРУКЦИИ */
+.inst-sandbox-box {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1.5px dashed rgba(243, 166, 0, 0.35);
+    border-radius: 16px;
+    padding: 14px;
+    margin: 12px 0;
+}
+
+.inst-step-badge {
+    display: inline-block;
+    background: rgba(46, 187, 154, 0.16);
+    color: var(--bybit-green);
+    border: 1px solid var(--bybit-green);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 7px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
 
 .nav-btn {
     position: relative;
