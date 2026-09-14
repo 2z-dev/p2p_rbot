@@ -4825,454 +4825,6 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
-
-/* ====================================================
-   ПОЛНОЕ ИНТЕРАКТИВНОЕ РУКОВОДСТВО ПОЛЬЗОВАТЕЛЯ (7 РАЗДЕЛОВ)
-==================================================== */
-let currentInstTab = 'dashboard';
-
-function openInstructionSheet() {
-    if (!requireSubscription()) return;
-    haptic('medium');
-    const sel = document.getElementById('inst-sheet-lang');
-    if (sel) sel.value = currentLang;
-
-    switchInstTab(currentInstTab || 'dashboard');
-    document.getElementById('instruction-sheet-modal').classList.add('show');
-}
-
-function closeInstructionSheet(event) {
-    if (event && event.target && event.target !== event.currentTarget) return;
-    haptic('light');
-    document.getElementById('instruction-sheet-modal').classList.remove('show');
-}
-
-function switchInstTab(tabKey) {
-    haptic('light');
-    currentInstTab = tabKey;
-    const tabs = ['dash', 'calc', 'calendar', 'trade', 'cards', 'history', 'profile'];
-    tabs.forEach(t => {
-        const btn = document.getElementById(`tab-inst-${t}`);
-        if (btn) {
-            btn.classList.toggle('active', (t === tabKey) || (t === 'dash' && tabKey === 'dashboard'));
-        }
-    });
-
-    renderInstructionTabContent(tabKey);
-}
-
-/* ====================================================
-   ОБРАБОТЧИКИ ДЛЯ ИНТЕРАКТИВНЫХ ВИДЖЕТОВ В РУКОВОДСТВЕ
-==================================================== */
-// 1. Интерактив инкогнито
-let instIncognitoState = false;
-function instSimulateIncognito() {
-    haptic('light');
-    instIncognitoState = !instIncognitoState;
-    const valEl = document.getElementById('inst-demo-profit-val');
-    const approxEl = document.getElementById('inst-demo-profit-approx');
-    const iconEl = document.getElementById('inst-demo-incognito-btn');
-
-    if (instIncognitoState) {
-        if (valEl) valEl.style.filter = 'blur(9px)';
-        if (approxEl) approxEl.style.filter = 'blur(9px)';
-        if (iconEl) iconEl.innerText = '🕶 Включен';
-    } else {
-        if (valEl) valEl.style.filter = 'none';
-        if (approxEl) approxEl.style.filter = 'none';
-        if (iconEl) iconEl.innerText = '👁 Выключен';
-    }
-}
-
-// 2. Интерактив калькулятора связок
-let instCalcMode = 'fiat';
-function instSimulateCalcMode(mode) {
-    haptic('light');
-    instCalcMode = mode;
-    document.getElementById('inst-calc-btn-fiat')?.classList.toggle('active', mode === 'fiat');
-    document.getElementById('inst-calc-btn-crypto')?.classList.toggle('active', mode === 'crypto');
-    instSimulateCalcRun();
-}
-
-function instSimulateCalcRun() {
-    const amt = parseFloat(document.getElementById('inst-calc-inp-amt')?.value) || 100000;
-    const buyR = parseFloat(document.getElementById('inst-calc-inp-buy')?.value) || 90.00;
-    const sellR = parseFloat(document.getElementById('inst-calc-inp-sell')?.value) || 92.50;
-
-    const spread = (((sellR - buyR) / buyR) * 100).toFixed(2);
-    const boughtUsdt = amt / buyR;
-
-    const resBox = document.getElementById('inst-calc-live-result');
-    if (!resBox) return;
-
-    if (instCalcMode === 'fiat') {
-        const soldFiat = boughtUsdt * sellR;
-        const profitFiat = (soldFiat - amt).toFixed(2);
-        resBox.innerHTML = `
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в фиате:</div>
-            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
-                +${parseFloat(profitFiat).toLocaleString()} ₽ <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
-            </div>
-            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
-                Куплено ${boughtUsdt.toFixed(2)} USDT и полностью продано. Депозит ${amt.toLocaleString()} ₽ возвращен, доход зачислен на карту.
-            </div>
-        `;
-    } else {
-        const soldUsdt = amt / sellR;
-        const profitUsdt = (boughtUsdt - soldUsdt).toFixed(2);
-        resBox.innerHTML = `
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в USDT:</div>
-            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
-                +${profitUsdt} USDT <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
-            </div>
-            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
-                Продано ${soldUsdt.toFixed(2)} USDT (возврат ${amt.toLocaleString()} ₽ на карту). Чистая прибыль осталась в криптокошельке.
-            </div>
-        `;
-    }
-}
-
-// 3. Интерактив календаря
-function instSimulateDaySelect(dayNum, profitFiat, profitUsdt, midP, spread) {
-    haptic('light');
-    document.querySelectorAll('.inst-cal-cell').forEach(c => c.classList.remove('selected'));
-    const clickedCell = document.getElementById(`inst-cal-cell-${dayNum}`);
-    if (clickedCell) clickedCell.classList.add('selected');
-
-    const totalF = (profitFiat + (profitUsdt * midP)).toFixed(2);
-    const totalU = (totalF / midP).toFixed(2);
-
-    const outBox = document.getElementById('inst-cal-day-detail');
-    if (outBox) {
-        outBox.innerHTML = `
-            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 4px;">
-                📅 ВЫБРАН ДЕНЬ: ${dayNum} СЕНТЯБРЯ 2026
-            </div>
-            <div style="font-size: 14px; font-weight: 900; color: var(--bybit-green);">
-                +${profitFiat.toLocaleString()} ₽ + ${profitUsdt.toFixed(2)} USDT
-            </div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-                ≈ +${parseFloat(totalF).toLocaleString()} ₽ (≈ +${totalU} $) • Спред: +${spread}%
-            </div>
-        `;
-    }
-}
-
-// 4. Интерактив одиночной сделки
-let instTradeType = 'buy';
-function instSimulateTradeType(type) {
-    haptic('light');
-    instTradeType = type;
-    const btnB = document.getElementById('inst-trade-btn-buy');
-    const btnS = document.getElementById('inst-trade-btn-sell');
-    const prevBtn = document.getElementById('inst-trade-submit-btn');
-
-    if (type === 'buy') {
-        btnB?.classList.add('active', 'buy');
-        btnS?.classList.remove('active', 'sell');
-        if (prevBtn) {
-            prevBtn.className = 'action-btn';
-            prevBtn.innerText = 'СОХРАНИТЬ ПОКУПКУ: 50 000.00 ₽';
-        }
-    } else {
-        btnS?.classList.add('active', 'sell');
-        btnB?.classList.remove('active', 'buy');
-        if (prevBtn) {
-            prevBtn.className = 'action-btn sell-mode';
-            prevBtn.innerText = 'СОХРАНИТЬ ПРОДАЖУ: 50 000.00 ₽';
-        }
-    }
-}
-
-// 5. Интерактив модуля карт
-let instCardDemoState = {
-    dayLimit: 150000,
-    daySpent: 0,
-    status: 'active',
-    note: 'Дроп Алексей, Сбер Black'
-};
-
-function instSimulateCardStep(step) {
-    haptic('medium');
-    const barEl = document.getElementById('inst-card-bar-fill');
-    const statEl = document.getElementById('inst-card-bar-stat');
-    const statusEl = document.getElementById('inst-card-status-badge');
-    const logEl = document.getElementById('inst-card-action-log');
-
-    if (step === 'buy') {
-        instCardDemoState.daySpent = 135000;
-        const pct = Math.round((instCardDemoState.daySpent / instCardDemoState.dayLimit) * 100);
-        if (barEl) {
-            barEl.style.width = `${pct}%`;
-            barEl.className = 'card-mini-bar-fill danger';
-        }
-        if (statEl) statEl.innerText = `${instCardDemoState.daySpent.toLocaleString()} / ${instCardDemoState.dayLimit.toLocaleString()} ₽ (${pct}%)`;
-        if (logEl) logEl.innerText = 'Закупка фиата на 135 000 ₽. Расход лимита 90% — полоска подсвечена красным (danger).';
-    } else if (step === 'withdraw') {
-        instCardDemoState.daySpent = 150000;
-        if (barEl) {
-            barEl.style.width = '100%';
-            barEl.className = 'card-mini-bar-fill danger';
-        }
-        if (statEl) statEl.innerText = '150 000 / 150 000 ₽ (100%)';
-        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-yellow); font-weight: 900;">⛔️ Лимит исчерпан</span>';
-        if (logEl) logEl.innerText = 'Снятие 15 000 ₽ с флагом [В ЛИМИТЕ]. Лимит достиг 100% — статус "Лимит исчерпан" назначен системой автоматически.';
-    } else if (step === 'cooldown') {
-        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-purple); font-weight: 800;">⏳ До 15 сен, 14:00 (осталось 23ч 59м)</span>';
-        if (logEl) logEl.innerText = 'Карта отправлена в отлежку на 24 часа. Запущен обратный отсчет таймера реального времени.';
-    } else if (step === 'reset') {
-        instCardDemoState.daySpent = 0;
-        if (barEl) {
-            barEl.style.width = '0%';
-            barEl.className = 'card-mini-bar-fill';
-        }
-        if (statEl) statEl.innerText = '0 / 150 000 ₽ (0%)';
-        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
-        if (logEl) logEl.innerText = 'Наступило 00:00:00. Суточный лимит сброшен в ноль, карта возвращена в штатный статус "В работе".';
-    }
-}
-
-// 6. Интерактив кнопки быстрого повтора
-function instSimulateRepeat() {
-    haptic('success');
-    const logBox = document.getElementById('inst-repeat-log');
-    if (logBox) {
-        logBox.innerHTML = `
-            <div style="color: var(--bybit-green); font-weight: 800;">✅ ПАРАМЕТРЫ СВЯЗКИ СКОПИРОВАНЫ В КАЛЬКУЛЯТОР:</div>
-            <div style="margin-top: 4px; color: #cbd5e1;">
-                • Сумма: <b>100 000 ₽</b><br>
-                • Закупка: <b>90.20 ₽</b> -> Продажа: <b>92.80 ₽</b><br>
-                • Карта: <b>Т-Банк 1</b> | Режим: <b>💰 В фиате</b><br>
-                Терминал автоматически переключил активную вкладку на Главный экран.
-            </div>
-        `;
-    }
-}
-
-// 7. Интерактив FX и Рефералки
-let instFxSimState = true;
-function instSimulateFxToggle() {
-    haptic('light');
-    instFxSimState = !instFxSimState;
-    const box = document.getElementById('inst-fx-preview-box');
-    const txt = document.getElementById('inst-fx-status-text');
-    if (instFxSimState) {
-        if (box) {
-            box.style.background = 'linear-gradient(135deg, rgba(243, 166, 0, 0.15) 0%, rgba(46, 187, 154, 0.15) 100%)';
-            box.style.borderColor = 'var(--bybit-yellow)';
-        }
-        if (txt) txt.innerText = 'Full FX Режим: 3D сферы, неоновые частицы, стекломорфизм (28px)';
-    } else {
-        if (box) {
-            box.style.background = '#05070a';
-            box.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-        }
-        if (txt) txt.innerText = 'OLED Черный: абсолютный чёрный фон, анимации отключены, макс. FPS';
-    }
-}
-
-/* ====================================================
-   ОБРАБОТЧИКИ ДЛЯ ИНТЕРАКТИВНЫХ ВИДЖЕТОВ В РУКОВОДСТВЕ
-==================================================== */
-let instIncognitoState = false;
-function instSimulateIncognito() {
-    haptic('light');
-    instIncognitoState = !instIncognitoState;
-    const valEl = document.getElementById('inst-demo-profit-val');
-    const approxEl = document.getElementById('inst-demo-profit-approx');
-    const iconEl = document.getElementById('inst-demo-incognito-btn');
-
-    if (instIncognitoState) {
-        if (valEl) valEl.style.filter = 'blur(10px)';
-        if (approxEl) approxEl.style.filter = 'blur(10px)';
-        if (iconEl) iconEl.innerText = '🕶 Включен';
-    } else {
-        if (valEl) valEl.style.filter = 'none';
-        if (approxEl) approxEl.style.filter = 'none';
-        if (iconEl) iconEl.innerText = '👁 Выключен';
-    }
-}
-
-let instCalcMode = 'fiat';
-function instSimulateCalcMode(mode) {
-    haptic('light');
-    instCalcMode = mode;
-    document.getElementById('inst-calc-btn-fiat')?.classList.toggle('active', mode === 'fiat');
-    document.getElementById('inst-calc-btn-crypto')?.classList.toggle('active', mode === 'crypto');
-    instSimulateCalcRun();
-}
-
-function instSimulateCalcRun() {
-    const amt = parseFloat(document.getElementById('inst-calc-inp-amt')?.value) || 100000;
-    const buyR = parseFloat(document.getElementById('inst-calc-inp-buy')?.value) || 90.00;
-    const sellR = parseFloat(document.getElementById('inst-calc-inp-sell')?.value) || 92.50;
-
-    const spread = (((sellR - buyR) / buyR) * 100).toFixed(2);
-    const boughtUsdt = amt / buyR;
-
-    const resBox = document.getElementById('inst-calc-live-result');
-    if (!resBox) return;
-
-    if (instCalcMode === 'fiat') {
-        const soldFiat = boughtUsdt * sellR;
-        const profitFiat = (soldFiat - amt).toFixed(2);
-        resBox.innerHTML = `
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в фиате:</div>
-            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
-                +${parseFloat(profitFiat).toLocaleString()} ₽ <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
-            </div>
-            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
-                Куплено ${boughtUsdt.toFixed(2)} USDT и полностью продано. Депозит ${amt.toLocaleString()} ₽ возвращен на карту вместе со спредом.
-            </div>
-        `;
-    } else {
-        const soldUsdt = amt / sellR;
-        const profitUsdt = (boughtUsdt - soldUsdt).toFixed(2);
-        resBox.innerHTML = `
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Результат фиксации в USDT:</div>
-            <div style="font-size: 16px; font-weight: 900; color: var(--bybit-green);">
-                +${profitUsdt} USDT <span style="font-size: 11px; color: var(--bybit-yellow);">(Спред: +${spread}%)</span>
-            </div>
-            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">
-                Продано ${soldUsdt.toFixed(2)} USDT (возврат тела ${amt.toLocaleString()} ₽ на карту). Вся чистая прибыль осталась в монетах USDT.
-            </div>
-        `;
-    }
-}
-
-function instSimulateDaySelect(dayNum, profitFiat, profitUsdt, midP, spread) {
-    haptic('light');
-    document.querySelectorAll('.inst-cal-cell').forEach(c => c.classList.remove('selected'));
-    const clickedCell = document.getElementById(`inst-cal-cell-${dayNum}`);
-    if (clickedCell) clickedCell.classList.add('selected');
-
-    const totalF = (profitFiat + (profitUsdt * midP)).toFixed(2);
-    const totalU = (totalF / midP).toFixed(2);
-    const sign = profitUsdt >= 0 ? '+' : '−';
-    const colorF = totalF < 0 ? 'var(--bybit-red)' : (totalF > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
-    const colorU = totalU < 0 ? 'var(--bybit-red)' : (totalU > 0 ? 'var(--bybit-green)' : 'var(--text-muted)');
-
-    const outBox = document.getElementById('inst-cal-day-detail');
-    if (outBox) {
-        outBox.innerHTML = `
-            <div style="font-size: 11px; font-weight: 800; color: var(--bybit-yellow); margin-bottom: 4px;">
-                📅 ВЫБРАН ДЕНЬ: ${dayNum} СЕНТЯБРЯ 2026
-            </div>
-            <div style="font-size: 15px; font-weight: 900; color: ${colorF};">
-                ${formatSignedMoney(profitFiat, 2)} ₽ <span style="color: var(--text-muted);">${sign}</span> ${Math.abs(profitUsdt).toFixed(2)} USDT
-            </div>
-            <div style="font-size: 12px; font-weight: 800; margin-top: 4px; display: flex; gap: 8px;">
-                <span style="color: ${colorF};">(≈ ${formatSignedMoney(totalF, 2)} ₽)</span>
-                <span style="color: ${colorU};">(≈ ${formatSignedMoney(totalU, 2)} $)</span>
-                <span style="color: var(--text-muted); margin-left: auto;">Спред: +${spread}%</span>
-            </div>
-        `;
-    }
-}
-
-let instTradeType = 'buy';
-function instSimulateTradeType(type) {
-    haptic('light');
-    instTradeType = type;
-    const btnB = document.getElementById('inst-trade-btn-buy');
-    const btnS = document.getElementById('inst-trade-btn-sell');
-    const prevBtn = document.getElementById('inst-trade-submit-btn');
-
-    if (type === 'buy') {
-        btnB?.classList.add('active', 'buy');
-        btnS?.classList.remove('active', 'sell');
-        if (prevBtn) {
-            prevBtn.className = 'action-btn';
-            prevBtn.innerText = 'СОХРАНИТЬ ПОКУПКУ: 50 000.00 ₽';
-        }
-    } else {
-        btnS?.classList.add('active', 'sell');
-        btnB?.classList.remove('active', 'buy');
-        if (prevBtn) {
-            prevBtn.className = 'action-btn sell-mode';
-            prevBtn.innerText = 'СОХРАНИТЬ ПРОДАЖУ: 50 000.00 ₽';
-        }
-    }
-}
-
-let instCardDemoState = { dayLimit: 150000, daySpent: 0 };
-function instSimulateCardStep(step) {
-    haptic('medium');
-    const barEl = document.getElementById('inst-card-bar-fill');
-    const statEl = document.getElementById('inst-card-bar-stat');
-    const statusEl = document.getElementById('inst-card-status-badge');
-    const logEl = document.getElementById('inst-card-action-log');
-
-    if (step === 'buy') {
-        instCardDemoState.daySpent = 135000;
-        const pct = Math.round((instCardDemoState.daySpent / instCardDemoState.dayLimit) * 100);
-        if (barEl) {
-            barEl.style.width = `${pct}%`;
-            barEl.className = 'card-mini-bar-fill danger';
-        }
-        if (statEl) statEl.innerText = `${instCardDemoState.daySpent.toLocaleString()} / ${instCardDemoState.dayLimit.toLocaleString()} ₽ (${pct}%)`;
-        if (logEl) logEl.innerText = 'Закупка фиата на 135 000 ₽. Расход лимита 90% — полоска подсвечена красным цветом (danger).';
-    } else if (step === 'withdraw') {
-        instCardDemoState.daySpent = 150000;
-        if (barEl) {
-            barEl.style.width = '100%';
-            barEl.className = 'card-mini-bar-fill danger';
-        }
-        if (statEl) statEl.innerText = '150 000 / 150 000 ₽ (100%)';
-        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-yellow); font-weight: 900;">⛔️ Лимит исчерпан</span>';
-        if (logEl) logEl.innerText = 'Снятие 15 000 ₽ в банкомате с флагом [В ЛИМИТЕ]. Лимит достиг 100% — статус "Лимит исчерпан" назначен системой автоматически.';
-    } else if (step === 'cooldown') {
-        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-purple); font-weight: 800;">⏳ До 15 сен, 14:00 (осталось 23ч 59м)</span>';
-        if (logEl) logEl.innerText = 'Карта переведена в отлежку на 24 часа. Включен обратный отсчет таймера реального времени.';
-    } else if (step === 'reset') {
-        instCardDemoState.daySpent = 0;
-        if (barEl) {
-            barEl.style.width = '0%';
-            barEl.className = 'card-mini-bar-fill';
-        }
-        if (statEl) statEl.innerText = '0 / 150 000 ₽ (0%)';
-        if (statusEl) statusEl.innerHTML = '<span style="color: var(--bybit-green); font-weight: 800;">🟢 В работе</span>';
-        if (logEl) logEl.innerText = 'Наступило 00:00:00. Суточный лимит сброшен в ноль, карта возвращена в штатный статус "В работе".';
-    }
-}
-
-function instSimulateRepeat() {
-    haptic('success');
-    const logBox = document.getElementById('inst-repeat-log');
-    if (logBox) {
-        logBox.innerHTML = `
-            <div style="color: var(--bybit-green); font-weight: 800;">✅ ПАРАМЕТРЫ СВЯЗКИ СКОПИРОВАНЫ В КАЛЬКУЛЯТОР:</div>
-            <div style="margin-top: 4px; color: #cbd5e1;">
-                • Прайс: <b>100 000 ₽</b> | Карта: <b>Т-Банк 1</b><br>
-                • Закупка: <b>90.20 ₽</b> ➔ Продажа: <b>92.80 ₽</b><br>
-                • Режим фиксации: <b>💰 Прибыль в фиате</b><br>
-                Всплывает уведомление: «🔁 Все параметры круга скопированы!»
-            </div>
-        `;
-    }
-}
-
-let instFxSimState = true;
-function instSimulateFxToggle() {
-    haptic('light');
-    instFxSimState = !instFxSimState;
-    const box = document.getElementById('inst-fx-preview-box');
-    const txt = document.getElementById('inst-fx-status-text');
-    if (instFxSimState) {
-        if (box) {
-            box.style.background = 'linear-gradient(135deg, rgba(243, 166, 0, 0.15) 0%, rgba(46, 187, 154, 0.15) 100%)';
-            box.style.borderColor = 'var(--bybit-yellow)';
-        }
-        if (txt) txt.innerText = 'Full FX: 3D сферы, неоновые частицы, стекломорфизм (28px)';
-    } else {
-        if (box) {
-            box.style.background = '#05070a';
-            box.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-        }
-        if (txt) txt.innerText = 'OLED Черный: абсолютный чёрный фон (#05070a), минимум энергопотребления';
-    }
-}
-
 /* ====================================================
    ПОЛНОЕ ИНТЕРАКТИВНОЕ РУКОВОДСТВО ПОЛЬЗОВАТЕЛЯ (РЕАЛЬНЫЙ UI 1:1)
 ==================================================== */
@@ -5518,16 +5070,14 @@ function instSimulateFxToggle() {
 }
 
 /* ====================================================
-   ГЕНЕРАТОР ПОЛНОГО РУКОВОДСТВА ПОЛЬЗОВАТЕЛЯ (РЕАЛЬНЫЙ UI 1:1)
+   ГЕНЕРАТОР ПОЛНОГО РУКОВОДСТВА ПОЛЬЗОВАТЕЛЯ
 ==================================================== */
 function renderInstructionTabContent(tabKey) {
     const container = document.getElementById('inst-sheet-body');
     if (!container) return;
 
     const sections = {
-        // ==========================================
-        // РАЗДЕЛ 1: СВОДКА, ПРИБЫЛЬ И ИНКОГНИТО
-        // ==========================================
+        // РАЗДЕЛ 1
         dashboard: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 1: Главная сводка, Общая прибыль и Инкогнито
@@ -5536,7 +5086,6 @@ function renderInstructionTabContent(tabKey) {
                 Главный аналитический пульт терминала консолидирует финансовые потоки со всех задействованных бирж и банковских счетов, рассчитывая фактический финансовый результат арбитража в реальном времени.
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ГЛАВНОГО ЭКРАНА -->
             <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; margin-bottom: 14px;">
                 <div class="tier-badge-row" style="margin-bottom: 8px;">
                     <div class="sub-tier-badge tier-month" style="padding: 9px 12px; font-size: 11px;">
@@ -5668,9 +5217,7 @@ function renderInstructionTabContent(tabKey) {
             </div>
         `,
 
-        // ==========================================
-        // РАЗДЕЛ 2: КАЛЬКУЛЯТОР СВЯЗОК
-        // ==========================================
+        // РАЗДЕЛ 2
         calc: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 2: Калькулятор связок (Фиат vs USDT)
@@ -5679,7 +5226,6 @@ function renderInstructionTabContent(tabKey) {
                 Инструмент предварительного расчета маржинальности арбитражного цикла (закупка + продажа) с фиксацией параметров в облачном журнале.
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 КАЛЬКУЛЯТОРА -->
             <div class="glass-card" style="border: 1px solid rgba(243, 166, 0, 0.4); margin-bottom: 14px; padding: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span class="badge" style="color: var(--bybit-yellow); font-size: 11px; margin: 0;">⚡️ КАЛЬКУЛЯТОР КРУГА</span>
@@ -5803,9 +5349,7 @@ function renderInstructionTabContent(tabKey) {
             </div>
         `,
 
-        // ==========================================
-        // РАЗДЕЛ 3: КАЛЕНДАРЬ ПРИБЫЛИ
-        // ==========================================
+        // РАЗДЕЛ 3
         calendar: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 3: Календарь общей прибыли
@@ -5814,7 +5358,6 @@ function renderInstructionTabContent(tabKey) {
                 Интерактивная тепловая карта торговых дней с динамическим расчетом консолидированной доходности каждого дня.
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 КАЛЕНДАРЯ -->
             <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
                 <div class="calendar-month-nav" style="margin-bottom: 10px;">
                     <button class="cal-nav-btn">‹</button>
@@ -5899,9 +5442,7 @@ function renderInstructionTabContent(tabKey) {
             </div>
         `,
 
-        // ==========================================
-        // РАЗДЕЛ 4: ОДИНОЧНЫЕ ОПЕРАЦИИ
-        // ==========================================
+        // РАЗДЕЛ 4
         trade: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 4: Одиночные операции (Сделки)
@@ -5910,7 +5451,6 @@ function renderInstructionTabContent(tabKey) {
                 Модуль ручной фиксации единичных торговых ордеров для работы по раздельной схеме (когда монеты закупаются у одного мерчанта, а распродаются частями в разное время).
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ФОРМЫ ОРДЕРА -->
             <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
                 <div style="margin-bottom: 8px;">
                     <span class="badge" style="margin-bottom: 4px;">Тип операции:</span>
@@ -5973,7 +5513,7 @@ function renderInstructionTabContent(tabKey) {
                     <div class="switch-btn" id="inst-trade-btn-sell" onclick="instSimulateTradeType('sell')">ПРОДАЖА 🔴</div>
                 </div>
                 <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 4px;">
                         <span style="color: var(--text-muted);">Параметры:</span>
                         <span style="color: #fff; font-weight: 800;">500.00 USDT по курсу 93.10 ₽</span>
                     </div>
@@ -5987,9 +5527,7 @@ function renderInstructionTabContent(tabKey) {
             </div>
         `,
 
-        // ==========================================
-        // РАЗДЕЛ 5: МОДУЛЬ КАРТ И ЛИМИТЫ 115-ФЗ
-        // ==========================================
+        // РАЗДЕЛ 5
         cards: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 5: Модуль карт, Касса и Контроль 115-ФЗ
@@ -5998,7 +5536,6 @@ function renderInstructionTabContent(tabKey) {
                 Центральный узел управления безопасностью банковских счетов, дроп-картами, кассовой наличностью и соблюдением суточных/месячных лимитов.
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 РЕЕСТРА КАРТ -->
             <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px; margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div>
@@ -6203,9 +5740,7 @@ function renderInstructionTabContent(tabKey) {
             </div>
         `,
 
-        // ==========================================
-        // РАЗДЕЛ 6: ИСТОРИЯ ОПЕРАЦИЙ
-        // ==========================================
+        // РАЗДЕЛ 6
         history: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 6: История операций
@@ -6214,7 +5749,6 @@ function renderInstructionTabContent(tabKey) {
                 Облачный реестр всех завершенных ордеров, связок и заметок с инструментами дублирования параметров.
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ЖУРНАЛА СДЕЛОК -->
             <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <div>
@@ -6312,9 +5846,7 @@ function renderInstructionTabContent(tabKey) {
             </div>
         `,
 
-        // ==========================================
-        // РАЗДЕЛ 7: НАСТРОЙКИ, FX И РЕФЕРАЛКА
-        // ==========================================
+        // РАЗДЕЛ 7
         profile: `
             <div style="font-size: 15px; font-weight: 900; color: var(--bybit-yellow); margin-bottom: 8px;">
                 РАЗДЕЛ 7: Настройки, FX и Партнерская сеть
@@ -6323,7 +5855,6 @@ function renderInstructionTabContent(tabKey) {
                 Раздел персонализации рабочей среды, графического режима и монетизации через реферальную программу.
             </p>
 
-            <!-- НАСТОЯЩИЙ РЕНДЕР 1:1 ПАНЕЛИ НАСТРОЕК -->
             <div class="glass-card" style="margin-bottom: 14px; padding: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);">
                     <div>
